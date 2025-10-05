@@ -9,24 +9,16 @@ import (
 	"github.com/quaadgras/go-compiler/internal/source"
 )
 
-func (cc Target) Literal(lit source.Literal) error {
-	if lit.Kind == token.INT && len(lit.Value) > 1 {
-		if lit.Value[0] == '0' && ((lit.Value[1] > '0' && lit.Value[1] < '9') || lit.Value[1] == '_') {
-			// Zig does not support leading zeroes in integer
-			// literals.
-			_, err := cc.Write([]byte("0o" + strings.TrimPrefix(lit.Value[1:], "_")))
-			return err
+func (c99 Target) Literal(lit source.Literal) error {
+	if len(lit.Value) > 2 {
+		if lit.Value[0] == '0' && lit.Value[1] == 'o' {
+			lit.Value = "0" + strings.TrimPrefix(lit.Value[2:], "_")
 		}
 	}
 	if (lit.Kind == token.IMAG || lit.Kind == token.FLOAT) && len(lit.Value) > 1 {
 		lit.Value = strings.TrimSuffix(lit.Value, "i")
 		if lit.Value == "0" {
 			lit.Value = "0.0"
-		}
-		// Zig does not support leading zeros, decimal points or trailing
-		// decimal points in floating point literals.
-		if lit.Value[1] != 'x' && lit.Value[1] != 'o' {
-			lit.Value = strings.TrimLeft(lit.Value, "0")
 		}
 		if lit.Value == "." {
 			lit.Value = "0.0"
@@ -39,7 +31,7 @@ func (cc Target) Literal(lit source.Literal) error {
 		}
 	}
 	if lit.Kind == token.IMAG {
-		fmt.Fprintf(cc, "go.complex128.init(0,%s)", lit.Value)
+		fmt.Fprintf(c99, "go_complex128_new(0,%s)", lit.Value)
 		return nil
 	}
 	if lit.Kind == token.CHAR {
@@ -48,7 +40,7 @@ func (cc Target) Literal(lit source.Literal) error {
 		if err != nil {
 			return err
 		}
-		fmt.Fprintf(cc, "%d", value)
+		fmt.Fprintf(c99, "%d", value)
 		return nil
 	}
 	if lit.Kind == token.STRING {
@@ -58,9 +50,9 @@ func (cc Target) Literal(lit source.Literal) error {
 		if err != nil {
 			return err
 		}
-		fmt.Fprintf(cc, "go_string_new(%q)", val)
+		fmt.Fprintf(c99, "go_string_new(%q)", val)
 		return nil
 	}
-	_, err := cc.Write([]byte(strings.ReplaceAll(lit.Value, "_", "")))
+	_, err := c99.Write([]byte(strings.ReplaceAll(lit.Value, "_", "")))
 	return err
 }

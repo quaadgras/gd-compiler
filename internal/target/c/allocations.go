@@ -2,7 +2,7 @@ package c
 
 import "github.com/quaadgras/go-compiler/internal/source"
 
-func (cc Target) StackAllocated(ident source.DefinedVariable) bool {
+func (c99 Target) StackAllocated(ident source.DefinedVariable) bool {
 	return true
 	if ident.Escapes.Block == nil {
 		return true

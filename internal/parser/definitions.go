@@ -6,8 +6,8 @@ import (
 	"reflect"
 	"strings"
 
-	"runtime.link/xyz"
 	"github.com/quaadgras/go-compiler/internal/source"
+	"runtime.link/xyz"
 )
 
 func loadDefinitions(pkg *source.Package, node ast.Decl, global bool) []source.Definition {
@@ -102,5 +102,6 @@ func loadDefinitionType(pkg *source.Package, in *ast.TypeSpec, outer bool) sourc
 	out.Type = loadType(pkg, in.Type)
 	out.Typed = typedIn(pkg, in.Type)
 	out.Package = pkg.Name
+	out.Exported = ast.IsExported(in.Name.Name)
 	return out
 }

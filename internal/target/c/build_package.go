@@ -2,8 +2,9 @@ package c
 
 import (
 	"bytes"
-	_ "embed"
+	"embed"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 
@@ -12,18 +13,8 @@ import (
 )
 
 var (
-	//go:embed go.c
-	runtime string
-	//go:embed go.h
-	headers string
-
-	//go:embed map.c
-	mapimpl string
-	//go:embed map.h
-	maphead string
-
-	//go:embed .clangd
-	clangd string
+	//go:embed library library/.clangd library/go/.clangd
+	library embed.FS
 )
 
 func Build(dir string, test bool) error {
@@ -31,11 +22,44 @@ func Build(dir string, test bool) error {
 	if err != nil {
 		return err
 	}
+	if err := os.RemoveAll("./.c"); err != nil {
+		return err
+	}
 	if err := os.MkdirAll(filepath.Join(".", ".c"), 0755); err != nil {
 		return err
 	}
+	stdlib, err := fs.Sub(library, "library")
+	if err != nil {
+		return err
+	}
+	if err := os.CopyFS("./.c", stdlib); err != nil {
+		return err
+	}
+
 	for _, pkg := range packages {
 		pkg = escape.Analysis(pkg)
+
+		if err := os.MkdirAll("./.c/go/"+pkg.Name, 0755); err != nil {
+			return err
+		}
+
+		public, err := os.Create("./.c/go/" + pkg.Name + ".h")
+		if err != nil {
+			return err
+		}
+		fmt.Fprintf(public, "#ifndef GO_%s_H\n", pkg.Name)
+		fmt.Fprintf(public, "#define GO_%s_H\n", pkg.Name)
+		fmt.Fprintln(public, "#include <go.h>")
+		fmt.Fprintln(public, "#include <go/"+pkg.Name+"/private.h>")
+
+		private, err := os.Create("./.c/go/" + pkg.Name + "/private.h")
+		if err != nil {
+			return err
+		}
+		fmt.Fprintf(private, "#ifndef GO_%s_PRIVATE_H\n", pkg.Name)
+		fmt.Fprintf(private, "#define GO_%s_PRIVATE_H\n", pkg.Name)
+		fmt.Fprintln(private, "#include <go.h>")
+
 		for _, file := range pkg.Files {
 			out, err := os.Create("./.c/" + filepath.Base(file.FileSet.File(file.Open).Name()) + ".c")
 			if err != nil {
@@ -45,6 +69,8 @@ func Build(dir string, test bool) error {
 			cc.CurrentPackage = pkg.Name
 			cc.Prelude = out
 			cc.Writer = new(bytes.Buffer)
+			cc.Private = private
+			cc.Exports = public
 			cc.Symbols = make(map[string]struct{})
 			if err := cc.File(file); err != nil {
 				return err
@@ -57,18 +83,15 @@ func Build(dir string, test bool) error {
 				return err
 			}
 		}
+
+		fmt.Fprintf(public, "#endif // GO_%s_H\n", pkg.Name)
+		if err := public.Close(); err != nil {
+			return err
+		}
+		fmt.Fprintf(private, "#endif // GO_%s_PRIVATE_H\n", pkg.Name)
+		if err := private.Close(); err != nil {
+			return err
+		}
 	}
-	if err := os.WriteFile("./.c/go.h", []byte(headers), 0644); err != nil {
-		return err
-	}
-	if err := os.WriteFile("./.c/map.h", []byte(maphead), 0644); err != nil {
-		return err
-	}
-	if err := os.WriteFile("./.c/map.c", []byte(mapimpl), 0644); err != nil {
-		return err
-	}
-	if err := os.WriteFile("./.c/.clangd", []byte(clangd), 0644); err != nil {
-		return err
-	}
-	return os.WriteFile("./.c/go.c", []byte(runtime), 0644)
+	return nil
 }

@@ -2,6 +2,7 @@ package c
 
 import (
 	"fmt"
+	"go/ast"
 	"go/types"
 	"reflect"
 	"strings"
@@ -9,22 +10,22 @@ import (
 	"github.com/quaadgras/go-compiler/internal/source"
 )
 
-func (cc Target) Type(e source.Type) string {
+func (c99 Target) Type(e source.Type) string {
 	value, _ := e.Get()
-	return cc.TypeOf(value.TypeAndValue().Type)
+	return c99.TypeOf(value.TypeAndValue().Type)
 }
 
-func (cc Target) ReflectType(e source.Type) string {
+func (c99 Target) ReflectType(e source.Type) string {
 	value, _ := e.Get()
-	return cc.ReflectTypeOf(value.TypeAndValue().Type)
+	return c99.ReflectTypeOf(value.TypeAndValue().Type)
 }
 
-func (cc Target) TypeUnknown(source.TypeUnknown) error {
-	fmt.Fprintf(cc, "unknown")
+func (c99 Target) TypeUnknown(source.TypeUnknown) error {
+	fmt.Fprintf(c99, "unknown")
 	return nil
 }
 
-func (cc Target) Mangle(s string) string {
+func (c99 Target) Mangle(s string) string {
 	var replacer = strings.NewReplacer(
 		".", "_",
 		"/", "_",
@@ -35,7 +36,7 @@ func (cc Target) Mangle(s string) string {
 	return replacer.Replace(s)
 }
 
-func (cc Target) TypeOf(t types.Type) string {
+func (c99 Target) TypeOf(t types.Type) string {
 	switch typ := t.(type) {
 	case *types.Basic:
 		switch typ.Kind() {
@@ -77,38 +78,21 @@ func (cc Target) TypeOf(t types.Type) string {
 			panic("unsupported basic type " + typ.String())
 		}
 	case *types.Array:
-		return fmt.Sprintf("[%d]%s", typ.Len(), cc.TypeOf(typ.Elem()))
+		return fmt.Sprintf("%s[%d]", c99.TypeOf(typ.Elem()), typ.Len())
 	case *types.Signature:
-		var builder strings.Builder
-		builder.WriteString("go.func(fn(*const anyopaque,?*go.routine")
-		for i := 0; i < typ.Params().Len(); i++ {
-			param := typ.Params().At(i)
-			builder.WriteString(", ")
-			builder.WriteString(cc.TypeOf(param.Type()))
-		}
-		builder.WriteString(") ")
-		if typ.Results().Len() == 0 {
-			builder.WriteString("void")
-		} else if typ.Results().Len() == 1 {
-			builder.WriteString(cc.TypeOf(typ.Results().At(0).Type()))
-		} else {
-			panic("unsupported function type with multiple results")
-		}
-		builder.WriteString(")")
-		return builder.String()
+		return "go_func"
 	case *types.Named:
 		if typ.Obj().Pkg() == nil {
-			return "@\"go." + typ.Obj().Name() + "\""
+			return "go_" + typ.Obj().Name()
 		}
-		switch typ.Obj().Pkg().Name() {
-		case "testing":
-			return "go." + typ.Obj().Pkg().Name() + "." + typ.Obj().Name()
-		case cc.CurrentPackage:
-			return typ.Obj().Name()
+		if typ.Obj().Pkg().Name() == c99.CurrentPackage {
+			if !ast.IsExported(typ.Obj().Name()) {
+				return typ.Obj().Name()
+			}
 		}
-		return "@\"" + typ.Obj().Pkg().Name() + "." + typ.Obj().Name() + "\""
+		return typ.Obj().Name() + "_go_" + typ.Obj().Pkg().Name() + "_package"
 	case *types.Pointer:
-		return cc.TypeOf(typ.Elem()) + "*"
+		return "go_pointer"
 	case *types.Slice:
 		return "go_slice"
 	case *types.Chan:
@@ -116,18 +100,18 @@ func (cc Target) TypeOf(t types.Type) string {
 	case *types.Map:
 		return "go_map"
 	case *types.Interface:
-		return "go.interface"
+		return "go_interface"
 	case *types.Struct:
 		var builder strings.Builder
-		builder.WriteString("struct {")
+		builder.WriteString("struct { ")
 		for i := 0; i < typ.NumFields(); i++ {
-			if i > 0 {
-				builder.WriteString(", ")
-			}
 			field := typ.Field(i)
+			ftype, array := c99.ArrayStrippedTypeOf(field.Type())
+			builder.WriteString(c99.TypeOf(ftype))
+			builder.WriteString(" ")
 			builder.WriteString(field.Name())
-			builder.WriteString(": ")
-			builder.WriteString(cc.TypeOf(field.Type()))
+			builder.WriteString(array)
+			builder.WriteString("; ")
 		}
 		builder.WriteString("}")
 		return builder.String()
@@ -136,13 +120,13 @@ func (cc Target) TypeOf(t types.Type) string {
 	case nil:
 		return "void"
 	case *types.Alias:
-		return cc.TypeOf(typ.Rhs())
+		return c99.TypeOf(typ.Rhs())
 	default:
 		panic("unsupported type " + reflect.TypeOf(typ).String())
 	}
 }
 
-func (cc Target) ReflectTypeOf(t types.Type) string {
+func (c99 Target) ReflectTypeOf(t types.Type) string {
 	switch typ := t.(type) {
 	case *types.Basic:
 		switch typ.Kind() {
@@ -187,12 +171,12 @@ func (cc Target) ReflectTypeOf(t types.Type) string {
 		if typ.Obj().Pkg() == nil {
 			return "&@\"go." + typ.Obj().Name() + ".(type)\""
 		}
-		if typ.Obj().Pkg().Name() == cc.CurrentPackage {
+		if typ.Obj().Pkg().Name() == c99.CurrentPackage {
 			return "&@\"" + typ.Obj().Name() + ".(type)\""
 		}
 		return "&@\"" + typ.Obj().Pkg().Name() + "." + typ.Obj().Name() + ".(type)\""
 	case *types.Pointer:
-		return "go.rptr(goto, " + cc.ReflectTypeOf(typ.Elem()) + ")"
+		return "go.rptr(goto, " + c99.ReflectTypeOf(typ.Elem()) + ")"
 	default:
 		panic("unsupported type " + reflect.TypeOf(typ).String())
 	}

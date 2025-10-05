@@ -1,0 +1,5 @@
+CompileFlags:
+  Remove: [-xobjective-c*]  # Strips any existing Objective-C or Objective-C++ mode flags
+  Add:
+    - "-I../"
+    - "-std=c99"

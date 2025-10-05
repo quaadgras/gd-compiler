@@ -8,78 +8,83 @@ import (
 	"runtime.link/xyz"
 )
 
-func (cc Target) DataComposite(data source.DataComposite) error {
+func (c99 Target) DataComposite(data source.DataComposite) error {
 	dtype, ok := data.Type.Get()
 	if !ok {
 		return data.Errorf("composite literal missing type")
 	}
-	fmt.Fprintf(cc, "%s", cc.Type(dtype))
 	switch typ := dtype.TypeAndValue().Type.Underlying().(type) {
 	case *types.Array:
-		fmt.Fprintf(cc, "{")
+		fmt.Fprintf(c99, "(%s)", c99.Type(dtype))
+		fmt.Fprintf(c99, "{")
 		for i, elem := range data.Elements {
 			if i > 0 {
-				fmt.Fprintf(cc, ", ")
+				fmt.Fprintf(c99, ", ")
 			}
-			if err := cc.Compile(elem); err != nil {
+			if err := c99.Compile(elem); err != nil {
 				return err
 			}
 		}
-		fmt.Fprintf(cc, "}")
+		fmt.Fprintf(c99, "}")
 		return nil
 	case *types.Slice:
-		fmt.Fprintf(cc, ".literal(goto, %d, .", len(data.Elements))
-		fmt.Fprintf(cc, "{")
+		fmt.Fprintf(c99, "go_slice_literal(%d, %s, ", len(data.Elements), c99.TypeOf(typ.Elem()))
 		for i, elem := range data.Elements {
 			if i > 0 {
-				fmt.Fprintf(cc, ", ")
+				fmt.Fprintf(c99, ", ")
 			}
-			if err := cc.Compile(elem); err != nil {
+			if err := c99.Compile(elem); err != nil {
 				return err
 			}
 		}
-		fmt.Fprintf(cc, "})")
+		fmt.Fprintf(c99, ")")
 		return nil
 	case *types.Map:
-		fmt.Fprintf(cc, ".literal(goto, %d, .", len(data.Elements))
-		fmt.Fprintf(cc, "{")
+		ktype := c99.TypeOf(typ.Key())
+		vtype := c99.TypeOf(typ.Elem())
+		fmt.Fprintf(c99, "go_map_literal(%s, %s, %d, ", ktype, vtype, len(data.Elements))
+		symbol := fmt.Sprintf("go_map_entry__%s__%s", c99.Mangle(c99.TypeOf(typ.Key())), c99.Mangle(c99.TypeOf(typ.Elem())))
+		c99.Requires(symbol, func() {
+			fmt.Fprintf(c99.Prelude, "typedef struct { %s key; %s val; } %s;\n",
+				c99.TypeOf(typ.Key()), c99.TypeOf(typ.Elem()), symbol)
+		})
 		for i, elem := range data.Elements {
 			if i > 0 {
-				fmt.Fprintf(cc, ", ")
+				fmt.Fprintf(c99, ", ")
 			}
 			pair := source.Expressions.KeyValue.Get(elem)
-			fmt.Fprintf(cc, ".{")
-			if err := cc.Compile(pair.Key); err != nil {
+			fmt.Fprintf(c99, "(%s){", symbol)
+			if err := c99.Compile(pair.Key); err != nil {
 				return err
 			}
-			fmt.Fprintf(cc, ", ")
-			if err := cc.Compile(pair.Value); err != nil {
+			fmt.Fprintf(c99, ", ")
+			if err := c99.Compile(pair.Value); err != nil {
 				return err
 			}
-			fmt.Fprintf(cc, "}")
+			fmt.Fprintf(c99, "}")
 		}
-		fmt.Fprintf(cc, "})")
+		fmt.Fprintf(c99, ")")
 		return nil
 	case *types.Struct:
-		fmt.Fprintf(cc, "{")
+		fmt.Fprintf(c99, "{")
 		for i, elem := range data.Elements {
 			if i > 0 {
-				fmt.Fprintf(cc, ", ")
+				fmt.Fprintf(c99, ", ")
 			}
 			switch xyz.ValueOf(elem) {
 			case source.Expressions.KeyValue:
-				if err := cc.Compile(elem); err != nil {
+				if err := c99.Compile(elem); err != nil {
 					return err
 				}
 			default:
 				field := typ.Field(i)
-				fmt.Fprintf(cc, ".%s = ", field.Name())
-				if err := cc.Compile(elem); err != nil {
+				fmt.Fprintf(c99, ".%s = ", field.Name())
+				if err := c99.Compile(elem); err != nil {
 					return err
 				}
 			}
 		}
-		fmt.Fprintf(cc, "}")
+		fmt.Fprintf(c99, "}")
 		return nil
 	default:
 		return data.Errorf("unexpected composite type: " + typ.String())

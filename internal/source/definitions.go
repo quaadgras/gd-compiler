@@ -74,4 +74,6 @@ type TypeDefinition struct {
 	Type           Type
 
 	Package string
+
+	Exported bool
 }

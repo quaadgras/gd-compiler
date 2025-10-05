@@ -2,6 +2,7 @@ package c
 
 import (
 	"fmt"
+	"go/ast"
 	"go/types"
 	"strings"
 
@@ -9,8 +10,8 @@ import (
 	"runtime.link/xyz"
 )
 
-func (cc Target) FunctionDefinition(decl source.FunctionDefinition) error {
-	fmt.Fprintf(cc, "\n%s", strings.Repeat("\t", cc.Tabs))
+func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
+	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 	body, ok := decl.Body.Get()
 	if !ok {
 		return decl.Errorf("function missing body")
@@ -22,51 +23,40 @@ func (cc Target) FunctionDefinition(decl source.FunctionDefinition) error {
 			body.Statements[i] = source.Statements.Defer.As(stmt)
 		}
 	}
-	if decl.IsTest {
-		fmt.Fprintf(cc, "test \"%s\" { var chan = go.routine{}; const goto = &chan; defer goto.exit();", strings.TrimPrefix(decl.Name.String, "Test"))
-		t, ok := decl.Type.Arguments.Fields[0].Names.Get()
-		if ok {
-			fmt.Fprintf(cc, "const %[1]s = go.new(goto,go.testing.T); go.use(%[1]s);", cc.toString(t[0]))
-		}
-		for _, stmt := range body.Statements {
-			cc.Tabs++
-			if err := cc.Statement(stmt); err != nil {
-				return err
-			}
-			cc.Tabs--
-		}
-		fmt.Fprintf(cc, "\n%s", strings.Repeat("\t", cc.Tabs))
-		fmt.Fprintf(cc, "}")
-		fmt.Fprintf(cc, "\n%s", strings.Repeat("\t", cc.Tabs))
-		return nil
-	}
 	receiver, isMethod := decl.Receiver.Get()
 	var fnName = decl.Name.String
 	if isMethod {
 		fnName = fmt.Sprintf(`@"%s.%s"`, receiver.Fields[0].Type.TypeAndValue().Type.(*types.Named).Obj().Name(), fnName)
 	}
 	if decl.Name.String == "main" {
-		fmt.Fprintf(cc, "main() { ")
+		fmt.Fprintf(c99, "go_main() { ")
 	} else {
+		var suffix string
+		if ast.IsExported(fnName) {
+			suffix = "_go_" + c99.PackageOf(c99.CurrentPackage) + "_package"
+		} else {
+			fmt.Fprintf(c99, "static ")
+		}
 		results, ok := decl.Type.Results.Get()
 		if ok {
 			switch len(results.Fields) {
 			case 1:
-				fmt.Fprintf(cc, "%s ", cc.Type(results.Fields[0].Type))
+				fmt.Fprintf(c99, "%s ", c99.Type(results.Fields[0].Type))
 			default:
-				fmt.Fprintf(cc, ".{")
+				fmt.Fprintf(c99, ".{")
 				for i, field := range results.Fields {
 					if i > 0 {
-						fmt.Fprintf(cc, ", ")
+						fmt.Fprintf(c99, ", ")
 					}
-					fmt.Fprintf(cc, "%s", cc.Type(field.Type))
+					fmt.Fprintf(c99, "%s", c99.Type(field.Type))
 				}
-				fmt.Fprintf(cc, "} ")
+				fmt.Fprintf(c99, "} ")
 			}
 		} else {
-			fmt.Fprintf(cc, "void ")
+			fmt.Fprintf(c99, "void ")
 		}
-		fmt.Fprintf(cc, "%s(", fnName)
+
+		fmt.Fprintf(c99, "%s%s(", fnName, suffix)
 		if isMethod {
 			field := receiver.Fields[0]
 			var name = "_"
@@ -74,7 +64,7 @@ func (cc Target) FunctionDefinition(decl source.FunctionDefinition) error {
 			if hasName {
 				name = names[0].String
 			}
-			fmt.Fprintf(cc, ", %s: %s", name, cc.Type(field.Type))
+			fmt.Fprintf(c99, ", %s: %s", name, c99.Type(field.Type))
 		}
 		{
 			var i int
@@ -85,37 +75,37 @@ func (cc Target) FunctionDefinition(decl source.FunctionDefinition) error {
 				}
 				for _, name := range names {
 					if i > 0 {
-						fmt.Fprintf(cc, ", ")
+						fmt.Fprintf(c99, ", ")
 					}
-					fmt.Fprintf(cc, "%s %s", cc.Type(param.Type), cc.toString(name))
+					fmt.Fprintf(c99, "%s %s", c99.Type(param.Type), c99.toString(name))
 					i++
 				}
 			}
 		}
-		fmt.Fprintf(cc, ") ")
-		fmt.Fprintf(cc, "{")
+		fmt.Fprintf(c99, ") ")
+		fmt.Fprintf(c99, "{")
 	}
 	for _, stmt := range body.Statements {
-		cc.Tabs++
-		if err := cc.Statement(stmt); err != nil {
+		c99.Tabs++
+		if err := c99.Statement(stmt); err != nil {
 			return err
 		}
-		cc.Tabs--
+		c99.Tabs--
 	}
-	fmt.Fprintf(cc, "\n%s", strings.Repeat("\t", cc.Tabs))
-	fmt.Fprintf(cc, "}")
-	fmt.Fprintf(cc, "\n%s", strings.Repeat("\t", cc.Tabs))
+	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
+	fmt.Fprintf(c99, "}")
+	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 	// Interface wrapper.
 	if isMethod {
 		named := receiver.Fields[0].Type.TypeAndValue().Type.(*types.Named)
-		fmt.Fprintf(cc, `pub fn @"%s.%s.%s.(itfc)"(default: ?*go.routine`, decl.Package, named.Obj().Name(), decl.Name.String)
+		fmt.Fprintf(c99, `pub fn @"%s.%s.%s.(itfc)"(default: ?*go.routine`, decl.Package, named.Obj().Name(), decl.Name.String)
 		field := receiver.Fields[0]
 		var name = "_"
 		names, hasName := field.Names.Get()
 		if hasName {
 			name = names[0].String
 		}
-		fmt.Fprintf(cc, ", %s: *const anyopaque", name)
+		fmt.Fprintf(c99, ", %s: *const anyopaque", name)
 		{
 			var i int
 			for _, param := range decl.Type.Arguments.Fields {
@@ -124,25 +114,25 @@ func (cc Target) FunctionDefinition(decl source.FunctionDefinition) error {
 					return param.Location.Errorf("missing names for function argument")
 				}
 				for _, name := range names {
-					fmt.Fprintf(cc, ", ")
-					fmt.Fprintf(cc, "%s: %s", cc.toString(name), cc.Type(param.Type))
+					fmt.Fprintf(c99, ", ")
+					fmt.Fprintf(c99, "%s: %s", c99.toString(name), c99.Type(param.Type))
 					i++
 				}
 			}
 		}
-		fmt.Fprintf(cc, ") ")
+		fmt.Fprintf(c99, ") ")
 		results, ok := decl.Type.Results.Get()
 		if ok {
 			switch len(results.Fields) {
 			case 1:
-				fmt.Fprintf(cc, "%s ", cc.Type(results.Fields[0].Type))
+				fmt.Fprintf(c99, "%s ", c99.Type(results.Fields[0].Type))
 			default:
 				return results.Opening.Errorf("unsupported number of function results: %d", len(results.Fields))
 			}
 		} else {
-			fmt.Fprintf(cc, "void ")
+			fmt.Fprintf(c99, "void ")
 		}
-		fmt.Fprintf(cc, "{ return %s(default, @as(*const %s, @ptrCast(%s)).*", fnName, cc.Type(field.Type), name)
+		fmt.Fprintf(c99, "{ return %s(default, @as(*const %s, @ptrCast(%s)).*", fnName, c99.Type(field.Type), name)
 		{
 			var i int
 			for _, param := range decl.Type.Arguments.Fields {
@@ -151,14 +141,14 @@ func (cc Target) FunctionDefinition(decl source.FunctionDefinition) error {
 					return param.Location.Errorf("missing names for function argument")
 				}
 				for _, name := range names {
-					fmt.Fprintf(cc, ", ")
-					fmt.Fprintf(cc, "%v", name)
+					fmt.Fprintf(c99, ", ")
+					fmt.Fprintf(c99, "%v", name)
 					i++
 				}
 			}
 		}
-		fmt.Fprintf(cc, "); }")
-		fmt.Fprintf(cc, "\n%s", strings.Repeat("\t", cc.Tabs))
+		fmt.Fprintf(c99, "); }")
+		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 	}
 	return nil
 }

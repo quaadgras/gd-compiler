@@ -7,66 +7,66 @@ import (
 	"github.com/quaadgras/go-compiler/internal/source"
 )
 
-func (cc Target) StatementIf(stmt source.StatementIf) error {
+func (c99 Target) StatementIf(stmt source.StatementIf) error {
 	init, hasInit := stmt.Init.Get()
 	if hasInit {
-		fmt.Fprintf(cc, "{")
-		if err := cc.Statement(init); err != nil {
+		fmt.Fprintf(c99, "{")
+		if err := c99.Statement(init); err != nil {
 			return err
 		}
-		fmt.Fprintf(cc, "; ")
+		fmt.Fprintf(c99, "; ")
 	}
-	fmt.Fprintf(cc, "if (")
-	if err := cc.Expression(stmt.Condition); err != nil {
+	fmt.Fprintf(c99, "if (")
+	if err := c99.Expression(stmt.Condition); err != nil {
 		return err
 	}
-	fmt.Fprintf(cc, ") {")
+	fmt.Fprintf(c99, ") {")
 	for _, stmt := range stmt.Body.Statements {
-		cc.Tabs++
-		if err := cc.Statement(stmt); err != nil {
+		c99.Tabs++
+		if err := c99.Statement(stmt); err != nil {
 			return err
 		}
-		cc.Tabs--
+		c99.Tabs--
 	}
 	ifelse, hasElse := stmt.Else.Get()
 	if hasElse {
-		fmt.Fprintf(cc, "\n%s", strings.Repeat("\t", cc.Tabs))
-		fmt.Fprintf(cc, "} else ")
-		cc.Tabs = -cc.Tabs
-		if err := cc.Statement(ifelse); err != nil {
+		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
+		fmt.Fprintf(c99, "} else ")
+		c99.Tabs = -c99.Tabs
+		if err := c99.Statement(ifelse); err != nil {
 			return err
 		}
 	} else {
-		fmt.Fprintf(cc, "\n%s", strings.Repeat("\t", cc.Tabs))
-		fmt.Fprintf(cc, "}")
+		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
+		fmt.Fprintf(c99, "}")
 	}
 	return nil
 }
 
-func (cc Target) StatementSwitch(stmt source.StatementSwitch) error {
-	fmt.Fprintf(cc, "{")
+func (c99 Target) StatementSwitch(stmt source.StatementSwitch) error {
+	fmt.Fprintf(c99, "{")
 	if init, ok := stmt.Init.Get(); ok {
-		cc.Tabs = -cc.Tabs
-		if err := cc.Statement(init); err != nil {
+		c99.Tabs = -c99.Tabs
+		if err := c99.Statement(init); err != nil {
 			return err
 		}
-		cc.Tabs = -cc.Tabs
+		c99.Tabs = -c99.Tabs
 	}
-	fmt.Fprintf(cc, "switch (")
+	fmt.Fprintf(c99, "switch (")
 	if value, ok := stmt.Value.Get(); ok {
-		if err := cc.Expression(value); err != nil {
+		if err := c99.Expression(value); err != nil {
 			return err
 		}
 	}
-	fmt.Fprintf(cc, ") {")
+	fmt.Fprintf(c99, ") {")
 	for _, clause := range stmt.Clauses {
-		cc.Tabs++
-		if err := cc.SwitchCaseClause(clause); err != nil {
+		c99.Tabs++
+		if err := c99.SwitchCaseClause(clause); err != nil {
 			return err
 		}
-		cc.Tabs--
+		c99.Tabs--
 	}
-	fmt.Fprintf(cc, "\n%s", strings.Repeat("\t", cc.Tabs))
-	fmt.Fprintf(cc, "}}")
+	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
+	fmt.Fprintf(c99, "}}")
 	return nil
 }

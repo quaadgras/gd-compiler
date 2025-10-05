@@ -8,137 +8,126 @@ import (
 	"github.com/quaadgras/go-compiler/internal/source"
 )
 
-func (cc Target) StatementFor(stmt source.StatementFor) error {
+func (c99 Target) StatementFor(stmt source.StatementFor) error {
+	if stmt.Label != "" {
+		fmt.Fprintf(c99, " %s:", stmt.Label)
+	}
+	fmt.Fprintf(c99, "for (")
 	init, hasInit := stmt.Init.Get()
 	if hasInit {
-		fmt.Fprintf(cc, "{")
-		if err := cc.Statement(init); err != nil {
+		if err := c99.Statement(init); err != nil {
 			return err
 		}
 	}
-	if stmt.Label != "" {
-		fmt.Fprintf(cc, " %s:", stmt.Label)
-	}
-	fmt.Fprintf(cc, "while (")
+	fmt.Fprintf(c99, "; ")
 	condition, hasCondition := stmt.Condition.Get()
 	if hasCondition {
-		if err := cc.Expression(condition); err != nil {
+		if err := c99.Expression(condition); err != nil {
 			return err
 		}
 	} else {
-		fmt.Fprintf(cc, "true")
+		fmt.Fprintf(c99, "go_true")
 	}
-	fmt.Fprintf(cc, ")")
+	fmt.Fprintf(c99, "; ")
 	statement, hasStatement := stmt.Statement.Get()
 	if hasStatement {
-		fmt.Fprintf(cc, ": (")
-		cc.Tabs = -cc.Tabs
+		c99.Tabs = -c99.Tabs
 		stmt, _ := statement.Get()
-		if err := cc.Compile(stmt); err != nil {
+		if err := c99.Compile(stmt); err != nil {
 			return err
 		}
-		cc.Tabs = -cc.Tabs
-		fmt.Fprintf(cc, ")")
+		c99.Tabs = -c99.Tabs
 	}
-	fmt.Fprintf(cc, " {")
+	fmt.Fprintf(c99, " {")
 	for _, stmt := range stmt.Body.Statements {
-		cc.Tabs++
-		if err := cc.Statement(stmt); err != nil {
+		c99.Tabs++
+		if err := c99.Statement(stmt); err != nil {
 			return err
 		}
-		cc.Tabs--
+		c99.Tabs--
 	}
-	fmt.Fprintf(cc, "\n%s", strings.Repeat("\t", cc.Tabs))
-	fmt.Fprintf(cc, "}")
+	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
+	fmt.Fprintf(c99, "}")
 	if hasInit {
-		fmt.Fprintf(cc, "}")
+		fmt.Fprintf(c99, "}")
 	}
 	return nil
 }
 
-func (cc Target) StatementRange(stmt source.StatementRange) error {
+func (c99 Target) StatementRange(stmt source.StatementRange) error {
 	switch stmt.X.TypeAndValue().Type.(type) {
 	case *types.Basic:
-		fmt.Fprintf(cc, "for (0..@as(%s,", cc.TypeOf(stmt.X.TypeAndValue().Type))
-		if err := cc.Expression(stmt.X); err != nil {
-			return err
-		}
-		fmt.Fprintf(cc, "))")
+		rtype := c99.TypeOf(stmt.X.TypeAndValue().Type)
+		iter_name := "go_iter"
 		key, hasKey := stmt.Key.Get()
 		if hasKey {
-			fmt.Fprintf(cc, " | ")
-			if err := cc.DefinedVariable(key); err != nil {
-				return err
-			}
-			fmt.Fprintf(cc, " |")
-		} else {
-			fmt.Fprintf(cc, " |_|")
+			iter_name = c99.toString(key)
 		}
 		if stmt.Label != "" {
-			fmt.Fprintf(cc, " %s:", stmt.Label)
+			fmt.Fprintf(c99, " %s:", stmt.Label)
 		}
-		fmt.Fprintf(cc, " {")
+		fmt.Fprintf(c99, "for (%s %s = 0; %[2]s < %[3]s; %[2]s++) {", rtype, iter_name, c99.toString(stmt.X))
 		for _, stmt := range stmt.Body.Statements {
-			cc.Tabs++
-			if err := cc.Statement(stmt); err != nil {
+			c99.Tabs++
+			if err := c99.Statement(stmt); err != nil {
 				return err
 			}
-			cc.Tabs--
+			c99.Tabs--
 		}
-		fmt.Fprintf(cc, "\n%s", strings.Repeat("\t", cc.Tabs))
-		fmt.Fprintf(cc, "}")
+		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
+		fmt.Fprintf(c99, "}")
 		return nil
 	case *types.Slice:
-		fmt.Fprintf(cc, "for (")
+		fmt.Fprintf(c99, "for (")
 		key, hasKey := stmt.Key.Get()
 		if key.String == "_" {
 			hasKey = false
 		}
 		val, hasVal := stmt.Value.Get()
 		if hasKey {
-			fmt.Fprintf(cc, "0..,")
+			fmt.Fprintf(c99, "0..,")
 		}
-		if err := cc.Expression(stmt.X); err != nil {
+		if err := c99.Expression(stmt.X); err != nil {
 			return err
 		}
-		fmt.Fprintf(cc, ".arraylist.items) |")
+		fmt.Fprintf(c99, ".arraylist.items) |")
 		if hasKey {
-			if err := cc.DefinedVariable(key); err != nil {
+			if err := c99.DefinedVariable(key); err != nil {
 				return err
 			}
 		}
 		if hasKey && hasVal {
-			fmt.Fprintf(cc, ",")
+			fmt.Fprintf(c99, ",")
 		}
 		if hasVal {
-			if err := cc.DefinedVariable(val); err != nil {
+			if err := c99.DefinedVariable(val); err != nil {
 				return err
 			}
 		}
-		fmt.Fprintf(cc, "|")
+		fmt.Fprintf(c99, "|")
 		if stmt.Label != "" {
-			fmt.Fprintf(cc, " %s:", stmt.Label)
+			fmt.Fprintf(c99, " %s:", stmt.Label)
 		}
-		fmt.Fprintf(cc, " {")
+		fmt.Fprintf(c99, " {")
 		for _, stmt := range stmt.Body.Statements {
-			cc.Tabs++
-			if err := cc.Statement(stmt); err != nil {
+			c99.Tabs++
+			if err := c99.Statement(stmt); err != nil {
 				return err
 			}
-			cc.Tabs--
+			c99.Tabs--
 		}
-		fmt.Fprintf(cc, "\n%s", strings.Repeat("\t", cc.Tabs))
-		fmt.Fprintf(cc, "}")
+		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
+		fmt.Fprintf(c99, "}")
 		return nil
 	}
 	return stmt.Errorf("range over unsupported type %T", stmt.X.TypeAndValue().Type)
 }
 
-func (cc Target) StatementContinue(stmt source.StatementContinue) error {
-	fmt.Fprintf(cc, "continue")
+func (c99 Target) StatementContinue(stmt source.StatementContinue) error {
+	fmt.Fprintf(c99, "continue")
 	label, hasLabel := stmt.Label.Get()
 	if hasLabel {
-		fmt.Fprintf(cc, " : %s", label.String)
+		fmt.Fprintf(c99, " : %s", label.String)
 	}
 	return nil
 }

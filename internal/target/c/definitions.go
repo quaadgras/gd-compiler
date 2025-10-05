@@ -10,87 +10,97 @@ import (
 	"github.com/quaadgras/go-compiler/internal/source"
 )
 
-func (cc Target) DefinedVariable(name source.DefinedVariable) error {
-	return cc.definedVariable(false, name)
+func (c99 Target) DefinedVariable(name source.DefinedVariable) error {
+	return c99.definedVariable(false, name)
 }
 
-func (cc Target) definedVariable(decl bool, name source.DefinedVariable) error {
+func (c99 Target) definedVariable(decl bool, name source.DefinedVariable) error {
 	var prefix string
-	if !decl && !cc.StackAllocated(name) {
+	if !decl && !c99.StackAllocated(name) {
 		prefix = "*"
 	}
 	if name.String == "_" {
-		_, err := cc.Write([]byte("_"))
+		_, err := c99.Write([]byte("_"))
 		return err
 	}
 	if !decl && prefix != "" {
-		fmt.Fprintf(cc, "%s", prefix)
+		fmt.Fprintf(c99, "%s", prefix)
 	}
-	_, err := cc.Write([]byte(name.String))
+	_, err := c99.Write([]byte(name.String))
 	if err != nil {
 		return err
 	}
 	return err
 }
 
-func (cc Target) DefinedFunction(name source.DefinedFunction) error {
-	fmt.Fprintf(cc, "%s", name.String)
+func (c99 Target) DefinedFunction(name source.DefinedFunction) error {
+	fmt.Fprintf(c99, "%s", name.String)
 	return nil
 }
 
-func (cc Target) DefinedConstant(name source.DefinedConstant) error {
+func (c99 Target) DefinedConstant(name source.DefinedConstant) error {
 	if name.Shadow > 0 {
-		fmt.Fprintf(cc, `@"%s.%d"`, name.String, name.Shadow)
+		fmt.Fprintf(c99, `@"%s.%d"`, name.String, name.Shadow)
 		return nil
 	}
-	_, err := cc.Write([]byte(name.String))
+	_, err := c99.Write([]byte(name.String))
 	return err
 }
 
-func (cc Target) SpecificationImport(spec source.Import) error {
+func (c99 Target) SpecificationImport(spec source.Import) error {
 	return nil
 	path, _ := strconv.Unquote(path.Base(spec.Path.Value))
 	rename, ok := spec.Rename.Get()
 	if ok {
-		fmt.Fprintf(cc, "const %s = ", rename.String)
+		fmt.Fprintf(c99, "const %s = ", rename.String)
 	} else {
 
-		fmt.Fprintf(cc, "const %s = ", path)
+		fmt.Fprintf(c99, "const %s = ", path)
 	}
-	fmt.Fprintf(cc, "@import(%q);\n", path+".zig")
+	fmt.Fprintf(c99, "@import(%q);\n", path+".zig")
 	return nil
 }
 
-func (cc Target) TypeDefinition(spec source.TypeDefinition) error {
-	fmt.Fprintf(cc, "\n%s", strings.Repeat("\t", cc.Tabs))
-	fmt.Fprintf(cc, "const %s = %s;", spec.Name.String, cc.Type(spec.Type))
-	if !spec.Global {
-		fmt.Fprintf(cc, "go.use(%s);", spec.Name.String)
+func (c99 Target) TypeDefinition(spec source.TypeDefinition) error {
+
+	header := c99.Private
+	suffix := ""
+	if spec.Exported && spec.Global {
+		header = c99.Exports
+		suffix = "_go_" + c99.CurrentPackage + "_package"
 	}
-	fmt.Fprintf(cc, "const @\"%s.(type)\" = go.rtype{", spec.Name.String)
-	fmt.Fprintf(cc, ".name=%q,", spec.Name.String)
+	if !spec.Global {
+		header = c99
+		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
+	}
+	ftype, array := c99.ArrayStrippedTypeOf(spec.Type.TypeAndValue().Type)
+	fmt.Fprintf(header, "typedef %s %s%s%s;\n", c99.TypeOf(ftype), spec.Name.String, suffix, array)
+	fmt.Fprintf(header, "extern struct go_type %s%s_type;\n", spec.Name.String, suffix)
+
+	/*fmt.Fprintf(c99, "const @\"%s.(type)\" = go.rtype{", spec.Name.String)
+	fmt.Fprintf(c99, ".name=%q,", spec.Name.String)
 	kind := kindOf(spec.Type.TypeAndValue().Type)
-	fmt.Fprintf(cc, ".kind=go.rkind.%s, ", kind)
+	fmt.Fprintf(c99, ".kind=go.rkind.%s, ", kind)
 	switch rtype := spec.Type.TypeAndValue().Type.(type) {
 	case *types.Struct:
-		fmt.Fprintf(cc, ".data=go.rdata{.%s=&[_]go.field{", kind)
+		fmt.Fprintf(c99, ".data=go.rdata{.%s=&[_]go.field{", kind)
 		for i := range rtype.NumFields() {
 			if i > 0 {
-				fmt.Fprintf(cc, ", ")
+				fmt.Fprintf(c99, ", ")
 			}
 			field := rtype.Field(i)
-			fmt.Fprintf(cc, ".{.name=%q,.type=%s,.offset=@offsetOf(%s,\"%[1]s\"),.exported=%v,.embedded=%v}",
-				field.Name(), cc.ReflectTypeOf(field.Type()), spec.Name.String, field.Exported(), field.Anonymous())
+			fmt.Fprintf(c99, ".{.name=%q,.type=%s,.offset=@offsetOf(%s,\"%[1]s\"),.exported=%v,.embedded=%v}",
+				field.Name(), c99.ReflectTypeOf(field.Type()), spec.Name.String, field.Exported(), field.Anonymous())
 		}
-		fmt.Fprintf(cc, "}}")
+		fmt.Fprintf(c99, "}}")
 	default:
-		fmt.Fprintf(cc, ".data=go.rdata{.%s=void{}}", kind)
+		fmt.Fprintf(c99, ".data=go.rdata{.%s=void{}}", kind)
 	}
-	fmt.Fprintf(cc, "}")
+	fmt.Fprintf(c99, "}")
 	if !spec.Global {
-		fmt.Fprintf(cc, "; go.use(@\"%s.(type)\")", spec.Name.String)
+		fmt.Fprintf(c99, "; go.use(@\"%s.(type)\")", spec.Name.String)
 	}
-	fmt.Fprintf(cc, ";")
+	fmt.Fprintf(c99, ";")*/
 	return nil
 }
 
@@ -157,9 +167,9 @@ func kindOf(t types.Type) string {
 	panic("unexpected kindOf: " + t.String())
 }
 
-func (cc Target) VariableDefinition(spec source.VariableDefinition) error {
-	if cc.Tabs > 0 {
-		fmt.Fprintf(cc, "\n%s", strings.Repeat("\t", cc.Tabs))
+func (c99 Target) VariableDefinition(spec source.VariableDefinition) error {
+	if c99.Tabs > 0 {
+		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 	}
 	var name = spec.Name
 	var value func() error
@@ -172,28 +182,28 @@ func (cc Target) VariableDefinition(spec source.VariableDefinition) error {
 	}
 	if ok {
 		rtype = vtype.TypeAndValue().Type
-		ztype = cc.TypeOf(vtype.TypeAndValue().Type)
+		ztype = c99.TypeOf(vtype.TypeAndValue().Type)
 	} else {
 		rtype = assignValue.TypeAndValue().Type
-		ztype = cc.TypeOf(assignValue.TypeAndValue().Type)
+		ztype = c99.TypeOf(assignValue.TypeAndValue().Type)
 	}
 	if !hasValue {
 		value = func() error {
 			if ztype[0] == '*' {
-				fmt.Fprintf(cc, "null")
+				fmt.Fprintf(c99, "null")
 				return nil
 			}
-			fmt.Fprintf(cc, "go.zero(%s)", ztype)
+			fmt.Fprintf(c99, "go.zero(%s)", ztype)
 			return nil
 		}
 	} else {
 		value = func() error {
-			return cc.Expression(assignValue)
+			return c99.Expression(assignValue)
 		}
 		_, isInterface := rtype.Underlying().(*types.Interface)
 		if isInterface {
 			value = func() error {
-				return cc.FunctionCall(source.FunctionCall{
+				return c99.FunctionCall(source.FunctionCall{
 					Location:  spec.Location,
 					Function:  source.Expressions.Type.As(vtype),
 					Arguments: []source.Expression{assignValue},
@@ -202,56 +212,55 @@ func (cc Target) VariableDefinition(spec source.VariableDefinition) error {
 		}
 	}
 	if name.String == "_" {
-		fmt.Fprintf(cc, "_ = ")
+		fmt.Fprintf(c99, "go_ignore(")
 		if err := value(); err != nil {
 			return err
 		}
+		fmt.Fprintf(c99, ")")
 	} else {
-		fmt.Fprintf(cc, "%s ", ztype)
-		if err := cc.definedVariable(true, name); err != nil {
+		ftype, array := c99.ArrayStrippedTypeOf(rtype)
+		fmt.Fprintf(c99, "%s ", c99.TypeOf(ftype))
+		if err := c99.definedVariable(true, name); err != nil {
 			return err
 		}
-		stackAllocated := cc.StackAllocated(name)
+		fmt.Fprint(c99, array)
+		stackAllocated := c99.StackAllocated(name)
 		stackAllocated = true
-		fmt.Fprint(cc, " = ")
+		fmt.Fprint(c99, " = ")
 		if !stackAllocated {
-			fmt.Fprintf(cc, "new(%s); *", cc.TypeOf(assignValue.TypeAndValue().Type))
-			if err := cc.definedVariable(true, name); err != nil {
+			fmt.Fprintf(c99, "new(%s); *", c99.TypeOf(assignValue.TypeAndValue().Type))
+			if err := c99.definedVariable(true, name); err != nil {
 				return err
 			}
-			fmt.Fprint(cc, " = ")
+			fmt.Fprint(c99, " = ")
 		}
 		if err := value(); err != nil {
 			return err
 		}
 	}
-	if cc.Tabs > 0 || spec.Global {
-		fmt.Fprintf(cc, ";")
+	if c99.Tabs > 0 || spec.Global {
+		fmt.Fprintf(c99, ";")
 	}
 	return nil
 }
 
-func (cc Target) ConstantDefinition(def source.ConstantDefinition) error {
-	if cc.Tabs > 0 {
-		fmt.Fprintf(cc, "\n%s", strings.Repeat("\t", cc.Tabs))
+func (c99 Target) ConstantDefinition(def source.ConstantDefinition) error {
+	if def.Name.String == "_" {
+		return nil
 	}
-	if def.Name.String != "_" {
-		fmt.Fprintf(cc, "const ")
-		if err := cc.DefinedConstant(def.Name); err != nil {
-			return err
-		}
-		fmt.Fprintf(cc, ": %s = ", cc.TypeOf(def.TypeAndValue().Type))
-	} else {
-		if err := cc.DefinedConstant(def.Name); err != nil {
-			return err
-		}
-		fmt.Fprintf(cc, " = ")
+	if c99.Tabs > 0 {
+		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 	}
-	if err := cc.Expression(def.Value); err != nil {
+	fmt.Fprintf(c99, "const ")
+	if err := c99.DefinedConstant(def.Name); err != nil {
 		return err
 	}
-	if cc.Tabs > 0 || def.Global {
-		fmt.Fprintf(cc, ";")
+	fmt.Fprintf(c99, ": %s = ", c99.TypeOf(def.TypeAndValue().Type))
+	if err := c99.Expression(def.Value); err != nil {
+		return err
+	}
+	if c99.Tabs > 0 || def.Global {
+		fmt.Fprintf(c99, ";")
 	}
 	return nil
 }

@@ -8,11 +8,11 @@ import (
 	"runtime.link/xyz"
 )
 
-func (cc Target) StatementGo(stmt source.StatementGo) error {
-	return cc.FunctionCall(stmt.Call)
+func (c99 Target) StatementGo(stmt source.StatementGo) error {
+	return c99.FunctionCall(stmt.Call)
 }
 
-func (cc Target) FunctionCall(expr source.FunctionCall) error {
+func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 	function := expr.Function
 	if xyz.ValueOf(function) == source.Expressions.Parenthesized {
 		function = source.Expressions.Parenthesized.Get(function).X
@@ -25,29 +25,29 @@ func (cc Target) FunctionCall(expr source.FunctionCall) error {
 		call := source.Expressions.BuiltinFunction.Get(function)
 		switch call.String {
 		case "println":
-			return cc.println(expr)
+			return c99.println(expr)
 		case "new":
-			return cc.new(expr)
+			return c99.new(expr)
 		case "make":
-			return cc.make(expr)
+			return c99.make(expr)
 		case "append":
-			return cc.append(expr)
+			return c99.append(expr)
 		case "copy":
-			return cc.copy(expr)
+			return c99.copy(expr)
 		case "clear":
-			return cc.clear(expr)
+			return c99.clear(expr)
 		case "len":
-			return cc.len(expr)
+			return c99.len(expr)
 		case "cap":
-			return cc.cap(expr)
+			return c99.cap(expr)
 		case "panic":
-			return cc.panic(expr)
+			return c99.panic(expr)
 		default:
 			return expr.Errorf("unsupported builtin function %s", call)
 		}
 	case source.Expressions.DefinedFunction:
 		call := source.Expressions.DefinedFunction.Get(function)
-		if err := cc.DefinedFunction(call); err != nil {
+		if err := c99.DefinedFunction(call); err != nil {
 			return err
 		}
 		if !call.Package {
@@ -55,7 +55,7 @@ func (cc Target) FunctionCall(expr source.FunctionCall) error {
 		}
 	case source.Expressions.DefinedVariable:
 		call := source.Expressions.DefinedVariable.Get(function)
-		if err := cc.DefinedVariable(call); err != nil {
+		if err := c99.DefinedVariable(call); err != nil {
 			return err
 		}
 		if !call.Package {
@@ -68,18 +68,18 @@ func (cc Target) FunctionCall(expr source.FunctionCall) error {
 			if defined.Method {
 				_, isInterface = left.X.TypeAndValue().Type.Underlying().(*types.Interface)
 				if isInterface {
-					if err := cc.Expression(left.X); err != nil {
+					if err := c99.Expression(left.X); err != nil {
 						return err
 					}
-					fmt.Fprintf(cc, `.itype.`)
-					if err := cc.DefinedFunction(defined); err != nil {
+					fmt.Fprintf(c99, `.itype.`)
+					if err := c99.DefinedFunction(defined); err != nil {
 						return err
 					}
-					fmt.Fprintf(cc, `(`)
-					if err := cc.Expression(left.X); err != nil {
+					fmt.Fprintf(c99, `(`)
+					if err := c99.Expression(left.X); err != nil {
 						return err
 					}
-					fmt.Fprintf(cc, ".value")
+					fmt.Fprintf(c99, ".value")
 				} else {
 					receiver = xyz.New(left.X)
 					rtype := left.X.TypeAndValue().Type
@@ -94,19 +94,15 @@ func (cc Target) FunctionCall(expr source.FunctionCall) error {
 					if !ok {
 						return left.Errorf("unsupported receiver type %s", rtype)
 					}
-					fmt.Fprintf(cc, `%s.@"%s.`, cc.PackageOf(named.Obj().Pkg().Name()), named.Obj().Name())
-					if err := cc.DefinedFunction(defined); err != nil {
-						return err
-					}
-					fmt.Fprintf(cc, `"`)
+					fmt.Fprintf(c99, `%s_%s_go_%s_package`, named.Obj().Name(), c99.toString(defined), c99.PackageOf(named.Obj().Pkg().Name()))
 				}
 			} else {
-				if err := cc.Compile(left); err != nil {
+				if err := c99.Compile(left); err != nil {
 					return err
 				}
 			}
 		} else {
-			if err := cc.Compile(left); err != nil {
+			if err := c99.Compile(left); err != nil {
 				return err
 			}
 		}
@@ -114,27 +110,27 @@ func (cc Target) FunctionCall(expr source.FunctionCall) error {
 		ctype := source.Expressions.Type.Get(function)
 		switch typ := ctype.TypeAndValue().Type.Underlying().(type) {
 		case *types.Interface:
-			fmt.Fprintf(cc, "%s.make(goto,", cc.Type(ctype))
-			if err := cc.Expression(expr.Arguments[0]); err != nil {
+			fmt.Fprintf(c99, "%s.make(goto,", c99.Type(ctype))
+			if err := c99.Expression(expr.Arguments[0]); err != nil {
 				return err
 			}
-			fmt.Fprintf(cc, ", %s, .{", cc.ReflectTypeOf(expr.Arguments[0].TypeAndValue().Type))
+			fmt.Fprintf(c99, ", %s, .{", c99.ReflectTypeOf(expr.Arguments[0].TypeAndValue().Type))
 			for i := range typ.NumMethods() {
 				if i > 0 {
-					fmt.Fprintf(cc, ", ")
+					fmt.Fprintf(c99, ", ")
 				}
 				method := typ.Method(i)
 				named := expr.Arguments[0].TypeAndValue().Type.(*types.Named)
-				fmt.Fprintf(cc, `.%s = &@"%s.%[1]s.(itfc)"`, method.Name(), named.Obj().Pkg().Name()+"."+named.Obj().Name())
+				fmt.Fprintf(c99, `.%s = &@"%s.%[1]s.(itfc)"`, method.Name(), named.Obj().Pkg().Name()+"."+named.Obj().Name())
 			}
-			fmt.Fprintf(cc, "})")
+			fmt.Fprintf(c99, "})")
 			return nil
 		default:
-			fmt.Fprintf(cc, "@as(%s)", cc.Type(ctype))
+			fmt.Fprintf(c99, "@as(%s)", c99.Type(ctype))
 			return nil
 		}
 	case source.Expressions.Function:
-		if err := cc.Expression(function); err != nil {
+		if err := c99.Expression(function); err != nil {
 			return err
 		}
 	default:
@@ -146,43 +142,43 @@ func (cc Target) FunctionCall(expr source.FunctionCall) error {
 	}
 	if !isInterface {
 		if variable && expr.Go {
-			fmt.Fprintf(cc, ".go(.{null")
+			fmt.Fprintf(c99, ".go(.{null")
 		} else if variable {
-			fmt.Fprintf(cc, ".call(.{goto")
+			fmt.Fprintf(c99, ".call(.{goto")
 		} else {
-			fmt.Fprintf(cc, "(")
+			fmt.Fprintf(c99, "(")
 		}
 	}
-	if receiver, ok := receiver.Get(); ok {
-		fmt.Fprintf(cc, ", ")
-		if err := cc.Expression(receiver); err != nil {
+	recv, hasReceiver := receiver.Get()
+	if hasReceiver {
+		if err := c99.Expression(recv); err != nil {
 			return err
 		}
 	}
 	var variadic bool
 	for i, arg := range expr.Arguments {
-		if i > 0 {
-			fmt.Fprintf(cc, ", ")
+		if i > 0 || hasReceiver {
+			fmt.Fprintf(c99, ", ")
 		}
 		if !variadic && (ftype.Variadic() && i >= ftype.Params().Len()-1) {
-			fmt.Fprintf(cc, "go.variadic(%d, %s, .{", len(expr.Arguments)+1-ftype.Params().Len(), cc.TypeOf(ftype.Params().At(ftype.Params().Len()-1).Type().(*types.Slice).Elem()))
+			fmt.Fprintf(c99, "go.variadic(%d, %s, .{", len(expr.Arguments)+1-ftype.Params().Len(), c99.TypeOf(ftype.Params().At(ftype.Params().Len()-1).Type().(*types.Slice).Elem()))
 			variadic = true
 		}
-		if err := cc.Expression(arg); err != nil {
+		if err := c99.Expression(arg); err != nil {
 			return err
 		}
 	}
 	if ftype.Variadic() {
 		if variadic {
-			fmt.Fprintf(cc, "})")
+			fmt.Fprintf(c99, "})")
 		} else {
-			fmt.Fprintf(cc, ".{}")
+			fmt.Fprintf(c99, ".{}")
 		}
 	}
 	if variable {
-		fmt.Fprintf(cc, "})")
+		fmt.Fprintf(c99, "})")
 	} else {
-		fmt.Fprintf(cc, ")")
+		fmt.Fprintf(c99, ")")
 	}
 	return nil
 }
