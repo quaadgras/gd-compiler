@@ -50,15 +50,34 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 		if err := c99.DefinedFunction(call); err != nil {
 			return err
 		}
-		if !call.Package {
+		if !call.IsGlobal {
 			variable = true
 		}
 	case source.Expressions.DefinedVariable:
 		call := source.Expressions.DefinedVariable.Get(function)
+		fmt.Fprintf(c99, "(go_func_get(")
 		if err := c99.DefinedVariable(call); err != nil {
 			return err
 		}
-		if !call.Package {
+		fmt.Fprintf(c99, ", ")
+		ftype := expr.Function.TypeAndValue().Type.(*types.Signature)
+		switch ftype.Results().Len() {
+		case 0:
+			fmt.Fprintf(c99, "void")
+		case 1:
+			fmt.Fprint(c99, c99.TypeOf(ftype.Results().At(0).Type()))
+		default:
+			panic("multiple return values not supported for function variables")
+		}
+		fmt.Fprintf(c99, "(*)(")
+		for i := 0; i < ftype.Params().Len(); i++ {
+			if i > 0 {
+				fmt.Fprintf(c99, ", ")
+			}
+			fmt.Fprint(c99, c99.TypeOf(ftype.Params().At(i).Type()))
+		}
+		fmt.Fprintf(c99, ")))")
+		if !call.IsGlobal {
 			variable = true
 		}
 	case source.Expressions.Selector:
@@ -94,7 +113,7 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 					if !ok {
 						return left.Errorf("unsupported receiver type %s", rtype)
 					}
-					fmt.Fprintf(c99, `%s_%s_go_%s_package`, named.Obj().Name(), c99.toString(defined), c99.PackageOf(named.Obj().Pkg().Name()))
+					fmt.Fprintf(c99, `%s_%s`, named.Obj().Name(), c99.toString(defined))
 				}
 			} else {
 				if err := c99.Compile(left); err != nil {
@@ -143,8 +162,6 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 	if !isInterface {
 		if variable && expr.Go {
 			fmt.Fprintf(c99, ".go(.{null")
-		} else if variable {
-			fmt.Fprintf(c99, ".call(.{goto")
 		} else {
 			fmt.Fprintf(c99, "(")
 		}
@@ -175,10 +192,6 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 			fmt.Fprintf(c99, ".{}")
 		}
 	}
-	if variable {
-		fmt.Fprintf(c99, "})")
-	} else {
-		fmt.Fprintf(c99, ")")
-	}
+	fmt.Fprintf(c99, ")")
 	return nil
 }

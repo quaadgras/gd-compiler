@@ -28,6 +28,15 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 	if isMethod {
 		fnName = fmt.Sprintf(`@"%s.%s"`, receiver.Fields[0].Type.TypeAndValue().Type.(*types.Named).Obj().Name(), fnName)
 	}
+	old := c99.CurrentFunction
+	old_count := c99.CurrentClosures
+	c99.CurrentFunction = fnName
+	c99.CurrentClosures = 0
+	defer func() {
+		c99.CurrentFunction = old
+		c99.CurrentClosures = old_count
+	}()
+
 	if decl.Name.String == "main" {
 		fmt.Fprintf(c99, "go_main() { ")
 	} else {

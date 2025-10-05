@@ -2,6 +2,7 @@ package c
 
 import (
 	"fmt"
+	"go/ast"
 	"go/types"
 	"path"
 	"strconv"
@@ -34,7 +35,11 @@ func (c99 Target) definedVariable(decl bool, name source.DefinedVariable) error 
 }
 
 func (c99 Target) DefinedFunction(name source.DefinedFunction) error {
-	fmt.Fprintf(c99, "%s", name.String)
+	if ast.IsExported(name.String) {
+		fmt.Fprintf(c99, "%s_go_%s_package", name.String, name.Package)
+	} else {
+		fmt.Fprintf(c99, "%s", name.String)
+	}
 	return nil
 }
 
@@ -245,19 +250,23 @@ func (c99 Target) VariableDefinition(spec source.VariableDefinition) error {
 }
 
 func (c99 Target) ConstantDefinition(def source.ConstantDefinition) error {
-	if def.Name.String == "_" {
-		return nil
-	}
 	if c99.Tabs > 0 {
 		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 	}
-	fmt.Fprintf(c99, "const ")
-	if err := c99.DefinedConstant(def.Name); err != nil {
-		return err
+	if def.Name.String != "_" {
+		fmt.Fprintf(c99, "const %s ", c99.TypeOf(def.TypeAndValue().Type))
+		if err := c99.DefinedConstant(def.Name); err != nil {
+			return err
+		}
+		fmt.Fprintf(c99, " = ")
+	} else {
+		fmt.Fprintf(c99, "go_ignore(")
 	}
-	fmt.Fprintf(c99, ": %s = ", c99.TypeOf(def.TypeAndValue().Type))
 	if err := c99.Expression(def.Value); err != nil {
 		return err
+	}
+	if def.Name.String == "_" {
+		fmt.Fprintf(c99, ")")
 	}
 	if c99.Tabs > 0 || def.Global {
 		fmt.Fprintf(c99, ";")

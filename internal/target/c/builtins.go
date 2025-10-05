@@ -3,6 +3,7 @@ package c
 import (
 	"fmt"
 	"go/types"
+	"io"
 
 	"github.com/quaadgras/go-compiler/internal/source"
 )
@@ -83,7 +84,7 @@ func (c99 Target) make(expr source.FunctionCall) error {
 		default:
 			return expr.Errorf("make expects one or two arguments, got %d", len(expr.Arguments))
 		}
-		fmt.Fprintf(c99, "go.chan(%s).make(goto,", c99.TypeOf(typ.Elem()))
+		fmt.Fprintf(c99, "go_chan_make(%s, ", c99.TypeOf(typ.Elem()))
 		if len(expr.Arguments) == 2 {
 			if err := c99.Expression(expr.Arguments[1]); err != nil {
 				return err
@@ -110,8 +111,9 @@ func (c99 Target) append(expr source.FunctionCall) error {
 	}
 	elemType := c99.TypeOf(expr.Arguments[0].TypeAndValue().Type.(*types.Slice).Elem())
 	symbol := fmt.Sprintf("go_append__%s", c99.Mangle(elemType))
-	c99.Requires(symbol, func() {
-		fmt.Fprintf(c99.Prelude, "static inline go_slice %s(go_slice s, %s v) { return go_append(s, sizeof(%s), &v); }\n", symbol, elemType, elemType)
+	c99.Requires(symbol, c99.Prelude, func(w io.Writer) error {
+		fmt.Fprintf(w, "static inline go_slice %s(go_slice s, %s v) { return go_append(s, sizeof(%s), &v); }\n", symbol, elemType, elemType)
+		return nil
 	})
 	fmt.Fprintf(c99, "%s(", symbol)
 	if err := c99.Expression(expr.Arguments[0]); err != nil {

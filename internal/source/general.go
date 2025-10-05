@@ -149,10 +149,11 @@ type Identifier struct {
 
 	Shadow int // number of shadowed identifiers
 
-	Mutable bool              // mutability analysis result
-	Escapes EscapeInformation // escape analysis result
-	Package bool              // identifier is global to the package and not defined within a sub-scope.
+	Mutable  bool              // mutability analysis result
+	Escapes  EscapeInformation // escape analysis result
+	IsGlobal bool              // identifier is global to the package and not defined within a sub-scope.
 
+	Package   string // package where the identifier is defined.
 	IsPackage bool
 }
 

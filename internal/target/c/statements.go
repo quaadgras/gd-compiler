@@ -3,6 +3,7 @@ package c
 import (
 	"fmt"
 	"go/types"
+	"io"
 	"strings"
 
 	"github.com/quaadgras/go-compiler/internal/source"
@@ -98,8 +99,9 @@ func (c99 Target) StatementReturn(stmt source.StatementReturn) error {
 
 func (c99 Target) StatementSend(stmt source.StatementSend) error {
 	symbol := fmt.Sprintf("go_chan_send__%s", c99.Mangle(c99.TypeOf(stmt.X.TypeAndValue().Type.(*types.Chan).Elem())))
-	c99.Requires(symbol, func() {
-		fmt.Fprintf(c99.Prelude, "static inline void %s(go_chan c, %s v) { go_chan_send(c, &v); }\n", symbol, c99.TypeOf(stmt.X.TypeAndValue().Type.(*types.Chan).Elem()))
+	c99.Requires(symbol, c99.Prelude, func(w io.Writer) error {
+		fmt.Fprintf(w, "static inline void %s(go_chan c, %s v) { go_chan_send(c, &v); }\n", symbol, c99.TypeOf(stmt.X.TypeAndValue().Type.(*types.Chan).Elem()))
+		return nil
 	})
 	fmt.Fprintf(c99, "%s(", symbol)
 	if err := c99.Expression(stmt.X); err != nil {
@@ -136,26 +138,24 @@ func (c99 Target) StatementSwitchType(stmt source.StatementSwitchType) error {
 func (c99 Target) SwitchCaseClause(clause source.SwitchCaseClause) error {
 	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 	if len(clause.Expressions) == 0 {
-		fmt.Fprintf(c99, "else")
+		fmt.Fprintf(c99, "default:")
 	} else {
-		for i, expr := range clause.Expressions {
-			if i > 0 {
-				fmt.Fprintf(c99, ", ")
-			}
+		for _, expr := range clause.Expressions {
+			fmt.Fprintf(c99, "case ")
 			if err := c99.Expression(expr); err != nil {
 				return err
 			}
+			fmt.Fprintf(c99, ": ")
 		}
 	}
-	fmt.Fprintf(c99, " => {")
+	c99.Tabs++
 	for _, stmt := range clause.Body {
-		c99.Tabs++
 		if err := c99.Statement(stmt); err != nil {
 			return err
 		}
-		c99.Tabs--
 	}
 	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
-	fmt.Fprintf(c99, "},")
+	fmt.Fprintf(c99, "break;")
+	c99.Tabs--
 	return nil
 }

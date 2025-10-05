@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"go/token"
 	"go/types"
-	"strings"
+	"io"
 
 	"github.com/quaadgras/go-compiler/internal/source"
+	"runtime.link/xyz"
 )
 
 func (c99 Target) Expression(expr source.Expression) error {
@@ -74,39 +75,24 @@ func (c99 Target) ExpressionFunction(e source.ExpressionFunction) error {
 	if c99.Tabs < 0 {
 		c99.Tabs = -c99.Tabs
 	}
-	fmt.Fprintf(c99, "%s.make(&struct{pub fn call(package: *const anyopaque, default: ?*go.routine", c99.TypeOf(e.Type.TypeAndValue().Type))
-	for _, arg := range e.Type.Arguments.Fields {
-		names, ok := arg.Names.Get()
-		if ok {
-			for _, name := range names {
-				fmt.Fprintf(c99, ",%s: %s", c99.toString(name), c99.Type(arg.Type))
-			}
-		} else {
-			fmt.Fprintf(c99, ",_: %s", c99.Type(arg.Type))
-		}
+	symbol := fmt.Sprintf("go_func_%s_%d", c99.CurrentFunction, c99.CurrentClosures)
+	if err := c99.Requires(symbol, c99.Prelude, func(w io.Writer) error {
+		var c99 = c99
+		c99.Writer = w
+		c99.Tabs = 0
+		return c99.FunctionDefinition(source.FunctionDefinition{
+			Location: e.Location,
+			Name: source.DefinedFunction{
+				String: symbol,
+			},
+			Type:      e.Type,
+			Body:      xyz.New(e.Body),
+			IsClosure: true,
+		})
+	}); err != nil {
+		return err
 	}
-	fmt.Fprintf(c99, ") ")
-	results, ok := e.Type.Results.Get()
-	if !ok {
-		fmt.Fprintf(c99, "void")
-	} else {
-		switch len(results.Fields) {
-		case 1:
-			fmt.Fprintf(c99, "%s", c99.Type(results.Fields[0].Type))
-		default:
-			return e.Errorf("multiple return values not supported")
-		}
-	}
-	fmt.Fprintf(c99, " { var chan2 = go.routine{}; const goto2: *go.routine = if (default) |select| select else &chan2; if (default == null) {defer goto2.exit();} go.use(package);")
-	for _, stmt := range e.Body.Statements {
-		c99.Tabs++
-		if err := c99.Statement(stmt); err != nil {
-			return err
-		}
-		c99.Tabs--
-	}
-	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
-	fmt.Fprintf(c99, "}}{})")
+	fmt.Fprintf(c99, "go_make_func(%s)", symbol)
 	return nil
 }
 
@@ -127,9 +113,10 @@ func (c99 Target) ExpressionIndex(expr source.ExpressionIndex) error {
 	case *types.Map:
 		mtype := expr.X.TypeAndValue().Type.(*types.Map)
 		symbol := fmt.Sprintf("go_map_get__%s__%s", c99.Mangle(c99.TypeOf(mtype.Key())), c99.Mangle(c99.TypeOf(mtype.Elem())))
-		c99.Requires(symbol, func() {
-			fmt.Fprintf(c99.Prelude, "static inline %s %s(go_map m, %s key) { %s val; go_map_get(m, &key, &val); return val; }\n",
+		c99.Requires(symbol, c99.Prelude, func(w io.Writer) error {
+			fmt.Fprintf(w, "static inline %s %s(go_map m, %s key) { %s val; go_map_get(m, &key, &val); return val; }\n",
 				c99.TypeOf(mtype.Elem()), symbol, c99.TypeOf(mtype.Key()), c99.TypeOf(mtype.Elem()))
+			return nil
 		})
 		fmt.Fprintf(c99, "%s(", symbol)
 		if err := c99.Expression(expr.X); err != nil {
@@ -169,10 +156,17 @@ func (c99 Target) ExpressionKeyValue(e source.ExpressionKeyValue) error {
 }
 
 func (c99 Target) AwaitChannel(e source.AwaitChannel) error {
+	symbol := fmt.Sprintf("go_chan_recv__%s", c99.Mangle(c99.TypeOf(e.Chan.TypeAndValue().Type.(*types.Chan).Elem())))
+	c99.Requires(symbol, c99.Prelude, func(w io.Writer) error {
+		fmt.Fprintf(w, "static inline %s %s(go_chan c) { %s v; go_chan_recv(c, &v); return v; }\n",
+			c99.TypeOf(e.Chan.TypeAndValue().Type.(*types.Chan).Elem()), symbol, c99.TypeOf(e.Chan.TypeAndValue().Type.(*types.Chan).Elem()))
+		return nil
+	})
+	fmt.Fprintf(c99, "%s(", symbol)
 	if err := c99.Expression(e.Chan); err != nil {
 		return err
 	}
-	fmt.Fprint(c99, ".recv(goto)")
+	fmt.Fprint(c99, ")")
 	return nil
 }
 

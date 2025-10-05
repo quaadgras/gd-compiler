@@ -7,9 +7,9 @@ import (
 	"go/types"
 	"strings"
 
+	"github.com/quaadgras/go-compiler/internal/source"
 	"golang.org/x/tools/go/packages"
 	"runtime.link/xyz"
-	"github.com/quaadgras/go-compiler/internal/source"
 )
 
 func Load(dir string, test bool) (map[string]source.Package, error) {
@@ -194,6 +194,10 @@ func loadIdentifier(pkg *source.Package, in *ast.Ident) source.Identifier {
 			isMethod = true
 		}
 	}
+	var pkgname string
+	if object != nil && object.Pkg() != nil {
+		pkgname = object.Pkg().Name()
+	}
 	return source.Identifier{
 		Typed:    typedIn(pkg, in),
 		Location: locationIn(pkg, in, in.Pos()),
@@ -201,7 +205,8 @@ func loadIdentifier(pkg *source.Package, in *ast.Ident) source.Identifier {
 		String:   in.Name,
 		Method:   isMethod,
 		Shadow:   shadow,
-		Package:  global,
+		IsGlobal: global,
+		Package:  pkgname,
 		Mutable:  true,
 	}
 }

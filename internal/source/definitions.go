@@ -37,6 +37,8 @@ type FunctionDefinition struct {
 	Body xyz.Maybe[StatementBlock]
 
 	IsTest bool // true when the function is a test function, within a test package.
+
+	IsClosure bool
 }
 
 // var Name Type = Value

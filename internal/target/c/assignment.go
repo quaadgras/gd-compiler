@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go/token"
 	"go/types"
+	"io"
 	"strings"
 
 	"github.com/quaadgras/go-compiler/internal/source"
@@ -66,9 +67,10 @@ func (c99 Target) StatementAssignment(stmt source.StatementAssignment) error {
 			expr := source.Expressions.Index.Get(variable)
 			if mtype, ok := expr.X.TypeAndValue().Type.(*types.Map); ok {
 				symbol := fmt.Sprintf("go_map_set__%s__%s", c99.Mangle(c99.TypeOf(mtype.Key())), c99.Mangle(c99.TypeOf(mtype.Elem())))
-				c99.Requires(symbol, func() {
-					fmt.Fprintf(c99.Prelude, "static inline void %s(go_map m, %s key, %s val) { go_map_set(m, &key, &val); }\n",
+				c99.Requires(symbol, c99.Prelude, func(w io.Writer) error {
+					fmt.Fprintf(w, "static inline void %s(go_map m, %s key, %s val) { go_map_set(m, &key, &val); }\n",
 						symbol, c99.TypeOf(mtype.Key()), c99.TypeOf(mtype.Elem()))
+					return nil
 				})
 				fmt.Fprintf(c99, "%s(", symbol)
 				if err := c99.Expression(expr.X); err != nil {

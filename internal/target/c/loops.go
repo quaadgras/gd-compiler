@@ -15,11 +15,14 @@ func (c99 Target) StatementFor(stmt source.StatementFor) error {
 	fmt.Fprintf(c99, "for (")
 	init, hasInit := stmt.Init.Get()
 	if hasInit {
+		tabs := c99.Tabs
+		c99.Tabs = -c99.Tabs
 		if err := c99.Statement(init); err != nil {
 			return err
 		}
+		c99.Tabs = tabs
 	}
-	fmt.Fprintf(c99, "; ")
+	fmt.Fprintf(c99, " ")
 	condition, hasCondition := stmt.Condition.Get()
 	if hasCondition {
 		if err := c99.Expression(condition); err != nil {
@@ -38,7 +41,7 @@ func (c99 Target) StatementFor(stmt source.StatementFor) error {
 		}
 		c99.Tabs = -c99.Tabs
 	}
-	fmt.Fprintf(c99, " {")
+	fmt.Fprintf(c99, ") {")
 	for _, stmt := range stmt.Body.Statements {
 		c99.Tabs++
 		if err := c99.Statement(stmt); err != nil {
@@ -48,9 +51,6 @@ func (c99 Target) StatementFor(stmt source.StatementFor) error {
 	}
 	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 	fmt.Fprintf(c99, "}")
-	if hasInit {
-		fmt.Fprintf(c99, "}")
-	}
 	return nil
 }
 

@@ -5,8 +5,8 @@ import (
 	"go/types"
 	"slices"
 
-	"runtime.link/xyz"
 	"github.com/quaadgras/go-compiler/internal/source"
+	"runtime.link/xyz"
 )
 
 // Analysis performs escape analysis on the given package, returning the package
@@ -202,12 +202,12 @@ func isGlobal(expr source.Expression) bool {
 	switch xyz.ValueOf(expr) {
 	case source.Expressions.DefinedVariable:
 		variable := source.Expressions.DefinedVariable.Get(expr)
-		return variable.Package
+		return variable.IsGlobal
 	case source.Expressions.Selector:
 		selector := source.Expressions.Selector.Get(expr)
 		if xyz.ValueOf(selector.Selection) == source.Expressions.DefinedVariable {
 			variable := source.Expressions.DefinedVariable.Get(selector.Selection)
-			return variable.Package
+			return variable.IsGlobal
 		}
 	}
 	return false

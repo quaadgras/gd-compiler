@@ -1,6 +1,7 @@
 package c
 
 import (
+	"bytes"
 	"fmt"
 	"go/types"
 	"io"
@@ -21,16 +22,23 @@ type Target struct {
 
 	Tabs int
 
-	CurrentPackage string
+	CurrentPackage  string
+	CurrentFunction string
+	CurrentClosures int
 
 	Symbols map[string]struct{}
 }
 
-func (c99 Target) Requires(symbol string, fn func()) {
+func (c99 Target) Requires(symbol string, w io.Writer, fn func(w io.Writer) error) error {
 	if _, ok := c99.Symbols[symbol]; !ok {
 		c99.Symbols[symbol] = struct{}{}
-		fn()
+		var buf bytes.Buffer
+		if err := fn(&buf); err != nil {
+			return err
+		}
+		fmt.Fprint(w, buf.String())
 	}
+	return nil
 }
 
 func (c99 Target) Compile(node source.Node) error {
@@ -85,6 +93,7 @@ func (c99 *Target) File(file source.File) error {
 	for _, pkg := range file.Imports {
 		path, _ := strconv.Unquote(pkg.Path.Value)
 		fmt.Fprintf(c99.Prelude, `#include <go/%s.h>`, path)
+		fmt.Fprintln(c99.Prelude)
 	}
 	fmt.Fprintln(c99.Prelude)
 	for _, decl := range file.Definitions {

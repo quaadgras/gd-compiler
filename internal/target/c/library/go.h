@@ -42,7 +42,7 @@ typedef struct {
 } go_pointer;
 
 typedef struct {
-    void (*go_func)(void);
+    void (*ptr)(void);
     char context[];
 } go_func;
 
@@ -111,9 +111,12 @@ go_string go_string_new(const char* str);
 go_int go_string_len(go_string s);
 go_bool go_string_eq(go_string a, go_string b);
 
+#define go_chan_make(T, length) ((go_chan){})
 void go_chan_send(go_chan c, const void* v);
+void go_chan_recv(go_chan c, void* v);
 
-
+#define go_make_func(fn) ((go_func){ .ptr = (void(*)(void))(fn) })
+#define go_func_get(f, T) (T)(f.ptr)
 
 go_uint64 go_hash_go_string(const void* item, go_uint64 seed0, go_uint64 seed1);
 go_bool go_same_go_string(const void* a, const void* b);

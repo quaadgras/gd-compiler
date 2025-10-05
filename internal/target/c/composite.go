@@ -3,6 +3,7 @@ package c
 import (
 	"fmt"
 	"go/types"
+	"io"
 
 	"github.com/quaadgras/go-compiler/internal/source"
 	"runtime.link/xyz"
@@ -44,9 +45,10 @@ func (c99 Target) DataComposite(data source.DataComposite) error {
 		vtype := c99.TypeOf(typ.Elem())
 		fmt.Fprintf(c99, "go_map_literal(%s, %s, %d, ", ktype, vtype, len(data.Elements))
 		symbol := fmt.Sprintf("go_map_entry__%s__%s", c99.Mangle(c99.TypeOf(typ.Key())), c99.Mangle(c99.TypeOf(typ.Elem())))
-		c99.Requires(symbol, func() {
-			fmt.Fprintf(c99.Prelude, "typedef struct { %s key; %s val; } %s;\n",
+		c99.Requires(symbol, c99.Prelude, func(w io.Writer) error {
+			fmt.Fprintf(w, "typedef struct { %s key; %s val; } %s;\n",
 				c99.TypeOf(typ.Key()), c99.TypeOf(typ.Elem()), symbol)
+			return nil
 		})
 		for i, elem := range data.Elements {
 			if i > 0 {
