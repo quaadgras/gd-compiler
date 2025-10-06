@@ -114,9 +114,9 @@ func (c99 Target) StatementReturn(stmt source.StatementReturn) error {
 }
 
 func (c99 Target) StatementSend(stmt source.StatementSend) error {
-	symbol := fmt.Sprintf("go_chan_send__%s", c99.Mangle(stmt.X.TypeAndValue().Type.(*types.Chan).Elem()))
+	symbol := fmt.Sprintf("go_send_%s", c99.Mangle(stmt.X.TypeAndValue().Type.(*types.Chan).Elem()))
 	c99.Requires(symbol, c99.Prelude, func(w io.Writer) error {
-		fmt.Fprintf(w, "static inline void %s(go_ch c, %s v) { go_chan_send(c, &v); }\n", symbol, c99.TypeOf(stmt.X.TypeAndValue().Type.(*types.Chan).Elem()))
+		fmt.Fprintf(w, "static inline void %s(go_ch c, %s v) { go_send(c, sizeof(%[2]s), &v); }\n", symbol, c99.TypeOf(stmt.X.TypeAndValue().Type.(*types.Chan).Elem()))
 		return nil
 	})
 	fmt.Fprintf(c99, "%s(", symbol)

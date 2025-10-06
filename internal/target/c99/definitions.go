@@ -81,9 +81,11 @@ func (c99 Target) TypeDefinition(spec source.TypeDefinition) error {
 		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 	}
 	ftype, array := c99.ArrayStrippedTypeOf(spec.Type.TypeAndValue().Type)
-	fmt.Fprintf(header, "typedef %s %s%s%s;\n", c99.TypeOf(ftype), spec.Name.String, suffix, array)
+	fmt.Fprintln(header)
+	fmt.Fprintf(header, "typedef %s %s%s%s;", c99.TypeOf(ftype), spec.Name.String, suffix, array)
 	if spec.Global {
-		fmt.Fprintf(header, "extern const go_type go_type_%s%s;\n", spec.Name.String, suffix)
+		fmt.Fprintln(header)
+		fmt.Fprintf(header, "extern const go_type go_type_%s%s;", spec.Name.String, suffix)
 	}
 
 	switch rtype := spec.Type.TypeAndValue().Type.(type) {

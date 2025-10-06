@@ -100,11 +100,11 @@ func Build(dir string, test bool) error {
 		if err := init.Close(); err != nil {
 			return err
 		}
-		fmt.Fprintf(public, "#endif // GO_%s_H\n", pkg.Name)
+		fmt.Fprintf(public, "\n#endif // GO_%s_H\n", pkg.Name)
 		if err := public.Close(); err != nil {
 			return err
 		}
-		fmt.Fprintf(private, "#endif // GO_%s_PRIVATE_H\n", pkg.Name)
+		fmt.Fprintf(private, "\n#endif // GO_%s_PRIVATE_H\n", pkg.Name)
 		if err := private.Close(); err != nil {
 			return err
 		}

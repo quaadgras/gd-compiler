@@ -65,9 +65,9 @@ func (c99 Target) StatementAssignment(stmt source.StatementAssignment) error {
 		case source.Expressions.Index:
 			expr := source.Expressions.Index.Get(variable)
 			if mtype, ok := expr.X.TypeAndValue().Type.(*types.Map); ok {
-				symbol := fmt.Sprintf("go_map_set__%s__%s", c99.Mangle(mtype.Key()), c99.Mangle(mtype.Elem()))
+				symbol := fmt.Sprintf("go_map_%s_%s_set", c99.Mangle(mtype.Key()), c99.Mangle(mtype.Elem()))
 				c99.Requires(symbol, c99.Prelude, func(w io.Writer) error {
-					fmt.Fprintf(w, "static inline void %s(go_map m, %s key, %s val) { go_map_set(m, &key, &val); }\n",
+					fmt.Fprintf(w, "static inline void %s(go_kv m, %s key, %s val) { go_map_set(m, &key, &val); }\n",
 						symbol, c99.TypeOf(mtype.Key()), c99.TypeOf(mtype.Elem()))
 					return nil
 				})

@@ -112,7 +112,7 @@ func (c99 Target) ExpressionIndex(expr source.ExpressionIndex) error {
 		return nil
 	case *types.Map:
 		mtype := expr.X.TypeAndValue().Type.(*types.Map)
-		symbol := fmt.Sprintf("go_map_get__%s__%s", c99.Mangle(mtype.Key()), c99.Mangle(mtype.Elem()))
+		symbol := fmt.Sprintf("go_map_%s_%s_get", c99.Mangle(mtype.Key()), c99.Mangle(mtype.Elem()))
 		c99.Requires(symbol, c99.Prelude, func(w io.Writer) error {
 			fmt.Fprintf(w, "static inline %s %s(go_kv m, %s key) { %s val; go_map_get(m, &key, &val); return val; }\n",
 				c99.TypeOf(mtype.Elem()), symbol, c99.TypeOf(mtype.Key()), c99.TypeOf(mtype.Elem()))
@@ -156,9 +156,9 @@ func (c99 Target) ExpressionKeyValue(e source.ExpressionKeyValue) error {
 }
 
 func (c99 Target) AwaitChannel(e source.AwaitChannel) error {
-	symbol := fmt.Sprintf("go_chan_recv__%s", c99.Mangle(e.Chan.TypeAndValue().Type.(*types.Chan).Elem()))
+	symbol := fmt.Sprintf("go_recv_%s", c99.Mangle(e.Chan.TypeAndValue().Type.(*types.Chan).Elem()))
 	c99.Requires(symbol, c99.Prelude, func(w io.Writer) error {
-		fmt.Fprintf(w, "static inline %s %s(go_ch c) { %s v; go_chan_recv(c, &v); return v; }\n",
+		fmt.Fprintf(w, "static inline %s %s(go_ch c) { %s v; go_recv(c, sizeof(%[1]s), &v); return v; }\n",
 			c99.TypeOf(e.Chan.TypeAndValue().Type.(*types.Chan).Elem()), symbol, c99.TypeOf(e.Chan.TypeAndValue().Type.(*types.Chan).Elem()))
 		return nil
 	})

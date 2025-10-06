@@ -178,8 +178,14 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 	}
 	if !isInterface {
 		if expr.Go {
-			tuple := c99.TupleTypeOf(ftype.Params())
-			fmt.Fprintf(c99, "%s, ", tuple)
+			results := c99.TupleTypeOf(ftype.Results())
+			params := c99.TupleTypeOf(ftype.Params())
+			symbol := "go_call_" + params + results
+			c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
+				fmt.Fprintf(w, "static int %s(void* ptr) {}\n", symbol)
+				return nil
+			})
+			fmt.Fprintf(c99, "%s, %s, ", params, results)
 		} else {
 			fmt.Fprintf(c99, "(")
 		}

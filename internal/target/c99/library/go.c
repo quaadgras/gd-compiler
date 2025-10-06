@@ -3,7 +3,9 @@
 #include <go.h>
 #include <string.h>
 #include <stdlib.h>
+#include <threads.h>
 #include "map.h"
+
 
 go_pt go_new(go_ii size, void* init) {
     go_pt p;
@@ -108,16 +110,43 @@ go_tf go_map_get(go_kv m, void *key, void *val) {
     return false;
 }
 
-
-go_u8 go_hash_go_string(const void *item, go_u8 seed0, go_u8 seed1) {
+go_u8 go_hash_ss(const void *item, go_u8 seed0, go_u8 seed1) {
     const go_ss *s = item;
     if (s->ptr == NULL) return 0;
     return hashmap_xxhash3(s->ptr, go_string_len(*s), seed0, seed1);
 }
-go_tf go_same_go_string(const void *a, const void *b) {
+go_tf go_same_ss(const void *a, const void *b) {
     return go_string_eq(*(const go_ss*)a, *(const go_ss*)b);
 }
 
-void go_routine(void(trampoline)(void*), go_fn fn, size_t arg_size, void* arg) {
+void go_routine(int(trampoline)(void*), go_fn fn, size_t arg_size, void* arg) {
+    thrd_t thread;
+    void *data = malloc(sizeof(go_fn) + arg_size);
+    memcpy(data, &fn, sizeof(go_fn));
+    memcpy(data + sizeof(go_fn), arg, arg_size);
+    thrd_create(&thread, trampoline, data);
+}
 
+void* go_index(go_ll s, go_ii elem_size, go_ii i) {
+    if (i < 0 || i >= s.len) {
+        go_panic("index out of range");
+    }
+    return (void*)s.ptr.ptr + i * elem_size;
+}
+
+go_ll go_slice(go_ll s, go_ii elem_size, go_ii low, go_ii high, go_ii cap) {
+    if (low < 0 || high < low || high > s.len) {
+        go_panic("slice bounds out of range");
+    }
+    if (cap < high - low) {
+        cap = high - low;
+    }
+    go_pt new_ptr = go_new(cap * elem_size, nil);
+    memcpy(new_ptr.ptr, (char*)s.ptr.ptr + low * elem_size, (high - low) * elem_size);
+    return (go_ll){ .ptr = new_ptr, .len = high - low, .cap = cap };
+}
+
+go_vv go_any_new(size_t size, void* value, const go_type* go_type) {
+    go_pt p = go_new(size, value);
+    return (go_vv){ .ptr = p, .go_type = go_type };
 }

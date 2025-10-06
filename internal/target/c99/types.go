@@ -158,22 +158,23 @@ func (c99 Target) InterfaceTypeOf(t types.Type) string {
 
 func (c99 Target) TupleTypeOf(t *types.Tuple) string {
 	var builder strings.Builder
-	builder.WriteString("go_tuple")
+	builder.WriteString("aa")
 	for arg := range t.Variables() {
-		fmt.Fprintf(&builder, "__%s", c99.Mangle(arg.Type()))
+		fmt.Fprintf(&builder, "%s", c99.Mangle(arg.Type()))
 	}
+	builder.WriteString("zz")
 	symbol := builder.String()
-	if symbol == "go_tuple" {
-		return symbol
+	if symbol == "aazz" {
+		return "az"
 	}
 	c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
 		fmt.Fprintf(w, "typedef struct { ")
 		var i int
 		for arg := range t.Variables() {
-			fmt.Fprintf(w, "%s arg%d; ", c99.TypeOf(arg.Type()), i)
+			fmt.Fprintf(w, "%s f%d; ", c99.TypeOf(arg.Type()), i)
 			i++
 		}
-		fmt.Fprintf(w, "} %s;\n", symbol)
+		fmt.Fprintf(w, "} go_%s;\n", symbol)
 		return nil
 	})
 	return symbol
@@ -237,6 +238,9 @@ func (c99 Target) TypeOf(t types.Type) string {
 		builder.WriteString("}")
 		return builder.String()
 	case *types.Struct:
+		if typ.NumFields() == 0 {
+			return "go_az"
+		}
 		var builder strings.Builder
 		builder.WriteString("struct { ")
 		for i := 0; i < typ.NumFields(); i++ {

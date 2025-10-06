@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go/ast"
 	"go/types"
+	"io"
 	"strings"
 
 	"github.com/quaadgras/go-compiler/internal/source"
@@ -37,24 +38,24 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 		c99.CurrentClosures = old_count
 	}()
 
-	return_type := func() {
+	return_type := func(w io.Writer) {
 		results, ok := decl.Type.Results.Get()
 		if ok {
 			switch len(results.Fields) {
 			case 1:
-				fmt.Fprintf(c99, "%s ", c99.Type(results.Fields[0].Type))
+				fmt.Fprintf(w, "%s ", c99.Type(results.Fields[0].Type))
 			default:
-				fmt.Fprintf(c99, ".{")
+				fmt.Fprintf(w, ".{")
 				for i, field := range results.Fields {
 					if i > 0 {
-						fmt.Fprintf(c99, ", ")
+						fmt.Fprintf(w, ", ")
 					}
-					fmt.Fprintf(c99, "%s", c99.Type(field.Type))
+					fmt.Fprintf(w, "%s", c99.Type(field.Type))
 				}
-				fmt.Fprintf(c99, "} ")
+				fmt.Fprintf(w, "} ")
 			}
 		} else {
-			fmt.Fprintf(c99, "void ")
+			fmt.Fprintf(w, "void ")
 		}
 	}
 	var suffix string
@@ -64,38 +65,52 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 	if decl.Name.String == "main" {
 		fmt.Fprintf(c99, "go_main() { ")
 	} else {
-		if !ast.IsExported(fnName) {
-			fmt.Fprintf(c99, "static ")
-		}
-		return_type()
-		fmt.Fprintf(c99, "%s%s(", fnName, suffix)
-		if isMethod {
-			field := receiver.Fields[0]
-			var name = "_"
-			names, hasName := field.Names.Get()
-			if hasName {
-				name = names[0].String
+		for _, param := range decl.Type.Arguments.Fields {
+			if _, ok := param.Names.Get(); !ok {
+				return param.Location.Errorf("missing names for function argument")
 			}
-			fmt.Fprintf(c99, "%s %s", c99.Type(field.Type), name)
 		}
-		{
-			var i int
-			for _, param := range decl.Type.Arguments.Fields {
-				names, ok := param.Names.Get()
-				if !ok {
-					return param.Location.Errorf("missing names for function argument")
+		decl := func(w io.Writer) {
+			if !ast.IsExported(fnName) {
+				fmt.Fprintf(w, "static ")
+			}
+			return_type(w)
+			fmt.Fprintf(w, "%s%s(", fnName, suffix)
+			if isMethod {
+				field := receiver.Fields[0]
+				var name = "_"
+				names, hasName := field.Names.Get()
+				if hasName {
+					name = names[0].String
 				}
-				for _, name := range names {
-					if i > 0 {
-						fmt.Fprintf(c99, ", ")
+				fmt.Fprintf(w, "%s %s", c99.Type(field.Type), name)
+			}
+			{
+				var i int
+				for _, param := range decl.Type.Arguments.Fields {
+					names, _ := param.Names.Get()
+					for _, name := range names {
+						if i > 0 {
+							fmt.Fprintf(w, ", ")
+						}
+						fmt.Fprintf(w, "%s %s", c99.Type(param.Type), c99.toString(name))
+						i++
 					}
-					fmt.Fprintf(c99, "%s %s", c99.Type(param.Type), c99.toString(name))
-					i++
 				}
 			}
+			fmt.Fprintf(w, ")")
 		}
-		fmt.Fprintf(c99, ") ")
-		fmt.Fprintf(c99, "{")
+		if ast.IsExported(fnName) {
+			fmt.Fprintln(c99.Exports)
+			decl(c99.Exports)
+			fmt.Fprintf(c99.Exports, ";")
+		} else {
+			fmt.Fprintln(c99.Private)
+			decl(c99.Private)
+			fmt.Fprintf(c99.Private, ";")
+		}
+		decl(c99)
+		fmt.Fprintf(c99, " {")
 	}
 	c99.Tabs++
 	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
@@ -120,7 +135,7 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 		if !ast.IsExported(fnName) {
 			fmt.Fprintf(c99, "static")
 		}
-		return_type()
+		return_type(c99)
 		fmt.Fprintf(c99, `I_%s%s(void* %s`, fnName, suffix, name)
 		{
 			var i int

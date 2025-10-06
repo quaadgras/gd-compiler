@@ -3,6 +3,7 @@
 #define GO
 
 #include <stdarg.h>
+#include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -43,6 +44,8 @@ typedef void* go_kv;
 typedef struct { void* ptr; /*size_t off;*/ } go_pt;
 typedef struct { go_pt ptr; go_ii len; go_ii cap; } go_ll;
 typedef struct { char *ptr; go_ii len; } go_ss;
+
+typedef struct {} go_az;
 
 typedef enum {
     go_kind_invalid = 0,
@@ -126,8 +129,8 @@ typedef struct {} go_tuple;
     go_defers = go_append(go_defers, sizeof(T), &(T){__VA_ARGS__}); \
 } while(0)
 
-void go_routine(void(trampoline)(void*), go_fn fn, size_t arg_size, void* arg);
-#define go_call(fn, T, ...) go_routine(fn, sizeof(T), &(T){__VA_ARGS__})
+void go_routine(int(trampoline)(void*), go_fn fn, size_t arg_size, void* arg);
+#define go_call(fn, IN, OUT, ...) go_routine(go_call_##IN##OUT, fn, sizeof(go_##IN), &(go_##IN){__VA_ARGS__})
 
 #define go_main() int main(int argc, char* argv[])
 static inline void go_print(const char* format, ...) {
@@ -144,14 +147,15 @@ go_pt go_new(go_ii size, void* init);
 #define go_pointer_new(t) go_new(sizeof(t), nil)
 #define go_pointer_set(p, t, v) *(t*)((p).ptr) = (v)
 #define go_pointer_get(p, t) (*(t*)((p).ptr))
-#define go_pointer_slice(p, S, T, lo, hi, cap) go_sliced((go_ll){p,S,S}, sizeof(T), lo, hi, cap)
+#define go_pointer_slice(p, S, T, lo, hi, cap) go_slice((go_ll){p,S,S}, sizeof(T), lo, hi, cap)
 
 go_ii go_copy(go_ii elem_size, go_ll dst, go_ll src);
 go_ll go_append(go_ll s, go_ii elem_size, const void* elem);
-go_ll go_sliced(go_ll s, go_ii elem_size, go_ii low, go_ii high, go_ii cap);
+go_ll go_slice(go_ll s, go_ii elem_size, go_ii low, go_ii high, go_ii cap);
+void* go_index(go_ll s, go_ii elem_size, go_ii i);
 
 #define go_slice_make(T, length, capacity) (go_ll){ .ptr = go_new(sizeof(T)*capacity, nil), .len = length, .cap = capacity }
-#define go_slice_index(s, T, i) (((T*)(s).ptr.ptr)[i])
+#define go_slice_index(s, T, i) (*(T*)go_index(s, sizeof(T), i))
 #define go_slice_copy(T, dst, src) go_copy(sizeof(T), dst, src)
 #define go_slice_literal(length, T, ...) (go_ll){ .ptr = go_new(sizeof(T)*length, &(T[]){__VA_ARGS__}), .len = length, .cap = length }
 #define go_variadic(length, T, ...) (go_ll){ .ptr = &(T[]){__VA_ARGS__}, .len = length, .cap = length }
@@ -159,7 +163,7 @@ static inline go_ii go_slice_len(go_ll s) { return s.len; }
 void go_slice_clear(go_ll s);
 
 go_kv go_make(go_ii key_size, go_ii elem_size, go_hash hash_func, go_same same_func, go_ii hint, go_ii argc, void* init);
-#define go_map_make(K, V, hint) go_make(sizeof(K), sizeof(V), go_hash_##K, go_same_##K, hint, 0)
+#define go_map_make(K, V, hint) go_make(sizeof(go_##K), sizeof(go_##V), go_hash_##K, go_same_##K, hint, 0, nil)
 #define go_map_literal(K, V, count, ...) go_make(sizeof(go_##K), sizeof(go_##V), go_hash_##K, go_same_##K, count, count, &(go_map_entry__##K##__##V[]){__VA_ARGS__})
 void go_map_set(go_kv m, void* key, void* val);
 go_tf go_map_get(go_kv m, void* key, void* val);
@@ -169,8 +173,9 @@ go_ii go_string_len(go_ss s);
 go_tf go_string_eq(go_ss a, go_ss b);
 
 #define go_chan_make(T, length) ((go_ch){})
-void go_chan_send(go_ch c, const void* v);
-void go_chan_recv(go_ch c, void* v);
+go_ch go_chan(go_ii elem_size, go_ii cap);
+void go_send(go_ch c, go_ii size, const void* v);
+go_tf go_recv(go_ch c, go_ii size, void* v);
 
 #define go_make_func(fn) ((go_fn){ .ptr = (void(*)(void))(fn) })
 #define go_func_get(f, T) (T)(f.ptr)
@@ -188,6 +193,11 @@ go_tf go_same_ss(const void* a, const void* b);
 
 static inline go_type* go_type_pointer_to(const go_type* to) {
     return go_new(sizeof(go_type), &(go_type){.name="*", .kind=go_kind_pointer, .data={.pointer={.elem=to}}}).ptr;
+}
+
+static inline void go_panic(const char* msg) {
+    fprintf(stderr, "panic: %s\n", msg);
+    abort();
 }
 
 static const go_type go_type_bool = {.name="bool", .kind=go_kind_bool};
