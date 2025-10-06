@@ -86,7 +86,7 @@ func (c99 Target) Mangle(t types.Type) string {
 		case types.Uint64:
 			return "u8"
 		case types.Uintptr:
-			return "pt"
+			return "up"
 		case types.Float32:
 			return "f4"
 		case types.Float64, types.UntypedFloat:

@@ -7,7 +7,7 @@
 #include "map.h"
 
 
-go_pt go_new(go_ii size, void* init) {
+go_pt go_new(go_ii size, const void* init) {
     go_pt p;
     p.ptr = malloc(size);
     if (init) {
@@ -40,12 +40,7 @@ go_ii go_copy(go_ii elem_size, go_ll dst, go_ll src) {
 void go_slice_clear(go_ll s) {
     memset(s.ptr.ptr, 0, s.cap * sizeof(s.ptr));
 }
-go_ss go_string_new(const char* str) {
-    go_ss s;
-    s.len = -1;
-    s.ptr = (char*)str;
-    return s;
-}
+
 go_ii go_string_len(go_ss s) {
     if (s.ptr == NULL) return 0;
     if (s.len == -1) return strlen(s.ptr);

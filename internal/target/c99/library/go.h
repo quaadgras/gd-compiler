@@ -12,6 +12,8 @@
 #define true 1
 #define false 0
 #define nil NULL
+#define go_ARCH "unknown"
+#define go_OS "unknown"
 
 typedef bool go_tf;
 #ifdef __LP64__
@@ -43,7 +45,7 @@ struct go_if;
 typedef void* go_kv;
 typedef struct { void* ptr; /*size_t off;*/ } go_pt;
 typedef struct { go_pt ptr; go_ii len; go_ii cap; } go_ll;
-typedef struct { char *ptr; go_ii len; } go_ss;
+typedef const struct { const char *ptr; const go_ii len; } go_ss;
 
 typedef struct {} go_az;
 
@@ -143,7 +145,7 @@ static inline void go_print(const char* format, ...) {
 typedef go_u8 (*go_hash)(const void *item, go_u8 seed0, go_u8 seed1);
 typedef go_tf (*go_same)(const void *a, const void *b);
 
-go_pt go_new(go_ii size, void* init);
+go_pt go_new(go_ii size,  const void* init);
 #define go_pointer_new(t) go_new(sizeof(t), nil)
 #define go_pointer_set(p, t, v) *(t*)((p).ptr) = (v)
 #define go_pointer_get(p, t) (*(t*)((p).ptr))
@@ -168,7 +170,7 @@ go_kv go_make(go_ii key_size, go_ii elem_size, go_hash hash_func, go_same same_f
 void go_map_set(go_kv m, void* key, void* val);
 go_tf go_map_get(go_kv m, void* key, void* val);
 
-go_ss go_string_new(const char* str);
+#define go_string_new(str) (go_ss){ .ptr = str, .len = -1 }
 go_ii go_string_len(go_ss s);
 go_tf go_string_eq(go_ss a, go_ss b);
 
@@ -180,7 +182,7 @@ go_tf go_recv(go_ch c, go_ii size, void* v);
 #define go_make_func(fn) ((go_fn){ .ptr = (void(*)(void))(fn) })
 #define go_func_get(f, T) (T)(f.ptr)
 
-static inline go_if go_interface_new(size_t size, void* value, const go_type* go_type, void* vtable) {
+static inline go_if go_interface_new(size_t size, const void* value, const go_type* go_type, void* vtable) {
     go_pt p = go_new(size, value);
     return (go_if){ .ptr = p, .go_type = go_type, .vtable = vtable };
 }
@@ -219,5 +221,7 @@ static const go_type go_type_complex128 = {.name="complex128", .kind=go_kind_com
 static const go_type go_type_byte = go_type_uint8;
 static const go_type go_type_rune = go_type_int32;
 static const go_type go_type_string = {.name="string", .kind=go_kind_string};
+
+typedef struct { go_ss(*Error)(void*);} go_error;
 
 #endif
