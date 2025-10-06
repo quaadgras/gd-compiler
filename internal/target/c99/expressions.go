@@ -1,4 +1,4 @@
-package c
+package c99
 
 import (
 	"fmt"
@@ -112,9 +112,9 @@ func (c99 Target) ExpressionIndex(expr source.ExpressionIndex) error {
 		return nil
 	case *types.Map:
 		mtype := expr.X.TypeAndValue().Type.(*types.Map)
-		symbol := fmt.Sprintf("go_map_get__%s__%s", c99.Mangle(c99.TypeOf(mtype.Key())), c99.Mangle(c99.TypeOf(mtype.Elem())))
+		symbol := fmt.Sprintf("go_map_get__%s__%s", c99.Mangle(mtype.Key()), c99.Mangle(mtype.Elem()))
 		c99.Requires(symbol, c99.Prelude, func(w io.Writer) error {
-			fmt.Fprintf(w, "static inline %s %s(go_map m, %s key) { %s val; go_map_get(m, &key, &val); return val; }\n",
+			fmt.Fprintf(w, "static inline %s %s(go_kv m, %s key) { %s val; go_map_get(m, &key, &val); return val; }\n",
 				c99.TypeOf(mtype.Elem()), symbol, c99.TypeOf(mtype.Key()), c99.TypeOf(mtype.Elem()))
 			return nil
 		})
@@ -156,9 +156,9 @@ func (c99 Target) ExpressionKeyValue(e source.ExpressionKeyValue) error {
 }
 
 func (c99 Target) AwaitChannel(e source.AwaitChannel) error {
-	symbol := fmt.Sprintf("go_chan_recv__%s", c99.Mangle(c99.TypeOf(e.Chan.TypeAndValue().Type.(*types.Chan).Elem())))
+	symbol := fmt.Sprintf("go_chan_recv__%s", c99.Mangle(e.Chan.TypeAndValue().Type.(*types.Chan).Elem()))
 	c99.Requires(symbol, c99.Prelude, func(w io.Writer) error {
-		fmt.Fprintf(w, "static inline %s %s(go_chan c) { %s v; go_chan_recv(c, &v); return v; }\n",
+		fmt.Fprintf(w, "static inline %s %s(go_ch c) { %s v; go_chan_recv(c, &v); return v; }\n",
 			c99.TypeOf(e.Chan.TypeAndValue().Type.(*types.Chan).Elem()), symbol, c99.TypeOf(e.Chan.TypeAndValue().Type.(*types.Chan).Elem()))
 		return nil
 	})
@@ -171,28 +171,32 @@ func (c99 Target) AwaitChannel(e source.AwaitChannel) error {
 }
 
 func (c99 Target) ExpressionSlice(e source.ExpressionSlice) error {
-	if err := c99.Expression(e.X); err != nil {
-		return err
+	var from, high, cap string = "0", "0", "0"
+	if expr, ok := e.From.Get(); ok {
+		from = c99.toString(expr)
 	}
-	fmt.Fprintf(c99, ".range(")
-	from, ok := e.From.Get()
-	if ok {
-		if err := c99.Expression(from); err != nil {
-			return err
-		}
+	if expr, ok := e.High.Get(); ok {
+		high = c99.toString(expr)
+	}
+	if expr, ok := e.Capacity.Get(); ok {
+		cap = c99.toString(expr)
 	} else {
-		fmt.Fprintf(c99, "0")
+		cap = high
 	}
-	fmt.Fprintf(c99, ", ")
-	high, ok := e.High.Get()
-	if ok {
-		if err := c99.Expression(high); err != nil {
-			return err
-		}
-	} else {
-		fmt.Fprintf(c99, "0")
+	switch e.X.TypeAndValue().Type.(type) {
+	case *types.Pointer:
+		array := e.X.TypeAndValue().Type.(*types.Pointer).Elem().(*types.Array)
+		fmt.Fprintf(c99, "go_pointer_slice(%s, %d, %s, %s, %s, %s)",
+			c99.toString(e.X),
+			array.Len(),
+			c99.TypeOf(array.Elem()),
+			from, high, cap)
+	case *types.Slice:
+		fmt.Fprintf(c99, "go_slice_slice(%s, %s, %s, %s)",
+			c99.toString(e.X),
+			c99.TypeOf(e.X.TypeAndValue().Type.(*types.Pointer).Elem()),
+			from, high)
 	}
-	fmt.Fprintf(c99, ")")
 	return nil
 }
 

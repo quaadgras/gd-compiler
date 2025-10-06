@@ -5,8 +5,8 @@
 #include <stdlib.h>
 #include "map.h"
 
-go_pointer go_new(go_int size, void* init) {
-    go_pointer p;
+go_pt go_new(go_ii size, void* init) {
+    go_pt p;
     p.ptr = malloc(size);
     if (init) {
         memcpy(p.ptr, init, size);
@@ -15,10 +15,10 @@ go_pointer go_new(go_int size, void* init) {
     }
     return p;
 }
-go_slice go_append(go_slice s, go_int elem_size, const void* elem) {
+go_ll go_append(go_ll s, go_ii elem_size, const void* elem) {
     if (s.len >= s.cap) {
-        go_int new_cap = s.cap == 0 ? 1 : s.cap * 2;
-        go_pointer new_ptr = go_new(new_cap * elem_size, nil);
+        go_ii new_cap = s.cap == 0 ? 1 : s.cap * 2;
+        go_pt new_ptr = go_new(new_cap * elem_size, nil);
         if (s.len > 0) {
             memcpy(new_ptr.ptr, s.ptr.ptr, s.len * elem_size);
         }
@@ -30,28 +30,28 @@ go_slice go_append(go_slice s, go_int elem_size, const void* elem) {
     s.len += 1;
     return s;
 }
-go_int go_copy(go_int elem_size, go_slice dst, go_slice src) {
-    go_int n = dst.len < src.len ? dst.len : src.len;
+go_ii go_copy(go_ii elem_size, go_ll dst, go_ll src) {
+    go_ii n = dst.len < src.len ? dst.len : src.len;
     memcpy(dst.ptr.ptr, src.ptr.ptr, n * elem_size);
     return n;
 }
-void go_slice_clear(go_slice s) {
+void go_slice_clear(go_ll s) {
     memset(s.ptr.ptr, 0, s.cap * sizeof(s.ptr));
 }
-go_string go_string_new(const char* str) {
-    go_string s;
+go_ss go_string_new(const char* str) {
+    go_ss s;
     s.len = -1;
     s.ptr = (char*)str;
     return s;
 }
-go_int go_string_len(go_string s) {
+go_ii go_string_len(go_ss s) {
     if (s.ptr == NULL) return 0;
     if (s.len == -1) return strlen(s.ptr);
     return s.len;
 }
-go_bool go_string_eq(go_string a, go_string b) {
-    go_int lena = go_string_len(a);
-    go_int lenb = go_string_len(b);
+go_tf go_string_eq(go_ss a, go_ss b) {
+    go_ii lena = go_string_len(a);
+    go_ii lenb = go_string_len(b);
     if (lena != lenb) return false;
     return (memcmp(a.ptr, b.ptr, lena) == 0) ? true : false;
 }
@@ -77,27 +77,27 @@ uint64_t map_hash(const void *item, uint64_t seed0, uint64_t seed1, void *udata)
     return meta->key_hash(item, seed0, seed1);
 }
 
-go_map go_make(go_int key_size, go_int elem_size, go_hash hash_func, go_same same_func, go_int hint, go_int argc, void* init) {
+go_kv go_make(go_ii key_size, go_ii elem_size, go_hash hash_func, go_same same_func, go_ii hint, go_ii argc, void* init) {
     map_metadata *meta = malloc(sizeof(map_metadata) + key_size + elem_size);
     meta->key_size = key_size;
     meta->val_size = elem_size;
     meta->key_hash = hash_func;
     meta->key_same = same_func;
-    go_map map = (go_map)hashmap_new(key_size+elem_size, 0, 0, 0,
+    go_kv map = (go_kv)hashmap_new(key_size+elem_size, 0, 0, 0,
         map_hash, map_compare, NULL, meta);
-    for (go_int i = 0; i < argc; i++) {
+    for (go_ii i = 0; i < argc; i++) {
         hashmap_set(map, init + i * (key_size + elem_size));
     }
     return map;
 }
-void go_map_set(go_map m, void *key, void *val) {
+void go_map_set(go_kv m, void *key, void *val) {
     map_metadata *meta = hashmap_udata(m);
     void* staging = meta->staging;
     memcpy(staging, key, meta->key_size);
     memcpy(staging + meta->key_size, val, meta->val_size);
     hashmap_set(m, staging);
 }
-go_bool go_map_get(go_map m, void *key, void *val) {
+go_tf go_map_get(go_kv m, void *key, void *val) {
     map_metadata *meta = hashmap_udata(m);
     const void* ptr = hashmap_get(m, key);
     if (ptr) {
@@ -109,11 +109,15 @@ go_bool go_map_get(go_map m, void *key, void *val) {
 }
 
 
-go_uint64 go_hash_go_string(const void *item, go_uint64 seed0, go_uint64 seed1) {
-    const go_string *s = item;
+go_u8 go_hash_go_string(const void *item, go_u8 seed0, go_u8 seed1) {
+    const go_ss *s = item;
     if (s->ptr == NULL) return 0;
     return hashmap_xxhash3(s->ptr, go_string_len(*s), seed0, seed1);
 }
-go_bool go_same_go_string(const void *a, const void *b) {
-    return go_string_eq(*(const go_string*)a, *(const go_string*)b);
+go_tf go_same_go_string(const void *a, const void *b) {
+    return go_string_eq(*(const go_ss*)a, *(const go_ss*)b);
+}
+
+void go_routine(void(trampoline)(void*), go_fn fn, size_t arg_size, void* arg) {
+
 }

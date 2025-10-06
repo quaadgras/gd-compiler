@@ -11,7 +11,7 @@ import (
 	"runtime.link/api"
 	"runtime.link/api/cmdl"
 
-	"github.com/quaadgras/go-compiler/internal/target/c"
+	"github.com/quaadgras/go-compiler/internal/target/c99"
 	"github.com/quaadgras/go-compiler/internal/zig"
 )
 
@@ -43,11 +43,11 @@ func main() {
 }
 
 func build(pkg string) error {
-	return c.Build(pkg, false)
+	return c99.Build(pkg, false)
 }
 
 func test(pkg string) error {
-	if err := c.Build(pkg, true); err != nil {
+	if err := c99.Build(pkg, true); err != nil {
 		return err
 	}
 	Zig := api.Import[zig.Command](cmdl.API, "zig", nil)

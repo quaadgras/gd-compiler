@@ -1,4 +1,4 @@
-package c
+package c99
 
 import (
 	"fmt"
@@ -10,7 +10,8 @@ import (
 
 func (c99 Target) StatementFor(stmt source.StatementFor) error {
 	if stmt.Label != "" {
-		fmt.Fprintf(c99, " %s:", stmt.Label)
+		fmt.Fprintf(c99, " %s: ", stmt.Label)
+		defer fmt.Fprintf(c99, " %s_end:;\n", stmt.Label)
 	}
 	fmt.Fprintf(c99, "for (")
 	init, hasInit := stmt.Init.Get()
@@ -55,16 +56,17 @@ func (c99 Target) StatementFor(stmt source.StatementFor) error {
 }
 
 func (c99 Target) StatementRange(stmt source.StatementRange) error {
-	switch stmt.X.TypeAndValue().Type.(type) {
+	if stmt.Label != "" {
+		fmt.Fprintf(c99, "%s: ", stmt.Label)
+		defer fmt.Fprintf(c99, " %s_end:;\n", stmt.Label)
+	}
+	switch typ := stmt.X.TypeAndValue().Type.(type) {
 	case *types.Basic:
 		rtype := c99.TypeOf(stmt.X.TypeAndValue().Type)
 		iter_name := "go_iter"
 		key, hasKey := stmt.Key.Get()
 		if hasKey {
 			iter_name = c99.toString(key)
-		}
-		if stmt.Label != "" {
-			fmt.Fprintf(c99, " %s:", stmt.Label)
 		}
 		fmt.Fprintf(c99, "for (%s %s = 0; %[2]s < %[3]s; %[2]s++) {", rtype, iter_name, c99.toString(stmt.X))
 		for _, stmt := range stmt.Body.Statements {
@@ -78,37 +80,23 @@ func (c99 Target) StatementRange(stmt source.StatementRange) error {
 		fmt.Fprintf(c99, "}")
 		return nil
 	case *types.Slice:
-		fmt.Fprintf(c99, "for (")
 		key, hasKey := stmt.Key.Get()
-		if key.String == "_" {
-			hasKey = false
+		if !hasKey || key.String == "_" {
+			key.String = "go_iter"
 		}
+		fmt.Fprintf(c99, "for (go_ii %s; %[1]s < go_slice_len(%[2]s); %[1]s++) {", c99.toString(key), c99.toString(stmt.X))
 		val, hasVal := stmt.Value.Get()
-		if hasKey {
-			fmt.Fprintf(c99, "0..,")
-		}
-		if err := c99.Expression(stmt.X); err != nil {
-			return err
-		}
-		fmt.Fprintf(c99, ".arraylist.items) |")
-		if hasKey {
-			if err := c99.DefinedVariable(key); err != nil {
-				return err
-			}
-		}
-		if hasKey && hasVal {
-			fmt.Fprintf(c99, ",")
-		}
 		if hasVal {
+			fmt.Fprintf(c99, "\n%s%s ", strings.Repeat("\t", c99.Tabs+1), c99.TypeOf(typ.Elem()))
 			if err := c99.DefinedVariable(val); err != nil {
 				return err
 			}
+			fmt.Fprintf(c99, " = go_slice_index(")
+			if err := c99.Expression(stmt.X); err != nil {
+				return err
+			}
+			fmt.Fprintf(c99, ", %s, %s);", c99.TypeOf(typ.Elem()), c99.toString(key))
 		}
-		fmt.Fprintf(c99, "|")
-		if stmt.Label != "" {
-			fmt.Fprintf(c99, " %s:", stmt.Label)
-		}
-		fmt.Fprintf(c99, " {")
 		for _, stmt := range stmt.Body.Statements {
 			c99.Tabs++
 			if err := c99.Statement(stmt); err != nil {
@@ -124,10 +112,11 @@ func (c99 Target) StatementRange(stmt source.StatementRange) error {
 }
 
 func (c99 Target) StatementContinue(stmt source.StatementContinue) error {
-	fmt.Fprintf(c99, "continue")
 	label, hasLabel := stmt.Label.Get()
 	if hasLabel {
-		fmt.Fprintf(c99, " : %s", label.String)
+		fmt.Fprintf(c99, "goto %s", label.String)
+	} else {
+		fmt.Fprintf(c99, "continue")
 	}
 	return nil
 }

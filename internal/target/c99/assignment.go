@@ -1,11 +1,10 @@
-package c
+package c99
 
 import (
 	"fmt"
 	"go/token"
 	"go/types"
 	"io"
-	"strings"
 
 	"github.com/quaadgras/go-compiler/internal/source"
 	"runtime.link/xyz"
@@ -66,7 +65,7 @@ func (c99 Target) StatementAssignment(stmt source.StatementAssignment) error {
 		case source.Expressions.Index:
 			expr := source.Expressions.Index.Get(variable)
 			if mtype, ok := expr.X.TypeAndValue().Type.(*types.Map); ok {
-				symbol := fmt.Sprintf("go_map_set__%s__%s", c99.Mangle(c99.TypeOf(mtype.Key())), c99.Mangle(c99.TypeOf(mtype.Elem())))
+				symbol := fmt.Sprintf("go_map_set__%s__%s", c99.Mangle(mtype.Key()), c99.Mangle(mtype.Elem()))
 				c99.Requires(symbol, c99.Prelude, func(w io.Writer) error {
 					fmt.Fprintf(w, "static inline void %s(go_map m, %s key, %s val) { go_map_set(m, &key, &val); }\n",
 						symbol, c99.TypeOf(mtype.Key()), c99.TypeOf(mtype.Elem()))
@@ -106,19 +105,16 @@ func (c99 Target) StatementAssignment(stmt source.StatementAssignment) error {
 			fmt.Fprintf(c99, " %s ", stmt.Token.Value)
 			switch variable.TypeAndValue().Type.(type) {
 			case *types.Interface:
-				if strings.HasPrefix(c99.TypeOf(stmt.Values[i].TypeAndValue().Type), "go.pointer(") {
-					fmt.Fprintf(c99, "go.any{.rtype=%s,.value=", c99.ReflectTypeOf(stmt.Values[i].TypeAndValue().Type))
-					if err := c99.Expression(stmt.Values[i]); err != nil {
-						return nil
-					}
-					fmt.Fprintf(c99, ".address}")
-				} else {
-					fmt.Fprintf(c99, "go.any.make(%s, goto, %s, ", c99.TypeOf(stmt.Values[i].TypeAndValue().Type), c99.ReflectTypeOf(stmt.Values[i].TypeAndValue().Type))
-					if err := c99.Expression(stmt.Values[i]); err != nil {
-						return err
-					}
-					fmt.Fprintf(c99, ")")
-				}
+				symbol := fmt.Sprintf("go_any__%s", c99.Mangle(stmt.Values[i].TypeAndValue().Type))
+				c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
+					fmt.Fprintf(w, "static inline go_vv %s(%[2]s v, const go_type* t) { return go_any_new(sizeof(%[2]s), &v, t); }\n",
+						symbol, c99.TypeOf(stmt.Values[i].TypeAndValue().Type))
+					return nil
+				})
+				fmt.Fprintf(c99, "%s(%s, %s)",
+					symbol,
+					c99.toString(stmt.Values[i]),
+					c99.ReflectTypeOf(stmt.Values[i].TypeAndValue().Type))
 			default:
 				if err := c99.Expression(stmt.Values[i]); err != nil {
 					return err

@@ -1,4 +1,4 @@
-package c
+package c99
 
 import (
 	"fmt"
@@ -110,9 +110,9 @@ func (c99 Target) append(expr source.FunctionCall) error {
 		return expr.Errorf("append expects exactly two arguments, got %d", len(expr.Arguments))
 	}
 	elemType := c99.TypeOf(expr.Arguments[0].TypeAndValue().Type.(*types.Slice).Elem())
-	symbol := fmt.Sprintf("go_append__%s", c99.Mangle(elemType))
+	symbol := fmt.Sprintf("go_append__%s", c99.Mangle(expr.Arguments[0].TypeAndValue().Type.(*types.Slice).Elem()))
 	c99.Requires(symbol, c99.Prelude, func(w io.Writer) error {
-		fmt.Fprintf(w, "static inline go_slice %s(go_slice s, %s v) { return go_append(s, sizeof(%s), &v); }\n", symbol, elemType, elemType)
+		fmt.Fprintf(w, "static inline go_ll %s(go_ll s, %s v) { return go_append(s, sizeof(%s), &v); }\n", symbol, elemType, elemType)
 		return nil
 	})
 	fmt.Fprintf(c99, "%s(", symbol)

@@ -1,4 +1,4 @@
-package c
+package c99
 
 import (
 	"bytes"
@@ -15,6 +15,7 @@ import (
 type Target struct {
 	io.Writer
 
+	Init    io.Writer
 	Prelude io.Writer
 	Exports io.Writer
 	Private io.Writer
@@ -65,13 +66,15 @@ func (c99 Target) toString(node source.Node) string {
 }
 
 func (c99 Target) Selection(sel source.Selection) error {
-	if err := c99.Compile(sel.X); err != nil {
-		return err
+	if sel.X.TypeAndValue().Type != nil {
+		if err := c99.Compile(sel.X); err != nil {
+			return err
+		}
+		for _, elem := range sel.Path {
+			fmt.Fprintf(c99, ".%s", elem)
+		}
+		fmt.Fprintf(c99, ".")
 	}
-	for _, elem := range sel.Path {
-		fmt.Fprintf(c99, ".%s", elem)
-	}
-	fmt.Fprintf(c99, ".")
 	return c99.Compile(sel.Selection)
 }
 

@@ -1,4 +1,4 @@
-package c
+package c99
 
 import (
 	"fmt"
@@ -61,8 +61,22 @@ func (c99 Target) StatementDecrement(stmt source.StatementDecrement) error {
 func (c99 Target) StatementDefer(stmt source.StatementDefer) error {
 	// TODO arguments need to be evaluated at the time of the defer statement.
 	if stmt.OutermostScope {
-		fmt.Fprintf(c99, "defer ")
-		return c99.FunctionCall(stmt.Call)
+		fmt.Fprintf(c99, "go_defer(")
+		if err := c99.Expression(stmt.Call.Function); err != nil {
+			return err
+		}
+		fmt.Fprintf(c99, ", go_tuple")
+		for _, arg := range stmt.Call.Arguments {
+			fmt.Fprintf(c99, "__%s", c99.TypeOf(arg.TypeAndValue().Type))
+		}
+		for _, arg := range stmt.Call.Arguments {
+			fmt.Fprintf(c99, ", ")
+			if err := c99.Expression(arg); err != nil {
+				return err
+			}
+		}
+		fmt.Fprintf(c99, ")")
+		return nil
 	}
 	return stmt.Location.Errorf("only defer at the outermost scope of a function is currently supported")
 }
@@ -70,10 +84,12 @@ func (c99 Target) StatementDefer(stmt source.StatementDefer) error {
 func (c99 Target) StatementEmpty(stmt source.StatementEmpty) error { return nil }
 
 func (c99 Target) StatementBreak(stmt source.StatementBreak) error {
-	fmt.Fprintf(c99, "break")
+
 	label, hasLabel := stmt.Label.Get()
 	if hasLabel {
-		fmt.Fprintf(c99, " : %s", label.String)
+		fmt.Fprintf(c99, "goto %s_end", label.String)
+	} else {
+		fmt.Fprintf(c99, "break")
 	}
 	return nil
 }
@@ -98,9 +114,9 @@ func (c99 Target) StatementReturn(stmt source.StatementReturn) error {
 }
 
 func (c99 Target) StatementSend(stmt source.StatementSend) error {
-	symbol := fmt.Sprintf("go_chan_send__%s", c99.Mangle(c99.TypeOf(stmt.X.TypeAndValue().Type.(*types.Chan).Elem())))
+	symbol := fmt.Sprintf("go_chan_send__%s", c99.Mangle(stmt.X.TypeAndValue().Type.(*types.Chan).Elem()))
 	c99.Requires(symbol, c99.Prelude, func(w io.Writer) error {
-		fmt.Fprintf(w, "static inline void %s(go_chan c, %s v) { go_chan_send(c, &v); }\n", symbol, c99.TypeOf(stmt.X.TypeAndValue().Type.(*types.Chan).Elem()))
+		fmt.Fprintf(w, "static inline void %s(go_ch c, %s v) { go_chan_send(c, &v); }\n", symbol, c99.TypeOf(stmt.X.TypeAndValue().Type.(*types.Chan).Elem()))
 		return nil
 	})
 	fmt.Fprintf(c99, "%s(", symbol)

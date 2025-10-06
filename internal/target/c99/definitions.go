@@ -1,4 +1,4 @@
-package c
+package c99
 
 import (
 	"fmt"
@@ -72,6 +72,8 @@ func (c99 Target) TypeDefinition(spec source.TypeDefinition) error {
 	suffix := ""
 	if spec.Exported && spec.Global {
 		header = c99.Exports
+	}
+	if spec.Exported {
 		suffix = "_go_" + c99.CurrentPackage + "_package"
 	}
 	if !spec.Global {
@@ -80,102 +82,68 @@ func (c99 Target) TypeDefinition(spec source.TypeDefinition) error {
 	}
 	ftype, array := c99.ArrayStrippedTypeOf(spec.Type.TypeAndValue().Type)
 	fmt.Fprintf(header, "typedef %s %s%s%s;\n", c99.TypeOf(ftype), spec.Name.String, suffix, array)
-	fmt.Fprintf(header, "extern struct go_type %s%s_type;\n", spec.Name.String, suffix)
+	if spec.Global {
+		fmt.Fprintf(header, "extern const go_type go_type_%s%s;\n", spec.Name.String, suffix)
+	}
 
-	/*fmt.Fprintf(c99, "const @\"%s.(type)\" = go.rtype{", spec.Name.String)
-	fmt.Fprintf(c99, ".name=%q,", spec.Name.String)
-	kind := kindOf(spec.Type.TypeAndValue().Type)
-	fmt.Fprintf(c99, ".kind=go.rkind.%s, ", kind)
 	switch rtype := spec.Type.TypeAndValue().Type.(type) {
 	case *types.Struct:
-		fmt.Fprintf(c99, ".data=go.rdata{.%s=&[_]go.field{", kind)
+		fmt.Fprintf(c99, "\nconst go_field go_fields_%s%s[] = {", spec.Name.String, suffix)
 		for i := range rtype.NumFields() {
 			if i > 0 {
 				fmt.Fprintf(c99, ", ")
 			}
 			field := rtype.Field(i)
-			fmt.Fprintf(c99, ".{.name=%q,.type=%s,.offset=@offsetOf(%s,\"%[1]s\"),.exported=%v,.embedded=%v}",
-				field.Name(), c99.ReflectTypeOf(field.Type()), spec.Name.String, field.Exported(), field.Anonymous())
+			fmt.Fprintf(c99, "{.name=%q,.type=%s,.offset=offsetof(%s%s, %s),.exported=%v,.embedded=%v}",
+				field.Name(), c99.ReflectTypeOf(field.Type()),
+				spec.Name.String, suffix, field.Name(), field.Exported(), field.Anonymous())
 		}
-		fmt.Fprintf(c99, "}}")
+		fmt.Fprintf(c99, "};")
 	default:
-		fmt.Fprintf(c99, ".data=go.rdata{.%s=void{}}", kind)
+	}
+
+	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
+	fmt.Fprintf(c99, "const go_type go_type_%s%s = {", spec.Name.String, suffix)
+	fmt.Fprintf(c99, ".name=%q,", spec.Name.String)
+	kind := kindOf(spec.Type.TypeAndValue().Type)
+	fmt.Fprintf(c99, ".kind=go_kind_%s", kind)
+	switch rtype := spec.Type.TypeAndValue().Type.(type) {
+	case *types.Struct:
+		fmt.Fprintf(c99, ", .data={.fields={&go_fields_%s%s[0], %d}}", spec.Name.String, suffix, rtype.NumFields())
 	}
 	fmt.Fprintf(c99, "}")
-	if !spec.Global {
-		fmt.Fprintf(c99, "; go.use(@\"%s.(type)\")", spec.Name.String)
-	}
-	fmt.Fprintf(c99, ";")*/
+	fmt.Fprintf(c99, ";\n")
 	return nil
 }
 
 func kindOf(t types.Type) string {
 	switch t := t.(type) {
 	case *types.Basic:
-		switch t.Kind() {
-		case types.Bool, types.UntypedBool:
-			return "Bool"
-		case types.Int, types.UntypedInt:
-			return "Int"
-		case types.Int8:
-			return "Int8"
-		case types.Int16:
-			return "Int16"
-		case types.Int32:
-			return "Int32"
-		case types.Int64:
-			return "Int64"
-		case types.Uint:
-			return "Uint"
-		case types.Uint8:
-			return "Uint8"
-		case types.Uint16:
-			return "Uint16"
-		case types.Uint32:
-			return "Uint32"
-		case types.Uint64:
-			return "Uint64"
-		case types.Uintptr:
-			return "Uintptr"
-		case types.Float32:
-			return "Float32"
-		case types.Float64, types.UntypedFloat:
-			return "Float64"
-		case types.Complex64:
-			return "Complex64"
-		case types.Complex128, types.UntypedComplex:
-			return "Complex128"
-		case types.String:
-			return "String"
-		case types.UnsafePointer:
-			return "UnsafePointer"
-		default:
-			panic("unexpected kindOf: " + t.String())
+		if t.Kind() == types.UnsafePointer {
+			return "unsafe_pointer"
 		}
+		return t.Name()
 	case *types.Array:
-		return "Array"
+		return "array"
 	case *types.Chan:
-		return "Chan"
+		return "chan"
 	case *types.Slice:
-		return "Slice"
+		return "slice"
 	case *types.Signature:
-		return "Func"
+		return "func"
 	case *types.Interface:
-		return "Interface"
+		return "interface"
 	case *types.Map:
-		return "Map"
+		return "map"
 	case *types.Pointer:
-		return "Pointer"
+		return "pointer"
 	case *types.Struct:
-		return "Struct"
+		return "struct"
 	}
 	panic("unexpected kindOf: " + t.String())
 }
 
 func (c99 Target) VariableDefinition(spec source.VariableDefinition) error {
-	if c99.Tabs > 0 {
-		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
-	}
 	var name = spec.Name
 	var value func() error
 	var rtype types.Type
@@ -198,7 +166,7 @@ func (c99 Target) VariableDefinition(spec source.VariableDefinition) error {
 				fmt.Fprintf(c99, "null")
 				return nil
 			}
-			fmt.Fprintf(c99, "go.zero(%s)", ztype)
+			fmt.Fprintf(c99, "{}")
 			return nil
 		}
 	} else {
@@ -216,6 +184,30 @@ func (c99 Target) VariableDefinition(spec source.VariableDefinition) error {
 			}
 		}
 	}
+	if spec.Global {
+		ftype, array := c99.ArrayStrippedTypeOf(rtype)
+		fmt.Fprintf(c99, "%s ", c99.TypeOf(ftype))
+		if err := c99.definedVariable(true, name); err != nil {
+			return err
+		}
+		fmt.Fprint(c99, array)
+		fmt.Fprintf(c99, ";")
+		if spec.Global {
+			c99.Writer = c99.Private
+			defer fmt.Fprintln(c99.Private)
+		}
+		fmt.Fprintf(c99, "extern %s ", c99.TypeOf(ftype))
+		if err := c99.definedVariable(true, name); err != nil {
+			return err
+		}
+		fmt.Fprint(c99, array)
+		fmt.Fprintf(c99, ";")
+		c99.Writer = c99.Init
+		c99.Tabs = 1
+	}
+	if c99.Tabs > 0 {
+		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
+	}
 	if name.String == "_" {
 		fmt.Fprintf(c99, "go_ignore(")
 		if err := value(); err != nil {
@@ -223,12 +215,18 @@ func (c99 Target) VariableDefinition(spec source.VariableDefinition) error {
 		}
 		fmt.Fprintf(c99, ")")
 	} else {
-		ftype, array := c99.ArrayStrippedTypeOf(rtype)
-		fmt.Fprintf(c99, "%s ", c99.TypeOf(ftype))
-		if err := c99.definedVariable(true, name); err != nil {
-			return err
+		if spec.Global {
+			if err := c99.definedVariable(true, name); err != nil {
+				return err
+			}
+		} else {
+			ftype, array := c99.ArrayStrippedTypeOf(rtype)
+			fmt.Fprintf(c99, "%s ", c99.TypeOf(ftype))
+			if err := c99.definedVariable(true, name); err != nil {
+				return err
+			}
+			fmt.Fprint(c99, array)
 		}
-		fmt.Fprint(c99, array)
 		stackAllocated := c99.StackAllocated(name)
 		stackAllocated = true
 		fmt.Fprint(c99, " = ")

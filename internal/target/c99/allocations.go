@@ -1,4 +1,4 @@
-package c
+package c99
 
 import "github.com/quaadgras/go-compiler/internal/source"
 

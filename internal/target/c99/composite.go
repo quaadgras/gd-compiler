@@ -1,4 +1,4 @@
-package c
+package c99
 
 import (
 	"fmt"
@@ -41,10 +41,10 @@ func (c99 Target) DataComposite(data source.DataComposite) error {
 		fmt.Fprintf(c99, ")")
 		return nil
 	case *types.Map:
-		ktype := c99.TypeOf(typ.Key())
-		vtype := c99.TypeOf(typ.Elem())
+		ktype := c99.Mangle(typ.Key())
+		vtype := c99.Mangle(typ.Elem())
 		fmt.Fprintf(c99, "go_map_literal(%s, %s, %d, ", ktype, vtype, len(data.Elements))
-		symbol := fmt.Sprintf("go_map_entry__%s__%s", c99.Mangle(c99.TypeOf(typ.Key())), c99.Mangle(c99.TypeOf(typ.Elem())))
+		symbol := fmt.Sprintf("go_map_entry__%s__%s", ktype, vtype)
 		c99.Requires(symbol, c99.Prelude, func(w io.Writer) error {
 			fmt.Fprintf(w, "typedef struct { %s key; %s val; } %s;\n",
 				c99.TypeOf(typ.Key()), c99.TypeOf(typ.Elem()), symbol)
@@ -68,7 +68,7 @@ func (c99 Target) DataComposite(data source.DataComposite) error {
 		fmt.Fprintf(c99, ")")
 		return nil
 	case *types.Struct:
-		fmt.Fprintf(c99, "{")
+		fmt.Fprintf(c99, "(%s){", c99.Type(dtype))
 		for i, elem := range data.Elements {
 			if i > 0 {
 				fmt.Fprintf(c99, ", ")

@@ -1,8 +1,9 @@
-package c
+package c99
 
 import (
 	"fmt"
 	"go/token"
+	"math/big"
 	"strconv"
 	"strings"
 
@@ -31,7 +32,7 @@ func (c99 Target) Literal(lit source.Literal) error {
 		}
 	}
 	if lit.Kind == token.IMAG {
-		fmt.Fprintf(c99, "go_complex128_new(0,%s)", lit.Value)
+		fmt.Fprintf(c99, "go_complex128(0,%s)", lit.Value)
 		return nil
 	}
 	if lit.Kind == token.CHAR {
@@ -52,6 +53,13 @@ func (c99 Target) Literal(lit source.Literal) error {
 		}
 		fmt.Fprintf(c99, "go_string_new(%q)", val)
 		return nil
+	}
+	if lit.Kind == token.INT {
+		val, _ := new(big.Int).SetString(strings.ReplaceAll(lit.Value, "_", ""), 0)
+		if !val.IsInt64() && !val.IsUint64() {
+			fmt.Fprintf(c99, "%d", val.Int64())
+			return nil
+		}
 	}
 	_, err := c99.Write([]byte(strings.ReplaceAll(lit.Value, "_", "")))
 	return err

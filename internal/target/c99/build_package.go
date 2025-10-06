@@ -1,4 +1,4 @@
-package c
+package c99
 
 import (
 	"bytes"
@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	//go:embed library library/.clangd library/go/.clangd
+	//go:embed library library/.clangd
 	library embed.FS
 )
 
@@ -51,6 +51,7 @@ func Build(dir string, test bool) error {
 		fmt.Fprintf(public, "#define GO_%s_H\n", pkg.Name)
 		fmt.Fprintln(public, "#include <go.h>")
 		fmt.Fprintln(public, "#include <go/"+pkg.Name+"/private.h>")
+		fmt.Fprintf(public, "void init_go_%s_package();\n", pkg.Name)
 
 		private, err := os.Create("./.c/go/" + pkg.Name + "/private.h")
 		if err != nil {
@@ -60,8 +61,17 @@ func Build(dir string, test bool) error {
 		fmt.Fprintf(private, "#define GO_%s_PRIVATE_H\n", pkg.Name)
 		fmt.Fprintln(private, "#include <go.h>")
 
+		init, err := os.Create("./.c/go/" + pkg.Name + "/init.c")
+		if err != nil {
+			return err
+		}
+		fmt.Fprintln(init, "#include <go.h>")
+		fmt.Fprintln(init, "#include <go/"+pkg.Name+".h>")
+		fmt.Fprintln(init, "#include <go/"+pkg.Name+"/private.h>")
+		fmt.Fprintf(init, "\nvoid init_go_%s_package() {", pkg.Name)
+
 		for _, file := range pkg.Files {
-			out, err := os.Create("./.c/" + filepath.Base(file.FileSet.File(file.Open).Name()) + ".c")
+			out, err := os.Create("./.c/go/" + pkg.Name + "/" + filepath.Base(file.FileSet.File(file.Open).Name()) + ".c")
 			if err != nil {
 				return err
 			}
@@ -71,6 +81,8 @@ func Build(dir string, test bool) error {
 			cc.Writer = new(bytes.Buffer)
 			cc.Private = private
 			cc.Exports = public
+			cc.Generic = cc.Prelude
+			cc.Init = init
 			cc.Symbols = make(map[string]struct{})
 			if err := cc.File(file); err != nil {
 				return err
@@ -84,6 +96,10 @@ func Build(dir string, test bool) error {
 			}
 		}
 
+		fmt.Fprintln(init, "\n}")
+		if err := init.Close(); err != nil {
+			return err
+		}
 		fmt.Fprintf(public, "#endif // GO_%s_H\n", pkg.Name)
 		if err := public.Close(); err != nil {
 			return err
