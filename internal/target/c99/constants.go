@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/quaadgras/go-compiler/internal/source"
+	"github.com/quaadgras/gd-compiler/internal/source"
 )
 
 func (c99 Target) Literal(lit source.Literal) error {
@@ -45,8 +45,6 @@ func (c99 Target) Literal(lit source.Literal) error {
 		return nil
 	}
 	if lit.Kind == token.STRING {
-		// normalize string literals, as zig has a different format for
-		// unicode escape sequences.
 		val, err := strconv.Unquote(lit.Value)
 		if err != nil {
 			return err

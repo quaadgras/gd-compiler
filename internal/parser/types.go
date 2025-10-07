@@ -4,8 +4,8 @@ import (
 	"go/ast"
 	"reflect"
 
+	"github.com/quaadgras/gd-compiler/internal/source"
 	"runtime.link/xyz"
-	"github.com/quaadgras/go-compiler/internal/source"
 )
 
 func loadType(pkg *source.Package, node ast.Node) source.Type {

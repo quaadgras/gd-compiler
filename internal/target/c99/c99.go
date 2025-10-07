@@ -6,10 +6,9 @@ import (
 	"go/types"
 	"io"
 	"reflect"
-	"strconv"
 	"strings"
 
-	"github.com/quaadgras/go-compiler/internal/source"
+	"github.com/quaadgras/gd-compiler/internal/source"
 )
 
 type Target struct {
@@ -92,12 +91,6 @@ func (c99 *Target) File(file source.File) error {
 	fmt.Fprintf(c99.Prelude, `#include <go/%s.h>`, c99.CurrentPackage)
 	fmt.Fprintln(c99.Prelude)
 	fmt.Fprintf(c99.Prelude, `#include <go/%s/private.h>`, c99.CurrentPackage)
-	fmt.Fprintln(c99.Prelude)
-	for _, pkg := range file.Imports {
-		path, _ := strconv.Unquote(pkg.Path.Value)
-		fmt.Fprintf(c99.Prelude, `#include <go/%s.h>`, path)
-		fmt.Fprintln(c99.Prelude)
-	}
 	fmt.Fprintln(c99.Prelude)
 	for _, decl := range file.Definitions {
 		if err := c99.Compile(decl); err != nil {

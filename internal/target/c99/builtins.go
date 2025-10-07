@@ -5,7 +5,7 @@ import (
 	"go/types"
 	"io"
 
-	"github.com/quaadgras/go-compiler/internal/source"
+	"github.com/quaadgras/gd-compiler/internal/source"
 )
 
 func (c99 Target) println(expr source.FunctionCall) error {

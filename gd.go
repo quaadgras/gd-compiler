@@ -1,23 +1,17 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"os"
-	"os/exec"
 
 	_ "embed"
 
-	"runtime.link/api"
-	"runtime.link/api/cmdl"
-
-	"github.com/quaadgras/go-compiler/internal/target/c99"
-	"github.com/quaadgras/go-compiler/internal/zig"
+	"github.com/quaadgras/gd-compiler/internal/target/c99"
 )
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("Usage: go [build/run]")
+		fmt.Println("Usage: gd-compiler [build/run]")
 		return
 	}
 	switch os.Args[1] {
@@ -37,7 +31,7 @@ func main() {
 			os.Exit(1)
 		}
 	default:
-		fmt.Println("Usage: go [build/run]")
+		fmt.Println("Usage: gd [build/run]")
 		os.Exit(1)
 	}
 }
@@ -50,8 +44,6 @@ func test(pkg string) error {
 	if err := c99.Build(pkg, true); err != nil {
 		return err
 	}
-	Zig := api.Import[zig.Command](cmdl.API, "zig", nil)
-	Zig.Test(context.TODO(), ".zig/main.zig")
 	return nil
 }
 
@@ -59,11 +51,5 @@ func run(pkg string) error {
 	if err := build(pkg); err != nil {
 		return err
 	}
-	os.Chdir("./.zig")
-	Zig := api.Import[zig.Command](cmdl.API, "zig", nil)
-	Zig.Build(context.TODO())
-	binary := exec.Command("./zig-out/bin/main")
-	binary.Stderr = os.Stderr
-	binary.Stdout = os.Stdout
-	return binary.Run()
+	return nil
 }

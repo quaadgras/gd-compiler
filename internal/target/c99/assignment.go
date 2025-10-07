@@ -6,7 +6,7 @@ import (
 	"go/types"
 	"io"
 
-	"github.com/quaadgras/go-compiler/internal/source"
+	"github.com/quaadgras/gd-compiler/internal/source"
 	"runtime.link/xyz"
 )
 

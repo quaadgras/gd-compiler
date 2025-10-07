@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"go/ast"
 	"go/types"
-	"path"
 	"strconv"
 	"strings"
 
-	"github.com/quaadgras/go-compiler/internal/source"
+	"github.com/quaadgras/gd-compiler/internal/source"
 )
 
 func (c99 Target) DefinedVariable(name source.DefinedVariable) error {
@@ -53,16 +52,9 @@ func (c99 Target) DefinedConstant(name source.DefinedConstant) error {
 }
 
 func (c99 Target) SpecificationImport(spec source.Import) error {
-	return nil
-	path, _ := strconv.Unquote(path.Base(spec.Path.Value))
-	rename, ok := spec.Rename.Get()
-	if ok {
-		fmt.Fprintf(c99, "const %s = ", rename.String)
-	} else {
-
-		fmt.Fprintf(c99, "const %s = ", path)
-	}
-	fmt.Fprintf(c99, "@import(%q);\n", path+".zig")
+	path, _ := strconv.Unquote(spec.Path.Value)
+	fmt.Fprintf(c99.Prelude, `#include <go/%s.h>`, path)
+	fmt.Fprintln(c99.Prelude)
 	return nil
 }
 

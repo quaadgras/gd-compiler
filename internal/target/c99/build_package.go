@@ -8,8 +8,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/quaadgras/go-compiler/internal/escape"
-	"github.com/quaadgras/go-compiler/internal/parser"
+	"github.com/quaadgras/gd-compiler/internal/escape"
+	"github.com/quaadgras/gd-compiler/internal/parser"
 )
 
 var (

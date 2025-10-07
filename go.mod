@@ -1,4 +1,4 @@
-module github.com/quaadgras/go-compiler
+module github.com/quaadgras/gd-compiler
 
 go 1.25.0
 

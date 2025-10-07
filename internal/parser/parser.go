@@ -7,7 +7,7 @@ import (
 	"go/types"
 	"strings"
 
-	"github.com/quaadgras/go-compiler/internal/source"
+	"github.com/quaadgras/gd-compiler/internal/source"
 	"golang.org/x/tools/go/packages"
 	"runtime.link/xyz"
 )

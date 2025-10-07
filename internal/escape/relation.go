@@ -1,8 +1,8 @@
 package escape
 
 import (
+	"github.com/quaadgras/gd-compiler/internal/source"
 	"runtime.link/xyz"
-	"github.com/quaadgras/go-compiler/internal/source"
 )
 
 // These functions setup the escape relationships for Go source.

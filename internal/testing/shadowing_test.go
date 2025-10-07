@@ -3,10 +3,6 @@ package main
 import "testing"
 
 func TestShadowing(t *testing.T) {
-	/*
-		Shadowing is not supported in zig but it is in Go, so the compiler
-		needs to be able to handle this case.
-	*/
 	{
 		var x int = 1
 		{

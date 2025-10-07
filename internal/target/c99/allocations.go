@@ -1,6 +1,6 @@
 package c99
 
-import "github.com/quaadgras/go-compiler/internal/source"
+import "github.com/quaadgras/gd-compiler/internal/source"
 
 func (c99 Target) StackAllocated(ident source.DefinedVariable) bool {
 	return true

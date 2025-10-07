@@ -3,8 +3,8 @@ package parser
 import (
 	"go/ast"
 
+	"github.com/quaadgras/gd-compiler/internal/source"
 	"runtime.link/xyz"
-	"github.com/quaadgras/go-compiler/internal/source"
 )
 
 func loadImport(pkg *source.Package, in *ast.ImportSpec) source.Import {

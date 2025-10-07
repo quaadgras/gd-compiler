@@ -6,8 +6,8 @@ import (
 	"go/types"
 	"reflect"
 
+	"github.com/quaadgras/gd-compiler/internal/source"
 	"runtime.link/xyz"
-	"github.com/quaadgras/go-compiler/internal/source"
 )
 
 func loadExpression(pkg *source.Package, node ast.Expr) source.Expression {
