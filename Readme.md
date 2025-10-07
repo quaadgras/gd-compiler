@@ -22,3 +22,7 @@ of Go programs that don't use the standard library. In order to avoid memory lea
 the output should be linked with a conservative garbage collector (for example,
 [The Boehm-Demers-Weiser Garbage Collector](https://www.hboehm.info/gc/)) or built
 with a C11 compiler with a builtin garbage collector (see. [Fil-C](https://fil-c.org/)).
+
+## License
+Compiler: AGPL-3.0 (the .go code in this repo)
+Runtimes: MIT (all .c and .h code in this repo)
