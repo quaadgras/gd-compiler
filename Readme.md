@@ -24,5 +24,5 @@ the output should be linked with a conservative garbage collector (for example,
 with a C11 compiler with a builtin garbage collector (see. [Fil-C](https://fil-c.org/)).
 
 ## License
-Compiler: AGPL-3.0 (the .go code in this repo)
-Runtimes: MIT (all .c and .h code in this repo)
+- Compiler: AGPL-3.0 (the .go code in this repo)
+- Runtimes: MIT (all .c and .h code in this repo)
