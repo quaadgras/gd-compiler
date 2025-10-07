@@ -233,7 +233,10 @@ func loadPackage(config *packages.Config, into map[string]source.Package, pkg *p
 			continue
 		}
 		switch imp.Name {
-		case "reflect", "testing", "runtime", "os", "syscall", "unsafe", "math":
+		case "reflect", "testing", "runtime", "os", "syscall", "unsafe", "math",
+			"os/exec", "os/signal", "runtime/cgo", "runtime/debug", "runtime/race",
+			"sync/atomic", "hash/maphash", "unique", "weak", "net", "internal/reflectlite",
+			"internal/sysrand", "embed", "builtin", "iter", "plugin", "structs", "time":
 			continue
 		}
 		if _, ok := into[imp.Name]; !ok {
