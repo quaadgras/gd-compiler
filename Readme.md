@@ -21,7 +21,7 @@ The project is in a very early stage, and only supports compiling a small subset
 of Go programs that don't use the standard library. In order to avoid memory leaks,
 the output should be linked with a conservative garbage collector (for example,
 [The Boehm-Demers-Weiser Garbage Collector](https://www.hboehm.info/gc/)) or built
-with a C11 compiler with a builtin garbage collector (see. [Fil-C](https://fil-c.org/)).
+with a C11 compiler that includes a garbage collector (see. [Fil-C](https://fil-c.org/)).
 
 ## License
 - Compiler: AGPL-3.0 (the .go code in this repo)
