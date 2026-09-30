@@ -60,11 +60,6 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 	if decl.Name.String == "main" {
 		fmt.Fprintf(c99, "go_main() { init_go_%s_package();", c99.CurrentPackage)
 	} else {
-		for _, param := range decl.Type.Arguments.Fields {
-			if _, ok := param.Names.Get(); !ok {
-				return param.Location.Errorf("missing names for function argument")
-			}
-		}
 		decl := func(w io.Writer) {
 			if closure {
 				fmt.Fprintf(w, "static ")
@@ -87,11 +82,16 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 				var i int
 				for _, param := range decl.Type.Arguments.Fields {
 					names, _ := param.Names.Get()
-					for _, name := range names {
+					for k := range max(len(names), 1) {
 						if i > 0 || isMethod || closure {
 							fmt.Fprintf(w, ", ")
 						}
-						fmt.Fprintf(w, "%s %s", c99.Type(param.Type), c99.parameterName(name))
+						// unnamed and blank parameters still need (distinct) C names.
+						cname := fmt.Sprintf("go_param_%d", i)
+						if k < len(names) && names[k].String != "_" {
+							cname = c99.parameterName(names[k])
+						}
+						fmt.Fprintf(w, "%s %s", c99.Type(param.Type), cname)
 						i++
 					}
 				}

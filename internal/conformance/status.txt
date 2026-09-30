@@ -479,7 +479,7 @@ fixedbugs/bug215.go	skip	todo:errorcheck
 fixedbugs/bug216.go	pass	
 fixedbugs/bug217.go	skip	todo:errorcheck
 fixedbugs/bug218.go	fail	gd: unsupported node type: StatementSelect
-fixedbugs/bug219.go	fail	gd: missing names for function argument
+fixedbugs/bug219.go	pass	
 fixedbugs/bug221.go	pass	
 fixedbugs/bug222.go	skip	todo:compiledir
 fixedbugs/bug223.go	skip	todo:errorcheck
@@ -807,7 +807,7 @@ fixedbugs/issue10700.go	skip	todo:errorcheck
 fixedbugs/issue10925.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue10958.go	skip	upstream:build !nacl && !js && disabled_see_issue_18589
 fixedbugs/issue10975.go	skip	todo:errorcheck
-fixedbugs/issue10977.go	fail	gd: missing names for function argument
+fixedbugs/issue10977.go	fail	c11: error: unknown type name 'T_go_p_package'
 fixedbugs/issue11053.go	skip	todo:rundir
 fixedbugs/issue11256.go	fail	gd: internal error: package "runtime" without types was imported from "test"
 fixedbugs/issue11286.go	fail	gd: internal error: package "runtime" without types was imported from "test"
@@ -961,7 +961,7 @@ fixedbugs/issue16515.go	fail	gd: internal error: package "runtime" without types
 fixedbugs/issue16616.go	skip	todo:compiledir
 fixedbugs/issue16733.go	pass	
 fixedbugs/issue16741.go	pass	
-fixedbugs/issue16760.go	fail	gd: unsupported function type *types.Named
+fixedbugs/issue16760.go	fail	c11: error: unknown type name 'F_go_main_package'
 fixedbugs/issue16804.go	fail	gd: internal error: package "math" without types was imported from "test"
 fixedbugs/issue16870.go	fail	gd: internal error: package "log" without types was imported from "test"
 fixedbugs/issue16948.go	fail	gd: internal error: package "sync/atomic" without types was imported from "test"
@@ -1150,7 +1150,7 @@ fixedbugs/issue23521.go	skip	gc:diagnostics -m
 fixedbugs/issue23522.go	fail	gd: internal error: package "math" without types was imported from "test"
 fixedbugs/issue23536.go	pass	
 fixedbugs/issue23545.go	fail	c11: error: invalid operands to binary != (have 'OutputID_go_main_package' {aka 'go_arr32_go_vv'} and 'go_arr32_go_vv')
-fixedbugs/issue23546.go	fail	gd: missing names for function argument
+fixedbugs/issue23546.go	fail	c11: error: invalid operands to binary == (have 'go_arr2_go_vv' and 'go_arr2_go_vv')
 fixedbugs/issue23586.go	skip	todo:errorcheck
 fixedbugs/issue23587.go	skip	todo:errorcheck
 fixedbugs/issue23609.go	skip	todo:errorcheck
@@ -1217,7 +1217,7 @@ fixedbugs/issue26120.go	pass
 fixedbugs/issue2615.go	fail	c11: error: storage class specified for parameter 'go_arr4_go_u8'
 fixedbugs/issue26153.go	pass	
 fixedbugs/issue26163.go	skip	gc:flags -N -d=softfloat
-fixedbugs/issue26248.go	fail	gd: missing names for function argument
+fixedbugs/issue26248.go	fail	c11: error: incompatible types when returning type 'T_go_main_package' {aka 'go_az'} but 'go_if' was expected
 fixedbugs/issue26335.go	fail	gd: internal error: package "reflect" without types was imported from "test"
 fixedbugs/issue26340.go	fail	gd: composite literal missing type
 fixedbugs/issue26341.go	skip	todo:compiledir
@@ -1226,13 +1226,13 @@ fixedbugs/issue26411.go	skip	gc:toolchain
 fixedbugs/issue26416.go	skip	todo:errorcheck
 fixedbugs/issue26426.go	pass	
 fixedbugs/issue26438.go	fail	exit: exit status 2 panic: impossible
-fixedbugs/issue26495.go	fail	gd: missing names for function argument
+fixedbugs/issue26495.go	pass	
 fixedbugs/issue26616.go	skip	todo:errorcheck
 fixedbugs/issue26855.go	skip	todo:errorcheck
 fixedbugs/issue27143.go	pass	
 fixedbugs/issue27201.go	skip	gc:stack-introspection runtime.Stack
-fixedbugs/issue27232.go	fail	gd: missing names for function argument
-fixedbugs/issue27267.go	fail	gd: missing names for function argument
+fixedbugs/issue27232.go	pass	
+fixedbugs/issue27267.go	fail	c11: error: unknown type name 'E_go_p_package'
 fixedbugs/issue27278.go	fail	c11: error: unknown type name 'T2_go_main_package'
 fixedbugs/issue27289.go	pass	
 fixedbugs/issue27356.go	skip	todo:errorcheck
@@ -1320,7 +1320,7 @@ fixedbugs/issue31010.go	fail	gd: function missing body
 fixedbugs/issue31053.go	skip	todo:errorcheck
 fixedbugs/issue31060.go	skip	todo:errorcheck
 fixedbugs/issue31252.go	skip	todo:compiledir
-fixedbugs/issue31412a.go	fail	gd: unsupported function type *types.Named
+fixedbugs/issue31412a.go	pass	
 fixedbugs/issue31412b.go	skip	todo:errorcheck
 fixedbugs/issue31419.go	fail	gd: unsupported type assertion to interface test.I
 fixedbugs/issue31546.go	fail	gd: internal error: package "reflect" without types was imported from "test"
@@ -1417,7 +1417,7 @@ fixedbugs/issue3925.go	skip	todo:errorcheck
 fixedbugs/issue39292.go	skip	gc:diagnostics -m
 fixedbugs/issue39459.go	fail	gd: panic: runtime error: invalid memory address or nil pointer dereference
 fixedbugs/issue39472.go	skip	gc:flags -N
-fixedbugs/issue39505.go	fail	gd: missing names for function argument
+fixedbugs/issue39505.go	pass	
 fixedbugs/issue39505b.go	fail	exit: exit status 2 panic: bad
 fixedbugs/issue39541.go	fail	gd: internal error: package "reflect" without types was imported from "test"
 fixedbugs/issue39651.go	pass	
@@ -1568,7 +1568,7 @@ fixedbugs/issue46556.go	pass
 fixedbugs/issue4663.go	skip	todo:errorcheck
 fixedbugs/issue46653.go	skip	todo:runindir
 fixedbugs/issue4667.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue46720.go	fail	gd: missing names for function argument
+fixedbugs/issue46720.go	fail	c11: error: stray '@' in program
 fixedbugs/issue46725.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue46749.go	skip	todo:errorcheck
 fixedbugs/issue46903.go	skip	gc:build cgo
@@ -1632,8 +1632,8 @@ fixedbugs/issue49249.go	skip	gc:flags -l
 fixedbugs/issue49282.go	fail	c11: error: initialization of 'struct <anonymous> *' from incompatible pointer type 'struct <anonymous> *' [-Wincompatible-po…
 fixedbugs/issue4932.go	skip	todo:compiledir
 fixedbugs/issue49368.go	skip	todo:errorcheck
-fixedbugs/issue49378.go	fail	gd: missing names for function argument
-fixedbugs/issue49512.go	fail	gd: missing names for function argument
+fixedbugs/issue49378.go	fail	c11: error: initialization of 'struct <anonymous> *' from incompatible pointer type 'struct <anonymous> *' [-Wincompatible-po…
+fixedbugs/issue49512.go	fail	c11: error: incompatible types when returning type 'go_pt' but 'go_if' was expected
 fixedbugs/issue49592.go	fail	c11: error: invalid operands to binary == (have 'void *' and 'go_pt')
 fixedbugs/issue49611.go	pass	
 fixedbugs/issue49619.go	pass	
@@ -1648,12 +1648,12 @@ fixedbugs/issue50372.go	skip	todo:errorcheck
 fixedbugs/issue50439.go	fail	c11: error: stray '@' in program
 fixedbugs/issue5056.go	fail	c11: error: incompatible types when assigning to type 'go_if' from type 'Foo_go_main_package' {aka 'short int'}
 fixedbugs/issue50671.go	pass	
-fixedbugs/issue50672.go	fail	gd: missing names for function argument
+fixedbugs/issue50672.go	fail	c11: error: incompatible type for argument 2 of 'go_invoke_go_ii_go_ii__go_ii'
 fixedbugs/issue50788.go	skip	todo:errorcheck
 fixedbugs/issue50854.go	pass	
 fixedbugs/issue5089.go	skip	todo:errorcheck
 fixedbugs/issue5105.go	skip	todo:rundir
-fixedbugs/issue51101.go	fail	gd: missing names for function argument
+fixedbugs/issue51101.go	pass	
 fixedbugs/issue5125.go	skip	todo:compiledir
 fixedbugs/issue51291.go	skip	todo:compiledir
 fixedbugs/issue51401.go	skip	gc:stack-introspection runtime.Callers
@@ -1692,7 +1692,7 @@ fixedbugs/issue52856.go	skip	todo:rundir
 fixedbugs/issue52862.go	skip	todo:compiledir
 fixedbugs/issue52870.go	fail	c11: error: unknown type name 'T3_go_p_package'; did you mean 'S1_go_p_package'?
 fixedbugs/issue52871.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
-fixedbugs/issue52907.go	fail	gd: missing names for function argument
+fixedbugs/issue52907.go	pass	
 fixedbugs/issue5291.go	skip	todo:rundir
 fixedbugs/issue52953.go	pass	
 fixedbugs/issue53018.go	fail	gd: range over unsupported type *types.Chan
@@ -1707,7 +1707,7 @@ fixedbugs/issue53635.go	fail	gd: unsupported index of func
 fixedbugs/issue53653.go	fail	gd: internal error: package "math" without types was imported from "test"
 fixedbugs/issue53702.go	fail	gd: range over unsupported type *types.Array
 fixedbugs/issue5373.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue53982.go	fail	gd: missing names for function argument
+fixedbugs/issue53982.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
 fixedbugs/issue54159.go	skip	gc:diagnostics -m=2
 fixedbugs/issue54220.go	fail	gd: internal error: package "strconv" without types was imported from "test"
 fixedbugs/issue54280.go	skip	todo:errorcheck
@@ -1745,7 +1745,7 @@ fixedbugs/issue56727.go	fail	gd: composite literal missing type
 fixedbugs/issue56768.go	fail	gd: composite literal missing type
 fixedbugs/issue56777.go	pass	
 fixedbugs/issue56778.go	skip	todo:compiledir
-fixedbugs/issue56923.go	fail	gd: unsupported function type *types.Named
+fixedbugs/issue56923.go	fail	gd: unsupported index of test.EqFunc
 fixedbugs/issue5698.go	skip	todo:errorcheck
 fixedbugs/issue56990.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue5704.go	pass	
@@ -1773,7 +1773,7 @@ fixedbugs/issue58439.go	pass
 fixedbugs/issue5856.go	skip	gc:stack-introspection runtime.Caller
 fixedbugs/issue58563.go	skip	todo:compiledir
 fixedbugs/issue58572.go	fail	c11: error: unknown type name 'Key2_go_p_package'; did you mean 'Client_go_p_package'?
-fixedbugs/issue58671.go	fail	gd: missing names for function argument
+fixedbugs/issue58671.go	pass	
 fixedbugs/issue58826.go	skip	gc:flags -dynlink
 fixedbugs/issue5910.go	skip	todo:compiledir
 fixedbugs/issue59169.go	fail	c11: error: stray '@' in program
@@ -1783,9 +1783,9 @@ fixedbugs/issue59293.go	fail	gd: unsupported node type: BuiltinFunction
 fixedbugs/issue59334.go	skip	gc:flags -tags=purego -gcflags=all=-d=checkptr
 fixedbugs/issue59338.go	fail	c11: error: passing argument 1 of 'g1_go_main_package' makes pointer from integer without a cast [-Wint-conversion]
 fixedbugs/issue59367.go	pass	
-fixedbugs/issue59378.go	fail	gd: missing names for function argument
+fixedbugs/issue59378.go	fail	gd: range over unsupported type *types.TypeParam
 fixedbugs/issue59404.go	skip	gc:flags -gcflags=-l=4
-fixedbugs/issue59404part2.go	fail	gd: missing names for function argument
+fixedbugs/issue59404part2.go	pass	
 fixedbugs/issue59411.go	fail	gd: internal error: package "math" without types was imported from "test"
 fixedbugs/issue5957.go	skip	todo:errorcheck
 fixedbugs/issue59572.go	pass	
@@ -1800,7 +1800,7 @@ fixedbugs/issue60582.go	fail	gd: internal error: package "fmt" without types was
 fixedbugs/issue60601.go	fail	gd: internal error: package "strings" without types was imported from "test"
 fixedbugs/issue60945.go	skip	todo:compiledir
 fixedbugs/issue60982.go	fail	gd: unsupported builtin function
-fixedbugs/issue60990.go	fail	gd: missing names for function argument
+fixedbugs/issue60990.go	fail	gd: unsupported builtin function
 fixedbugs/issue60991.go	fail	gd: internal error: package "math" without types was imported from "test"
 fixedbugs/issue61127.go	pass	
 fixedbugs/issue61187.go	fail	gd: internal error: package "fmt" without types was imported from "test"
@@ -1841,7 +1841,7 @@ fixedbugs/issue64715.go	pass
 fixedbugs/issue64826.go	pass	
 fixedbugs/issue6500.go	skip	todo:errorcheck
 fixedbugs/issue6513.go	skip	todo:compiledir
-fixedbugs/issue65362.go	fail	gd: missing names for function argument
+fixedbugs/issue65362.go	pass	
 fixedbugs/issue65417.go	fail	gd: internal error: package "strings" without types was imported from "test"
 fixedbugs/issue65593.go	fail	gd: range over unsupported type *types.Chan
 fixedbugs/issue6572.go	skip	todo:errorcheck
@@ -1851,14 +1851,14 @@ fixedbugs/issue65893.go	pass
 fixedbugs/issue65957.go	skip	todo:rundir
 fixedbugs/issue65962.go	fail	gd: unsupported type assertion to interface T
 fixedbugs/issue66066.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue66066b.go	fail	c11: error: redefinition of parameter '_'
+fixedbugs/issue66066b.go	pass	
 fixedbugs/issue66096.go	fail	c11: error: ISO C forbids empty initializer braces before C23 [-Wpedantic]
-fixedbugs/issue66261.go	fail	gd: missing names for function argument
+fixedbugs/issue66261.go	pass	
 fixedbugs/issue66575.go	pass	
 fixedbugs/issue66585.go	pass	
 fixedbugs/issue66663.go	fail	gd: unsupported index of func
 fixedbugs/issue6671.go	skip	todo:errorcheck
-fixedbugs/issue66873.go	fail	gd: missing names for function argument
+fixedbugs/issue66873.go	fail	gd: panic: unexpected kindOf: test.T
 fixedbugs/issue6703a.go	skip	todo:errorcheck
 fixedbugs/issue6703b.go	skip	todo:errorcheck
 fixedbugs/issue6703c.go	skip	todo:errorcheck
@@ -1930,7 +1930,7 @@ fixedbugs/issue7129.go	skip	todo:errorcheck
 fixedbugs/issue7150.go	skip	todo:errorcheck
 fixedbugs/issue7153.go	skip	todo:errorcheck
 fixedbugs/issue71675.go	fail	gd: range over unsupported type *types.Signature
-fixedbugs/issue71680.go	fail	gd: unsupported function type *types.Named
+fixedbugs/issue71680.go	fail	c11: error: expected expression before ')' token
 fixedbugs/issue71759.go	pass	
 fixedbugs/issue71852.go	fail	gd: internal error: package "math" without types was imported from "test"
 fixedbugs/issue71857.go	fail	gd: internal error: package "sync/atomic" without types was imported from "test"
@@ -1959,7 +1959,7 @@ fixedbugs/issue73748b.go	skip	gc:import runtime/trace
 fixedbugs/issue73823.go	fail	gd: unsupported assignment of multiple results in for statement
 fixedbugs/issue73888.go	fail	gd: panic: unexpected kindOf: test.SourceRange
 fixedbugs/issue73888b.go	fail	gd: panic: unexpected kindOf: test.SourceRange
-fixedbugs/issue73916.go	fail	gd: missing names for function argument
+fixedbugs/issue73916.go	pass	
 fixedbugs/issue73916b.go	pass	
 fixedbugs/issue73917.go	fail	gd: unsupported node type: DefinedType
 fixedbugs/issue73920.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
@@ -1971,7 +1971,7 @@ fixedbugs/issue74379c.go	fail	gd: internal error: package "errors" without types
 fixedbugs/issue74626.go	skip	todo:errorcheck
 fixedbugs/issue74648.go	skip	todo:runindir
 fixedbugs/issue74836.go	fail	gd: function missing body
-fixedbugs/issue74888.go	fail	gd: missing names for function argument
+fixedbugs/issue74888.go	fail	c11: error: unknown type name 'P_go_main_package'
 fixedbugs/issue74908.go	fail	c11: error: unknown type name 'Type_go_main_package'
 fixedbugs/issue74935.go	fail	gd: internal error: package "reflect" without types was imported from "test"
 fixedbugs/issue75022.go	skip	todo:errorcheck
@@ -2301,7 +2301,7 @@ method4.go	skip	todo:rundir
 method5.go	fail	gd: unsupported conversion to test.Tbigv
 method6.go	skip	todo:errorcheck
 method7.go	fail	gd: panic: unsupported node type: DefinedType
-named.go	fail	gd: missing names for function argument
+named.go	fail	gd: unsupported type *types.Named
 named1.go	skip	todo:errorcheck
 newexpr.go	fail	c11: error: invalid operands to binary != (have 'go_arr2_go_ii' and 'go_arr2_go_ii')
 newinline.go	skip	gc:build goexperiment.newinliner
@@ -2347,7 +2347,7 @@ reflectmethod4.go	fail	gd: internal error: package "reflect" without types was i
 reflectmethod5.go	fail	gd: internal error: package "reflect" without types was imported from "test"
 reflectmethod6.go	fail	gd: internal error: package "reflect" without types was imported from "test"
 reflectmethod7.go	fail	gd: internal error: package "reflect" without types was imported from "test"
-reflectmethod8.go	fail	gd: missing names for function argument
+reflectmethod8.go	fail	gd: panic: unsupported node type: DefinedType
 rename.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 rename1.go	skip	todo:errorcheck
 reorder.go	fail	gd: internal error: package "fmt" without types was imported from "test"
@@ -2474,22 +2474,22 @@ typeparam/issue47514.go	fail	gd: unsupported index of func
 typeparam/issue47514b.go	fail	gd: unsupported index of func
 typeparam/issue47514c.go	skip	todo:rundir
 typeparam/issue47631.go	pass	
-typeparam/issue47676.go	fail	gd: missing names for function argument
+typeparam/issue47676.go	fail	gd: unsupported builtin function
 typeparam/issue47684.go	fail	gd: unsupported index of func
 typeparam/issue47684b.go	fail	gd: unsupported index of func
 typeparam/issue47684c.go	fail	gd: unsupported index of func
 typeparam/issue47708.go	pass	
-typeparam/issue47710.go	fail	gd: missing names for function argument
+typeparam/issue47710.go	fail	c11: error: unknown type name 'IntType_go_p_package'; did you mean 'FooType_go_p_package'?
 typeparam/issue47713.go	fail	gd: internal error: package "encoding" without types was imported from "test"
 typeparam/issue47716.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 typeparam/issue47723.go	fail	gd: unsupported index of func
 typeparam/issue47740.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 typeparam/issue47740b.go	fail	gd: internal error: package "reflect" without types was imported from "test"
 typeparam/issue47775.go	skip	todo:rundir
-typeparam/issue47775b.go	fail	gd: missing names for function argument
+typeparam/issue47775b.go	fail	gd: unsupported index of func
 typeparam/issue47797.go	fail	gd: panic: unsupported type *types.TypeParam
 typeparam/issue47877.go	fail	gd: panic: unsupported type *types.TypeParam
-typeparam/issue47878.go	fail	gd: unsupported function type *types.Named
+typeparam/issue47878.go	fail	gd: panic: interface conversion: types.Type is *types.Named, not *types.Slice
 typeparam/issue47892.go	skip	todo:rundir
 typeparam/issue47892b.go	skip	todo:compiledir
 typeparam/issue47896.go	fail	gd: internal error: package "database/sql" without types was imported from "test"
@@ -2534,12 +2534,12 @@ typeparam/issue48462.go	skip	todo:rundir
 typeparam/issue48537.go	fail	gd: unexpected composite type: interface
 typeparam/issue48538.go	fail	gd: unexpected composite type: interface
 typeparam/issue48598.go	fail	gd: unsupported index of func
-typeparam/issue48602.go	fail	gd: unsupported function type *types.Named
+typeparam/issue48602.go	fail	gd: unsupported index of test.IteratorFunc
 typeparam/issue48604.go	fail	gd: unsupported index of test.Bar
 typeparam/issue48609.go	fail	gd: unsupported type *types.TypeParam
-typeparam/issue48617.go	fail	gd: unsupported function type *types.Named
+typeparam/issue48617.go	fail	gd: unsupported index of func
 typeparam/issue48645a.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/issue48645b.go	fail	gd: unsupported function type *types.Named
+typeparam/issue48645b.go	fail	gd: unsupported node type: ExpressionIndices
 typeparam/issue48711.go	skip	todo:errorcheck
 typeparam/issue48716.go	skip	todo:rundir
 typeparam/issue48838.go	fail	gd: unsupported index of func
@@ -2556,7 +2556,7 @@ typeparam/issue49497.go	skip	todo:rundir
 typeparam/issue49516.go	fail	gd: panic: unsupported type *types.TypeParam
 typeparam/issue49524.go	skip	todo:rundir
 typeparam/issue49536.go	skip	todo:compiledir
-typeparam/issue49538.go	fail	gd: missing names for function argument
+typeparam/issue49538.go	fail	c11: error: request for member 'vtable' in something not a structure or union
 typeparam/issue49547.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 typeparam/issue49611.go	pass	
 typeparam/issue49659.go	skip	todo:compiledir
@@ -2612,7 +2612,7 @@ typeparam/issue51765.go	pass
 typeparam/issue51832.go	fail	gd: unsupported index of func
 typeparam/issue51836.go	skip	todo:compiledir
 typeparam/issue51840.go	fail	gd: range over unsupported type *types.TypeParam
-typeparam/issue51909.go	fail	gd: unsupported function type *types.Named
+typeparam/issue51909.go	pass	
 typeparam/issue51925.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 typeparam/issue52026.go	fail	gd: panic: unsupported type *types.TypeParam
 typeparam/issue52117.go	skip	todo:compiledir
@@ -2660,7 +2660,7 @@ typeparam/mdempsky/20.go	fail	gd: unsupported index of func
 typeparam/mdempsky/21.go	fail	gd: unsupported index of func
 typeparam/mdempsky/3.go	skip	todo:compiledir
 typeparam/mdempsky/4.go	skip	todo:compiledir
-typeparam/mdempsky/5.go	fail	gd: missing names for function argument
+typeparam/mdempsky/5.go	fail	gd: panic: unsupported call for function of type xyz.Case
 typeparam/mdempsky/6.go	fail	gd: unsupported index of test.I
 typeparam/mdempsky/7.go	skip	todo:compiledir
 typeparam/mdempsky/8.go	skip	todo:errorcheck

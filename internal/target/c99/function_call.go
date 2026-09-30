@@ -199,7 +199,7 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 		invoked = true
 	}
 	_ = isVariable
-	ftype, ok := expr.Function.TypeAndValue().Type.(*types.Signature)
+	ftype, ok := expr.Function.TypeAndValue().Type.Underlying().(*types.Signature)
 	if !ok {
 		return expr.Errorf("unsupported function type %T", expr.Function.TypeAndValue().Type)
 	}

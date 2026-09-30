@@ -36,7 +36,7 @@ func (c99 Target) Nil(expr source.Nil) error {
 }
 
 func (c99 Target) ExpressionBinary(expr source.ExpressionBinary) error {
-	if ok, err := c99.hoisted(expr.Location.Node, expr.TypeAndValue().Type, func(cc Target) error { return cc.ExpressionBinary(expr) }); ok {
+	if ok, err := c99.hoistLogical(expr); ok {
 		return err
 	}
 	if tv := expr.TypeAndValue(); tv.Value != nil && tv.Value.Kind() != constant.Complex {

@@ -185,3 +185,42 @@ func (c99 Target) ordered(exprs []source.Expression, roots []source.Expression, 
 	}
 	return nil
 }
+
+// hoistLogical hoists x && y (or x || y), when it's to be hoisted, reporting whether it
+// did. y is only evaluated if x is true (false for ||), so it's evaluated within an if
+// statement, where its own calls are ordered.
+func (c99 Target) hoistLogical(expr source.ExpressionBinary) (bool, error) {
+	order, node := c99.Order, expr.Location.Node
+	if order == nil || !order.hoist[node] {
+		return false, nil
+	}
+	if name, ok := order.names[node]; ok {
+		fmt.Fprint(c99, name)
+		return true, nil
+	}
+	var x, y strings.Builder
+	cc := c99
+	cc.Writer = &x
+	if err := cc.Expression(expr.X); err != nil {
+		return true, err
+	}
+	sub := c99.orderOf([]source.Expression{expr.Y})
+	cc.Writer, cc.Order = &y, sub
+	if err := cc.Expression(expr.Y); err != nil {
+		return true, err
+	}
+	var temps string
+	if sub != nil {
+		temps = strings.Join(sub.temps, " ") + " "
+	}
+	not := ""
+	if expr.Operation.Value == token.LOR {
+		not = "!"
+	}
+	name := fmt.Sprintf("go_order_%d", c99.Closures.count)
+	c99.Closures.count++
+	order.temps = append(order.temps, fmt.Sprintf("go_tf %[1]s = %[2]s; if (%[3]s%[1]s) { %[4]s%[1]s = %[5]s; }", name, x.String(), not, temps, y.String()))
+	order.names[node] = name
+	fmt.Fprint(c99, name)
+	return true, nil
+}
