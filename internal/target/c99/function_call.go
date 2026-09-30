@@ -423,7 +423,7 @@ func (c99 Target) InterfaceOf(expr source.Expression, iface types.Type) (string,
 			return "", err
 		}
 		methods = append(methods, fmt.Sprintf(".%s = %s%s_%s_go_%s_package",
-			method.Name(), prefix, c99.typeCName(named), method.Name(), named.Obj().Pkg().Name()))
+			method.Name(), prefix, c99.typeCName(named), method.Name(), source.PackageIdent(named.Obj().Pkg())))
 	}
 	// The table of methods is static, as interface values may outlive any function.
 	hash := fnv.New64a()

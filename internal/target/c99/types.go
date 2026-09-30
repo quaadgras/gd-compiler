@@ -167,12 +167,12 @@ func (c99 Target) InterfaceTypeOf(t types.Type) string {
 	if typ.Obj().Pkg() == nil {
 		return "go_" + typ.Obj().Name()
 	}
-	if typ.Obj().Pkg().Name() == c99.CurrentPackage {
+	if source.PackageIdent(typ.Obj().Pkg()) == c99.CurrentPackage {
 		if !ast.IsExported(typ.Obj().Name()) {
 			return typ.Obj().Name()
 		}
 	}
-	return typ.Obj().Name() + "_go_" + typ.Obj().Pkg().Name() + "_package"
+	return typ.Obj().Name() + "_go_" + source.PackageIdent(typ.Obj().Pkg()) + "_package"
 }
 
 func (c99 Target) TupleTypeOf(t *types.Tuple) string {
@@ -218,8 +218,8 @@ func (c99 Target) TypeOf(t types.Type) string {
 			return "go_" + typ.Obj().Name()
 		}
 		name := c99.typeCName(typ)
-		if typ.Obj().Pkg().Name() != c99.CurrentPackage || ast.IsExported(typ.Obj().Name()) {
-			name += "_go_" + typ.Obj().Pkg().Name() + "_package"
+		if source.PackageIdent(typ.Obj().Pkg()) != c99.CurrentPackage || ast.IsExported(typ.Obj().Name()) {
+			name += "_go_" + source.PackageIdent(typ.Obj().Pkg()) + "_package"
 		}
 		if typ.TypeArgs().Len() > 0 {
 			c99.instanceType(typ, name)
@@ -301,7 +301,7 @@ func (c99 Target) ReflectTypeOf(t types.Type) string {
 		if typ.TypeArgs().Len() > 0 {
 			return c99.instanceDescriptor(typ)
 		}
-		return "&go_type_" + typ.Obj().Name() + "_go_" + typ.Obj().Pkg().Name() + "_package"
+		return "&go_type_" + typ.Obj().Name() + "_go_" + source.PackageIdent(typ.Obj().Pkg()) + "_package"
 	case *types.TypeParam:
 		panic("unsupported type " + reflect.TypeOf(typ).String())
 	}

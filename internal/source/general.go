@@ -5,6 +5,8 @@ import (
 	"go/ast"
 	"go/token"
 	"go/types"
+	"strings"
+	"unicode"
 
 	"runtime.link/xyz"
 )
@@ -160,11 +162,34 @@ type Identifier struct {
 type Package struct {
 	types.Info
 
-	Name  string
-	Test  bool
-	Files []File
+	Name    string   // Go package name.
+	Path    string   // import path.
+	Ident   string   // C identifier, see [PackageIdent].
+	Imports []string // import paths.
+	Test    bool
+	Files   []File
 
 	FileSet *token.FileSet
+}
+
+// PackageIdent returns the identifier of a package for C names (unique, unlike package
+// names): its import path, with other characters than letters and digits replaced by _.
+func PackageIdent(pkg *types.Package) string {
+	if pkg == nil {
+		return ""
+	}
+	if pkg.Name() == "main" {
+		return "main"
+	}
+	var b strings.Builder
+	for _, r := range pkg.Path() {
+		if r < 128 && (unicode.IsLetter(r) || unicode.IsDigit(r)) {
+			b.WriteRune(r)
+		} else {
+			b.WriteByte('_')
+		}
+	}
+	return b.String()
 }
 
 func (location Location) Errorf(format string, args ...interface{}) error {

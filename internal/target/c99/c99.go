@@ -22,7 +22,9 @@ type Target struct {
 
 	Tabs int
 
-	CurrentPackage  string
+	CurrentPackage  string // C identifier, see [source.PackageIdent].
+	CurrentPath     string // import path.
+	CurrentName     string // Go name.
 	CurrentFunction string
 
 	Symbols map[string]struct{}
@@ -204,9 +206,9 @@ func (c99 Target) Star(star source.Star) error {
 
 func (c99 *Target) File(file source.File) error {
 	fmt.Fprintln(c99.Prelude, `#include <go.h>`)
-	fmt.Fprintf(c99.Prelude, `#include <go/%s.h>`, c99.CurrentPackage)
+	fmt.Fprintf(c99.Prelude, `#include <go/%s.h>`, c99.CurrentPath)
 	fmt.Fprintln(c99.Prelude)
-	fmt.Fprintf(c99.Prelude, `#include <go/%s/private.h>`, c99.CurrentPackage)
+	fmt.Fprintf(c99.Prelude, `#include <go/%s/private.h>`, c99.CurrentPath)
 	fmt.Fprintln(c99.Prelude)
 	for _, decl := range file.Definitions {
 		if err := c99.Compile(decl); err != nil {

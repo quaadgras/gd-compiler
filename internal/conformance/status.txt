@@ -6,96 +6,96 @@
 # path	pass|fail|skip	reason
 235.go	fail	gd: unsupported type *types.Named
 64bit.go	skip	todo:runoutput
-abi/bad_internal_offsets.go	fail	c11: error: unknown type name 'StructF0S1_go_genChecker0_package'
+abi/bad_internal_offsets.go	fail	c11: error: unknown type name 'StructF0S1_go_test_package'
 abi/bad_select_crash.go	skip	gc:goexperiment regabi,regabiargs
-abi/convF_criteria.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-abi/convT64_criteria.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+abi/convF_criteria.go	fail	gd: panic: runtime error: index out of range
+abi/convT64_criteria.go	fail	gd: panic: runtime error: index out of range
 abi/defer_aggregate.go	fail	c11: error: 'p0exp' undeclared (first use in this function)
 abi/defer_recover_results.go	fail	c11: error: invalid operands to binary != (have 'S_go_main_package' {aka 'go_struct_aadfd7abe455ee6d'} and 'S_go_main_package…
-abi/double_nested_addressed_struct.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-abi/double_nested_struct.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-abi/f_ret_z_not.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-abi/fibish.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-abi/fibish_closure.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+abi/double_nested_addressed_struct.go	fail	gd: panic: runtime error: index out of range
+abi/double_nested_struct.go	fail	gd: panic: runtime error: index out of range
+abi/f_ret_z_not.go	fail	gd: panic: runtime error: index out of range
+abi/fibish.go	fail	gd: panic: runtime error: index out of range
+abi/fibish_closure.go	fail	gd: panic: runtime error: index out of range
 abi/fuzz_trailing_zero_field.go	fail	gd: unsupported builtin function
-abi/idata.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-abi/leaf.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-abi/leaf2.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-abi/many_int_input.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-abi/many_intstar_input.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+abi/idata.go	fail	gd: panic: runtime error: index out of range
+abi/leaf.go	fail	gd: panic: runtime error: index out of range
+abi/leaf2.go	fail	gd: panic: runtime error: index out of range
+abi/many_int_input.go	fail	gd: panic: runtime error: index out of range
+abi/many_intstar_input.go	fail	gd: panic: runtime error: index out of range
 abi/map.go	skip	gc:finalizers runtime.SetFinalizer
 abi/method_wrapper.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
 abi/more_intstar_input.go	pass	
-abi/named_results.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-abi/named_return_stuff.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+abi/named_results.go	fail	gd: panic: runtime error: index out of range
+abi/named_return_stuff.go	fail	gd: panic: runtime error: index out of range
 abi/open_defer_1.go	pass	
-abi/part_live.go	fail	gd: internal error: package "runtime" without types was imported from "test"
-abi/part_live_2.go	fail	gd: internal error: package "runtime" without types was imported from "test"
+abi/part_live.go	fail	gd: panic: runtime error: index out of range
+abi/part_live_2.go	fail	gd: panic: runtime error: index out of range
 abi/reg_not_ssa.go	fail	c11: error: invalid operands to binary != (have 'T_go_main_package' {aka 'go_struct_e671604c2868915c'} and 'T_go_main_package…
 abi/result_live.go	skip	gc:diagnostics -live
 abi/result_regalloc.go	pass	
-abi/return_stuff.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-abi/s_sif_sif.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-abi/spills3.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-abi/spills4.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+abi/return_stuff.go	fail	gd: panic: runtime error: index out of range
+abi/s_sif_sif.go	fail	gd: panic: runtime error: index out of range
+abi/spills3.go	fail	gd: panic: runtime error: index out of range
+abi/spills4.go	fail	gd: panic: runtime error: index out of range
 abi/store_reg_args.go	pass	
-abi/struct_3_string_input.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-abi/struct_lower_1.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-abi/too_big_to_ssa.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-abi/uglyfib.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+abi/struct_3_string_input.go	fail	gd: panic: runtime error: index out of range
+abi/struct_lower_1.go	fail	gd: panic: runtime error: index out of range
+abi/too_big_to_ssa.go	fail	gd: panic: runtime error: index out of range
+abi/uglyfib.go	fail	gd: panic: runtime error: index out of range
 abi/wrapdefer_largetmp.go	pass	
 abi/zombie_struct_select.go	pass	
-alg.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+alg.go	fail	gd: panic: runtime error: index out of range
 alias.go	skip	todo:errorcheck
 alias1.go	pass	
 alias2.go	skip	todo:errorcheck
 alias3.go	skip	todo:rundir
 align.go	pass	
-append.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+append.go	fail	gd: panic: runtime error: index out of range
 append1.go	skip	todo:errorcheck
 arenas/smoke.go	skip	gc:goexperiment arenas
-args.go	fail	gd: internal error: package "os" without types was imported from "test"
-armimm.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+args.go	fail	gd: panic: runtime error: index out of range
+armimm.go	fail	gd: panic: runtime error: index out of range
 asmhdr.go	skip	todo:buildrundir
 assign.go	skip	todo:errorcheck
 assign1.go	skip	todo:errorcheck
 atomicload.go	fail	c11: error: 'N' undeclared (first use in this function)
 bigalg.go	pass	
 bigmap.go	fail	c11: error: unknown type name 'T_go_main_package'
-blank.go	fail	gd: internal error: package "os" without types was imported from "test"
+blank.go	fail	gd: panic: runtime error: index out of range
 blank1.go	skip	todo:errorcheck
 bloop.go	skip	gc:diagnostics -m=2
 bom.go	skip	todo:runoutput
 bombad.go	skip	todo:errorcheck
 bounds.go	skip	gc:diagnostics -m
 cannotassign.go	skip	todo:errorcheck
-chan/doubleselect.go	fail	gd: internal error: package "flag" without types was imported from "test"
-chan/fifo.go	fail	gd: internal error: package "os" without types was imported from "test"
-chan/goroutines.go	fail	gd: internal error: package "os" without types was imported from "test"
-chan/nonblock.go	fail	gd: internal error: package "runtime" without types was imported from "test"
+chan/doubleselect.go	fail	gd: panic: runtime error: index out of range
+chan/fifo.go	fail	gd: panic: runtime error: index out of range
+chan/goroutines.go	fail	gd: panic: runtime error: index out of range
+chan/nonblock.go	fail	gd: panic: runtime error: index out of range
 chan/perm.go	skip	todo:errorcheck
-chan/powser1.go	fail	gd: internal error: package "os" without types was imported from "test"
-chan/powser2.go	fail	gd: internal error: package "os" without types was imported from "test"
+chan/powser1.go	fail	gd: panic: runtime error: index out of range
+chan/powser2.go	fail	gd: panic: runtime error: index out of range
 chan/select.go	fail	exit: exit status 2 panic: fail
 chan/select2.go	skip	gc:memstats runtime.MemProfileRate
-chan/select3.go	fail	gd: internal error: package "time" without types was imported from "test"
+chan/select3.go	fail	gd: panic: runtime error: index out of range
 chan/select4.go	pass	
 chan/select5.go	skip	todo:runoutput
 chan/select6.go	pass	
-chan/select7.go	fail	gd: internal error: package "runtime" without types was imported from "test"
+chan/select7.go	fail	gd: panic: runtime error: index out of range
 chan/select8.go	pass	
 chan/sendstmt.go	pass	
 chan/sieve1.go	pass	
-chan/sieve2.go	fail	gd: internal error: package "container/heap" without types was imported from "test"
+chan/sieve2.go	fail	gd: panic: runtime error: index out of range
 chan/zerosize.go	pass	
-chancap.go	fail	gd: internal error: package "strings" without types was imported from "test"
-chanlinear.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-char_lit.go	fail	gd: internal error: package "os" without types was imported from "test"
+chancap.go	fail	gd: panic: runtime error: index out of range
+chanlinear.go	fail	gd: panic: runtime error: index out of range
+char_lit.go	fail	gd: panic: runtime error: index out of range
 char_lit1.go	skip	gc:diagnostics -d=panic
 checkbce.go	skip	gc:diagnostics -d=ssa/check_bce/debug=3
-clear.go	fail	gd: internal error: package "math" without types was imported from "test"
+clear.go	fail	c11: error: incompatible type for argument 1 of 'go_slice_clear'
 clearfat.go	skip	todo:runoutput
-closedchan.go	fail	gd: internal error: package "os" without types was imported from "test"
+closedchan.go	fail	gd: panic: runtime error: index out of range
 closure.go	skip	gc:memstats runtime.ReadMemStats
 closure1.go	pass	
 closure2.go	fail	gd: panic: interface conversion: ast.Expr is *ast.IndexExpr, not *ast.Ident
@@ -104,10 +104,10 @@ closure4.go	pass
 closure5.go	skip	todo:compiledir
 closure6.go	pass	
 closure7.go	pass	
-cmp.go	fail	gd: internal error: package "os" without types was imported from "test"
+cmp.go	fail	gd: panic: runtime error: index out of range
 cmp6.go	skip	todo:errorcheck
 cmplx.go	skip	todo:errorcheck
-cmplxdivide.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+cmplxdivide.go	fail	gd: panic: runtime error: index out of range
 cmplxdivide1.go	skip	upstream:skip
 codegen/addrcalc.go	skip	gc:asmcheck
 codegen/alloc.go	skip	gc:asmcheck
@@ -198,19 +198,19 @@ codegen/writebarrier.go	skip	gc:asmcheck
 codegen/zerosize.go	skip	gc:asmcheck
 complit.go	pass	
 complit1.go	skip	todo:errorcheck
-complit2.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+complit2.go	fail	gd: panic: runtime error: index out of range
 compos.go	fail	c11: error: two or more data types in declaration specifiers
-const.go	fail	gd: internal error: package "os" without types was imported from "test"
+const.go	fail	gd: panic: runtime error: index out of range
 const1.go	skip	todo:errorcheck
 const2.go	skip	todo:errorcheck
-const3.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+const3.go	fail	gd: panic: runtime error: index out of range
 const4.go	fail	gd: unsupported len of *
 const5.go	skip	todo:errorcheck
 const6.go	skip	todo:errorcheck
 const7.go	skip	gc:toolchain
 const8.go	pass	
 convT2X.go	fail	gd: unsupported type *types.Named
-convert.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+convert.go	fail	gd: panic: runtime error: index out of range
 convert1.go	skip	todo:errorcheck
 convert2.go	skip	todo:errorcheck
 convert3.go	skip	todo:errorcheck
@@ -219,7 +219,7 @@ convert5.go	skip	gc:flags -gcflags=-d=converthash=qy
 convinline.go	skip	todo:runoutput
 convlit.go	skip	todo:errorcheck
 convlit1.go	skip	todo:errorcheck
-copy.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+copy.go	fail	gd: panic: runtime error: index out of range
 copy1.go	skip	todo:errorcheck
 crlf.go	skip	todo:runoutput
 ddd.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
@@ -227,7 +227,7 @@ ddd1.go	skip	todo:errorcheck
 ddd2.go	skip	todo:rundir
 decl.go	pass	
 declbad.go	skip	todo:errorcheck
-defer.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+defer.go	fail	gd: panic: runtime error: index out of range
 defererrcheck.go	skip	gc:diagnostics -d=defer
 deferfin.go	skip	gc:finalizers runtime.SetFinalizer
 defernil.go	pass	
@@ -238,14 +238,14 @@ devirtualization_nil_panics.go	skip	gc:stack-introspection runtime.Callers
 devirtualization_with_type_assertions_interleaved.go	skip	gc:diagnostics -m
 directive.go	skip	todo:errorcheck
 directive2.go	skip	todo:errorcheck
-divide.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+divide.go	fail	gd: panic: runtime error: index out of range
 divmod.go	fail	c11: error: two or more data types in declaration specifiers
 dwarf/dwarf.go	skip	todo:rundir
 dwarf/linedirectives.go	pass	
 embedfunc.go	skip	todo:errorcheck
 embedvers.go	skip	todo:errorcheck
 empty.go	pass	
-env.go	fail	gd: internal error: package "os" without types was imported from "test"
+env.go	fail	gd: panic: runtime error: index out of range
 eof.go	pass	
 eof1.go	pass	
 escape.go	fail	exit: exit status 2 panic: BUG: no escape
@@ -289,7 +289,7 @@ fixedbugs/bug002.go	pass
 fixedbugs/bug003.go	pass	
 fixedbugs/bug004.go	pass	
 fixedbugs/bug005.go	pass	
-fixedbugs/bug006.go	fail	gd: internal error: package "os" without types was imported from "test"
+fixedbugs/bug006.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug007.go	fail	gd: panic: unexpected kindOf: test.Point
 fixedbugs/bug008.go	pass	
 fixedbugs/bug009.go	pass	
@@ -307,7 +307,7 @@ fixedbugs/bug022.go	skip	todo:errorcheck
 fixedbugs/bug023.go	pass	
 fixedbugs/bug024.go	pass	
 fixedbugs/bug026.go	fail	c11: error: 'go_type_I_go_main_package' undeclared here (not in a function); did you mean 'go_type_Vector_go_main_package'?
-fixedbugs/bug027.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/bug027.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug028.go	pass	
 fixedbugs/bug030.go	skip	todo:errorcheck
 fixedbugs/bug031.go	pass	
@@ -329,8 +329,8 @@ fixedbugs/bug055.go	pass
 fixedbugs/bug056.go	pass	
 fixedbugs/bug057.go	pass	
 fixedbugs/bug058.go	pass	
-fixedbugs/bug059.go	fail	gd: internal error: package "os" without types was imported from "test"
-fixedbugs/bug060.go	fail	gd: internal error: package "os" without types was imported from "test"
+fixedbugs/bug059.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/bug060.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug061.go	pass	
 fixedbugs/bug062.go	skip	todo:errorcheck
 fixedbugs/bug063.go	pass	
@@ -340,7 +340,7 @@ fixedbugs/bug066.go	pass
 fixedbugs/bug067.go	pass	
 fixedbugs/bug068.go	skip	todo:errorcheck
 fixedbugs/bug069.go	pass	
-fixedbugs/bug070.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/bug070.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug071.go	pass	
 fixedbugs/bug072.go	skip	todo:errorcheck
 fixedbugs/bug073.go	pass	
@@ -386,15 +386,15 @@ fixedbugs/bug116.go	pass
 fixedbugs/bug117.go	skip	todo:errorcheck
 fixedbugs/bug118.go	pass	
 fixedbugs/bug119.go	pass	
-fixedbugs/bug120.go	fail	gd: internal error: package "os" without types was imported from "test"
+fixedbugs/bug120.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug121.go	skip	todo:errorcheck
 fixedbugs/bug122.go	skip	todo:errorcheck
 fixedbugs/bug123.go	skip	todo:errorcheck
 fixedbugs/bug126.go	skip	todo:errorcheck
 fixedbugs/bug127.go	skip	todo:errorcheck
 fixedbugs/bug128.go	pass	
-fixedbugs/bug129.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/bug130.go	fail	gd: internal error: package "os" without types was imported from "test"
+fixedbugs/bug129.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/bug130.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug131.go	skip	todo:errorcheck
 fixedbugs/bug132.go	skip	todo:errorcheck
 fixedbugs/bug133.go	skip	todo:errorcheck
@@ -404,25 +404,25 @@ fixedbugs/bug136.go	skip	todo:errorcheck
 fixedbugs/bug137.go	pass	
 fixedbugs/bug139.go	pass	
 fixedbugs/bug140.go	fail	c11: error: implicit declaration of function 'main_go_main_package'; did you mean 'init_go_main_package'? [-Wimplicit-functio…
-fixedbugs/bug141.go	fail	gd: internal error: package "os" without types was imported from "test"
+fixedbugs/bug141.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug142.go	pass	
 fixedbugs/bug143.go	fail	gd: unsupported type *types.Named
 fixedbugs/bug144.go	pass	
 fixedbugs/bug145.go	pass	
 fixedbugs/bug146.go	skip	todo:errorcheck
-fixedbugs/bug147.go	fail	gd: internal error: package "time" without types was imported from "test"
+fixedbugs/bug147.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug148.go	fail	exit: exit status 2 panic: function should panic
 fixedbugs/bug149.go	pass	
 fixedbugs/bug150.go	fail	gd: function missing body
 fixedbugs/bug151.go	pass	
 fixedbugs/bug1515.go	pass	
 fixedbugs/bug152.go	pass	
-fixedbugs/bug154.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/bug154.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug155.go	pass	
 fixedbugs/bug156.go	pass	
 fixedbugs/bug157.go	pass	
 fixedbugs/bug158.go	pass	
-fixedbugs/bug159.go	fail	gd: internal error: package "os" without types was imported from "test"
+fixedbugs/bug159.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug160.go	skip	todo:rundir
 fixedbugs/bug161.go	pass	
 fixedbugs/bug163.go	skip	todo:errorcheck
@@ -438,17 +438,17 @@ fixedbugs/bug173.go	pass
 fixedbugs/bug174.go	pass	
 fixedbugs/bug175.go	skip	todo:errorcheck
 fixedbugs/bug176.go	skip	todo:errorcheck
-fixedbugs/bug177.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+fixedbugs/bug177.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug178.go	pass	
 fixedbugs/bug179.go	skip	todo:errorcheck
 fixedbugs/bug180.go	pass	
 fixedbugs/bug181.go	skip	todo:errorcheck
 fixedbugs/bug182.go	skip	todo:errorcheck
 fixedbugs/bug183.go	skip	todo:errorcheck
-fixedbugs/bug184.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/bug184.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug185.go	pass	
 fixedbugs/bug186.go	skip	todo:errorcheck
-fixedbugs/bug187.go	fail	gd: internal error: package "os" without types was imported from "test"
+fixedbugs/bug187.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug188.go	skip	gc:diagnostics -d=panic
 fixedbugs/bug189.go	skip	todo:errorcheck
 fixedbugs/bug190.go	fail	c11: error: unknown type name 'S_go_main_package'
@@ -468,8 +468,8 @@ fixedbugs/bug202.go	pass
 fixedbugs/bug203.go	pass	
 fixedbugs/bug204.go	fail	c11: error: two or more data types in declaration specifiers
 fixedbugs/bug205.go	skip	todo:errorcheck
-fixedbugs/bug206.go	fail	gd: internal error: package "go/ast" without types was imported from "test"
-fixedbugs/bug207.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/bug206.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/bug207.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug208.go	skip	todo:errorcheck
 fixedbugs/bug209.go	skip	todo:errorcheck
 fixedbugs/bug212.go	skip	todo:errorcheck
@@ -492,17 +492,17 @@ fixedbugs/bug229.go	skip	todo:errorcheck
 fixedbugs/bug230.go	fail	c11: error: incompatible types when returning type 'struct <anonymous>' but 'struct <anonymous>' was expected
 fixedbugs/bug231.go	skip	todo:errorcheck
 fixedbugs/bug232.go	pass	
-fixedbugs/bug233.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/bug233.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug234.go	pass	
 fixedbugs/bug235.go	pass	
 fixedbugs/bug236.go	pass	
-fixedbugs/bug237.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/bug237.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug238.go	skip	todo:errorcheck
 fixedbugs/bug239.go	pass	
 fixedbugs/bug240.go	skip	todo:errorcheck
 fixedbugs/bug241.go	skip	todo:errorcheck
 fixedbugs/bug242.go	fail	gd: unsupported type assertion to interface test.I
-fixedbugs/bug243.go	fail	gd: internal error: package "errors" without types was imported from "test"
+fixedbugs/bug243.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug244.go	pass	
 fixedbugs/bug245.go	fail	gd: function missing body
 fixedbugs/bug246.go	fail	gd: panic: unsupported basic type unsafe.Pointer
@@ -516,19 +516,19 @@ fixedbugs/bug253.go	fail	c11: error: 'S3_go_main_package' {aka 'go_struct_2993e7
 fixedbugs/bug254.go	pass	
 fixedbugs/bug255.go	skip	todo:errorcheck
 fixedbugs/bug256.go	skip	todo:errorcheck
-fixedbugs/bug257.go	fail	gd: internal error: package "crypto/md5" without types was imported from "test"
-fixedbugs/bug258.go	fail	gd: internal error: package "math" without types was imported from "test"
-fixedbugs/bug259.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/bug260.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/bug257.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/bug258.go	fail	c11: error: implicit declaration of function 'Pow_go_math_package'; did you mean 'Sqrt_go_math_package'? [-Wimplicit-function…
+fixedbugs/bug259.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/bug260.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug261.go	pass	
-fixedbugs/bug262.go	fail	gd: internal error: package "errors" without types was imported from "test"
+fixedbugs/bug262.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug263.go	fail	exit: exit status 2 panic: BUG: world!
 fixedbugs/bug264.go	pass	
-fixedbugs/bug265.go	fail	gd: internal error: package "os" without types was imported from "test"
+fixedbugs/bug265.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug266.go	pass	
 fixedbugs/bug267.go	pass	
 fixedbugs/bug269.go	pass	
-fixedbugs/bug271.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/bug271.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug272.go	pass	
 fixedbugs/bug273.go	fail	exit: signal: trace/breakpoint trap filc safety error: attempt to allocate object that is too bi…
 fixedbugs/bug274.go	skip	todo:errorcheck
@@ -552,19 +552,19 @@ fixedbugs/bug291.go	pass
 fixedbugs/bug292.go	pass	
 fixedbugs/bug293.go	pass	
 fixedbugs/bug294.go	fail	c11: error: 'log' redeclared as different kind of symbol
-fixedbugs/bug295.go	fail	gd: internal error: package "testing" without types was imported from "test"
+fixedbugs/bug295.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug296.go	pass	
 fixedbugs/bug297.go	skip	gc:diagnostics -d=panic
 fixedbugs/bug298.go	skip	todo:errorcheck
 fixedbugs/bug299.go	skip	todo:errorcheck
 fixedbugs/bug300.go	skip	todo:errorcheck
 fixedbugs/bug301.go	pass	
-fixedbugs/bug303.go	fail	gd: internal error: package "io" without types was imported from "test"
+fixedbugs/bug303.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug304.go	pass	
 fixedbugs/bug305.go	skip	todo:errorcheck
 fixedbugs/bug306.go	skip	todo:compiledir
 fixedbugs/bug307.go	fail	gd: unsupported builtin function
-fixedbugs/bug308.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/bug308.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug309.go	pass	
 fixedbugs/bug311.go	fail	gd: range over unsupported type *types.Map
 fixedbugs/bug312.go	fail	c11: error: invalid operands to binary != (have 'go_vv' and 'int')
@@ -576,7 +576,7 @@ fixedbugs/bug317.go	pass
 fixedbugs/bug318.go	skip	todo:errorcheck
 fixedbugs/bug319.go	fail	gd: panic: unsupported basic type unsafe.Pointer
 fixedbugs/bug320.go	pass	
-fixedbugs/bug321.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/bug321.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug322.go	skip	todo:rundir
 fixedbugs/bug323.go	skip	todo:errorcheck
 fixedbugs/bug324.go	skip	todo:rundir
@@ -586,7 +586,7 @@ fixedbugs/bug327.go	pass
 fixedbugs/bug328.go	fail	gd: panic: unsupported basic type unsafe.Pointer
 fixedbugs/bug329.go	fail	c11: error: invalid operands to binary + (have 'int' and 'go_aaf8f8zz')
 fixedbugs/bug330.go	skip	todo:errorcheck
-fixedbugs/bug331.go	fail	gd: internal error: package "io" without types was imported from "test"
+fixedbugs/bug331.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug332.go	skip	todo:errorcheck
 fixedbugs/bug333.go	pass	
 fixedbugs/bug334.go	pass	
@@ -601,7 +601,7 @@ fixedbugs/bug342.go	skip	todo:errorcheck
 fixedbugs/bug343.go	pass	
 fixedbugs/bug344.go	skip	todo:errorcheck
 fixedbugs/bug345.go	skip	todo:errorcheck
-fixedbugs/bug346.go	fail	gd: internal error: package "os" without types was imported from "test"
+fixedbugs/bug346.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug347.go	skip	gc:stack-introspection runtime.Caller
 fixedbugs/bug348.go	skip	gc:stack-introspection runtime.Caller
 fixedbugs/bug349.go	skip	todo:errorcheck
@@ -617,13 +617,13 @@ fixedbugs/bug358.go	skip	gc:diagnostics -d=panic
 fixedbugs/bug361.go	pass	
 fixedbugs/bug362.go	skip	todo:errorcheck
 fixedbugs/bug363.go	skip	todo:errorcheck
-fixedbugs/bug364.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/bug364.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug365.go	skip	todo:errorcheck
 fixedbugs/bug366.go	pass	
 fixedbugs/bug367.go	skip	todo:rundir
 fixedbugs/bug368.go	pass	
 fixedbugs/bug369.go	skip	gc:build !nacl && !js && !wasip1 && gc
-fixedbugs/bug370.go	fail	gd: internal error: package "runtime" without types was imported from "test"
+fixedbugs/bug370.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug371.go	skip	todo:errorcheck
 fixedbugs/bug372.go	pass	
 fixedbugs/bug373.go	skip	todo:errorcheck
@@ -641,7 +641,7 @@ fixedbugs/bug384.go	skip	todo:errorcheck
 fixedbugs/bug385_32.go	skip	upstream:build 386 || amd64p32 || arm
 fixedbugs/bug385_64.go	skip	todo:errorcheck
 fixedbugs/bug386.go	skip	todo:errorcheck
-fixedbugs/bug387.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/bug387.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug388.go	skip	todo:errorcheck
 fixedbugs/bug388a.go	skip	todo:errorcheck
 fixedbugs/bug389.go	skip	todo:errorcheck
@@ -655,7 +655,7 @@ fixedbugs/bug397.go	skip	gc:diagnostics -d=panic
 fixedbugs/bug398.go	skip	todo:errorcheck
 fixedbugs/bug399.go	pass	
 fixedbugs/bug401.go	fail	gd: unsupported builtin function
-fixedbugs/bug402.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/bug402.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug403.go	pass	
 fixedbugs/bug404.go	skip	todo:compiledir
 fixedbugs/bug405.go	pass	
@@ -669,7 +669,7 @@ fixedbugs/bug413.go	skip	todo:errorcheck
 fixedbugs/bug414.go	skip	todo:rundir
 fixedbugs/bug415.go	skip	todo:compiledir
 fixedbugs/bug416.go	skip	todo:errorcheck
-fixedbugs/bug417.go	fail	c11: error: unknown type name 'S3_go_p_package'
+fixedbugs/bug417.go	fail	c11: error: unknown type name 'S3_go_test_package'
 fixedbugs/bug418.go	skip	todo:errorcheck
 fixedbugs/bug419.go	pass	
 fixedbugs/bug420.go	fail	c11: error: '_' undeclared (first use in this function)
@@ -677,7 +677,7 @@ fixedbugs/bug421.go	skip	todo:errorcheck
 fixedbugs/bug422.go	pass	
 fixedbugs/bug423.go	pass	
 fixedbugs/bug424.go	skip	todo:rundir
-fixedbugs/bug425.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/bug425.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug426.go	pass	
 fixedbugs/bug427.go	fail	c11: error: invalid operands to binary == (have 'S_go_main_package' {aka 'go_struct_b9ec856e6ec077f9'} and 'S_go_main_package…
 fixedbugs/bug428.go	fail	gd: append expects exactly two arguments, got 3
@@ -685,7 +685,7 @@ fixedbugs/bug430.go	pass
 fixedbugs/bug431.go	pass	
 fixedbugs/bug432.go	pass	
 fixedbugs/bug433.go	fail	c11: error: invalid operands to binary != (have 'S_go_main_package' {aka 'go_struct_8ca8dbfb27d33684'} and 'S_go_main_package…
-fixedbugs/bug434.go	fail	gd: internal error: package "math" without types was imported from "test"
+fixedbugs/bug434.go	fail	c11: error: implicit declaration of function 'Float64bits_go_math_package' [-Wimplicit-function-declaration]
 fixedbugs/bug435.go	skip	todo:errorcheck
 fixedbugs/bug436.go	pass	
 fixedbugs/bug437.go	skip	todo:rundir
@@ -696,7 +696,7 @@ fixedbugs/bug440_64.go	pass
 fixedbugs/bug441.go	fail	gd: panic: unsupported node type: DefinedType
 fixedbugs/bug442.go	fail	gd: unsupported map key type interface
 fixedbugs/bug443.go	fail	gd: panic: unexpected kindOf: test.T1
-fixedbugs/bug444.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+fixedbugs/bug444.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug445.go	pass	
 fixedbugs/bug446.go	fail	gd: panic: unsupported node type: DefinedType
 fixedbugs/bug447.go	skip	todo:runoutput
@@ -713,7 +713,7 @@ fixedbugs/bug457.go	pass
 fixedbugs/bug458.go	pass	
 fixedbugs/bug459.go	skip	todo:errorcheck
 fixedbugs/bug460.go	skip	todo:errorcheck
-fixedbugs/bug461.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+fixedbugs/bug461.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug462.go	skip	todo:errorcheck
 fixedbugs/bug463.go	skip	todo:errorcheck
 fixedbugs/bug464.go	skip	todo:errorcheck
@@ -721,11 +721,11 @@ fixedbugs/bug465.go	skip	todo:rundir
 fixedbugs/bug466.go	skip	todo:rundir
 fixedbugs/bug467.go	skip	todo:compiledir
 fixedbugs/bug468.go	skip	todo:rundir
-fixedbugs/bug470.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/bug470.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug471.go	pass	
 fixedbugs/bug472.go	skip	todo:rundir
 fixedbugs/bug473.go	pass	
-fixedbugs/bug474.go	fail	gd: internal error: package "sync" without types was imported from "test"
+fixedbugs/bug474.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug475.go	pass	
 fixedbugs/bug476.go	pass	
 fixedbugs/bug477.go	fail	gd: unsupported conversion of struct
@@ -734,14 +734,14 @@ fixedbugs/bug479.go	skip	todo:rundir
 fixedbugs/bug480.go	skip	todo:compiledir
 fixedbugs/bug481.go	pass	
 fixedbugs/bug482.go	pass	
-fixedbugs/bug483.go	fail	gd: internal error: package "bytes" without types was imported from "test"
-fixedbugs/bug484.go	fail	gd: internal error: package "runtime" without types was imported from "test"
+fixedbugs/bug483.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/bug484.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug485.go	fail	c11: error: implicit declaration of function 'B_val_go_main_package'; did you mean 'init_go_main_package'? [-Wimplicit-functi…
 fixedbugs/bug486.go	pass	
 fixedbugs/bug487.go	skip	todo:errorcheck
 fixedbugs/bug488.go	skip	todo:errorcheck
 fixedbugs/bug489.go	pass	
-fixedbugs/bug490.go	fail	c11: error: invalid operands to binary == (have 'go_vv' and 'S_go_p_package' {aka 'go_az'})
+fixedbugs/bug490.go	fail	c11: error: invalid operands to binary == (have 'go_vv' and 'S_go_test_package' {aka 'go_az'})
 fixedbugs/bug491.go	fail	gd: unsupported builtin function
 fixedbugs/bug492.go	skip	todo:rundir
 fixedbugs/bug493.go	fail	gd: append expects exactly two arguments, got 1
@@ -751,9 +751,9 @@ fixedbugs/bug496.go	pass
 fixedbugs/bug497.go	fail	c11: error: unknown type name 's'
 fixedbugs/bug498.go	pass	
 fixedbugs/bug499.go	pass	
-fixedbugs/bug500.go	fail	gd: internal error: package "runtime" without types was imported from "test"
+fixedbugs/bug500.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug501.go	pass	
-fixedbugs/bug502.go	fail	gd: internal error: package "testing" without types was imported from "test"
+fixedbugs/bug502.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug503.go	pass	
 fixedbugs/bug504.go	skip	todo:compiledir
 fixedbugs/bug505.go	fail	gd: panic: unexpected kindOf: test.I
@@ -763,14 +763,14 @@ fixedbugs/bug508.go	pass
 fixedbugs/bug509.go	pass	
 fixedbugs/bug510.go	skip	todo:rundir
 fixedbugs/bug511.go	skip	todo:compiledir
-fixedbugs/bug512.go	fail	gd: internal error: package "sync" without types was imported from "test"
+fixedbugs/bug512.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug513.go	skip	gc:build ((linux && amd64) || (linux && ppc64le) || (darwin && amd64) || (freebsd && amd64) || (netbsd && amd64) || (windows && amd64)) && cgo
 fixedbugs/bug514.go	skip	gc:build cgo
 fixedbugs/bug515.go	skip	gc:build gccgo
 fixedbugs/bug516.go	fail	gd: unsupported conversion from
 fixedbugs/bug517.go	pass	
 fixedbugs/bug518.go	skip	todo:errorcheck
-fixedbugs/dse_move_auxint.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/dse_move_auxint.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/gcc101994.go	pass	
 fixedbugs/gcc61204.go	pass	
 fixedbugs/gcc61244.go	pass	
@@ -783,7 +783,7 @@ fixedbugs/gcc61258.go	pass
 fixedbugs/gcc61264.go	fail	c11: error: lvalue required as left operand of assignment
 fixedbugs/gcc61265.go	pass	
 fixedbugs/gcc61273.go	pass	
-fixedbugs/gcc65755.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+fixedbugs/gcc65755.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/gcc67968.go	skip	todo:compiledir
 fixedbugs/gcc78763.go	pass	
 fixedbugs/gcc80226.go	pass	
@@ -795,7 +795,7 @@ fixedbugs/issue10219.go	skip	todo:compiledir
 fixedbugs/issue10253.go	pass	
 fixedbugs/issue10284.go	fail	gd: panic: unsupported basic type unsafe.Pointer
 fixedbugs/issue10320.go	pass	
-fixedbugs/issue10332.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue10332.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue10353.go	fail	c11: error: request for member 'foo_go_main_package' in something not a structure or union
 fixedbugs/issue10407.go	skip	todo:runoutput
 fixedbugs/issue10441.go	pass	
@@ -804,13 +804,13 @@ fixedbugs/issue10607.go	skip	gc:build linux && !ppc64 && gc && cgo
 fixedbugs/issue10607a.go	skip	upstream:skip
 fixedbugs/issue10654.go	pass	
 fixedbugs/issue10700.go	skip	todo:errorcheck
-fixedbugs/issue10925.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue10925.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue10958.go	skip	upstream:build !nacl && !js && disabled_see_issue_18589
 fixedbugs/issue10975.go	skip	todo:errorcheck
 fixedbugs/issue10977.go	pass	
 fixedbugs/issue11053.go	skip	todo:rundir
-fixedbugs/issue11256.go	fail	gd: internal error: package "runtime" without types was imported from "test"
-fixedbugs/issue11286.go	fail	gd: internal error: package "runtime" without types was imported from "test"
+fixedbugs/issue11256.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue11286.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue11326.go	skip	todo:errorcheck
 fixedbugs/issue11326b.go	fail	c11: error: 'Inf' undeclared (first use in this function)
 fixedbugs/issue11354.go	pass	
@@ -830,29 +830,29 @@ fixedbugs/issue11699.go	fail	gd: function missing body
 fixedbugs/issue11737.go	skip	todo:errorcheck
 fixedbugs/issue11750.go	pass	
 fixedbugs/issue11771.go	skip	gc:build !nacl && !js && !wasip1 && gc
-fixedbugs/issue11790.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue11945.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue11987.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue11790.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue11945.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue11987.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue12006.go	skip	gc:diagnostics -m
 fixedbugs/issue12108.go	fail	c11: error: 'I_Super_Method_go_main_package' undeclared here (not in a function); did you mean 'I_Base_Method_go_main_package…
-fixedbugs/issue12133.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue12226.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue12133.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue12226.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue12347.go	pass	
 fixedbugs/issue12411.go	pass	
 fixedbugs/issue12413.go	pass	
 fixedbugs/issue12525.go	skip	todo:errorcheck
 fixedbugs/issue12536.go	fail	gd: unsupported map key type interface
-fixedbugs/issue12577.go	fail	gd: internal error: package "math" without types was imported from "test"
+fixedbugs/issue12577.go	fail	c11: error: implicit declaration of function 'Signbit_go_math_package'; did you mean 'init_go_main_package'? [-Wimplicit-func…
 fixedbugs/issue12588.go	skip	gc:diagnostics -m
-fixedbugs/issue12621.go	fail	gd: internal error: package "math" without types was imported from "test"
+fixedbugs/issue12621.go	fail	c11: error: implicit declaration of function 'Signbit_go_math_package'; did you mean 'init_go_main_package'? [-Wimplicit-func…
 fixedbugs/issue12677.go	skip	todo:compiledir
 fixedbugs/issue12686.go	pass	
 fixedbugs/issue12944.go	skip	todo:errorcheck
 fixedbugs/issue1304.go	pass	
-fixedbugs/issue13160.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue13162.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue13160.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue13162.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue13169.go	fail	c11: error: 'n' undeclared (first use in this function)
-fixedbugs/issue13171.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue13171.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue13248.go	skip	todo:errorcheck
 fixedbugs/issue13261.go	pass	
 fixedbugs/issue13262.go	pass	
@@ -888,17 +888,17 @@ fixedbugs/issue14405.go	pass
 fixedbugs/issue14520.go	skip	todo:errorcheck
 fixedbugs/issue14520a.go	skip	todo:errorcheck
 fixedbugs/issue14540.go	skip	todo:errorcheck
-fixedbugs/issue14553.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue14591.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue14553.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue14591.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue14636.go	skip	gc:build !nacl && !js && !wasip1 && !android && gc
 fixedbugs/issue14646.go	skip	gc:stack-introspection runtime.Caller
-fixedbugs/issue14651.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue14651.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue14652.go	pass	
-fixedbugs/issue14725.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue14725.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue14729.go	skip	todo:errorcheck
 fixedbugs/issue14988.go	skip	todo:errorcheck
 fixedbugs/issue14999.go	skip	todo:errorcheck
-fixedbugs/issue15002.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue15002.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue15013.go	pass	
 fixedbugs/issue15039.go	pass	
 fixedbugs/issue15042.go	pass	
@@ -907,23 +907,23 @@ fixedbugs/issue15071.go	skip	todo:rundir
 fixedbugs/issue15084.go	pass	
 fixedbugs/issue15091.go	skip	todo:errorcheck
 fixedbugs/issue15141.go	pass	
-fixedbugs/issue15175.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue15175.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue15252.go	pass	
 fixedbugs/issue15277.go	skip	gc:memstats runtime.ReadMemStats
 fixedbugs/issue15281.go	skip	gc:memstats runtime.ReadMemStats
-fixedbugs/issue15303.go	fail	gd: internal error: package "os" without types was imported from "test"
+fixedbugs/issue15303.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue15311.go	skip	todo:errorcheck
-fixedbugs/issue15329.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue15439.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+fixedbugs/issue15329.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue15439.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue15470.go	skip	todo:compiledir
 fixedbugs/issue15514.go	skip	todo:errorcheck
-fixedbugs/issue15528.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue15528.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue15548.go	skip	todo:compiledir
 fixedbugs/issue15550.go	fail	c11: error: expected identifier or '(' before 'void'
 fixedbugs/issue15572.go	skip	todo:compiledir
 fixedbugs/issue15585.go	pass	
 fixedbugs/issue15602.go	fail	gd: unsupported type assertion to interface error
-fixedbugs/issue15604.go	fail	gd: internal error: package "os" without types was imported from "test"
+fixedbugs/issue15604.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue15609.go	skip	todo:runindir
 fixedbugs/issue15611.go	skip	todo:errorcheck
 fixedbugs/issue15646.go	skip	todo:rundir
@@ -932,7 +932,7 @@ fixedbugs/issue15733.go	pass
 fixedbugs/issue15747.go	skip	gc:diagnostics -live
 fixedbugs/issue15747b.go	pass	
 fixedbugs/issue15838.go	skip	todo:compiledir
-fixedbugs/issue15895.go	fail	c11: error: invalid operands to binary == (have 'A_go_p_package' {aka 'go_arr1_go_ii'} and 'A_go_p_package' {aka 'go_arr1_go_…
+fixedbugs/issue15895.go	fail	c11: error: invalid operands to binary == (have 'A_go_test_package' {aka 'go_arr1_go_ii'} and 'A_go_test_package' {aka 'go_ar…
 fixedbugs/issue15898.go	skip	todo:errorcheck
 fixedbugs/issue15902.go	pass	
 fixedbugs/issue15920.go	skip	todo:compiledir
@@ -940,33 +940,33 @@ fixedbugs/issue15926.go	fail	gd: unsupported node type: DefinedType
 fixedbugs/issue15961.go	fail	c11: error: expected ')' before '{' token
 fixedbugs/issue15975.go	fail	exit: signal: trace/breakpoint trap filc safety error: cannot read pointer with null object.
 fixedbugs/issue15988.go	pass	
-fixedbugs/issue15992.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue15992.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue16008.go	skip	todo:errorcheck
-fixedbugs/issue16016.go	fail	gd: internal error: package "runtime" without types was imported from "test"
+fixedbugs/issue16016.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue16037_run.go	skip	gc:toolchain
-fixedbugs/issue16095.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue16130.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue16095.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue16130.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue16133.go	skip	todo:errorcheck
 fixedbugs/issue16193.go	pass	
 fixedbugs/issue16241.go	skip	gc:diagnostics -m
 fixedbugs/issue16241_64.go	skip	gc:diagnostics -m
-fixedbugs/issue16249.go	fail	gd: internal error: package "errors" without types was imported from "test"
+fixedbugs/issue16249.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue16306.go	fail	gd: panic: unsupported basic type unsafe.Pointer
 fixedbugs/issue16317.go	skip	todo:compiledir
-fixedbugs/issue16331.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+fixedbugs/issue16331.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue16369.go	skip	todo:errorcheck
 fixedbugs/issue16428.go	skip	todo:errorcheck
 fixedbugs/issue16439.go	skip	todo:errorcheck
-fixedbugs/issue16515.go	fail	gd: internal error: package "runtime" without types was imported from "test"
+fixedbugs/issue16515.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue16616.go	skip	todo:compiledir
 fixedbugs/issue16733.go	pass	
 fixedbugs/issue16741.go	pass	
 fixedbugs/issue16760.go	fail	exit: signal: trace/breakpoint trap filc safety error: cannot read pointer with null object.
-fixedbugs/issue16804.go	fail	gd: internal error: package "math" without types was imported from "test"
-fixedbugs/issue16870.go	fail	gd: internal error: package "log" without types was imported from "test"
-fixedbugs/issue16948.go	fail	gd: internal error: package "sync/atomic" without types was imported from "test"
+fixedbugs/issue16804.go	pass	
+fixedbugs/issue16870.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue16948.go	fail	gd: function missing body
 fixedbugs/issue16949.go	skip	todo:errorcheck
-fixedbugs/issue16985.go	fail	gd: internal error: package "sync/atomic" without types was imported from "test"
+fixedbugs/issue16985.go	fail	gd: function missing body
 fixedbugs/issue17005.go	pass	
 fixedbugs/issue17038.go	skip	todo:errorcheck
 fixedbugs/issue17039.go	pass	
@@ -977,16 +977,16 @@ fixedbugs/issue17318.go	skip	gc:diagnostics -m
 fixedbugs/issue17328.go	skip	todo:errorcheck
 fixedbugs/issue17381.go	skip	gc:stack-introspection runtime.Callers
 fixedbugs/issue17449.go	skip	todo:errorcheck
-fixedbugs/issue17551.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue17551.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue17588.go	skip	gc:diagnostics -d=panic
 fixedbugs/issue17596.go	fail	gd: function missing body
 fixedbugs/issue17631.go	skip	todo:errorcheck
-fixedbugs/issue17640.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue17640.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue17645.go	skip	todo:errorcheck
-fixedbugs/issue17710.go	fail	gd: internal error: package "runtime" without types was imported from "test"
+fixedbugs/issue17710.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue17752.go	pass	
 fixedbugs/issue17758.go	skip	todo:errorcheck
-fixedbugs/issue17918.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue17918.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue18089.go	fail	c11: error: macro "go_ignore" passed 2 arguments, but takes just 1
 fixedbugs/issue18092.go	skip	todo:errorcheck
 fixedbugs/issue18149.go	skip	gc:stack-introspection runtime.Caller
@@ -1001,8 +1001,8 @@ fixedbugs/issue18595.go	fail	gd: unsupported conversion to test.I
 fixedbugs/issue18636.go	skip	gc:import runtime/debug
 fixedbugs/issue18640.go	fail	gd: panic: unexpected kindOf: test.b
 fixedbugs/issue18655.go	skip	todo:errorcheck
-fixedbugs/issue18661.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue18725.go	fail	gd: internal error: package "os" without types was imported from "test"
+fixedbugs/issue18661.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue18725.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue18747.go	skip	todo:errorcheck
 fixedbugs/issue18808.go	pass	
 fixedbugs/issue18882.go	skip	todo:errorcheck
@@ -1013,21 +1013,21 @@ fixedbugs/issue18915.go	skip	todo:errorcheck
 fixedbugs/issue18994.go	pass	
 fixedbugs/issue19012.go	skip	todo:errorcheck
 fixedbugs/issue19028.go	skip	todo:rundir
-fixedbugs/issue19040.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue19040.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue19056.go	skip	todo:errorcheck
 fixedbugs/issue19078.go	fail	gd: panic: unsupported basic type unsafe.Pointer
 fixedbugs/issue19084.go	pass	
-fixedbugs/issue19113.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+fixedbugs/issue19113.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue19137.go	pass	
 fixedbugs/issue19168.go	skip	gc:diagnostics -d=wb
-fixedbugs/issue19182.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue19201.go	fail	gd: internal error: package "encoding/binary" without types was imported from "test"
-fixedbugs/issue19217.go	fail	gd: internal error: package "encoding/binary" without types was imported from "test"
-fixedbugs/issue19246.go	fail	gd: internal error: package "os" without types was imported from "test"
+fixedbugs/issue19182.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue19201.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue19217.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue19246.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue19261.go	skip	gc:diagnostics -m
-fixedbugs/issue19275.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue19275.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue19323.go	skip	todo:errorcheck
-fixedbugs/issue19359.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue19359.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue19467.go	skip	todo:rundir
 fixedbugs/issue19482.go	skip	todo:errorcheck
 fixedbugs/issue19507.go	skip	upstream:build arm
@@ -1035,7 +1035,7 @@ fixedbugs/issue19515.go	pass
 fixedbugs/issue19548.go	skip	todo:rundir
 fixedbugs/issue19555.go	pass	
 fixedbugs/issue19610.go	skip	todo:errorcheck
-fixedbugs/issue19632.go	fail	gd: internal error: package "strings" without types was imported from "test"
+fixedbugs/issue19632.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue19658.go	skip	gc:toolchain
 fixedbugs/issue19667.go	skip	todo:errorcheck
 fixedbugs/issue19671.go	pass	
@@ -1051,12 +1051,12 @@ fixedbugs/issue19764.go	skip	todo:rundir
 fixedbugs/issue19783.go	pass	
 fixedbugs/issue19799.go	skip	gc:stack-introspection runtime.Callers
 fixedbugs/issue19880.go	skip	todo:errorcheck
-fixedbugs/issue19911.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue19911.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue19947.go	skip	todo:errorcheck
 fixedbugs/issue19977.go	skip	todo:errorcheck
 fixedbugs/issue20014.go	skip	todo:runindir
 fixedbugs/issue20027.go	skip	todo:errorcheck
-fixedbugs/issue20029.go	fail	gd: internal error: package "runtime" without types was imported from "test"
+fixedbugs/issue20029.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue20097.go	pass	
 fixedbugs/issue20145.go	pass	
 fixedbugs/issue20162.go	skip	gc:flags -c=4
@@ -1068,8 +1068,8 @@ fixedbugs/issue20233.go	skip	todo:errorcheck
 fixedbugs/issue20245.go	skip	gc:diagnostics -d=panic
 fixedbugs/issue20250.go	skip	gc:diagnostics -live
 fixedbugs/issue20298.go	skip	todo:errorcheck
-fixedbugs/issue20333.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue20335.go	fail	gd: internal error: package "sync/atomic" without types was imported from "test"
+fixedbugs/issue20333.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue20335.go	fail	gd: function missing body
 fixedbugs/issue20415.go	skip	todo:errorcheck
 fixedbugs/issue20529.go	skip	todo:errorcheck
 fixedbugs/issue20530.go	pass	
@@ -1096,16 +1096,16 @@ fixedbugs/issue21655.go	pass
 fixedbugs/issue21687.go	fail	exit: exit status 2 panic: 2
 fixedbugs/issue21709.go	skip	gc:diagnostics -m
 fixedbugs/issue21770.go	skip	todo:errorcheck
-fixedbugs/issue21808.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue21808.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue21879.go	skip	gc:stack-introspection runtime.Callers
 fixedbugs/issue21882.go	skip	todo:errorcheck
-fixedbugs/issue21887.go	fail	gd: internal error: package "strconv" without types was imported from "test"
+fixedbugs/issue21887.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue21934.go	skip	todo:errorcheck
-fixedbugs/issue21963.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue21963.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue21979.go	skip	todo:errorcheck
 fixedbugs/issue21988.go	skip	todo:errorcheck
 fixedbugs/issue22063.go	skip	todo:errorcheck
-fixedbugs/issue22076.go	fail	gd: internal error: package "bytes" without types was imported from "test"
+fixedbugs/issue22076.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue22083.go	skip	gc:import runtime/debug
 fixedbugs/issue22164.go	skip	todo:errorcheck
 fixedbugs/issue22198.go	pass	
@@ -1118,23 +1118,23 @@ fixedbugs/issue22344.go	fail	c11: error: expected identifier or '(' before 'void
 fixedbugs/issue22351.go	skip	todo:errorcheck
 fixedbugs/issue22389.go	skip	gc:diagnostics -d=panic
 fixedbugs/issue22429.go	pass	
-fixedbugs/issue22458.go	fail	gd: internal error: package "runtime" without types was imported from "test"
+fixedbugs/issue22458.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue22581.go	skip	todo:errorcheck
-fixedbugs/issue22605.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+fixedbugs/issue22605.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue22660.go	skip	gc:build !js && !wasip1 && gc
 fixedbugs/issue22662.go	skip	gc:stack-introspection runtime.Caller
 fixedbugs/issue22662b.go	skip	gc:build !js && !wasip1 && gc
-fixedbugs/issue22683.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue22683.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue22781.go	skip	gc:import runtime/debug
 fixedbugs/issue22794.go	skip	todo:errorcheck
 fixedbugs/issue22822.go	skip	todo:errorcheck
 fixedbugs/issue22877.go	skip	todo:builddir
-fixedbugs/issue22881.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue22881.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue22904.go	skip	todo:errorcheck
 fixedbugs/issue22921.go	skip	gc:diagnostics -d=panic
 fixedbugs/issue22941.go	skip	todo:rundir
 fixedbugs/issue22962.go	skip	todo:compiledir
-fixedbugs/issue23017.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue23017.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue23093.go	skip	todo:errorcheck
 fixedbugs/issue23094.go	skip	todo:errorcheck
 fixedbugs/issue23116.go	skip	todo:errorcheck
@@ -1147,7 +1147,7 @@ fixedbugs/issue23414.go	fail	c11: error: invalid operands to binary == (have 'go
 fixedbugs/issue23489.go	pass	
 fixedbugs/issue23504.go	pass	
 fixedbugs/issue23521.go	skip	gc:diagnostics -m
-fixedbugs/issue23522.go	fail	gd: internal error: package "math" without types was imported from "test"
+fixedbugs/issue23522.go	fail	c11: error: implicit declaration of function 'Copysign_go_math_package'; did you mean 'Sqrt_go_math_package'? [-Wimplicit-fun…
 fixedbugs/issue23536.go	pass	
 fixedbugs/issue23545.go	fail	c11: error: invalid operands to binary != (have 'OutputID_go_main_package' {aka 'go_arr32_go_vv'} and 'go_arr32_go_vv')
 fixedbugs/issue23546.go	fail	c11: error: invalid operands to binary == (have 'go_arr2_go_vv' and 'go_arr2_go_vv')
@@ -1160,7 +1160,7 @@ fixedbugs/issue23732.go	skip	todo:errorcheck
 fixedbugs/issue23734.go	fail	c11: error: incompatible type for argument 2 of 'go_map_get_go_vv_go_ii'
 fixedbugs/issue23780.go	fail	c11: error: invalid suffix "LL" on floating constant
 fixedbugs/issue23781.go	fail	c11: error: invalid suffix "LL" on floating constant
-fixedbugs/issue23812.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue23812.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue23814.go	fail	c11: error: macro "go_ignore" passed 2 arguments, but takes just 1
 fixedbugs/issue23823.go	skip	todo:errorcheck
 fixedbugs/issue23837.go	fail	c11: error: invalid operands to binary == (have 'go_az' and 'go_az')
@@ -1172,14 +1172,14 @@ fixedbugs/issue24159.go	skip	todo:errorcheck
 fixedbugs/issue24173.go	pass	
 fixedbugs/issue24187.go	skip	upstream:build amd64p32
 fixedbugs/issue24339.go	skip	todo:errorcheck
-fixedbugs/issue24419.go	fail	gd: internal error: package "bytes" without types was imported from "test"
-fixedbugs/issue24449.go	fail	gd: internal error: package "sync/atomic" without types was imported from "test"
+fixedbugs/issue24419.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue24449.go	fail	gd: function missing body
 fixedbugs/issue24470.go	skip	gc:diagnostics -d=panic
 fixedbugs/issue24488.go	skip	gc:stack-introspection runtime.Stack
 fixedbugs/issue24491a.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue24491b.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue24503.go	pass	
-fixedbugs/issue24547.go	fail	gd: internal error: package "bytes" without types was imported from "test"
+fixedbugs/issue24547.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue24651a.go	skip	gc:diagnostics -m
 fixedbugs/issue24651b.go	skip	gc:diagnostics -m
 fixedbugs/issue24693.go	skip	todo:rundir
@@ -1187,29 +1187,29 @@ fixedbugs/issue24755.go	skip	todo:errorcheck
 fixedbugs/issue24760.go	fail	gd: panic: unsupported basic type unsafe.Pointer
 fixedbugs/issue24761.go	skip	todo:compiledir
 fixedbugs/issue24763.go	pass	
-fixedbugs/issue24799.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue24799.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue24801.go	skip	todo:compiledir
-fixedbugs/issue24817.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue24817.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue24937.go	pass	
 fixedbugs/issue24939.go	pass	
 fixedbugs/issue25006.go	pass	
 fixedbugs/issue25055.go	skip	todo:compiledir
-fixedbugs/issue25101.go	fail	c11: error: 'struct <anonymous>' has no member named 'm_go_p_package'
-fixedbugs/issue25322.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue25101.go	fail	c11: error: 'struct <anonymous>' has no member named 'm_go_test_package'
+fixedbugs/issue25322.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue25507.go	skip	todo:errorcheck
 fixedbugs/issue25516.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
 fixedbugs/issue25727.go	skip	todo:errorcheck
 fixedbugs/issue25741.go	pass	
 fixedbugs/issue25776.go	pass	
-fixedbugs/issue25897a.go	fail	gd: internal error: package "reflect" without types was imported from "test"
-fixedbugs/issue25897b.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+fixedbugs/issue25897a.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue25897b.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue25958.go	skip	todo:errorcheck
 fixedbugs/issue25966.go	skip	gc:flags -N
 fixedbugs/issue25984.go	skip	todo:compiledir
 fixedbugs/issue25993.go	skip	gc:flags -d=ssa/check/on
 fixedbugs/issue26024.go	pass	
 fixedbugs/issue26043.go	pass	
-fixedbugs/issue26094.go	fail	gd: internal error: package "strings" without types was imported from "test"
+fixedbugs/issue26094.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue26097.go	pass	
 fixedbugs/issue26105.go	pass	
 fixedbugs/issue26116.go	pass	
@@ -1218,7 +1218,7 @@ fixedbugs/issue2615.go	fail	exit: exit status 2 panic: failed
 fixedbugs/issue26153.go	pass	
 fixedbugs/issue26163.go	skip	gc:flags -N -d=softfloat
 fixedbugs/issue26248.go	fail	c11: error: 'go_if' has no member named 'M_go_main_package'
-fixedbugs/issue26335.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+fixedbugs/issue26335.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue26340.go	pass	
 fixedbugs/issue26341.go	skip	todo:compiledir
 fixedbugs/issue26407.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
@@ -1236,19 +1236,19 @@ fixedbugs/issue27267.go	pass
 fixedbugs/issue27278.go	fail	c11: error: unknown type name 'T2_go_main_package'
 fixedbugs/issue27289.go	pass	
 fixedbugs/issue27356.go	skip	todo:errorcheck
-fixedbugs/issue27518a.go	fail	gd: internal error: package "runtime" without types was imported from "test"
+fixedbugs/issue27518a.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue27518b.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue27557.go	skip	gc:diagnostics -m
 fixedbugs/issue27595.go	skip	todo:errorcheck
 fixedbugs/issue27695.go	skip	gc:import runtime/debug
-fixedbugs/issue27695b.go	fail	gd: internal error: package "reflect" without types was imported from "test"
-fixedbugs/issue27695c.go	fail	gd: internal error: package "io" without types was imported from "test"
+fixedbugs/issue27695b.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue27695c.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue27718.go	pass	
 fixedbugs/issue27732a.go	skip	gc:diagnostics -m
-fixedbugs/issue27829.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue27829.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue27836.go	skip	todo:compiledir
 fixedbugs/issue27938.go	skip	gc:diagnostics -d=panic
-fixedbugs/issue27961.go	fail	gd: internal error: package "math" without types was imported from "test"
+fixedbugs/issue27961.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
 fixedbugs/issue28053.go	skip	todo:errorcheck
 fixedbugs/issue28055.go	pass	
 fixedbugs/issue28058.go	skip	todo:errorcheck
@@ -1258,30 +1258,30 @@ fixedbugs/issue28079b.go	skip	todo:errorcheck
 fixedbugs/issue28079c.go	skip	todo:errorcheck
 fixedbugs/issue28085.go	skip	todo:errorcheck
 fixedbugs/issue28268.go	skip	todo:errorcheck
-fixedbugs/issue28390.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue28390.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue28430.go	fail	gd: function missing body
 fixedbugs/issue28445.go	pass	
 fixedbugs/issue28450.go	skip	todo:errorcheck
 fixedbugs/issue28601.go	pass	
 fixedbugs/issue28616.go	pass	
 fixedbugs/issue28688.go	skip	gc:flags -gcflags=-d=softfloat
-fixedbugs/issue28748.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue28797.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue28748.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue28797.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue28926.go	skip	todo:errorcheck
 fixedbugs/issue29013a.go	pass	
 fixedbugs/issue29013b.go	pass	
-fixedbugs/issue29190.go	fail	gd: internal error: package "strings" without types was imported from "test"
+fixedbugs/issue29190.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue29215.go	pass	
 fixedbugs/issue29218.go	pass	
 fixedbugs/issue29220.go	pass	
-fixedbugs/issue29264.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue29304.go	fail	gd: internal error: package "errors" without types was imported from "test"
-fixedbugs/issue29312.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue29264.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue29304.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue29312.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue29329.go	skip	gc:build cgo && linux && amd64
 fixedbugs/issue29350.go	pass	
 fixedbugs/issue29362.go	fail	gd: panic: unsupported basic type unsafe.Pointer
 fixedbugs/issue29362b.go	fail	gd: panic: unsupported basic type unsafe.Pointer
-fixedbugs/issue29389.go	fail	gd: internal error: package "io" without types was imported from "test"
+fixedbugs/issue29389.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue29402.go	pass	
 fixedbugs/issue29504.go	skip	gc:stack-introspection runtime.Callers
 fixedbugs/issue29562.go	pass	
@@ -1289,23 +1289,23 @@ fixedbugs/issue29610.go	skip	todo:rundir
 fixedbugs/issue29612.go	skip	todo:runindir
 fixedbugs/issue29735.go	skip	gc:stack-introspection runtime.Callers
 fixedbugs/issue29855.go	skip	todo:errorcheck
-fixedbugs/issue29870.go	fail	gd: internal error: package "log" without types was imported from "test"
+fixedbugs/issue29870.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue29870b.go	skip	todo:errorcheck
 fixedbugs/issue29919.go	skip	todo:rundir
 fixedbugs/issue29943.go	pass	
-fixedbugs/issue30041.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+fixedbugs/issue30041.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue30061.go	skip	gc:linkname
 fixedbugs/issue30085.go	skip	todo:errorcheck
 fixedbugs/issue30087.go	skip	todo:errorcheck
-fixedbugs/issue30116.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue30116u.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue30243.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue30116.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue30116u.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue30243.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue30430.go	pass	
 fixedbugs/issue30476.go	skip	gc:finalizers runtime.SetFinalizer
-fixedbugs/issue30566a.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue30566b.go	fail	gd: internal error: package "bytes" without types was imported from "test"
-fixedbugs/issue30606.go	fail	gd: internal error: package "reflect" without types was imported from "test"
-fixedbugs/issue30606b.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+fixedbugs/issue30566a.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue30566b.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue30606.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue30606b.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue30659.go	skip	todo:compiledir
 fixedbugs/issue30679.go	pass	
 fixedbugs/issue30709.go	pass	
@@ -1314,8 +1314,8 @@ fixedbugs/issue30862.go	skip	todo:runindir
 fixedbugs/issue30898.go	skip	gc:diagnostics -m
 fixedbugs/issue30907.go	skip	todo:compiledir
 fixedbugs/issue30908.go	skip	todo:rundir
-fixedbugs/issue30956.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue30977.go	fail	gd: internal error: package "runtime" without types was imported from "test"
+fixedbugs/issue30956.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue30977.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue31010.go	fail	gd: function missing body
 fixedbugs/issue31053.go	skip	todo:errorcheck
 fixedbugs/issue31060.go	skip	todo:errorcheck
@@ -1323,7 +1323,7 @@ fixedbugs/issue31252.go	skip	todo:compiledir
 fixedbugs/issue31412a.go	pass	
 fixedbugs/issue31412b.go	skip	todo:errorcheck
 fixedbugs/issue31419.go	fail	gd: unsupported type assertion to interface test.I
-fixedbugs/issue31546.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+fixedbugs/issue31546.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue31573.go	skip	gc:diagnostics -m
 fixedbugs/issue31636.go	skip	todo:rundir
 fixedbugs/issue31637.go	skip	todo:compiledir
@@ -1332,10 +1332,10 @@ fixedbugs/issue31777.go	pass
 fixedbugs/issue31782.go	pass	
 fixedbugs/issue31915.go	skip	gc:flags -d=ssa/check/on
 fixedbugs/issue31959.go	skip	todo:rundir
-fixedbugs/issue31987.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue31987.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue32133.go	skip	todo:errorcheck
 fixedbugs/issue32175.go	pass	
-fixedbugs/issue32187.go	fail	gd: internal error: package "log" without types was imported from "test"
+fixedbugs/issue32187.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue32288.go	pass	
 fixedbugs/issue32347.go	pass	
 fixedbugs/issue32454.go	pass	
@@ -1358,7 +1358,7 @@ fixedbugs/issue33219.go	skip	todo:compiledir
 fixedbugs/issue33275.go	skip	upstream:skip
 fixedbugs/issue33275_run.go	skip	gc:toolchain
 fixedbugs/issue33308.go	skip	todo:errorcheck
-fixedbugs/issue33355.go	fail	gd: internal error: package "bytes" without types was imported from "test"
+fixedbugs/issue33355.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue33386.go	skip	todo:errorcheck
 fixedbugs/issue33438.go	pass	
 fixedbugs/issue33460.go	skip	todo:errorcheck
@@ -1396,11 +1396,11 @@ fixedbugs/issue36723.go	skip	gc:flags -d=ssa/check/on
 fixedbugs/issue3705.go	skip	todo:errorcheck
 fixedbugs/issue37246.go	pass	
 fixedbugs/issue37513.go	skip	todo:buildrundir
-fixedbugs/issue37716.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+fixedbugs/issue37716.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue37753.go	pass	
 fixedbugs/issue3783.go	skip	todo:errorcheck
 fixedbugs/issue37837.go	skip	gc:diagnostics -m
-fixedbugs/issue37975.go	fail	gd: internal error: package "strings" without types was imported from "test"
+fixedbugs/issue37975.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue38093.go	skip	upstream:build js
 fixedbugs/issue38117.go	skip	todo:errorcheck
 fixedbugs/issue38125.go	fail	gd: unsupported node type: DefinedType
@@ -1419,21 +1419,21 @@ fixedbugs/issue39459.go	pass
 fixedbugs/issue39472.go	skip	gc:flags -N
 fixedbugs/issue39505.go	pass	
 fixedbugs/issue39505b.go	fail	exit: exit status 2 panic: bad
-fixedbugs/issue39541.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+fixedbugs/issue39541.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue39651.go	pass	
 fixedbugs/issue40152.go	fail	c11: error: invalid operands to binary == (have 'int' and 'go_vv')
 fixedbugs/issue40252.go	skip	todo:rundir
 fixedbugs/issue40367.go	pass	
-fixedbugs/issue40629.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue40629.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue4066.go	pass	
 fixedbugs/issue40746.go	pass	
 fixedbugs/issue4085a.go	skip	todo:errorcheck
-fixedbugs/issue4085b.go	fail	gd: internal error: package "strings" without types was imported from "test"
+fixedbugs/issue4085b.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue40917.go	skip	gc:flags -gcflags=-d=checkptr
 fixedbugs/issue40954.go	skip	gc:build cgo
 fixedbugs/issue4097.go	skip	todo:errorcheck
 fixedbugs/issue4099.go	skip	gc:diagnostics -m
-fixedbugs/issue41239.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue41239.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue41247.go	skip	todo:errorcheck
 fixedbugs/issue41440.go	skip	todo:errorcheck
 fixedbugs/issue41500.go	skip	todo:errorcheck
@@ -1486,9 +1486,9 @@ fixedbugs/issue4348.go	skip	upstream:skip
 fixedbugs/issue43480.go	fail	exit: exit status 2 panic: 10000000000000000
 fixedbugs/issue4353.go	pass	
 fixedbugs/issue43551.go	skip	todo:compiledir
-fixedbugs/issue43570.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue43570.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue4359.go	skip	todo:errorcheck
-fixedbugs/issue43619.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue43619.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue43633.go	skip	todo:rundir
 fixedbugs/issue4365.go	skip	todo:errorcheck
 fixedbugs/issue43677.go	fail	gd: function missing body
@@ -1496,8 +1496,8 @@ fixedbugs/issue4370.go	skip	todo:compiledir
 fixedbugs/issue43701.go	pass	
 fixedbugs/issue43762.go	skip	todo:errorcheck
 fixedbugs/issue43835.go	fail	exit: exit status 2 panic: FAIL
-fixedbugs/issue43908.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue43942.go	fail	gd: internal error: package "log" without types was imported from "test"
+fixedbugs/issue43908.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue43942.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue43962.go	skip	todo:errorcheck
 fixedbugs/issue4396a.go	pass	
 fixedbugs/issue4396b.go	fail	c11: error: unknown type name 'T2_go_main_package'
@@ -1522,9 +1522,9 @@ fixedbugs/issue4463.go	skip	todo:errorcheck
 fixedbugs/issue4468.go	skip	todo:errorcheck
 fixedbugs/issue4470.go	skip	todo:errorcheck
 fixedbugs/issue44732.go	skip	todo:runindir
-fixedbugs/issue44739.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue44823.go	fail	gd: internal error: package "encoding/binary" without types was imported from "test"
-fixedbugs/issue44830.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+fixedbugs/issue44739.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue44823.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue44830.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue4495.go	fail	gd: panic: unsupported node type: DefinedType
 fixedbugs/issue45045.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue4510.go	skip	todo:errorcheck
@@ -1534,7 +1534,7 @@ fixedbugs/issue4517b.go	skip	todo:errorcheck
 fixedbugs/issue4517c.go	skip	todo:errorcheck
 fixedbugs/issue4517d.go	skip	todo:errorcheck
 fixedbugs/issue4518.go	fail	c11: error: incompatible type for argument 1 of 'check_go_main_package'
-fixedbugs/issue45242.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue45242.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue45258.go	pass	
 fixedbugs/issue4529.go	fail	c11: error: too few arguments to function 'A_c_go_main_package'
 fixedbugs/issue45323.go	fail	gd: function missing body
@@ -1550,15 +1550,15 @@ fixedbugs/issue45706.go	fail	gd: panic: interface conversion: ast.Expr is *ast.S
 fixedbugs/issue45743.go	pass	
 fixedbugs/issue45804.go	skip	todo:errorcheck
 fixedbugs/issue4585.go	fail	gd: panic: unsupported basic type unsafe.Pointer
-fixedbugs/issue45851.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue45851.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue4590.go	skip	todo:rundir
 fixedbugs/issue45913.go	skip	todo:errorcheck
 fixedbugs/issue45947.go	pass	
 fixedbugs/issue45948.go	skip	gc:flags -N
 fixedbugs/issue4610.go	skip	todo:errorcheck
 fixedbugs/issue4614.go	fail	gd: panic: unsupported basic type unsafe.Pointer
-fixedbugs/issue4618.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue4620.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue4618.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue4620.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue46234.go	skip	todo:buildrun
 fixedbugs/issue46304.go	pass	
 fixedbugs/issue46386.go	skip	gc:flags -p=main
@@ -1567,7 +1567,7 @@ fixedbugs/issue4654.go	skip	todo:errorcheck
 fixedbugs/issue46556.go	pass	
 fixedbugs/issue4663.go	skip	todo:errorcheck
 fixedbugs/issue46653.go	skip	todo:runindir
-fixedbugs/issue4667.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue4667.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue46720.go	fail	gd: unsupported conversion from
 fixedbugs/issue46725.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue46749.go	skip	todo:errorcheck
@@ -1591,20 +1591,20 @@ fixedbugs/issue47771.go	fail	c11: error: incompatible type for argument 2 of 'go
 fixedbugs/issue4785.go	fail	c11: error: invalid operands to binary != (have 'go_vv' and 'int')
 fixedbugs/issue47928.go	skip	gc:goexperiment fieldtrack
 fixedbugs/issue48026.go	skip	gc:flags -d=ssa/check/on
-fixedbugs/issue48033.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue48033.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue48088.go	skip	todo:compiledir
 fixedbugs/issue48092.go	skip	gc:flags -B
 fixedbugs/issue48097.go	skip	todo:errorcheck
 fixedbugs/issue4813.go	skip	todo:errorcheck
 fixedbugs/issue48230.go	skip	todo:errorcheck
-fixedbugs/issue48289.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue48289.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue48301.go	skip	todo:errorcheck
-fixedbugs/issue48357.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+fixedbugs/issue48357.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue48459.go	pass	
 fixedbugs/issue4847.go	skip	todo:errorcheck
 fixedbugs/issue48471.go	skip	todo:errorcheck
-fixedbugs/issue48473.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue48476.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue48473.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue48476.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue48536.go	fail	gd: panic: unsupported basic type unsafe.Pointer
 fixedbugs/issue48558.go	skip	todo:errorcheck
 fixedbugs/issue48784.go	skip	todo:errorcheck
@@ -1623,7 +1623,7 @@ fixedbugs/issue4909a.go	skip	todo:errorcheck
 fixedbugs/issue4909b.go	skip	todo:errorcheck
 fixedbugs/issue49100.go	pass	
 fixedbugs/issue49100b.go	pass	
-fixedbugs/issue49110.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+fixedbugs/issue49110.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue49122.go	pass	
 fixedbugs/issue49143.go	skip	todo:compiledir
 fixedbugs/issue49145.go	pass	
@@ -1638,7 +1638,7 @@ fixedbugs/issue49592.go	fail	c11: error: invalid operands to binary == (have 'vo
 fixedbugs/issue49611.go	pass	
 fixedbugs/issue49619.go	pass	
 fixedbugs/issue4964.go	skip	todo:rundir
-fixedbugs/issue49665.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue49665.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue49767.go	skip	todo:errorcheck
 fixedbugs/issue49814.go	skip	todo:errorcheck
 fixedbugs/issue5002.go	pass	
@@ -1657,7 +1657,7 @@ fixedbugs/issue51101.go	pass
 fixedbugs/issue5125.go	skip	todo:compiledir
 fixedbugs/issue51291.go	skip	todo:compiledir
 fixedbugs/issue51401.go	skip	gc:stack-introspection runtime.Callers
-fixedbugs/issue51437.go	fail	c11: error: incompatible types when initializing type 'T_go_p_package *' {aka 'go_az *'} using type 'T_go_p_package' {aka 'go…
+fixedbugs/issue51437.go	fail	c11: error: incompatible types when initializing type 'T_go_test_package *' {aka 'go_az *'} using type 'T_go_test_package' {a…
 fixedbugs/issue51475.go	pass	
 fixedbugs/issue51531.go	skip	todo:errorcheck
 fixedbugs/issue5162.go	skip	todo:runoutput
@@ -1672,25 +1672,25 @@ fixedbugs/issue52128.go	skip	todo:compiledir
 fixedbugs/issue52193.go	skip	gc:diagnostics -m
 fixedbugs/issue52278.go	skip	gc:flags -d=ssa/check/on
 fixedbugs/issue52279.go	skip	todo:rundir
-fixedbugs/issue5231.go	fail	c11: error: request for member 'NotVariadic_go_p_package' in something not a structure or union
+fixedbugs/issue5231.go	fail	c11: error: request for member 'NotVariadic_go_test_package' in something not a structure or union
 fixedbugs/issue52438.go	pass	
 fixedbugs/issue5244.go	pass	
 fixedbugs/issue52535.go	pass	
 fixedbugs/issue5259.go	skip	todo:compiledir
 fixedbugs/issue52590.go	skip	todo:compiledir
 fixedbugs/issue5260.go	skip	todo:rundir
-fixedbugs/issue52612.go	fail	gd: internal error: package "sync/atomic" without types was imported from "test"
+fixedbugs/issue52612.go	fail	gd: function missing body
 fixedbugs/issue52673.go	pass	
 fixedbugs/issue52697.go	skip	todo:errorcheck
-fixedbugs/issue52701.go	fail	c11: error: invalid operands to binary == (have 'T1_go_p_package' {aka 'go_az'} and 'T1_go_p_package' {aka 'go_az'})
+fixedbugs/issue52701.go	fail	c11: error: invalid operands to binary == (have 'T1_go_test_package' {aka 'go_az'} and 'T1_go_test_package' {aka 'go_az'})
 fixedbugs/issue52748.go	skip	todo:errorcheck
-fixedbugs/issue52788.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue52788a.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue52788.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue52788a.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue52841.go	pass	
 fixedbugs/issue52846.go	fail	gd: panic: unexpected kindOf: test.S
 fixedbugs/issue52856.go	skip	todo:rundir
 fixedbugs/issue52862.go	skip	todo:compiledir
-fixedbugs/issue52870.go	fail	c11: error: unknown type name 'T3_go_p_package'; did you mean 'S1_go_p_package'?
+fixedbugs/issue52870.go	fail	c11: error: unknown type name 'T3_go_test_package'; did you mean 'S1_go_test_package'?
 fixedbugs/issue52871.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
 fixedbugs/issue52907.go	pass	
 fixedbugs/issue5291.go	skip	todo:rundir
@@ -1701,23 +1701,23 @@ fixedbugs/issue53309.go	fail	gd: unsupported call for function of type xyz.Case
 fixedbugs/issue53439.go	fail	gd: unsupported node type: BuiltinFunction
 fixedbugs/issue53454.go	fail	gd: function missing body
 fixedbugs/issue5358.go	skip	todo:errorcheck
-fixedbugs/issue53600.go	fail	gd: internal error: package "math" without types was imported from "test"
+fixedbugs/issue53600.go	fail	c11: error: 'MinInt64' undeclared (first use in this function)
 fixedbugs/issue53619.go	fail	c11: error: invalid operands to binary != (have 'go_vv' and 'int')
 fixedbugs/issue53635.go	pass	
-fixedbugs/issue53653.go	fail	gd: internal error: package "math" without types was imported from "test"
+fixedbugs/issue53653.go	fail	c11: error: 'MinInt64' undeclared (first use in this function)
 fixedbugs/issue53702.go	fail	c11: error: implicit declaration of function 'Sub_Do_go_main_package'; did you mean 'Base_Do_go_main_package'? [-Wimplicit-fu…
-fixedbugs/issue5373.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue5373.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue53982.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
 fixedbugs/issue54159.go	skip	gc:diagnostics -m=2
-fixedbugs/issue54220.go	fail	gd: internal error: package "strconv" without types was imported from "test"
+fixedbugs/issue54220.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue54280.go	skip	todo:errorcheck
 fixedbugs/issue54307.go	pass	
 fixedbugs/issue54343.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue54348.go	fail	c11: error: unknown type name 'E_go_main_package'
-fixedbugs/issue54467.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue54467.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue54542.go	skip	gc:toolchain
 fixedbugs/issue54632.go	pass	
-fixedbugs/issue54638.go	fail	gd: internal error: package "sync/atomic" without types was imported from "test"
+fixedbugs/issue54638.go	fail	gd: function missing body
 fixedbugs/issue5470.go	skip	todo:compiledir
 fixedbugs/issue54722.go	pass	
 fixedbugs/issue54722b.go	pass	
@@ -1725,7 +1725,7 @@ fixedbugs/issue54911.go	pass
 fixedbugs/issue54912.go	skip	todo:rundir
 fixedbugs/issue5493.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue54959.go	pass	
-fixedbugs/issue54991.go	fail	gd: internal error: package "sync/atomic" without types was imported from "test"
+fixedbugs/issue54991.go	fail	gd: function missing body
 fixedbugs/issue55122.go	fail	c11: error: invalid operands to binary == (have 'go_arr32_go_u1' and 'go_arr32_go_u1')
 fixedbugs/issue55122b.go	fail	c11: error: invalid operands to binary == (have 'go_arr32_go_u1' and 'go_arr32_go_u1')
 fixedbugs/issue5515.go	pass	
@@ -1736,7 +1736,7 @@ fixedbugs/issue5607.go	pass
 fixedbugs/issue5609.go	skip	todo:errorcheck
 fixedbugs/issue56103.go	skip	todo:errorcheck
 fixedbugs/issue56105.go	skip	gc:flags -d=libfuzzer
-fixedbugs/issue56109.go	fail	gd: internal error: package "math" without types was imported from "test"
+fixedbugs/issue56109.go	pass	
 fixedbugs/issue5614.go	skip	todo:compiledir
 fixedbugs/issue56141.go	skip	gc:flags -d=libfuzzer
 fixedbugs/issue56220.go	skip	todo:errorcheck
@@ -1747,9 +1747,9 @@ fixedbugs/issue56777.go	pass
 fixedbugs/issue56778.go	skip	todo:compiledir
 fixedbugs/issue56923.go	fail	gd: panic: unsupported index of test.EqFunc
 fixedbugs/issue5698.go	skip	todo:errorcheck
-fixedbugs/issue56990.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue56990.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue5704.go	pass	
-fixedbugs/issue57184.go	fail	gd: internal error: package "log" without types was imported from "test"
+fixedbugs/issue57184.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue57309.go	fail	gd: panic: unsupported conversion to test.I
 fixedbugs/issue5753.go	fail	c11: error: 'Thing_go_main_package' {aka 'go_az'} has no member named 'broken_go_main_package'
 fixedbugs/issue5755.go	skip	todo:compiledir
@@ -1758,13 +1758,13 @@ fixedbugs/issue57823.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue57846.go	pass	
 fixedbugs/issue5793.go	fail	gd: unsupported builtin function
 fixedbugs/issue57955.go	pass	
-fixedbugs/issue5809.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue5809.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue58161.go	skip	gc:flags -d=ssa/check/seed=1
 fixedbugs/issue5820.go	pass	
 fixedbugs/issue58293.go	pass	
 fixedbugs/issue58300.go	skip	gc:stack-introspection runtime.FuncForPC
 fixedbugs/issue58300b.go	skip	gc:stack-introspection runtime.FuncForPC
-fixedbugs/issue58325.go	fail	c11: error: unknown type name 'S2_go_p_package'
+fixedbugs/issue58325.go	fail	c11: error: unknown type name 'S2_go_test_package'
 fixedbugs/issue58339.go	skip	todo:compiledir
 fixedbugs/issue58341.go	pass	
 fixedbugs/issue58345.go	pass	
@@ -1772,7 +1772,7 @@ fixedbugs/issue5841.go	pass
 fixedbugs/issue58439.go	pass	
 fixedbugs/issue5856.go	skip	gc:stack-introspection runtime.Caller
 fixedbugs/issue58563.go	skip	todo:compiledir
-fixedbugs/issue58572.go	fail	c11: error: unknown type name 'Key2_go_p_package'; did you mean 'Client_go_p_package'?
+fixedbugs/issue58572.go	fail	c11: error: unknown type name 'Key2_go_test_package'; did you mean 'Client_go_test_package'?
 fixedbugs/issue58671.go	pass	
 fixedbugs/issue58826.go	skip	gc:flags -dynlink
 fixedbugs/issue5910.go	skip	todo:compiledir
@@ -1786,33 +1786,33 @@ fixedbugs/issue59367.go	pass
 fixedbugs/issue59378.go	pass	
 fixedbugs/issue59404.go	skip	gc:flags -gcflags=-l=4
 fixedbugs/issue59404part2.go	pass	
-fixedbugs/issue59411.go	fail	gd: internal error: package "math" without types was imported from "test"
+fixedbugs/issue59411.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue5957.go	skip	todo:errorcheck
 fixedbugs/issue59572.go	pass	
-fixedbugs/issue5963.go	fail	gd: internal error: package "os" without types was imported from "test"
+fixedbugs/issue5963.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue59638.go	skip	gc:flags -gcflags=-l=4
-fixedbugs/issue59680.go	fail	gd: internal error: package "sync" without types was imported from "test"
+fixedbugs/issue59680.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue59709.go	skip	todo:rundir
 fixedbugs/issue6004.go	skip	todo:errorcheck
 fixedbugs/issue6036.go	pass	
-fixedbugs/issue6055.go	fail	gd: internal error: package "runtime" without types was imported from "test"
-fixedbugs/issue60582.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue60601.go	fail	gd: internal error: package "strings" without types was imported from "test"
+fixedbugs/issue6055.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue60582.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue60601.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue60945.go	skip	todo:compiledir
 fixedbugs/issue60982.go	pass	
 fixedbugs/issue60990.go	fail	c11: error: duplicate member '_'
-fixedbugs/issue60991.go	fail	gd: internal error: package "math" without types was imported from "test"
+fixedbugs/issue60991.go	pass	
 fixedbugs/issue61127.go	pass	
-fixedbugs/issue61187.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue61187.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue6131.go	pass	
-fixedbugs/issue6140.go	fail	c11: error: 'struct <anonymous>' has no member named 'm_go_p_package'
+fixedbugs/issue6140.go	fail	c11: error: 'struct <anonymous>' has no member named 'm_go_test_package'
 fixedbugs/issue61778.go	pass	
 fixedbugs/issue61895.go	pass	
 fixedbugs/issue61908.go	pass	
 fixedbugs/issue61992.go	pass	
-fixedbugs/issue62203.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue62203.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue62313.go	pass	
-fixedbugs/issue62360.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue62360.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue62469.go	pass	
 fixedbugs/issue6247.go	fail	c11: error: invalid operands to binary * (have 'go_aaf8f8zz' and 'go_aaf8f8zz')
 fixedbugs/issue62498.go	skip	todo:rundir
@@ -1842,7 +1842,7 @@ fixedbugs/issue64826.go	pass
 fixedbugs/issue6500.go	skip	todo:errorcheck
 fixedbugs/issue6513.go	skip	todo:compiledir
 fixedbugs/issue65362.go	pass	
-fixedbugs/issue65417.go	fail	gd: internal error: package "strings" without types was imported from "test"
+fixedbugs/issue65417.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue65593.go	pass	
 fixedbugs/issue6572.go	skip	todo:errorcheck
 fixedbugs/issue65778.go	skip	gc:godebug gotypesalias=1
@@ -1850,13 +1850,13 @@ fixedbugs/issue65808.go	pass
 fixedbugs/issue65893.go	pass	
 fixedbugs/issue65957.go	skip	todo:rundir
 fixedbugs/issue65962.go	fail	gd: unsupported type assertion to interface test.I
-fixedbugs/issue66066.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue66066.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue66066b.go	pass	
 fixedbugs/issue66096.go	pass	
 fixedbugs/issue66261.go	pass	
 fixedbugs/issue66575.go	pass	
 fixedbugs/issue66585.go	pass	
-fixedbugs/issue66663.go	fail	c11: error: unknown type name 'Range_go_p_package'; did you mean 'AddrImpl_go_p_package'?
+fixedbugs/issue66663.go	fail	c11: error: unknown type name 'Range_go_test_package'; did you mean 'AddrImpl_go_test_package'?
 fixedbugs/issue6671.go	skip	todo:errorcheck
 fixedbugs/issue66873.go	fail	gd: panic: unexpected kindOf: test.T
 fixedbugs/issue6703a.go	skip	todo:errorcheck
@@ -1894,10 +1894,10 @@ fixedbugs/issue6750.go	skip	todo:errorcheck
 fixedbugs/issue6772.go	skip	todo:errorcheck
 fixedbugs/issue6789.go	skip	todo:rundir
 fixedbugs/issue68054.go	fail	gd: unsupported index of test.Seq
-fixedbugs/issue68227.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue68227.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue68264.go	pass	
 fixedbugs/issue68292.go	skip	todo:errorcheck
-fixedbugs/issue68322.go	fail	gd: internal error: package "math" without types was imported from "test"
+fixedbugs/issue68322.go	fail	c11: error: implicit declaration of function 'Trunc_go_math_package'; did you mean 'Sqrt_go_math_package'? [-Wimplicit-functi…
 fixedbugs/issue68415.go	skip	gc:flags -gcflags=all=-d=checkptr
 fixedbugs/issue6847.go	pass	
 fixedbugs/issue68525.go	skip	gc:flags -gcflags='all=-N -l'
@@ -1908,20 +1908,20 @@ fixedbugs/issue68734.go	pass
 fixedbugs/issue68809.go	pass	
 fixedbugs/issue68816.go	fail	exit: signal: trace/breakpoint trap filc safety error: attempt to allocate object that is too bi…
 fixedbugs/issue6889.go	skip	todo:errorcheck
-fixedbugs/issue6899.go	fail	gd: internal error: package "math" without types was imported from "test"
-fixedbugs/issue6902.go	fail	gd: internal error: package "os" without types was imported from "test"
-fixedbugs/issue69434.go	fail	gd: internal error: package "iter" without types was imported from "test"
+fixedbugs/issue6899.go	fail	c11: error: implicit declaration of function 'Copysign_go_math_package'; did you mean 'Sqrt_go_math_package'? [-Wimplicit-fun…
+fixedbugs/issue6902.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue69434.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue69507.go	fail	gd: range over unsupported type *types.Named
 fixedbugs/issue6964.go	skip	todo:errorcheck
 fixedbugs/issue6977.go	skip	todo:errorcheck
 fixedbugs/issue69825.go	skip	gc:flags -d=libfuzzer
-fixedbugs/issue70156.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+fixedbugs/issue70156.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue70175.go	fail	c11: error: duplicate label 'go_label__'
 fixedbugs/issue70189.go	fail	gd: range over unsupported type *types.Map
 fixedbugs/issue7023.go	skip	todo:compiledir
-fixedbugs/issue7044.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue7044.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue70481.go	pass	
-fixedbugs/issue7050.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue7050.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue7083.go	skip	gc:import runtime/debug
 fixedbugs/issue71184.go	pass	
 fixedbugs/issue71225.go	skip	gc:build cgo
@@ -1932,11 +1932,11 @@ fixedbugs/issue7153.go	skip	todo:errorcheck
 fixedbugs/issue71675.go	fail	gd: range over unsupported type *types.Signature
 fixedbugs/issue71680.go	pass	
 fixedbugs/issue71759.go	pass	
-fixedbugs/issue71852.go	fail	gd: internal error: package "math" without types was imported from "test"
-fixedbugs/issue71857.go	fail	gd: internal error: package "sync/atomic" without types was imported from "test"
-fixedbugs/issue71932.go	fail	gd: internal error: package "runtime" without types was imported from "test"
-fixedbugs/issue72063.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue72090.go	fail	gd: internal error: package "iter" without types was imported from "test"
+fixedbugs/issue71852.go	fail	c11: error: implicit declaration of function 'Pow10_go_math_package'; did you mean 'Sqrt_go_math_package'? [-Wimplicit-functi…
+fixedbugs/issue71857.go	fail	gd: function missing body
+fixedbugs/issue71932.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue72063.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue72090.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue7214.go	skip	todo:errorcheck
 fixedbugs/issue7223.go	skip	todo:errorcheck
 fixedbugs/issue7272.go	fail	gd: unsupported go of builtin close
@@ -1953,7 +1953,7 @@ fixedbugs/issue73476.go	fail	exit: exit status 2 panic: runtime error: invalid m
 fixedbugs/issue73483.go	skip	gc:build race && cgo
 fixedbugs/issue73491.go	pass	
 fixedbugs/issue7366.go	fail	c11: error: invalid operands to binary == (have 'T_go_main_package' {aka 'go_struct_f44187e72e2ead89'} and 'T_go_main_package…
-fixedbugs/issue73716.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue73716.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue73748a.go	skip	gc:import runtime/trace
 fixedbugs/issue73748b.go	skip	gc:import runtime/trace
 fixedbugs/issue73823.go	fail	gd: unsupported assignment of multiple results in for statement
@@ -1963,27 +1963,27 @@ fixedbugs/issue73916.go	pass
 fixedbugs/issue73916b.go	pass	
 fixedbugs/issue73917.go	fail	gd: unsupported node type: DefinedType
 fixedbugs/issue73920.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
-fixedbugs/issue7405.go	fail	c11: error: unknown type name 'T2_go_p_package'
-fixedbugs/issue7419.go	fail	gd: internal error: package "os" without types was imported from "test"
-fixedbugs/issue74379.go	fail	gd: internal error: package "errors" without types was imported from "test"
-fixedbugs/issue74379b.go	fail	gd: internal error: package "errors" without types was imported from "test"
-fixedbugs/issue74379c.go	fail	gd: internal error: package "errors" without types was imported from "test"
+fixedbugs/issue7405.go	fail	c11: error: unknown type name 'T2_go_test_package'
+fixedbugs/issue7419.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue74379.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue74379b.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue74379c.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue74626.go	skip	todo:errorcheck
 fixedbugs/issue74648.go	skip	todo:runindir
 fixedbugs/issue74836.go	fail	gd: function missing body
 fixedbugs/issue74888.go	pass	
 fixedbugs/issue74908.go	pass	
-fixedbugs/issue74935.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+fixedbugs/issue74935.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue75022.go	skip	todo:errorcheck
-fixedbugs/issue75063.go	fail	c11: error: unknown type name 'Elements_go_reorder_package'
+fixedbugs/issue75063.go	fail	c11: error: unknown type name 'Elements_go_test_package'
 fixedbugs/issue7525.go	skip	todo:errorcheck
 fixedbugs/issue7525b.go	skip	todo:errorcheck
 fixedbugs/issue7525c.go	skip	todo:errorcheck
 fixedbugs/issue7525d.go	skip	todo:errorcheck
 fixedbugs/issue7525e.go	skip	todo:errorcheck
 fixedbugs/issue75278.go	skip	gc:diagnostics -m=2
-fixedbugs/issue75327.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue75365.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue75327.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue75365.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue7538a.go	skip	todo:errorcheck
 fixedbugs/issue7538b.go	pass	
 fixedbugs/issue7547.go	pass	
@@ -1993,29 +1993,29 @@ fixedbugs/issue75764.go	skip	gc:stack-introspection runtime.Callers
 fixedbugs/issue7590.go	pass	
 fixedbugs/issue76008.go	skip	gc:stack-introspection runtime.Caller
 fixedbugs/issue7648.go	skip	todo:compiledir
-fixedbugs/issue76709.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue76709.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue7675.go	skip	todo:errorcheck
 fixedbugs/issue7690.go	skip	gc:stack-introspection runtime.Stack
 fixedbugs/issue76950.go	pass	
 fixedbugs/issue77303.go	fail	c11: error: invalid operands to binary == (have 'go_arr3_zeroSizeSpecial' and 'go_arr3_zeroSizeSpecial')
-fixedbugs/issue7740.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue7740.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue7742.go	pass	
 fixedbugs/issue77435.go	fail	c11: error: incompatible type for argument 1 of 'go_slice_clear'
 fixedbugs/issue7746.go	skip	todo:errorcheck
 fixedbugs/issue77534.go	pass	
 fixedbugs/issue7760.go	skip	todo:errorcheck
 fixedbugs/issue77604.go	pass	
-fixedbugs/issue77613.go	fail	gd: internal error: package "strings" without types was imported from "test"
-fixedbugs/issue77635.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+fixedbugs/issue77613.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue77635.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue77635b.go	pass	
-fixedbugs/issue77779.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+fixedbugs/issue77779.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue77815.go	pass	
 fixedbugs/issue77868.go	pass	
 fixedbugs/issue77919.go	pass	
 fixedbugs/issue7794.go	pass	
 fixedbugs/issue78016.go	pass	
 fixedbugs/issue78028.go	pass	
-fixedbugs/issue78081.go	fail	gd: internal error: package "runtime" without types was imported from "test"
+fixedbugs/issue78081.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue78262.go	fail	c11: error: unknown type name 'B_go_main_package'
 fixedbugs/issue78295.go	fail	gd: unsupported receiver type struct
 fixedbugs/issue78297.go	pass	
@@ -2027,54 +2027,54 @@ fixedbugs/issue78355.go	skip	todo:errorcheck
 fixedbugs/issue78404.go	fail	c11: error: unknown type name 'Iface_go_main_package'; did you mean 'Impl2_go_main_package'?
 fixedbugs/issue78408.go	fail	gd: range over unsupported type *types.Signature
 fixedbugs/issue78410.go	pass	
-fixedbugs/issue78599.go	fail	gd: internal error: package "iter" without types was imported from "test"
-fixedbugs/issue7863.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue78599.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue7863.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue78641.go	pass	
 fixedbugs/issue7867.go	skip	todo:runoutput
-fixedbugs/issue7884.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue7884.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue78892.go	pass	
 fixedbugs/issue79182.go	pass	
-fixedbugs/issue79186.go	fail	gd: internal error: package "runtime" without types was imported from "test"
+fixedbugs/issue79186.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue79197.go	pass	
 fixedbugs/issue7921.go	skip	gc:diagnostics -m
 fixedbugs/issue79236.go	pass	
-fixedbugs/issue79236b.go	fail	gd: internal error: package "strings" without types was imported from "test"
+fixedbugs/issue79236b.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue79258.go	skip	todo:errorcheck
-fixedbugs/issue79274.go	fail	gd: internal error: package "math/big" without types was imported from "test"
+fixedbugs/issue79274.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue79274a.go	skip	todo:compiledir
-fixedbugs/issue7944.go	fail	gd: internal error: package "runtime" without types was imported from "test"
+fixedbugs/issue7944.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue79762.go	skip	gc:import runtime/debug
 fixedbugs/issue79812.go	fail	gd: unsupported conversion to float64
-fixedbugs/issue79874.go	fail	gd: internal error: package "encoding/binary" without types was imported from "test"
-fixedbugs/issue79886.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue79887.go	fail	gd: internal error: package "math/bits" without types was imported from "test"
-fixedbugs/issue79909.go	fail	gd: internal error: package "strconv" without types was imported from "test"
-fixedbugs/issue7995.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue79874.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue79886.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue79887.go	fail	c11: error: 'ntz8tab' undeclared (first use in this function)
+fixedbugs/issue79909.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue7995.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue7995b.go	skip	todo:rundir
 fixedbugs/issue7996.go	fail	gd: unsupported map key type interface
 fixedbugs/issue79960.go	pass	
 fixedbugs/issue7997.go	pass	
 fixedbugs/issue7998.go	pass	
-fixedbugs/issue80004.go	fail	gd: internal error: package "runtime" without types was imported from "test"
-fixedbugs/issue8004.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+fixedbugs/issue80004.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue8004.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue80096.go	pass	
 fixedbugs/issue80097.go	fail	c11: error: invalid operands to binary != (have 'go_arr65536_go_pt' and 'go_arr65536_go_pt')
 fixedbugs/issue8011.go	pass	
 fixedbugs/issue80127.go	pass	
 fixedbugs/issue8017.go	fail	gd: panic: unsupported len of
-fixedbugs/issue80188.go	fail	gd: internal error: package "runtime" without types was imported from "test"
+fixedbugs/issue80188.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue80196.go	fail	c11: error: invalid operands to binary != (have 'S_go_main_package' {aka 'go_arr5_go_pt'} and 'S_go_main_package' {aka 'go_ar…
-fixedbugs/issue8028.go	fail	c11: error: unknown type name 'T_go_p_package'
-fixedbugs/issue8036.go	fail	gd: internal error: package "runtime" without types was imported from "test"
+fixedbugs/issue8028.go	fail	c11: error: unknown type name 'T_go_test_package'
+fixedbugs/issue8036.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue8039.go	fail	gd: unsupported deferred of builtin copy
 fixedbugs/issue8042.go	pass	
 fixedbugs/issue8047.go	pass	
 fixedbugs/issue8047b.go	pass	
-fixedbugs/issue8048.go	fail	gd: internal error: package "runtime" without types was imported from "test"
+fixedbugs/issue8048.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue80517_1.go	fail	exit: signal: trace/breakpoint trap filc safety error: attempt to allocate object that is too bi…
 fixedbugs/issue80517_2.go	fail	exit: signal: trace/breakpoint trap filc safety error: attempt to allocate object that is too bi…
 fixedbugs/issue80517_3.go	fail	exit: signal: trace/breakpoint trap filc safety error: attempt to allocate object that is too bi…
-fixedbugs/issue80577.go	fail	gd: internal error: package "math/bits" without types was imported from "test"
+fixedbugs/issue80577.go	fail	c11: error: 'ntz8tab' undeclared (first use in this function)
 fixedbugs/issue8060.go	skip	todo:compiledir
 fixedbugs/issue8073.go	pass	
 fixedbugs/issue8074.go	fail	gd: unsupported go of builtin copy
@@ -2082,11 +2082,11 @@ fixedbugs/issue8076.go	pass
 fixedbugs/issue8079.go	pass	
 fixedbugs/issue80976.go	fail	c11: error: implicit declaration of function 'TypeMap_Set_go_main_package' [-Wimplicit-function-declaration]
 fixedbugs/issue81165.go	fail	c11: error: implicit declaration of function 'someType_SuccessLink_go_main_package' [-Wimplicit-function-declaration]
-fixedbugs/issue8132.go	fail	gd: internal error: package "runtime" without types was imported from "test"
-fixedbugs/issue8139.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+fixedbugs/issue8132.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue8139.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue8154.go	pass	
-fixedbugs/issue8155.go	fail	gd: internal error: package "runtime" without types was imported from "test"
-fixedbugs/issue8158.go	fail	gd: internal error: package "runtime" without types was imported from "test"
+fixedbugs/issue8155.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue8158.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue8183.go	skip	todo:errorcheck
 fixedbugs/issue8280.go	skip	todo:compiledir
 fixedbugs/issue8311.go	skip	todo:errorcheck
@@ -2099,9 +2099,9 @@ fixedbugs/issue8440.go	skip	todo:errorcheck
 fixedbugs/issue8475.go	pass	
 fixedbugs/issue8501.go	skip	todo:errorcheck
 fixedbugs/issue8507.go	skip	todo:errorcheck
-fixedbugs/issue8606.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue8606b.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue8612.go	fail	c11: error: invalid operands to binary == (have 'S_go_p_package' {aka 'go_struct_3a47d2d0348b4e7c'} and 'go_vv')
+fixedbugs/issue8606.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue8606b.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue8612.go	fail	c11: error: invalid operands to binary == (have 'S_go_test_package' {aka 'go_struct_3a47d2d0348b4e7c'} and 'go_vv')
 fixedbugs/issue8613.go	pass	
 fixedbugs/issue8620.go	pass	
 fixedbugs/issue8745.go	skip	todo:errorcheck
@@ -2136,11 +2136,11 @@ fixedbugs/notinheap2.go	skip	gc:build cgo
 fixedbugs/notinheap3.go	skip	gc:build cgo
 fixedbugs/shrd_zero_count.go	pass	
 fixedbugs/splitload_pointer_compare.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
-fixedbugs/walk_bounded_overshift_empty_bound.go	fail	gd: internal error: package "strings" without types was imported from "test"
+fixedbugs/walk_bounded_overshift_empty_bound.go	fail	gd: panic: runtime error: index out of range
 float_lit.go	pass	
-float_lit2.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+float_lit2.go	fail	gd: panic: runtime error: index out of range
 float_lit3.go	skip	todo:errorcheck
-floatcmp.go	fail	gd: internal error: package "math" without types was imported from "test"
+floatcmp.go	fail	c11: error: 'nan' redeclared as different kind of symbol
 for.go	fail	exit: exit status 2 panic: 1
 func.go	pass	
 func1.go	skip	todo:errorcheck
@@ -2154,20 +2154,20 @@ func8.go	pass
 funcdup.go	skip	todo:errorcheck
 funcdup2.go	skip	todo:errorcheck
 fuse.go	skip	gc:diagnostics -d=ssa/late_fuse/debug=1
-gc.go	fail	gd: internal error: package "runtime" without types was imported from "test"
+gc.go	fail	gd: panic: runtime error: index out of range
 gc1.go	pass	
 gc2.go	skip	gc:memstats runtime.ReadMemStats
 gcgort.go	skip	gc:import runtime/debug
 gcstring.go	skip	gc:finalizers runtime.SetFinalizer
-genmeth.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-genmeth1.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-genmeth2.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-goprint.go	fail	gd: internal error: package "log" without types was imported from "test"
+genmeth.go	fail	gd: panic: runtime error: index out of range
+genmeth1.go	fail	gd: panic: runtime error: index out of range
+genmeth2.go	fail	gd: panic: runtime error: index out of range
+goprint.go	fail	gd: panic: runtime error: index out of range
 goto.go	skip	todo:errorcheck
 heapsampling.go	skip	gc:memstats runtime.MemProfileRate
 helloworld.go	pass	
 if.go	pass	
-import.go	fail	gd: internal error: package "os" without types was imported from "test"
+import.go	fail	gd: panic: runtime error: index out of range
 import1.go	skip	todo:errorcheck
 import2.go	skip	todo:compiledir
 import4.go	skip	todo:errorcheck
@@ -2183,7 +2183,7 @@ init.go	skip	todo:errorcheck
 init1.go	skip	gc:memstats runtime.ReadMemStats
 initcomma.go	pass	
 initexp.go	skip	todo:errorcheck
-initialize.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+initialize.go	fail	gd: panic: runtime error: index out of range
 initializerr.go	skip	todo:errorcheck
 initloop.go	skip	todo:errorcheck
 inline.go	skip	gc:diagnostics -m
@@ -2195,20 +2195,20 @@ inline_literal.go	skip	gc:stack-introspection runtime.FuncForPC
 inline_math_bits_rotate.go	skip	gc:diagnostics -m
 inline_sync.go	skip	gc:diagnostics -m
 inline_variadic.go	skip	gc:diagnostics -m
-int_lit.go	fail	gd: internal error: package "os" without types was imported from "test"
+int_lit.go	fail	gd: panic: runtime error: index out of range
 intcvt.go	pass	
 interface/assertinline.go	skip	gc:diagnostics -d=typeassert
 interface/bigdata.go	fail	c11: error: expected identifier or '(' before 'int'
 interface/convert.go	fail	gd: unsupported type assertion to interface test.StringLengther
 interface/convert1.go	pass	
 interface/convert2.go	pass	
-interface/embed.go	fail	gd: internal error: package "os" without types was imported from "test"
+interface/embed.go	fail	gd: panic: runtime error: index out of range
 interface/embed1.go	skip	todo:rundir
 interface/embed2.go	skip	todo:errorcheck
 interface/embed3.go	skip	todo:rundir
 interface/explicit.go	skip	todo:errorcheck
 interface/fail.go	fail	gd: unsupported type assertion to interface test.I
-interface/fake.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+interface/fake.go	fail	gd: panic: runtime error: index out of range
 interface/noeq.go	fail	c11: error: invalid operands to binary == (have 'go_vv' and 'go_vv')
 interface/pointer.go	skip	todo:errorcheck
 interface/private.go	skip	todo:errorcheck
@@ -2217,23 +2217,23 @@ interface/receiver1.go	skip	todo:errorcheck
 interface/recursive.go	pass	
 interface/recursive1.go	skip	todo:compiledir
 interface/returntype.go	fail	gd: panic: unsupported type assertion to interface test.I2
-interface/struct.go	fail	gd: internal error: package "os" without types was imported from "test"
+interface/struct.go	fail	gd: panic: runtime error: index out of range
 internal/runtime/sys/inlinegcpc.go	skip	gc:diagnostics -m
 intrinsic.go	skip	gc:diagnostics -d=ssa/intrinsics/debug
 intrinsic_atomic.go	skip	gc:diagnostics -d=ssa/intrinsics/debug
 iota.go	pass	
 ken/array.go	pass	
-ken/chan.go	fail	gd: internal error: package "os" without types was imported from "test"
-ken/chan1.go	fail	gd: internal error: package "runtime" without types was imported from "test"
+ken/chan.go	fail	gd: panic: runtime error: index out of range
+ken/chan1.go	fail	gd: panic: runtime error: index out of range
 ken/complit.go	pass	
 ken/convert.go	fail	c11: error: expected expression before ')' token
 ken/cplx0.go	fail	c11: error: initializer element is not constant
 ken/cplx1.go	fail	c11: error: initializer element is not constant
 ken/cplx2.go	fail	gd: unsupported builtin function
-ken/cplx3.go	fail	gd: internal error: package "reflect" without types was imported from "test"
-ken/cplx4.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+ken/cplx3.go	fail	gd: panic: runtime error: index out of range
+ken/cplx4.go	fail	gd: panic: runtime error: index out of range
 ken/cplx5.go	fail	gd: unsupported builtin function
-ken/divconst.go	fail	gd: internal error: package "math/rand" without types was imported from "test"
+ken/divconst.go	fail	gd: panic: runtime error: index out of range
 ken/divmod.go	pass	
 ken/embed.go	fail	gd: panic: interface conversion: types.Type is *types.Basic, not *types.Struct
 ken/for.go	pass	
@@ -2243,12 +2243,12 @@ ken/intervar.go	pass
 ken/label.go	pass	
 ken/litfun.go	pass	
 ken/mfunc.go	pass	
-ken/modconst.go	fail	gd: internal error: package "math/rand" without types was imported from "test"
+ken/modconst.go	fail	gd: panic: runtime error: index out of range
 ken/ptrfun.go	pass	
 ken/ptrvar.go	pass	
 ken/range.go	fail	gd: range over unsupported type *types.Map
 ken/rob1.go	pass	
-ken/rob2.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+ken/rob2.go	fail	gd: panic: runtime error: index out of range
 ken/robfor.go	pass	
 ken/robfunc.go	pass	
 ken/shift.go	fail	output: mismatch
@@ -2274,7 +2274,7 @@ linkobj.go	skip	gc:build !nacl && !js && gc && !wasip1
 linkx.go	skip	upstream:skip
 linkx_run.go	skip	gc:build !nacl && !js && !wasip1 && gc
 literal.go	fail	c11: error: integer constant is so large that it is unsigned
-literal2.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+literal2.go	fail	gd: panic: runtime error: index out of range
 live.go	skip	gc:diagnostics -live
 live1.go	fail	gd: function missing body
 live2.go	skip	gc:diagnostics -live
@@ -2285,12 +2285,12 @@ mainsig.go	skip	todo:errorcheck
 makechan.go	skip	todo:errorcheck
 makemap.go	skip	todo:errorcheck
 makenew.go	skip	todo:errorcheck
-makeslice.go	fail	gd: internal error: package "strings" without types was imported from "test"
+makeslice.go	fail	gd: panic: runtime error: index out of range
 mallocfin.go	skip	gc:finalizers runtime.SetFinalizer
-map.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+map.go	fail	gd: panic: runtime error: index out of range
 map1.go	skip	todo:errorcheck
-mapclear.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-maplinear.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+mapclear.go	fail	gd: panic: runtime error: index out of range
+maplinear.go	fail	gd: panic: runtime error: index out of range
 maymorestack.go	skip	gc:flags -gcflags=-d=maymorestack=main.mayMoreStack
 mergemul.go	skip	todo:runoutput
 method.go	fail	gd: panic: unexpected kindOf: test.T
@@ -2305,7 +2305,7 @@ named.go	fail	gd: unsupported type *types.Named
 named1.go	skip	todo:errorcheck
 newexpr.go	fail	c11: error: invalid operands to binary != (have 'go_arr2_go_ii' and 'go_arr2_go_ii')
 newinline.go	skip	gc:build goexperiment.newinliner
-nil.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+nil.go	fail	gd: panic: runtime error: index out of range
 nilcheck.go	skip	gc:diagnostics -d=nil
 nilptr.go	fail	gd: panic: runtime error: index out of range
 nilptr2.go	fail	c11: error: implicit declaration of function 'M1_F_go_main_package'; did you mean 'M_F_go_main_package'? [-Wimplicit-function…
@@ -2321,7 +2321,7 @@ nowritebarrier.go	skip	todo:errorcheck
 nul1.go	skip	todo:errorcheck
 opt_branchlikely.go	skip	gc:diagnostics -d=ssa/likelyadjust/debug=1,ssa/insert_resched_checks/off
 parentype.go	fail	gd: function missing body
-peano.go	fail	gd: internal error: package "runtime" without types was imported from "test"
+peano.go	fail	gd: panic: runtime error: index out of range
 phiopt.go	skip	gc:diagnostics -d=ssa/phiopt/debug=3
 print.go	fail	c11: error: 'struct <anonymous>' has no member named 'go_type'
 printbig.go	pass	
@@ -2334,23 +2334,23 @@ range2.go	skip	todo:errorcheck
 range3.go	pass	
 range4.go	fail	gd: panic: interface conversion: ast.Expr is *ast.StarExpr, not *ast.Ident
 rangegen.go	skip	todo:runoutput
-recover.go	fail	gd: internal error: package "os" without types was imported from "test"
-recover1.go	fail	gd: internal error: package "runtime" without types was imported from "test"
-recover2.go	fail	gd: internal error: package "strings" without types was imported from "test"
-recover3.go	fail	gd: internal error: package "runtime" without types was imported from "test"
+recover.go	fail	gd: panic: runtime error: index out of range
+recover1.go	fail	gd: panic: runtime error: index out of range
+recover2.go	fail	gd: panic: runtime error: index out of range
+recover3.go	fail	gd: panic: runtime error: index out of range
 recover4.go	skip	gc:import runtime/debug
 recover5.go	skip	todo:errorcheck
-reflectmethod1.go	fail	gd: internal error: package "reflect" without types was imported from "test"
-reflectmethod2.go	fail	gd: internal error: package "reflect" without types was imported from "test"
-reflectmethod3.go	fail	gd: internal error: package "reflect" without types was imported from "test"
-reflectmethod4.go	fail	gd: internal error: package "reflect" without types was imported from "test"
-reflectmethod5.go	fail	gd: internal error: package "reflect" without types was imported from "test"
-reflectmethod6.go	fail	gd: internal error: package "reflect" without types was imported from "test"
-reflectmethod7.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+reflectmethod1.go	fail	gd: panic: runtime error: index out of range
+reflectmethod2.go	fail	gd: panic: runtime error: index out of range
+reflectmethod3.go	fail	gd: panic: runtime error: index out of range
+reflectmethod4.go	fail	gd: panic: runtime error: index out of range
+reflectmethod5.go	fail	gd: panic: runtime error: index out of range
+reflectmethod6.go	fail	gd: panic: runtime error: index out of range
+reflectmethod7.go	fail	gd: panic: runtime error: index out of range
 reflectmethod8.go	fail	gd: panic: unsupported node type: DefinedType
-rename.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+rename.go	fail	gd: panic: runtime error: index out of range
 rename1.go	skip	todo:errorcheck
-reorder.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+reorder.go	fail	gd: panic: runtime error: index out of range
 reorder2.go	fail	c11: error: 'log' redeclared as different kind of symbol
 retjmp.go	skip	todo:buildrundir
 return.go	skip	todo:errorcheck
@@ -2363,9 +2363,9 @@ rune.go	fail	c11: error: 'maxRune' undeclared (first use in this function)
 runtime.go	skip	todo:errorcheck
 shift1.go	skip	todo:errorcheck
 shift2.go	fail	c11: error: invalid operands to binary << (have 'double' and 'go_uu' {aka 'long int'})
-shift3.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+shift3.go	fail	gd: panic: runtime error: index out of range
 sieve.go	pass	
-sigchld.go	fail	gd: internal error: package "syscall" without types was imported from "test"
+sigchld.go	fail	gd: panic: runtime error: index out of range
 simassign.go	fail	c11: error: incompatible type for argument 1 of 'swap_go_main_package'
 simd.go	skip	gc:build goexperiment.simd && amd64
 simd/bug1.go	skip	gc:build amd64 && goexperiment.simd
@@ -2380,14 +2380,14 @@ sliceopt.go	skip	gc:diagnostics -d=append,slice
 solitaire.go	pass	
 stack.go	fail	exit: signal: trace/breakpoint trap filc safety error: stack overflow.
 stackobj.go	skip	gc:finalizers runtime.SetFinalizer
-stackobj2.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+stackobj2.go	fail	gd: panic: runtime error: index out of range
 stackobj3.go	skip	gc:finalizers runtime.SetFinalizer
-strcopy.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+strcopy.go	fail	gd: panic: runtime error: index out of range
 strength.go	skip	todo:runoutput
-string_lit.go	fail	gd: internal error: package "os" without types was imported from "test"
-stringrange.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+string_lit.go	fail	gd: panic: runtime error: index out of range
+stringrange.go	fail	gd: panic: runtime error: index out of range
 struct0.go	fail	gd: unsupported map key type interface
-switch.go	fail	gd: internal error: package "os" without types was imported from "test"
+switch.go	fail	gd: panic: runtime error: index out of range
 switch2.go	skip	todo:errorcheck
 switch3.go	skip	todo:errorcheck
 switch4.go	skip	todo:errorcheck
@@ -2421,39 +2421,39 @@ turing.go	pass
 typecheck.go	skip	todo:errorcheck
 typecheckloop.go	skip	todo:errorcheck
 typeparam/absdiff.go	pass	
-typeparam/absdiff2.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/absdiff3.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/absdiff2.go	fail	gd: panic: runtime error: index out of range
+typeparam/absdiff3.go	fail	gd: panic: runtime error: index out of range
 typeparam/absdiffimp.go	skip	todo:rundir
 typeparam/absdiffimp2.go	skip	todo:rundir
-typeparam/adder.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/adder.go	fail	gd: panic: runtime error: index out of range
 typeparam/aliasimp.go	skip	todo:rundir
 typeparam/append.go	fail	gd: unsupported type *types.Named
-typeparam/boundmethod.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/boundmethod.go	fail	gd: panic: runtime error: index out of range
 typeparam/builtins.go	pass	
 typeparam/chans.go	skip	gc:finalizers runtime.SetFinalizer
 typeparam/chansimp.go	skip	todo:rundir
-typeparam/combine.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/cons.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/combine.go	fail	gd: panic: runtime error: index out of range
+typeparam/cons.go	fail	gd: panic: runtime error: index out of range
 typeparam/dedup.go	skip	todo:rundir
 typeparam/devirtualize1.go	fail	gd: panic: unsupported type assertion to interface interface
 typeparam/devirtualize2.go	fail	gd: panic: unsupported type assertion to interface interface
 typeparam/dictionaryCapture-noinline.go	skip	gc:flags -gcflags="-l"
-typeparam/dictionaryCapture.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/dictionaryCapture.go	fail	gd: panic: runtime error: index out of range
 typeparam/dottype.go	fail	gd: illegal type for print: (int, bool)
-typeparam/double.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/double.go	fail	gd: panic: runtime error: index out of range
 typeparam/eface.go	fail	gd: unsupported call for function of type xyz.Case
 typeparam/equal.go	fail	c11: error: invalid operands to binary == (have 'go_ii' {aka 'long int'} and 'go_vv')
-typeparam/fact.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/fact.go	fail	gd: panic: runtime error: index out of range
 typeparam/factimp.go	skip	todo:rundir
 typeparam/gencrawler.go	skip	todo:rundir
-typeparam/genembed.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/genembed2.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/genembed.go	fail	gd: panic: runtime error: index out of range
+typeparam/genembed2.go	fail	gd: panic: runtime error: index out of range
 typeparam/geninline.go	skip	todo:rundir
-typeparam/graph.go	fail	gd: internal error: package "errors" without types was imported from "test"
-typeparam/ifaceconv.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/importtest.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/index.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/index2.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/graph.go	fail	gd: panic: runtime error: index out of range
+typeparam/ifaceconv.go	fail	gd: panic: runtime error: index out of range
+typeparam/importtest.go	fail	gd: panic: runtime error: index out of range
+typeparam/index.go	fail	gd: panic: runtime error: index out of range
+typeparam/index2.go	fail	gd: panic: runtime error: index out of range
 typeparam/interfacearg.go	fail	gd: unsupported node type: DefinedType
 typeparam/issue23536.go	pass	
 typeparam/issue376214.go	fail	c11: error: incompatible type for argument 2 of 'go_append_u1'
@@ -2461,15 +2461,15 @@ typeparam/issue39755.go	pass
 typeparam/issue42758.go	fail	gd: panic: unsupported map key type interface
 typeparam/issue44688.go	fail	gd: unsupported index of test.B1
 typeparam/issue45547.go	pass	
-typeparam/issue45722.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/issue45722.go	fail	gd: panic: runtime error: index out of range
 typeparam/issue45738.go	pass	
-typeparam/issue45817.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/issue45817.go	fail	gd: panic: runtime error: index out of range
 typeparam/issue46461.go	pass	
 typeparam/issue46461b.go	skip	todo:compiledir
 typeparam/issue46472.go	pass	
 typeparam/issue46591.go	fail	gd: unsupported map key type interface
-typeparam/issue47258.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/issue47272.go	fail	gd: internal error: package "errors" without types was imported from "test"
+typeparam/issue47258.go	fail	gd: panic: runtime error: index out of range
+typeparam/issue47272.go	fail	gd: panic: runtime error: index out of range
 typeparam/issue47514.go	pass	
 typeparam/issue47514b.go	fail	c11: error: expected identifier or '(' before 'do'
 typeparam/issue47514c.go	skip	todo:rundir
@@ -2480,19 +2480,19 @@ typeparam/issue47684b.go	pass
 typeparam/issue47684c.go	pass	
 typeparam/issue47708.go	pass	
 typeparam/issue47710.go	pass	
-typeparam/issue47713.go	fail	gd: internal error: package "encoding" without types was imported from "test"
-typeparam/issue47716.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/issue47713.go	fail	gd: panic: runtime error: index out of range
+typeparam/issue47716.go	fail	gd: panic: runtime error: index out of range
 typeparam/issue47723.go	pass	
-typeparam/issue47740.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/issue47740b.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+typeparam/issue47740.go	fail	gd: panic: runtime error: index out of range
+typeparam/issue47740b.go	fail	gd: panic: runtime error: index out of range
 typeparam/issue47775.go	skip	todo:rundir
 typeparam/issue47775b.go	fail	c11: error: 'C__go_ii_go_main_package' {aka 'go_az'} has no member named 'reset_go_main_package'
-typeparam/issue47797.go	fail	c11: error: implicit declaration of function 'Bar_Bat_go_p_package'; did you mean 'init_go_p_package'? [-Wimplicit-function-d…
+typeparam/issue47797.go	fail	c11: error: implicit declaration of function 'Bar_Bat_go_test_package'; did you mean 'init_go_test_package'? [-Wimplicit-func…
 typeparam/issue47877.go	pass	
 typeparam/issue47878.go	pass	
 typeparam/issue47892.go	skip	todo:rundir
 typeparam/issue47892b.go	skip	todo:compiledir
-typeparam/issue47896.go	fail	gd: internal error: package "database/sql" without types was imported from "test"
+typeparam/issue47896.go	fail	gd: panic: runtime error: index out of range
 typeparam/issue47901.go	fail	gd: unsupported call for function of type xyz.Case
 typeparam/issue47924.go	pass	
 typeparam/issue47925.go	fail	c11: error: incompatible types when returning type 'go_if' but 'go_vv' was expected
@@ -2502,10 +2502,10 @@ typeparam/issue47925d.go	fail	gd: unsupported call for function of type xyz.Case
 typeparam/issue47929.go	skip	gc:flags -p=p
 typeparam/issue47948.go	pass	
 typeparam/issue47966.go	fail	gd: panic: unexpected kindOf: comparable
-typeparam/issue48013.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/issue48016.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/issue48013.go	fail	gd: panic: runtime error: index out of range
+typeparam/issue48016.go	fail	gd: panic: runtime error: index out of range
 typeparam/issue48030.go	pass	
-typeparam/issue48042.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/issue48042.go	fail	gd: panic: runtime error: index out of range
 typeparam/issue48047.go	fail	c11: error: unknown type name 'B_go_main_package'; did you mean 'BImpl_go_main_package'?
 typeparam/issue48049.go	fail	c11: error: unknown type name 'Fooer_go_main_package'
 typeparam/issue48056.go	pass	
@@ -2516,14 +2516,14 @@ typeparam/issue48185a.go	skip	todo:rundir
 typeparam/issue48185b.go	skip	todo:rundir
 typeparam/issue48191.go	skip	gc:flags -c=2
 typeparam/issue48198.go	pass	
-typeparam/issue48225.go	fail	gd: internal error: package "reflect" without types was imported from "test"
-typeparam/issue48253.go	fail	gd: internal error: package "reflect" without types was imported from "test"
-typeparam/issue48276a.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/issue48225.go	fail	gd: panic: runtime error: index out of range
+typeparam/issue48253.go	fail	gd: panic: runtime error: index out of range
+typeparam/issue48276a.go	fail	gd: panic: runtime error: index out of range
 typeparam/issue48276b.go	pass	
 typeparam/issue48280.go	skip	todo:rundir
 typeparam/issue48306.go	skip	todo:rundir
-typeparam/issue48317.go	fail	gd: internal error: package "encoding/json" without types was imported from "test"
-typeparam/issue48318.go	fail	gd: internal error: package "encoding/xml" without types was imported from "test"
+typeparam/issue48317.go	fail	gd: panic: runtime error: index out of range
+typeparam/issue48318.go	fail	gd: panic: runtime error: index out of range
 typeparam/issue48337a.go	skip	todo:rundir
 typeparam/issue48337b.go	skip	todo:rundir
 typeparam/issue48344.go	fail	c11: error: incompatible type for argument 2 of 'go_append_if01'
@@ -2538,7 +2538,7 @@ typeparam/issue48602.go	fail	gd: panic: unsupported index of test.IteratorFunc
 typeparam/issue48604.go	fail	gd: panic: unsupported index of test.Bar
 typeparam/issue48609.go	pass	
 typeparam/issue48617.go	fail	c11: error: unknown type name 'Foo_go_main_package'; did you mean 'Bar__go_ii_go_main_package'?
-typeparam/issue48645a.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/issue48645a.go	fail	gd: panic: runtime error: index out of range
 typeparam/issue48645b.go	fail	gd: panic: unsupported index of test.IteratorFunc
 typeparam/issue48711.go	skip	todo:errorcheck
 typeparam/issue48716.go	skip	todo:rundir
@@ -2548,7 +2548,7 @@ typeparam/issue49027.go	skip	todo:rundir
 typeparam/issue49049.go	fail	c11: error: unknown type name 'A_go_main_package'; did you mean 'Z_go_main_package'?
 typeparam/issue49241.go	skip	todo:rundir
 typeparam/issue49246.go	skip	todo:compiledir
-typeparam/issue49295.go	fail	gd: internal error: package "io" without types was imported from "test"
+typeparam/issue49295.go	fail	gd: panic: runtime error: index out of range
 typeparam/issue49309.go	pass	
 typeparam/issue49421.go	pass	
 typeparam/issue49432.go	fail	c11: error: 'Foo__go_ii_go_main_package' {aka 'go_az'} has no member named 'Bar_go_main_package'
@@ -2557,27 +2557,27 @@ typeparam/issue49516.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on 
 typeparam/issue49524.go	skip	todo:rundir
 typeparam/issue49536.go	skip	todo:compiledir
 typeparam/issue49538.go	pass	
-typeparam/issue49547.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/issue49547.go	fail	gd: panic: runtime error: index out of range
 typeparam/issue49611.go	pass	
 typeparam/issue49659.go	skip	todo:compiledir
 typeparam/issue49659b.go	pass	
 typeparam/issue49667.go	skip	todo:rundir
 typeparam/issue49875.go	pass	
 typeparam/issue49893.go	skip	todo:compiledir
-typeparam/issue50002.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/issue50109.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/issue50002.go	fail	gd: panic: runtime error: index out of range
+typeparam/issue50109.go	fail	gd: panic: runtime error: index out of range
 typeparam/issue50109b.go	pass	
 typeparam/issue50121.go	skip	todo:rundir
 typeparam/issue50121b.go	skip	todo:rundir
 typeparam/issue50147.go	pass	
-typeparam/issue50177.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/issue50193.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/issue50177.go	fail	gd: panic: runtime error: index out of range
+typeparam/issue50193.go	fail	gd: panic: runtime error: index out of range
 typeparam/issue50259.go	fail	gd: panic: unexpected kindOf: test.T
 typeparam/issue50264.go	pass	
 typeparam/issue50317.go	skip	todo:errorcheck
 typeparam/issue50417.go	pass	
 typeparam/issue50417b.go	pass	
-typeparam/issue50419.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/issue50419.go	fail	gd: panic: runtime error: index out of range
 typeparam/issue50437.go	skip	todo:compiledir
 typeparam/issue50481b.go	skip	todo:rundir
 typeparam/issue50481c.go	skip	todo:rundir
@@ -2586,10 +2586,10 @@ typeparam/issue50486.go	skip	todo:compiledir
 typeparam/issue50552.go	skip	todo:compiledir
 typeparam/issue50561.go	skip	todo:compiledir
 typeparam/issue50598.go	skip	todo:rundir
-typeparam/issue50642.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/issue50690a.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/issue50690b.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/issue50690c.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/issue50642.go	fail	gd: panic: runtime error: index out of range
+typeparam/issue50690a.go	fail	gd: panic: runtime error: index out of range
+typeparam/issue50690b.go	fail	gd: panic: runtime error: index out of range
+typeparam/issue50690c.go	fail	gd: panic: runtime error: index out of range
 typeparam/issue50833.go	pass	
 typeparam/issue50841.go	skip	todo:compiledir
 typeparam/issue50993.go	skip	gc:flags -d=checkptr
@@ -2600,11 +2600,11 @@ typeparam/issue51233.go	skip	todo:errorcheck
 typeparam/issue51236.go	pass	
 typeparam/issue51245.go	pass	
 typeparam/issue51250a.go	skip	todo:rundir
-typeparam/issue51303.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/issue51303.go	fail	gd: panic: runtime error: index out of range
 typeparam/issue51355.go	fail	c11: error: conflicting types for 'value'; have 'go_ss *'
 typeparam/issue51367.go	skip	todo:rundir
 typeparam/issue51423.go	skip	todo:compiledir
-typeparam/issue51521.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/issue51521.go	fail	gd: panic: runtime error: index out of range
 typeparam/issue51522a.go	fail	c11: error: invalid operands to binary != (have 'go_vv' and 'go_ii' {aka 'long int'})
 typeparam/issue51522b.go	fail	c11: error: invalid operands to binary == (have 'go_vv' and 'go_ii' {aka 'long int'})
 typeparam/issue51700.go	fail	gd: unsupported type assertion to interface interface
@@ -2613,13 +2613,13 @@ typeparam/issue51832.go	pass
 typeparam/issue51836.go	skip	todo:compiledir
 typeparam/issue51840.go	pass	
 typeparam/issue51909.go	pass	
-typeparam/issue51925.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/issue51925.go	fail	gd: panic: runtime error: index out of range
 typeparam/issue52026.go	fail	c11: error: unknown type name 'Option_go_main_package'; did you mean 'None_go_main_package'?
 typeparam/issue52117.go	skip	todo:compiledir
 typeparam/issue52124.go	fail	gd: panic: unexpected kindOf: any
 typeparam/issue52228.go	fail	gd: unsupported type assertion to interface test.SomeInterface
 typeparam/issue52241.go	fail	c11: error: 'Collector__go_ii_go_main_package' {aka 'go_az'} has no member named 'Collect_go_main_package'
-typeparam/issue53087.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/issue53087.go	fail	gd: panic: runtime error: index out of range
 typeparam/issue53254.go	pass	
 typeparam/issue53390.go	fail	gd: unsupported node type: BuiltinFunction
 typeparam/issue53406.go	fail	c11: error: implicit declaration of function 'Outer__go_ii__go_ii_M_go_main_package'; did you mean 'Outer__go_ii__go_ii_go_ma…
@@ -2629,21 +2629,21 @@ typeparam/issue53762.go	fail	gd: unsupported call for function of type xyz.Case
 typeparam/issue54135.go	fail	gd: unsupported type assertion to interface interface
 typeparam/issue54225.go	pass	
 typeparam/issue54302.go	skip	todo:rundir
-typeparam/issue54456.go	fail	gd: internal error: package "reflect" without types was imported from "test"
+typeparam/issue54456.go	fail	gd: panic: runtime error: index out of range
 typeparam/issue54497.go	skip	gc:diagnostics -m
 typeparam/issue54535.go	pass	
 typeparam/issue54537.go	pass	
 typeparam/issue54765.go	skip	gc:build cgo
 typeparam/issue55101.go	pass	
 typeparam/issue58513.go	skip	gc:stack-introspection runtime.Caller
-typeparam/list.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/list2.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/list.go	fail	gd: panic: runtime error: index out of range
+typeparam/list2.go	fail	gd: panic: runtime error: index out of range
 typeparam/listimp.go	skip	todo:rundir
 typeparam/listimp2.go	skip	todo:rundir
-typeparam/lockable.go	fail	gd: internal error: package "sync" without types was imported from "test"
-typeparam/map.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/lockable.go	fail	gd: panic: runtime error: index out of range
+typeparam/map.go	fail	gd: panic: runtime error: index out of range
 typeparam/mapimp.go	skip	todo:rundir
-typeparam/maps.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/maps.go	fail	gd: panic: runtime error: index out of range
 typeparam/mapsimp.go	skip	todo:rundir
 typeparam/mdempsky/1.go	skip	todo:compiledir
 typeparam/mdempsky/10.go	skip	todo:rundir
@@ -2651,9 +2651,9 @@ typeparam/mdempsky/12.go	skip	todo:rundir
 typeparam/mdempsky/13.go	fail	gd: panic: unsupported node type: DefinedType
 typeparam/mdempsky/14.go	fail	gd: panic: unexpected kindOf: test.AnyInt
 typeparam/mdempsky/15.go	skip	gc:goexperiment fieldtrack
-typeparam/mdempsky/16.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/mdempsky/17.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/mdempsky/18.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/mdempsky/16.go	fail	gd: panic: runtime error: index out of range
+typeparam/mdempsky/17.go	fail	gd: panic: runtime error: index out of range
+typeparam/mdempsky/18.go	fail	gd: panic: runtime error: index out of range
 typeparam/mdempsky/19.go	fail	gd: unsupported node type: DefinedType
 typeparam/mdempsky/2.go	fail	gd: panic: unsupported call for function of type xyz.Case
 typeparam/mdempsky/20.go	fail	gd: unsupported index of test.T
@@ -2665,49 +2665,49 @@ typeparam/mdempsky/6.go	fail	gd: unsupported index of test.I
 typeparam/mdempsky/7.go	skip	todo:compiledir
 typeparam/mdempsky/8.go	skip	todo:errorcheck
 typeparam/mdempsky/9.go	fail	c11: error: lvalue required as left operand of assignment
-typeparam/metrics.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/min.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/metrics.go	fail	gd: panic: runtime error: index out of range
+typeparam/min.go	fail	gd: panic: runtime error: index out of range
 typeparam/mincheck.go	skip	todo:errorcheck
 typeparam/minimp.go	skip	todo:rundir
 typeparam/mutualimp.go	skip	todo:compiledir
-typeparam/nested.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/ordered.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/nested.go	fail	gd: panic: runtime error: index out of range
+typeparam/ordered.go	fail	gd: panic: runtime error: index out of range
 typeparam/orderedmap.go	skip	gc:finalizers runtime.SetFinalizer
 typeparam/orderedmapsimp.go	skip	todo:rundir
-typeparam/pair.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/pair.go	fail	gd: panic: runtime error: index out of range
 typeparam/pairimp.go	skip	todo:rundir
 typeparam/pragma.go	skip	gc:diagnostics -m
 typeparam/recoverimp.go	skip	todo:rundir
 typeparam/select.go	skip	todo:rundir
-typeparam/sets.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/sets.go	fail	gd: panic: runtime error: index out of range
 typeparam/setsimp.go	skip	todo:rundir
-typeparam/settable.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/settable.go	fail	gd: panic: runtime error: index out of range
 typeparam/shape1.go	fail	output: mismatch
-typeparam/shape_assert.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/shape_assert.go	fail	gd: panic: runtime error: index out of range
 typeparam/sliceimp.go	skip	todo:rundir
-typeparam/slices.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/smallest.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/slices.go	fail	gd: panic: runtime error: index out of range
+typeparam/smallest.go	fail	gd: panic: runtime error: index out of range
 typeparam/smoketest.go	fail	gd: panic: unexpected kindOf: test.T1
-typeparam/stringable.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/stringer.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/stringable.go	fail	gd: panic: runtime error: index out of range
+typeparam/stringer.go	fail	gd: panic: runtime error: index out of range
 typeparam/stringerimp.go	skip	todo:rundir
-typeparam/struct.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/struct.go	fail	gd: panic: runtime error: index out of range
 typeparam/structinit.go	skip	todo:rundir
-typeparam/subdict.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/sum.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/subdict.go	fail	gd: panic: runtime error: index out of range
+typeparam/sum.go	fail	gd: panic: runtime error: index out of range
 typeparam/tparam1.go	skip	todo:errorcheck
 typeparam/typelist.go	pass	
 typeparam/typeswitch1.go	fail	gd: unsupported type switch case interface
-typeparam/typeswitch2.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/typeswitch2.go	fail	gd: panic: runtime error: index out of range
 typeparam/typeswitch3.go	fail	gd: unsupported type switch case test.I (an interface with methods)
 typeparam/typeswitch4.go	fail	gd: unsupported type switch case test.I (an interface with methods)
 typeparam/typeswitch5.go	fail	gd: unsupported type switch case interface
 typeparam/typeswitch6.go	fail	gd: unsupported type switch case interface
 typeparam/typeswitch7.go	fail	gd: unsupported type switch case interface
 typeparam/valimp.go	skip	todo:rundir
-typeparam/value.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeswitch.go	fail	gd: internal error: package "os" without types was imported from "test"
-typeswitch1.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+typeparam/value.go	fail	gd: panic: runtime error: index out of range
+typeswitch.go	fail	gd: panic: runtime error: index out of range
+typeswitch1.go	fail	gd: panic: runtime error: index out of range
 typeswitch2.go	skip	todo:errorcheck
 typeswitch2b.go	skip	todo:errorcheck
 typeswitch3.go	skip	todo:errorcheck
@@ -2716,19 +2716,19 @@ uintptrescapes2.go	skip	gc:diagnostics -m
 uintptrescapes3.go	skip	gc:finalizers runtime.SetFinalizer
 uintptrkeepalive.go	skip	todo:errorcheck
 undef.go	skip	todo:errorcheck
-unsafe_slice_data.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+unsafe_slice_data.go	fail	gd: panic: runtime error: index out of range
 unsafe_string.go	fail	gd: panic: unsupported node type: BuiltinFunction
-unsafe_string_data.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-unsafebuiltins.go	fail	gd: internal error: package "math" without types was imported from "test"
+unsafe_string_data.go	fail	gd: panic: runtime error: index out of range
+unsafebuiltins.go	fail	gd: constant 18446744073709551616 overflows 64 bits
 used.go	skip	todo:errorcheck
-utf.go	fail	gd: internal error: package "unicode/utf8" without types was imported from "test"
+utf.go	fail	gd: append expects exactly two arguments, got 3
 varerr.go	skip	todo:errorcheck
 varinit.go	fail	exit: exit status 2 panic: fail
 wasmexport.go	skip	upstream:build wasm
 wasmexport2.go	skip	upstream:build wasm
 wasmmemsize.go	skip	upstream:build wasm
 weak.go	skip	todo:errorcheck
-winbatch.go	fail	gd: internal error: package "bytes" without types was imported from "test"
+winbatch.go	fail	gd: panic: runtime error: index out of range
 writebarrier.go	skip	gc:diagnostics -d=wb
-zerodivide.go	fail	gd: internal error: package "fmt" without types was imported from "test"
+zerodivide.go	fail	gd: panic: runtime error: index out of range
 zerosize.go	fail	exit: exit status 2 panic: FAIL

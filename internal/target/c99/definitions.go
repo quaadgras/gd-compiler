@@ -120,7 +120,7 @@ func (c99 Target) TypeDefinition(spec source.TypeDefinition) error {
 
 	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 	fmt.Fprintf(c99, "const go_type go_type_%s%s = {", spec.Name.String, rsuffix)
-	fmt.Fprintf(c99, ".name=%q,", c99.CurrentPackage+"."+spec.Name.String)
+	fmt.Fprintf(c99, ".name=%q,", c99.CurrentName+"."+spec.Name.String)
 	kind := kindOf(spec.Type.TypeAndValue().Type)
 	fmt.Fprintf(c99, ".kind=go_kind_%s", kind)
 	switch rtype := spec.Type.TypeAndValue().Type.(type) {

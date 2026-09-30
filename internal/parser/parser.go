@@ -5,6 +5,7 @@ import (
 	"go/ast"
 	"go/token"
 	"go/types"
+	"sort"
 	"strings"
 
 	"github.com/quaadgras/gd-compiler/internal/source"
@@ -12,9 +13,11 @@ import (
 	"runtime.link/xyz"
 )
 
-func Load(dir string, test bool) (map[string]source.Package, error) {
+// Load loads the package in dir, and the packages it imports, in dependency order (the
+// package in dir is last).
+func Load(dir string, test bool) ([]source.Package, error) {
 	config := &packages.Config{
-		Mode:  packages.NeedName | packages.NeedFiles | packages.NeedCompiledGoFiles | packages.NeedImports | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedSyntax,
+		Mode:  packages.NeedName | packages.NeedFiles | packages.NeedCompiledGoFiles | packages.NeedImports | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedSyntax | packages.NeedDeps,
 		Dir:   dir,
 		Tests: test,
 	}
@@ -22,9 +25,29 @@ func Load(dir string, test bool) (map[string]source.Package, error) {
 	if err != nil {
 		return nil, err
 	}
-	var results = make(map[string]source.Package)
+	var results []source.Package
+	seen := make(map[string]bool)
+	var visit func(pkg *packages.Package)
+	visit = func(pkg *packages.Package) {
+		if seen[pkg.ID] {
+			return
+		}
+		seen[pkg.ID] = true
+		var paths []string
+		for path := range pkg.Imports {
+			paths = append(paths, path)
+		}
+		sort.Strings(paths)
+		for _, path := range paths {
+			visit(pkg.Imports[path])
+		}
+		if loaded, ok := loadPackage(pkg, test); ok {
+			loaded.Imports = paths
+			results = append(results, loaded)
+		}
+	}
 	for _, pkg := range pkgs {
-		loadPackage(config, results, pkg, test)
+		visit(pkg)
 	}
 	return results, nil
 }
@@ -196,7 +219,7 @@ func loadIdentifier(pkg *source.Package, in *ast.Ident) source.Identifier {
 	}
 	var pkgname string
 	if object != nil && object.Pkg() != nil {
-		pkgname = object.Pkg().Name()
+		pkgname = source.PackageIdent(object.Pkg())
 	}
 	return source.Identifier{
 		Typed:    typedIn(pkg, in),
@@ -211,23 +234,23 @@ func loadIdentifier(pkg *source.Package, in *ast.Ident) source.Identifier {
 	}
 }
 
-func loadPackage(config *packages.Config, into map[string]source.Package, pkg *packages.Package, test bool) error {
+func loadPackage(pkg *packages.Package, test bool) (source.Package, bool) {
+	if pkg.TypesInfo == nil || pkg.Types == nil {
+		return source.Package{}, false
+	}
 	var loaded = source.Package{
 		Info:    *pkg.TypesInfo,
 		Name:    pkg.Name,
+		Path:    pkg.PkgPath,
+		Ident:   source.PackageIdent(pkg.Types),
 		FileSet: pkg.Fset,
 		Test:    test,
 	}
-	if strings.HasSuffix(pkg.ID, ".test") {
-		return nil
-	}
-	if (strings.HasSuffix(pkg.ID, ".test]") && !test) || (!strings.HasSuffix(pkg.ID, ".test]") && test) {
-		return nil
+	if strings.HasSuffix(pkg.ID, ".test") || (!test && strings.HasSuffix(pkg.ID, ".test]")) {
+		return loaded, false
 	}
 	for _, file := range pkg.Syntax {
 		loaded.Files = append(loaded.Files, loadFile(&loaded, file))
 	}
-	into[pkg.Name] = loaded
-	// Skip loading dependencies for now - only compile the requested package
-	return nil
+	return loaded, true
 }

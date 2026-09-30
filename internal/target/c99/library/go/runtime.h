@@ -45,10 +45,10 @@ typedef struct {
 
 typedef struct { go_up Stack0[32]; } StackRecord_go_runtime_package;
 typedef struct { go_i8 Count; go_i8 Cycles; StackRecord_go_runtime_package StackRecord; } BlockProfileRecord_go_runtime_package;
-typedef struct {} Cleanup_go_runtime_package;
+typedef struct { char _; } Cleanup_go_runtime_package;
 
 static inline go_ll StackRecord_Stack_go_runtime_package(StackRecord_go_runtime_package* sr) {
-    return (go_ll){};
+    return (go_ll){0};
 }
 
 static const go_ss Compiler_go_runtime_package = go_string_const("gd");
@@ -56,7 +56,7 @@ static const go_ss GOARCH_go_runtime_package = go_string_const(go_ARCH);
 static const go_ss GOOS_go_runtime_package = go_string_const(go_OS);
 extern go_ii MemProfileRate_go_runtime_package;
 
-static inline go_aaiitfzz BlockProfile_go_runtime_package(go_ll p) { return (go_aaiitfzz){}; }
+static inline go_aaiitfzz BlockProfile_go_runtime_package(go_ll p) { return (go_aaiitfzz){0}; }
 static inline void Breakpoint_go_runtime_package(void) {
     #if defined(_MSC_VER)
         __debugbreak();
@@ -79,22 +79,22 @@ static inline void Breakpoint_go_runtime_package(void) {
         // Do nothing on unsupported platforms
     #endif
 }
-static inline go_aaupssiitfzz Caller_go_runtime_package(go_ii skip) { return (go_aaupssiitfzz){}; }
+static inline go_aaupssiitfzz Caller_go_runtime_package(go_ii skip) { return (go_aaupssiitfzz){0}; }
 static inline go_ii Callers_go_runtime_package(go_ii skip, go_ll pc) { return 0; }
 static inline void GC_go_runtime_package(void) {}
 static inline go_ii GOMAXPROCS_go_runtime_package(go_ii n) { return -1; }
 static inline void Goexit_go_runtime_package(void) { thrd_exit(0); }
-static inline go_aaiitfzz GoroutineProfile_go_runtime_package(go_ll p) { return (go_aaiitfzz){}; }
+static inline go_aaiitfzz GoroutineProfile_go_runtime_package(go_ll p) { return (go_aaiitfzz){0}; }
 static inline void Gosched_go_runtime_package(void) { thrd_yield(); }
-static inline void KeepAlive_go_runtime_package(go_vv x) {};
+static inline void KeepAlive_go_runtime_package(go_vv x) { (void)x; }
 static inline void LockOSThread_go_runtime_package(void) {}
-static inline go_aaiitfzz MemProfile_go_runtime_package(go_ll p, go_tf inuseZero) { return (go_aaiitfzz){}; }
-static inline go_aaiitfzz MutexProfile_go_runtime_package(go_ll p) { return (go_aaiitfzz){}; }
+static inline go_aaiitfzz MemProfile_go_runtime_package(go_ll p, go_tf inuseZero) { return (go_aaiitfzz){0}; }
+static inline go_aaiitfzz MutexProfile_go_runtime_package(go_ll p) { return (go_aaiitfzz){0}; }
 static inline go_ii NumCPU_go_runtime_package(void) { return 1; }
 static inline go_ii NumCgoCall_go_runtime_package(void) { return 0; }
 static inline go_ii NumGoroutine_go_runtime_package(void) { return 1; }
 static inline void ReadMemStats_go_runtime_package(go_pt m) {}
-static inline go_ll ReadTrace_go_runtime_package(void) { return (go_ll){}; }
+static inline go_ll ReadTrace_go_runtime_package(void) { return (go_ll){0}; }
 static inline void SetBlockProfileRate_go_runtime_package(go_ii rate) {}
 static inline void SetCPUProfileRate_go_runtime_package(go_ii hz) {}
 static inline void SetCgoTraceback_go_runtime_package(go_ii version, go_pt traceback, go_pt context, go_pt symbolizer) {}
@@ -104,12 +104,12 @@ static inline go_ii SetMutexProfileFraction_go_runtime_package(go_ii rate) { ret
 static inline go_ii Stack_go_runtime_package(go_ll buf, go_tf all) { return 0; }
 static inline go_if StartTrace_go_runtime_package(void) { return New_go_errors_package(go_string_new("tracing not supported")); }
 static inline void StopTrace_go_runtime_package(void) {}
-static inline go_aaiitfzz ThreadCreateProfile_go_runtime_package(go_ll p) { return (go_aaiitfzz){}; }
+static inline go_aaiitfzz ThreadCreateProfile_go_runtime_package(go_ll p) { return (go_aaiitfzz){0}; }
 static inline void UnlockOSThread_go_runtime_package(void) {}
 static inline go_ss Version_go_runtime_package(void) { return go_string_new("go1.25.1"); }
 
 static inline Cleanup_go_runtime_package AddCleanup_go_runtime_package(const go_type T, const go_type S, go_pt ptr, go_fn cleanup, void* arg) {
-    return (Cleanup_go_runtime_package){};
+    return (Cleanup_go_runtime_package){0};
 }
 static inline void Cleanup_Stop_go_runtime_package(Cleanup_go_runtime_package c) {}
 
@@ -128,33 +128,29 @@ typedef struct {
     go_up Entry;
 } Frame_go_runtime_package;
 
-typedef struct {
-
-} Frames_go_runtime_package;
+typedef struct { char _; } Frames_go_runtime_package;
 
 typedef struct {
     Frame_go_runtime_package f1;
     go_tf f2;
 } go_aa__runtime_Frame__tfzz;
 
-static inline go_pt CallersFrames(go_ll callers) { return (go_pt){}; }
+static inline go_pt CallersFrames(go_ll callers) { return (go_pt){0}; }
 static inline go_aa__runtime_Frame__tfzz Next_go_runtime_package(void) {
-    return (go_aa__runtime_Frame__tfzz){};
+    return (go_aa__runtime_Frame__tfzz){0};
 }
 
-typedef struct {
-
-} Func_go_runtime_package;
+typedef struct { char _; } Func_go_runtime_package;
 
 typedef struct {
     go_ss f1;
     go_ii f2;
 } go_aassiizz;
 
-static inline go_pt FuncForPC_go_runtime_package(go_up pc) { return (go_pt){}; }
-static inline go_up Func_Entry_go_runtime_package(go_pt f) { return (go_up){}; }
-static inline go_aassiizz Func_FileLine_go_runtime_package(go_pt f) { return (go_aassiizz){}; }
-static inline go_ss Func_Name_go_runtime_package(go_pt f) { return (go_ss){}; }
+static inline go_pt FuncForPC_go_runtime_package(go_up pc) { return (go_pt){0}; }
+static inline go_up Func_Entry_go_runtime_package(go_pt f) { return (go_up){0}; }
+static inline go_aassiizz Func_FileLine_go_runtime_package(go_pt f) { return (go_aassiizz){0}; }
+static inline go_ss Func_Name_go_runtime_package(go_pt f) { return (go_ss){0}; }
 
 typedef struct {
     go_i8 AllocBytes;
@@ -173,25 +169,22 @@ static inline go_ii MemProfileRecord_InUseObjects_go_runtime_package(go_pt r) {
     return record.AllocObjects - record.FreeObjects;
 }
 static inline go_ll MemProfileRecord_Stack0_go_runtime_package(void) {
-    return (go_ll){};
+    return (go_ll){0};
 }
 
-typedef struct {
-} PanicNilError_go_runtime_package;
+typedef struct { char _; } PanicNilError_go_runtime_package;
 
 static inline go_ss PanicNilError_Error_go_runtime_package(PanicNilError_go_runtime_package p) {
     return go_string_new("runtime error: invalid memory address or nil pointer dereference");
 }
 static inline void PanicNilError_RuntimeError_go_runtime_package(PanicNilError_go_runtime_package p) {}
 
-typedef struct {
-} Pinner_go_runtime_package;
+typedef struct { char _; } Pinner_go_runtime_package;
 
 static inline void Pinner_Pin_go_runtime_package(Pinner_go_runtime_package* p, go_vv pointer) {}
 static inline void Pinner_Unpin_go_runtime_package(Pinner_go_runtime_package* p) {}
 
-typedef struct {
-} TypeAssertionError_go_runtime_package;
+typedef struct { char _; } TypeAssertionError_go_runtime_package;
 
 static inline go_ss TypeAssertionError_Error_go_runtime_package(TypeAssertionError_go_runtime_package e) {
     return go_string_new("interface conversion: interface is nil, not ");
