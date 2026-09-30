@@ -165,8 +165,10 @@ typedef struct { char _; } go_tuple;
 // go_main defines C's main, that runs the Go main function as the main goroutine (with a
 // larger stack than C's main thread may have, as Go's stacks grow), then exits.
 int go_run_main(int (*main)(void));
+extern int go_argc; // the command-line arguments, for os.Args.
+extern char** go_argv;
 #define go_main() static int go_main_goroutine(void); \
-    int main(int argc, char* argv[]) { (void)argc; (void)argv; return go_run_main(go_main_goroutine); } \
+    int main(int argc, char* argv[]) { go_argc = argc; go_argv = argv; return go_run_main(go_main_goroutine); } \
     static int go_main_goroutine(void)
 static inline void go_print(const char* format, ...) {
     va_list args;

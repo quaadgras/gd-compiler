@@ -19,6 +19,13 @@ func (c99 Target) methodTable(t types.Type) string {
 	if !ok || named.Obj().Pkg() == nil {
 		return ""
 	}
+	if IsNative(named.Obj().Pkg().Path()) { // which implement some of the methods of their types.
+		symbol := "go_methods_" + c99.typeCName(named) + "_go_" + source.PackageIdent(named.Obj().Pkg()) + "_package"
+		if _, isPointer := t.Underlying().(*types.Pointer); isPointer {
+			symbol = "go_methods_ptr_" + strings.TrimPrefix(symbol, "go_methods_")
+		}
+		return fmt.Sprintf("\n#ifdef %[1]s\n, .methods=%[1]s, .nmethods=go_n%[2]s\n#endif\n", symbol, strings.TrimPrefix(symbol, "go_"))
+	}
 	if _, ok := named.Underlying().(*types.Interface); ok {
 		return ""
 	}

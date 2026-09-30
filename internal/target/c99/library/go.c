@@ -449,6 +449,9 @@ go_tf go_type_eq(const go_type* a, const go_type* b) {
     return a->kind == b->kind && strcmp(a->name, b->name) == 0;
 }
 
+int go_argc;
+char** go_argv;
+
 go_tf go_vv_eq(go_vv a, go_vv b) {
     if (!a.go_type || !b.go_type) return a.go_type == b.go_type;
     if (!go_type_eq(a.go_type, b.go_type)) return false;

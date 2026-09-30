@@ -8,6 +8,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/quaadgras/gd-compiler/internal/escape"
 	"github.com/quaadgras/gd-compiler/internal/parser"
@@ -50,8 +51,16 @@ func Build(dir string, test bool) error {
 	}
 	compile := make(map[string]bool)
 	var visit func(path string)
+	native := make(map[string]bool)
 	visit = func(path string) {
-		if compile[path] || IsNative(path) {
+		if compile[path] || native[path] {
+			return
+		}
+		if IsNative(path) { // with the packages that its implementation uses.
+			native[path] = true
+			for _, imported := range nativeImports(path) {
+				visit(imported)
+			}
 			return
 		}
 		compile[path] = true
@@ -62,6 +71,16 @@ func Build(dir string, test bool) error {
 	if len(packages) > 0 {
 		visit(packages[len(packages)-1].Path)
 	}
+	for path := range native { // the implementation of native packages (their header is in library/go).
+		if hooks, err := fs.ReadFile(library, "library/hooks/"+path+".c"); err == nil {
+			if err := os.MkdirAll("./.c/go/"+path, 0755); err != nil {
+				return err
+			}
+			if err := os.WriteFile("./.c/go/"+path+"/native.c", hooks, 0644); err != nil {
+				return err
+			}
+		}
+	}
 	for _, pkg := range packages {
 		if !compile[pkg.Path] {
 			continue
@@ -71,6 +90,29 @@ func Build(dir string, test bool) error {
 		}
 	}
 	return nil
+}
+
+// hasNativeInit reports whether the package with the path is native, and implemented by a
+// file (library/hooks), which defines its init function.
+func hasNativeInit(path string) bool {
+	_, err := fs.Stat(library, "library/hooks/"+path+".c")
+	return err == nil && IsNative(path)
+}
+
+// nativeImports returns the import paths of the packages that the implementation of the
+// native package with the path uses, from the "// gd:import path" lines of its header.
+func nativeImports(path string) []string {
+	header, err := fs.ReadFile(library, "library/go/"+path+".h")
+	if err != nil {
+		return nil
+	}
+	var imports []string
+	for _, line := range strings.Split(string(header), "\n") {
+		if imported, ok := strings.CutPrefix(line, "// gd:import "); ok {
+			imports = append(imports, strings.TrimSpace(imported))
+		}
+	}
+	return imports
 }
 
 // IsNative reports whether the package with the import path is implemented in C11, by a
@@ -169,7 +211,7 @@ func compilePackage(pkg source.Package, compiled map[string]bool, byPath map[str
 	// A package is initialized once, after the packages it imports.
 	fmt.Fprintf(init, "\nvoid init_go_%s_package(void) {\n\tstatic go_tf done = false;\n\tif (done) return;\n\tdone = true;", pkg.Ident)
 	for _, imported := range pkg.Imports {
-		if compiled[imported] {
+		if compiled[imported] || hasNativeInit(imported) {
 			fmt.Fprintf(init, "\n\tinit_go_%s_package();", byPath[imported].Ident)
 		}
 	}
