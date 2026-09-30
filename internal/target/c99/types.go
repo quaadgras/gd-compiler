@@ -149,7 +149,7 @@ func (c99 Target) ArrayTypeOf(typ *types.Array) string {
 	symbol := fmt.Sprintf("go_arr%d_%s", typ.Len(), identifier.ReplaceAllString(elem, "_"))
 	c99.Requires(symbol, c99.Private, func(w io.Writer) error {
 		// C has no zero length arrays, so [0]T has room for one element.
-		fmt.Fprintf(w, "\n#ifndef %[1]s_defined\n#define %[1]s_defined\ntypedef struct { %[2]s a[%[3]d]; } %[1]s;\n#endif",
+		fmt.Fprintf(w, "\n#ifndef %[1]s_defined\n#define %[1]s_defined\ntypedef struct { %[2]s a[%[3]d]; } %[1]s;\n#endif\n",
 			symbol, elem, max(typ.Len(), 1))
 		return nil
 	})

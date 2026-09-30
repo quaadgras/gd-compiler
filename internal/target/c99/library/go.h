@@ -143,6 +143,20 @@ static inline void go_print(const char* format, ...) {
     va_end(args);
 }
 
+// print and println, see runtime/print.go. Output goes to stderr, as with gc.
+void go_print_string(go_ss s);
+void go_print_cstring(const char* s);
+void go_print_bool(go_tf v);
+void go_print_int(go_i8 v);
+void go_print_uint(go_u8 v);
+void go_print_float64(go_f8 v);
+void go_print_float32(go_f4 v);
+void go_print_complex128(go_aaf8f8zz v);
+void go_print_complex64(go_aaf4f4zz v);
+void go_print_pointer(go_up p);
+void go_print_slice(go_ll s);
+void go_print_iface(go_up type, go_up data);
+
 typedef go_u8 (*go_hash)(const void *item, go_u8 seed0, go_u8 seed1);
 typedef go_tf (*go_same)(const void *a, const void *b);
 

@@ -2,6 +2,8 @@
 
 #include <go.h>
 #include <string.h>
+#include <math.h>
+#include <inttypes.h>
 #include <stdlib.h>
 #include <threads.h>
 #include "map.h"
@@ -144,4 +146,116 @@ go_ll go_slice(go_ll s, go_ii elem_size, go_ii low, go_ii high, go_ii cap) {
 go_vv go_any_new(size_t size, void* value, const go_type* go_type) {
     go_pt p = go_new(size, value);
     return (go_vv){ .ptr = p, .go_type = go_type };
+}
+
+// print and println, see runtime/print.go.
+
+static void go_print_bytes(const char* p, size_t n) {
+    if (n == 0) return;
+    fwrite(p, 1, n, stderr);
+}
+
+void go_print_cstring(const char* s) { go_print_bytes(s, strlen(s)); }
+void go_print_string(go_ss s) { go_print_bytes(s.ptr, (size_t)go_string_len(s)); }
+void go_print_bool(go_tf v) { go_print_cstring(v ? "true" : "false"); }
+void go_print_int(go_i8 v) { fprintf(stderr, "%" PRId64, v); }
+void go_print_uint(go_u8 v) { fprintf(stderr, "%" PRIu64, v); }
+void go_print_pointer(go_up p) { fprintf(stderr, "0x%" PRIxPTR, p); }
+
+// go_format_float formats v like strconv.FormatFloat(v, 'g', -1, bits), into buf, which
+// must have room for 32 bytes.
+static void go_format_float(char* buf, double v, int bits) {
+    if (isnan(v)) { strcpy(buf, "NaN"); return; }
+    if (isinf(v)) { strcpy(buf, v > 0 ? "+Inf" : "-Inf"); return; }
+    char* out = buf;
+    if (signbit(v)) *out++ = '-';
+    if (v == 0) { strcpy(out, "0"); return; }
+    // The shortest decimal that parses back to v.
+    char tmp[40];
+    for (int p = 1; p <= 17; p++) {
+        snprintf(tmp, sizeof tmp, "%.*e", p - 1, v);
+        if (bits == 32 ? strtof(tmp, NULL) == (float)v : strtod(tmp, NULL) == v) break;
+    }
+    char d[20];
+    int nd = 0;
+    const char* c = tmp;
+    if (*c == '-') c++;
+    for (; *c && *c != 'e'; c++) {
+        if (*c != '.') d[nd++] = *c;
+    }
+    while (nd > 1 && d[nd-1] == '0') nd--;
+    int exp = atoi(c + 1);
+    int dp = exp + 1; // position of the decimal point, relative to the digits.
+    if (exp < -4 || exp >= 6) { // %e, with as many digits as needed.
+        *out++ = d[0];
+        if (nd > 1) {
+            *out++ = '.';
+            memcpy(out, d + 1, nd - 1);
+            out += nd - 1;
+        }
+        *out++ = 'e';
+        *out++ = exp < 0 ? '-' : '+';
+        if (exp < 0) exp = -exp;
+        if (exp >= 100) *out++ = '0' + exp / 100;
+        *out++ = '0' + (exp / 10) % 10;
+        *out++ = '0' + exp % 10;
+    } else { // %f
+        if (dp > 0) {
+            for (int i = 0; i < dp; i++) *out++ = i < nd ? d[i] : '0';
+        } else {
+            *out++ = '0';
+        }
+        int prec = nd - dp > 0 ? nd - dp : 0;
+        if (prec > 0) {
+            *out++ = '.';
+            for (int i = 1; i <= prec; i++) {
+                int j = dp + i - 1;
+                *out++ = (j >= 0 && j < nd) ? d[j] : '0';
+            }
+        }
+    }
+    *out = 0;
+}
+
+void go_print_float64(go_f8 v) {
+    char buf[32];
+    go_format_float(buf, v, 64);
+    go_print_cstring(buf);
+}
+
+void go_print_float32(go_f4 v) {
+    char buf[32];
+    go_format_float(buf, v, 32);
+    go_print_cstring(buf);
+}
+
+static void go_print_complex(double re, double im, int bits) {
+    char buf[32];
+    go_print_cstring("(");
+    go_format_float(buf, re, bits);
+    go_print_cstring(buf);
+    go_format_float(buf, im, bits);
+    if (buf[0] != '+' && buf[0] != '-') go_print_cstring("+");
+    go_print_cstring(buf);
+    go_print_cstring("i)");
+}
+
+void go_print_complex128(go_aaf8f8zz v) { go_print_complex(v.f1, v.f2, 64); }
+void go_print_complex64(go_aaf4f4zz v) { go_print_complex(v.f1, v.f2, 32); }
+
+void go_print_slice(go_ll s) {
+    go_print_cstring("[");
+    go_print_int(s.len);
+    go_print_cstring("/");
+    go_print_int(s.cap);
+    go_print_cstring("]");
+    go_print_pointer((go_up)s.ptr.ptr);
+}
+
+void go_print_iface(go_up type, go_up data) {
+    go_print_cstring("(");
+    go_print_pointer(type);
+    go_print_cstring(",");
+    go_print_pointer(data);
+    go_print_cstring(")");
 }

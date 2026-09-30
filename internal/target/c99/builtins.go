@@ -2,47 +2,97 @@ package c99
 
 import (
 	"fmt"
+	"go/constant"
 	"go/types"
 	"io"
+	"strconv"
+	"strings"
 
 	"github.com/quaadgras/gd-compiler/internal/source"
 )
 
-func (c99 Target) println(expr source.FunctionCall) error {
-	fmt.Fprintf(c99, "go_print(")
-	var format string
+func (c99 Target) println(expr source.FunctionCall) error { return c99.print(expr, true) }
+
+// print implements the print and println builtins, with the same output as gc (see
+// runtime/print.go). Arguments are evaluated and printed from left to right.
+func (c99 Target) print(expr source.FunctionCall, newline bool) error {
+	var calls []string
 	for i, arg := range expr.Arguments {
-		if i > 0 {
-			format += " "
+		if i > 0 && newline {
+			calls = append(calls, `go_print_cstring(" ")`)
 		}
-		switch rtype := arg.TypeAndValue().Type.(type) {
-		case *types.Basic:
-			switch rtype.Kind() {
-			case types.Int, types.Int8, types.Int16, types.Int32, types.Int64, types.Uint, types.Uint8, types.Uint16, types.Uint32, types.Uint64, types.Uintptr:
-				format += "%d"
-			case types.Float64, types.Float32:
-				format += "%e"
-			case types.String:
-				format += "%s"
-			case types.Bool:
-				format += "%b"
-			default:
-				return expr.Location.Errorf("unsupported type %s", rtype)
-			}
-		default:
-			return fmt.Errorf("unsupported type %T", rtype)
-		}
-	}
-	format += "\n"
-	fmt.Fprintf(c99, "%q", format)
-	for _, arg := range expr.Arguments {
-		fmt.Fprintf(c99, ", ")
-		if err := c99.Expression(arg); err != nil {
+		call, err := c99.printArgument(expr, arg)
+		if err != nil {
 			return err
 		}
+		calls = append(calls, call)
 	}
-	fmt.Fprintf(c99, ")")
+	if newline {
+		calls = append(calls, `go_print_cstring("\n")`)
+	}
+	if len(calls) == 0 {
+		fmt.Fprintf(c99, "((void)0)")
+		return nil
+	}
+	fmt.Fprintf(c99, "(%s)", strings.Join(calls, ", "))
 	return nil
+}
+
+func (c99 Target) printArgument(call source.FunctionCall, arg source.Expression) (string, error) {
+	tv := arg.TypeAndValue()
+	var value string
+	if tv.Value != nil && tv.Value.Kind() != constant.Complex {
+		var buf strings.Builder
+		cc := c99
+		cc.Writer = &buf
+		if err := cc.ConstantValue(tv.Value, false); err != nil {
+			return "", err
+		}
+		value = buf.String()
+	} else if tv.Value != nil {
+		re, _ := constant.Float64Val(constant.Real(tv.Value))
+		im, _ := constant.Float64Val(constant.Imag(tv.Value))
+		ctor := "go_complex128"
+		if basic, ok := tv.Type.Underlying().(*types.Basic); ok && basic.Kind() == types.Complex64 {
+			ctor = "go_complex64"
+		}
+		value = fmt.Sprintf("%s(%s, %s)", ctor,
+			strconv.FormatFloat(re, 'g', -1, 64), strconv.FormatFloat(im, 'g', -1, 64))
+	} else {
+		value = c99.toString(arg)
+	}
+	switch typ := tv.Type.Underlying().(type) {
+	case *types.Basic:
+		switch {
+		case typ.Info()&types.IsBoolean != 0:
+			return fmt.Sprintf("go_print_bool(%s)", value), nil
+		case typ.Info()&types.IsUnsigned != 0:
+			return fmt.Sprintf("go_print_uint((go_u8)(%s))", value), nil
+		case typ.Info()&types.IsInteger != 0:
+			return fmt.Sprintf("go_print_int((go_i8)(%s))", value), nil
+		case typ.Kind() == types.Float32:
+			return fmt.Sprintf("go_print_float32(%s)", value), nil
+		case typ.Info()&types.IsFloat != 0:
+			return fmt.Sprintf("go_print_float64(%s)", value), nil
+		case typ.Kind() == types.Complex64:
+			return fmt.Sprintf("go_print_complex64(%s)", value), nil
+		case typ.Info()&types.IsComplex != 0:
+			return fmt.Sprintf("go_print_complex128(%s)", value), nil
+		case typ.Info()&types.IsString != 0:
+			return fmt.Sprintf("go_print_string(%s)", value), nil
+		case typ.Kind() == types.UntypedNil:
+			return "go_print_pointer(0)", nil
+		}
+	case *types.Pointer, *types.Signature:
+		return fmt.Sprintf("go_print_pointer((go_up)(%s).ptr)", value), nil
+	case *types.Chan, *types.Map:
+		return fmt.Sprintf("go_print_pointer((go_up)(%s))", value), nil
+	case *types.Slice:
+		return fmt.Sprintf("go_print_slice(%s)", value), nil
+	case *types.Interface:
+		return fmt.Sprintf("go_print_iface((go_up)(%[1]s).go_type, (go_up)(%[1]s).ptr.ptr)", value), nil
+	}
+	return "", call.Errorf("illegal type for print: %s", tv.Type)
 }
 
 func (c99 Target) new(expr source.FunctionCall) error {

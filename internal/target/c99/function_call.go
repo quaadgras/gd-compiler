@@ -28,6 +28,8 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 	case source.Expressions.BuiltinFunction:
 		call := source.Expressions.BuiltinFunction.Get(function)
 		switch call.String {
+		case "print":
+			return c99.print(expr, false)
 		case "println":
 			return c99.println(expr)
 		case "new":
