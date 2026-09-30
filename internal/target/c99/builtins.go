@@ -84,6 +84,8 @@ func (c99 Target) printArgument(call source.FunctionCall, index int, arg source.
 			return fmt.Sprintf("go_print_string(%s)", value), nil
 		case typ.Kind() == types.UntypedNil:
 			return "go_print_pointer(0)", nil
+		case typ.Kind() == types.UnsafePointer:
+			return fmt.Sprintf("go_print_pointer((go_up)(%s).ptr)", value), nil
 		}
 	case *types.Pointer, *types.Signature:
 		return fmt.Sprintf("go_print_pointer((go_up)(%s).ptr)", value), nil
@@ -160,31 +162,54 @@ func (c99 Target) make(expr source.FunctionCall) error {
 	}
 }
 
+// append appends values to a slice (one at a time), a slice to a slice (s, t...), or the
+// bytes of a string to a byte slice (b, str...).
 func (c99 Target) append(expr source.FunctionCall) error {
-	if len(expr.Arguments) != 2 {
-		return expr.Errorf("append expects exactly two arguments, got %d", len(expr.Arguments))
+	slice := expr.Arguments[0].TypeAndValue().Type.Underlying().(*types.Slice)
+	value := c99.toString(expr.Arguments[0])
+	if len(expr.Arguments) == 2 && expr.Ellipsis.Open.IsValid() {
+		if isString(expr.Arguments[1].TypeAndValue().Type) {
+			fmt.Fprintf(c99, "go_append_string(%s, %s)", value, c99.toString(expr.Arguments[1]))
+		} else {
+			fmt.Fprintf(c99, "go_append_slice(%s, sizeof(%s), %s)", value, c99.TypeOf(slice.Elem()), c99.toString(expr.Arguments[1]))
+		}
+		return nil
 	}
-	elemType := c99.TypeOf(expr.Arguments[0].TypeAndValue().Type.Underlying().(*types.Slice).Elem())
-	symbol := fmt.Sprintf("go_append_%s", c99.Mangle(expr.Arguments[0].TypeAndValue().Type.Underlying().(*types.Slice).Elem()))
-	c99.Requires(symbol, c99.Prelude, func(w io.Writer) error {
-		fmt.Fprintf(w, "static inline go_ll %s(go_ll s, %s v) { return go_append(s, sizeof(%s), &v); }\n", symbol, elemType, elemType)
+	elemType := c99.TypeOf(slice.Elem())
+	symbol := "go_append_" + identifier.ReplaceAllString(elemType, "_")
+	c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
+		fmt.Fprintf(w, "static inline go_ll %s(go_ll s, %s v) { return go_append(s, sizeof(%[2]s), &v); }\n", symbol, elemType)
 		return nil
 	})
-	fmt.Fprintf(c99, "%s(", symbol)
-	if err := c99.Expression(expr.Arguments[0]); err != nil {
-		return err
+	var values []string
+	for _, arg := range expr.Arguments[1:] {
+		var buf strings.Builder
+		cc := c99
+		cc.Writer = &buf
+		if err := cc.ExpressionAs(arg, slice.Elem()); err != nil {
+			return err
+		}
+		values = append(values, buf.String())
 	}
-	fmt.Fprintf(c99, ", ")
-	if err := c99.Expression(expr.Arguments[1]); err != nil {
-		return err
+	switch len(values) {
+	case 0:
+		fmt.Fprint(c99, value)
+	case 1:
+		fmt.Fprintf(c99, "%s(%s, %s)", symbol, value, values[0])
+	default: // the values are all evaluated before any is appended (they may read s).
+		fmt.Fprintf(c99, "go_append_slice(%[1]s, sizeof(%[2]s), go_slice_literal(%[3]d, %[2]s, %[4]s))",
+			value, elemType, len(values), strings.Join(values, ", "))
 	}
-	fmt.Fprintf(c99, ")")
 	return nil
 }
 
 func (c99 Target) copy(expr source.FunctionCall) error {
 	if len(expr.Arguments) != 2 {
 		return fmt.Errorf("copy expects exactly two arguments, got %d", len(expr.Arguments))
+	}
+	if isString(expr.Arguments[1].TypeAndValue().Type) { // copy(bytes, string)
+		fmt.Fprintf(c99, "go_copy(1, %s, go_bytes_of_string(%s))", c99.toString(expr.Arguments[0]), c99.toString(expr.Arguments[1]))
+		return nil
 	}
 	fmt.Fprintf(c99, "go_slice_copy(%s, ", c99.TypeOf(expr.Arguments[0].TypeAndValue().Type.Underlying().(*types.Slice).Elem()))
 	if err := c99.Expression(expr.Arguments[0]); err != nil {
@@ -215,7 +240,7 @@ func (c99 Target) len(expr source.FunctionCall) error {
 		return fmt.Errorf("len expects exactly one argument, got %d", len(expr.Arguments))
 	}
 	if tv := expr.TypeAndValue(); tv.Value != nil { // arrays, and constant strings.
-		return c99.ConstantValue(tv.Value, false)
+		return c99.Constant(tv)
 	}
 	arg := expr.Arguments[0]
 	switch typ := arg.TypeAndValue().Type.Underlying().(type) {
@@ -242,7 +267,7 @@ func (c99 Target) cap(expr source.FunctionCall) error {
 		return fmt.Errorf("cap expects exactly one argument, got %d", len(expr.Arguments))
 	}
 	if tv := expr.TypeAndValue(); tv.Value != nil { // arrays.
-		return c99.ConstantValue(tv.Value, false)
+		return c99.Constant(tv)
 	}
 	switch expr.Arguments[0].TypeAndValue().Type.Underlying().(type) {
 	case *types.Slice:
@@ -295,7 +320,7 @@ func (c99 Target) delete(expr source.FunctionCall) error {
 // minmax implements min and max: for floats, NaN wins, and -0 is less than +0.
 func (c99 Target) minmax(expr source.FunctionCall, name string) error {
 	if tv := expr.TypeAndValue(); tv.Value != nil {
-		return c99.ConstantValue(tv.Value, false)
+		return c99.Constant(tv)
 	}
 	t := expr.TypeAndValue().Type
 	ctype := c99.TypeOf(t)

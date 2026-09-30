@@ -189,7 +189,7 @@ typedef go_tf (*go_same)(const void *a, const void *b);
 
 go_pt go_new(go_ii size,  const void* init);
 #define go_pointer_new(t) go_new(sizeof(t), nil)
-#define go_pointer_set(p, t, v) *(t*)go_nil_check((p).ptr) = (v)
+#define go_pointer_set(p, t, ...) *(t*)go_nil_check((p).ptr) = (__VA_ARGS__) // values may have commas.
 #define go_pointer_get(p, t) (*(t*)go_nil_check((p).ptr))
 // go_slice slices s[low:high:max], omitted bounds are go_slice_default.
 #define go_slice_default INT64_MIN
@@ -197,6 +197,8 @@ go_pt go_new(go_ii size,  const void* init);
 
 go_ii go_copy(go_ii elem_size, go_ll dst, go_ll src);
 go_ll go_append(go_ll s, go_ii elem_size, const void* elem);
+go_ll go_append_slice(go_ll s, go_ii elem_size, go_ll t);
+go_ll go_append_string(go_ll s, go_ss t);
 go_ll go_slice(go_ll s, go_ii elem_size, go_i8 low, go_i8 high, go_i8 max);
 void* go_index(go_ll s, go_ii elem_size, go_ii i);
 
@@ -204,7 +206,7 @@ void* go_index(go_ll s, go_ii elem_size, go_ii i);
 #define go_slice_index(s, T, i) (*(T*)go_index(s, sizeof(T), i))
 #define go_slice_copy(T, dst, src) go_copy(sizeof(T), dst, src)
 #define go_slice_literal(length, T, ...) (go_ll){ .ptr = go_new(sizeof(T)*length, &(T[]){__VA_ARGS__}), .len = length, .cap = length }
-#define go_variadic(length, T, ...) (go_ll){ .ptr = &(T[]){__VA_ARGS__}, .len = length, .cap = length }
+#define go_variadic(length, T, ...) go_slice_literal(length, T, __VA_ARGS__) // may be kept by the callee.
 static inline go_ii go_slice_len(go_ll s) { return s.len; }
 void go_slice_clear(go_ll s);
 
@@ -220,6 +222,11 @@ go_tf go_map_get(go_kv m, const void* key, void* val);
 #define go_string_new(str) (go_ss){ .ptr = str, .len = -1 }
 #define go_string_const(str) { .ptr = str, .len = -1 } // for static initializers.
 go_ii go_string_len(go_ss s);
+// go_bytes_of_string is a byte slice that shares the bytes of s (for reading them).
+static inline go_ll go_bytes_of_string(go_ss s) {
+    go_ii n = go_string_len(s);
+    return (go_ll){ .ptr = { .ptr = (void*)s.ptr }, .len = n, .cap = n };
+}
 go_tf go_string_eq(go_ss a, go_ss b);
 go_ii go_string_cmp(go_ss a, go_ss b);
 go_ss go_string_concat(go_ss a, go_ss b);

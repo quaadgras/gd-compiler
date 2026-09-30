@@ -2,7 +2,6 @@ package c99
 
 import (
 	"fmt"
-	"go/ast"
 	"go/types"
 	"hash/fnv"
 	"io"
@@ -89,6 +88,8 @@ func (c99 Target) Mangle(t types.Type) string {
 			return "u8"
 		case types.Uintptr:
 			return "up"
+		case types.UnsafePointer:
+			return "pt" // the same C type as other pointers.
 		case types.Float32:
 			return "f4"
 		case types.Float64, types.UntypedFloat:
@@ -148,11 +149,10 @@ func (c99 Target) Mangle(t types.Type) string {
 func (c99 Target) ArrayTypeOf(typ *types.Array) string {
 	elem := c99.TypeOf(typ.Elem())
 	symbol := fmt.Sprintf("go_arr%d_%s", typ.Len(), identifier.ReplaceAllString(elem, "_"))
-	c99.Requires(symbol, c99.Private, func(w io.Writer) error {
+	c99.defineType(symbol, []types.Type{typ.Elem()}, func(w io.Writer) {
 		// C has no zero length arrays, so [0]T has room for one element.
 		fmt.Fprintf(w, "\n#ifndef %[1]s_defined\n#define %[1]s_defined\ntypedef struct { %[2]s a[%[3]d]; } %[1]s;\n#endif\n",
 			symbol, elem, max(typ.Len(), 1))
-		return nil
 	})
 	return symbol
 }
@@ -167,12 +167,7 @@ func (c99 Target) InterfaceTypeOf(t types.Type) string {
 	if typ.Obj().Pkg() == nil {
 		return "go_" + typ.Obj().Name()
 	}
-	if source.PackageIdent(typ.Obj().Pkg()) == c99.CurrentPackage {
-		if !ast.IsExported(typ.Obj().Name()) {
-			return typ.Obj().Name()
-		}
-	}
-	return typ.Obj().Name() + "_go_" + source.PackageIdent(typ.Obj().Pkg()) + "_package"
+	return c99.typeCName(typ) + "_go_" + source.PackageIdent(typ.Obj().Pkg()) + "_package"
 }
 
 func (c99 Target) TupleTypeOf(t *types.Tuple) string {
@@ -217,10 +212,8 @@ func (c99 Target) TypeOf(t types.Type) string {
 		if typ.Obj().Pkg() == nil {
 			return "go_" + typ.Obj().Name()
 		}
-		name := c99.typeCName(typ)
-		if source.PackageIdent(typ.Obj().Pkg()) != c99.CurrentPackage || ast.IsExported(typ.Obj().Name()) {
-			name += "_go_" + source.PackageIdent(typ.Obj().Pkg()) + "_package"
-		}
+		// named types are always qualified by their package, as headers are shared.
+		name := c99.typeCName(typ) + "_go_" + source.PackageIdent(typ.Obj().Pkg()) + "_package"
 		if typ.TypeArgs().Len() > 0 {
 			c99.instanceType(typ, name)
 		}
@@ -244,7 +237,7 @@ func (c99 Target) TypeOf(t types.Type) string {
 			sig := method.Type().(*types.Signature)
 			builder.WriteString(c99.TupleOfResults(sig))
 			builder.WriteString("(*")
-			builder.WriteString(method.Name())
+			builder.WriteString(source.CIdent(method.Name()))
 			builder.WriteString(")(void*")
 			for j := 0; j < sig.Params().Len(); j++ {
 				builder.WriteString(", ")
@@ -263,14 +256,17 @@ func (c99 Target) TypeOf(t types.Type) string {
 		hash := fnv.New64a()
 		hash.Write([]byte(types.TypeString(typ, func(pkg *types.Package) string { return pkg.Path() })))
 		symbol := fmt.Sprintf("go_struct_%x", hash.Sum64())
-		c99.Requires(symbol, c99.Private, func(w io.Writer) error {
+		var fieldTypes []types.Type
+		for field := range typ.Fields() {
+			fieldTypes = append(fieldTypes, field.Type())
+		}
+		c99.defineType(symbol, fieldTypes, func(w io.Writer) {
 			var fields strings.Builder
 			for i := 0; i < typ.NumFields(); i++ {
 				field := typ.Field(i)
-				fmt.Fprintf(&fields, "%s %s; ", c99.TypeOf(field.Type()), field.Name())
+				fmt.Fprintf(&fields, "%s %s; ", c99.TypeOf(field.Type()), fieldName(field, i))
 			}
 			fmt.Fprintf(w, "\n#ifndef %[1]s_defined\n#define %[1]s_defined\ntypedef struct { %[2]s} %[1]s;\n#endif\n", symbol, fields.String())
-			return nil
 		})
 		return symbol
 	case *types.Tuple:
@@ -379,4 +375,22 @@ func typeName(t types.Type) string {
 		return name
 	}
 	return types.TypeString(t, qualifier)
+}
+
+// fieldName returns the C name of the i'th field of a struct (blank fields, which may be
+// repeated, are numbered).
+func fieldName(field *types.Var, i int) string {
+	if field.Name() == "_" {
+		return fmt.Sprintf("go_blank_%d", i)
+	}
+	return source.CIdent(field.Name())
+}
+
+func fieldIndex(typ *types.Struct, field *types.Var) int {
+	for i := range typ.NumFields() {
+		if typ.Field(i) == field {
+			return i
+		}
+	}
+	return -1
 }

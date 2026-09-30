@@ -3,7 +3,6 @@ package c99
 import (
 	"fmt"
 	"go/ast"
-	"go/constant"
 	"go/token"
 	"go/types"
 	"io"
@@ -39,8 +38,8 @@ func (c99 Target) ExpressionBinary(expr source.ExpressionBinary) error {
 	if ok, err := c99.hoistLogical(expr); ok {
 		return err
 	}
-	if tv := expr.TypeAndValue(); tv.Value != nil && tv.Value.Kind() != constant.Complex {
-		return c99.ConstantValue(tv.Value, false)
+	if tv := expr.TypeAndValue(); tv.Value != nil {
+		return c99.Constant(tv)
 	}
 	switch expr.Operation.Value {
 	case token.QUO, token.REM:
@@ -130,7 +129,7 @@ func (c99 Target) ExpressionAs(expr source.Expression, target types.Type) error 
 		}
 	}
 	if isNil(expr) && target != nil {
-		if _, ok := target.Underlying().(*types.Basic); !ok {
+		if _, ok := target.Underlying().(*types.Basic); !ok || isUnsafePointer(target) {
 			fmt.Fprintf(c99, "((%s){0})", c99.TypeOf(target))
 			return nil
 		}
@@ -203,6 +202,8 @@ func (c99 Target) compareNil(op token.Token, x source.Expression) error {
 	switch typ := x.TypeAndValue().Type.Underlying().(type) {
 	case *types.Pointer, *types.Signature:
 		field = ".ptr"
+	case *types.Basic: // unsafe.Pointer
+		field = ".ptr"
 	case *types.Slice:
 		field = ".ptr.ptr"
 	case *types.Interface:
@@ -244,7 +245,7 @@ func (c99 Target) ExpressionFunction(e source.ExpressionFunction) error {
 		if len(captures) > 0 {
 			fmt.Fprintf(w, "typedef struct { ")
 			for _, v := range captures {
-				fmt.Fprintf(w, "%s* %s; ", c99.TypeOf(subst(v.Type())), v.Name())
+				fmt.Fprintf(w, "%s* %s; ", c99.TypeOf(subst(v.Type())), source.CIdent(v.Name()))
 			}
 			fmt.Fprintf(w, "} go_env_%s;\n", symbol)
 		}
@@ -268,7 +269,7 @@ func (c99 Target) ExpressionFunction(e source.ExpressionFunction) error {
 	// after the variables, in the function (or closure) creating this closure.
 	var boxes []string
 	for _, v := range captures {
-		boxes = append(boxes, v.Name())
+		boxes = append(boxes, source.CIdent(v.Name()))
 	}
 	fmt.Fprintf(c99, "go_make_closure(%s, go_new(sizeof(go_env_%[1]s), &(go_env_%[1]s){ %s }).ptr)", symbol, strings.Join(boxes, ", "))
 	return nil
@@ -279,7 +280,7 @@ func (c99 Target) ExpressionIndex(expr source.ExpressionIndex) error {
 		return c99.DefinedFunction(source.Expressions.DefinedFunction.Get(expr.X))
 	}
 	if tv := expr.TypeAndValue(); tv.Value != nil {
-		return c99.ConstantValue(tv.Value, false)
+		return c99.Constant(tv)
 	}
 	switch xtype := expr.X.TypeAndValue().Type.Underlying().(type) {
 	case *types.Basic: // strings

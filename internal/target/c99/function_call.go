@@ -2,7 +2,6 @@ package c99
 
 import (
 	"fmt"
-	"go/constant"
 	"go/types"
 	"hash/fnv"
 	"io"
@@ -27,9 +26,24 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 	if ok, err := c99.hoisted(expr.Location.Node, expr.TypeAndValue().Type, func(cc Target) error { return cc.FunctionCall(expr) }); ok {
 		return err
 	}
+	if tv := expr.TypeAndValue(); tv.Value != nil {
+		return c99.Constant(tv) // unsafe.Sizeof, len of arrays, conversions...
+	}
 	function := expr.Function
 	if xyz.ValueOf(function) == source.Expressions.Parenthesized {
 		function = source.Expressions.Parenthesized.Get(function).X
+	}
+	if xyz.ValueOf(function) == source.Expressions.Selector {
+		sel := source.Expressions.Selector.Get(function)
+		switch xyz.ValueOf(sel.Selection) {
+		case source.Expressions.BuiltinFunction:
+			return c99.unsafeBuiltin(expr, source.Expressions.BuiltinFunction.Get(sel.Selection).String)
+		case source.Expressions.DefinedType: // pkg.T(x)
+			if ok, err := c99.conversion(expr, function.TypeAndValue().Type); ok || err != nil {
+				return err
+			}
+			return expr.Errorf("unsupported conversion to %s", function.TypeAndValue().Type)
+		}
 	}
 	switch xyz.ValueOf(function) { // f[T](...), the instance is recorded for f.
 	case source.Expressions.Index:
@@ -200,12 +214,12 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 		if i > 0 || hasReceiver || isInterface || invoked {
 			fmt.Fprintf(c99, ", ")
 		}
-		if !variadic && (ftype.Variadic() && i >= ftype.Params().Len()-1) {
+		if !variadic && ftype.Variadic() && i >= ftype.Params().Len()-1 && !expr.Ellipsis.Open.IsValid() {
 			fmt.Fprintf(c99, "go_variadic(%d, %s, ", len(expr.Arguments)+1-ftype.Params().Len(), c99.TypeOf(ftype.Params().At(ftype.Params().Len()-1).Type().Underlying().(*types.Slice).Elem()))
 			variadic = true
 		}
 		var target types.Type
-		if params := ftype.Params(); ftype.Variadic() && i >= params.Len()-1 {
+		if params := ftype.Params(); ftype.Variadic() && i >= params.Len()-1 && !expr.Ellipsis.Open.IsValid() {
 			if slice, ok := params.At(params.Len() - 1).Type().Underlying().(*types.Slice); ok {
 				target = slice.Elem()
 			}
@@ -218,7 +232,7 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 			return err
 		}
 	}
-	if ftype.Variadic() {
+	if ftype.Variadic() && !expr.Ellipsis.Open.IsValid() {
 		if variadic {
 			fmt.Fprintf(c99, ")")
 		} else {
@@ -261,8 +275,8 @@ func (c99 Target) conversion(expr source.FunctionCall, t types.Type) (bool, erro
 	if isNil(arg) { // T(nil)
 		return true, c99.ExpressionAs(arg, t)
 	}
-	if tv := expr.TypeAndValue(); tv.Value != nil && tv.Value.Kind() != constant.Complex {
-		return true, c99.ConstantValue(tv.Value, false)
+	if tv := expr.TypeAndValue(); tv.Value != nil {
+		return true, c99.Constant(tv)
 	}
 	if isString(t) && isString(arg.TypeAndValue().Type) {
 		return true, c99.Expression(arg)
@@ -279,8 +293,8 @@ func (c99 Target) conversion(expr source.FunctionCall, t types.Type) (bool, erro
 		return true, nil
 	}
 	from := arg.TypeAndValue().Type
-	if iface, ok := t.Underlying().(*types.Interface); ok && iface.Empty() {
-		value, err := c99.AnyOf(arg)
+	if _, ok := t.Underlying().(*types.Interface); ok && !isInterfaceType(from) {
+		value, err := c99.InterfaceOf(arg, t)
 		if err != nil {
 			return true, err
 		}
@@ -301,6 +315,14 @@ func (c99 Target) conversion(expr source.FunctionCall, t types.Type) (bool, erro
 			return true, err
 		}
 		fmt.Fprintf(c99, ")")
+		return true, nil
+	}
+	if isUnsafePointer(t) && isInteger(from) {
+		fmt.Fprintf(c99, "((go_pt){ .ptr = (void*)(go_up)(%s) })", c99.toString(arg))
+		return true, nil
+	}
+	if isInteger(t) && isUnsafePointer(from) {
+		fmt.Fprintf(c99, "((%s)(go_up)(%s).ptr)", c99.TypeOf(t), c99.toString(arg))
 		return true, nil
 	}
 	if isNumeric(t) && isNumeric(arg.TypeAndValue().Type) {
@@ -422,8 +444,8 @@ func (c99 Target) InterfaceOf(expr source.Expression, iface types.Type) (string,
 		if err := c99.MethodInstance(named, method.Name()); err != nil {
 			return "", err
 		}
-		methods = append(methods, fmt.Sprintf(".%s = %s%s_%s_go_%s_package",
-			method.Name(), prefix, c99.typeCName(named), method.Name(), source.PackageIdent(named.Obj().Pkg())))
+		methods = append(methods, fmt.Sprintf(".%[1]s = %[2]s%[3]s_%[1]s_go_%[4]s_package",
+			source.CIdent(method.Name()), prefix, c99.typeCName(named), source.PackageIdent(named.Obj().Pkg())))
 	}
 	// The table of methods is static, as interface values may outlive any function.
 	hash := fnv.New64a()
@@ -434,4 +456,34 @@ func (c99 Target) InterfaceOf(expr source.Expression, iface types.Type) (string,
 		return nil
 	})
 	return fmt.Sprintf("%s(%s, %s, &%s)", symbol, c99.toString(expr), rtype, vtable), nil
+}
+
+func isUnsafePointer(t types.Type) bool {
+	basic, ok := t.Underlying().(*types.Basic)
+	return ok && basic.Kind() == types.UnsafePointer
+}
+
+// unsafeBuiltin writes a call of a function of package unsafe (which are builtins).
+func (c99 Target) unsafeBuiltin(expr source.FunctionCall, name string) error {
+	arg := func(i int) string { return c99.toString(expr.Arguments[i]) }
+	switch name {
+	case "Add":
+		fmt.Fprintf(c99, "((go_pt){ .ptr = (char*)(%s).ptr + (go_ii)(%s) })", arg(0), arg(1))
+	case "Slice":
+		fmt.Fprintf(c99, "((go_ll){ .ptr = %s, .len = (go_ii)(%s), .cap = (go_ii)(%[2]s) })", arg(0), arg(1))
+	case "SliceData":
+		fmt.Fprintf(c99, "((%s).ptr)", arg(0))
+	case "String":
+		fmt.Fprintf(c99, "((go_ss){ .ptr = (const char*)(%s).ptr, .len = (go_ii)(%s) })", arg(0), arg(1))
+	case "StringData":
+		fmt.Fprintf(c99, "((go_pt){ .ptr = (void*)(%s).ptr })", arg(0))
+	default:
+		return expr.Errorf("unsupported unsafe.%s", name)
+	}
+	return nil
+}
+
+func isInterfaceType(t types.Type) bool {
+	_, ok := t.Underlying().(*types.Interface)
+	return ok
 }

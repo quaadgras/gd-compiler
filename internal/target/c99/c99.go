@@ -16,7 +16,8 @@ type Target struct {
 	io.Writer
 
 	Prelude      io.Writer
-	Private      io.Writer // types of the package (in its private header).
+	Private      io.Writer // of the package's private header (before declarations).
+	TypeDefs     *TypeDefs // of the package, see [TypeDefs].
 	Declarations io.Writer // of variables and functions (in its private header).
 	Generic      io.Writer
 

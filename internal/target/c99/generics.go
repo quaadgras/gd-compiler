@@ -229,9 +229,8 @@ func (c99 Target) emitInstance(decl source.FunctionDefinition, substitute func(t
 
 // instanceType defines (if it hasn't been) the C type of an instance of a generic type.
 func (c99 Target) instanceType(named *types.Named, cname string) {
-	c99.Requires(cname, c99.Private, func(w io.Writer) error {
+	c99.defineType(cname, []types.Type{named.Underlying()}, func(w io.Writer) {
 		fmt.Fprintf(w, "\n#ifndef %[1]s_defined\n#define %[1]s_defined\ntypedef %[2]s %[1]s;\n#endif\n", cname, c99.TypeOf(named.Underlying()))
-		return nil
 	})
 }
 

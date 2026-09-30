@@ -83,8 +83,9 @@ func loadSelection(pkg *source.Package, in *ast.SelectorExpr) source.Selection {
 	}
 	meta, ok := pkg.Selections[in]
 	if ok && len(meta.Index()) > 1 && meta.Kind() == types.FieldVal {
+		// the embedded fields that the (promoted) field is selected through.
 		ptype := sel.X.TypeAndValue().Type.Underlying()
-		for index := range meta.Index()[1:] {
+		for _, index := range meta.Index()[:len(meta.Index())-1] {
 			for {
 				ptr, ok := ptype.(*types.Pointer)
 				if !ok {
@@ -225,7 +226,7 @@ func loadIdentifier(pkg *source.Package, in *ast.Ident) source.Identifier {
 		Typed:    typedIn(pkg, in),
 		Location: locationIn(pkg, in, in.Pos()),
 		Unique:   object,
-		String:   in.Name,
+		String:   source.CIdent(in.Name),
 		Method:   isMethod,
 		Shadow:   shadow,
 		IsGlobal: global,

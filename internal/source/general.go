@@ -216,3 +216,30 @@ type Literal struct {
 	WithLocation[string]
 	Kind token.Token
 }
+
+// reserved are C keywords, and names defined by C's standard headers (or go.h) as macros,
+// which Go identifiers may be.
+var reserved = map[string]bool{
+	"auto": true, "break": true, "case": true, "char": true, "const": true, "continue": true,
+	"default": true, "do": true, "double": true, "else": true, "enum": true, "extern": true,
+	"float": true, "for": true, "goto": true, "if": true, "inline": true, "int": true, "long": true,
+	"register": true, "restrict": true, "return": true, "short": true, "signed": true,
+	"sizeof": true, "static": true, "struct": true, "switch": true, "typedef": true, "union": true,
+	"unsigned": true, "void": true, "volatile": true, "while": true,
+	"true": true, "false": true, "nil": true, "NULL": true, "bool": true, "errno": true,
+	"stdin": true, "stdout": true, "stderr": true, "EOF": true, "assert": true, "offsetof": true,
+	"signbit": true, "isnan": true, "isinf": true, "isfinite": true, "fpclassify": true,
+	"alignas": true, "alignof": true, "noreturn": true, "complex": true, "imaginary": true,
+	"static_assert": true, "thread_local": true, "setjmp": true, "longjmp": true, "jmp_buf": true,
+	"va_start": true, "va_arg": true, "va_end": true, "va_copy": true, "va_list": true,
+	"INFINITY": true, "NAN": true, "HUGE_VAL": true,
+}
+
+// CIdent returns the C name for a Go identifier: those that are C keywords or macros (or
+// that could clash with gd's runtime, which starts with go_) are suffixed with _.
+func CIdent(name string) string {
+	if reserved[name] || strings.HasPrefix(name, "go_") || strings.HasPrefix(name, "_") && name != "_" {
+		return name + "_"
+	}
+	return name
+}

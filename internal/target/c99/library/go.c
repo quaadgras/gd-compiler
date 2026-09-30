@@ -27,7 +27,7 @@ go_ll go_append(go_ll s, go_ii elem_size, const void* elem) {
         if (s.len > 0) {
             memcpy(new_ptr.ptr, s.ptr.ptr, s.len * elem_size);
         }
-        free(s.ptr.ptr);
+        // the old array may be shared with other slices, it is garbage collected.
         s.ptr = new_ptr;
         s.cap = new_cap;
     }
@@ -35,6 +35,26 @@ go_ll go_append(go_ll s, go_ii elem_size, const void* elem) {
     s.len += 1;
     return s;
 }
+go_ll go_append_slice(go_ll s, go_ii elem_size, go_ll t) {
+    if (t.len == 0) return s;
+    if (s.len + t.len > s.cap) {
+        go_ii new_cap = s.cap * 2;
+        if (new_cap < s.len + t.len) new_cap = s.len + t.len;
+        go_pt new_ptr = go_new(new_cap * elem_size, nil);
+        if (s.len > 0) memcpy(new_ptr.ptr, s.ptr.ptr, s.len * elem_size);
+        s.ptr = new_ptr;
+        s.cap = new_cap;
+    }
+    memmove((char*)s.ptr.ptr + s.len * elem_size, t.ptr.ptr, t.len * elem_size); // may overlap.
+    s.len += t.len;
+    return s;
+}
+
+go_ll go_append_string(go_ll s, go_ss t) {
+    go_ll bytes = { .ptr = { .ptr = (void*)t.ptr }, .len = go_string_len(t), .cap = go_string_len(t) };
+    return go_append_slice(s, 1, bytes);
+}
+
 go_ii go_copy(go_ii elem_size, go_ll dst, go_ll src) {
     go_ii n = dst.len < src.len ? dst.len : src.len;
     memcpy(dst.ptr.ptr, src.ptr.ptr, n * elem_size);

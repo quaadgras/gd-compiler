@@ -114,7 +114,7 @@ func (c99 Target) DataComposite(data source.DataComposite) error {
 				}
 			default:
 				field := typ.Field(i)
-				fmt.Fprintf(c99, ".%s = ", field.Name())
+				fmt.Fprintf(c99, ".%s = ", fieldName(field, i))
 				if err := c99.ExpressionAs(elem, field.Type()); err != nil {
 					return err
 				}

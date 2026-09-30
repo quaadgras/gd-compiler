@@ -27,13 +27,12 @@ func (c99 Target) TupleOf(ts []types.Type) string {
 		ctypes = append(ctypes, c99.TypeOf(t))
 	}
 	symbol := "go_tuple_" + identifier.ReplaceAllString(strings.Join(ctypes, "_"), "_")
-	c99.Requires(symbol, c99.Private, func(w io.Writer) error {
+	c99.defineType(symbol, ts, func(w io.Writer) {
 		fmt.Fprintf(w, "\n#ifndef %[1]s_defined\n#define %[1]s_defined\ntypedef struct { ", symbol)
 		for i, ctype := range ctypes {
 			fmt.Fprintf(w, "%s r%d; ", ctype, i)
 		}
 		fmt.Fprintf(w, "} %s;\n#endif\n", symbol)
-		return nil
 	})
 	return symbol
 }

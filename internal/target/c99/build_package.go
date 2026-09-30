@@ -118,6 +118,7 @@ func compilePackage(pkg source.Package, compiled map[string]bool, byPath map[str
 	for _, file := range pkg.Files {
 		syntax = append(syntax, file.Location.Node.(*ast.File))
 	}
+	typeDefinitions := NewTypeDefs()
 	closures := NewClosures(&pkg.Info, syntax)
 	closures.generics = NewGenerics(pkg.Files)
 	for _, file := range pkg.Files {
@@ -132,6 +133,7 @@ func compilePackage(pkg source.Package, compiled map[string]bool, byPath map[str
 		cc.Prelude = out
 		cc.Writer = new(bytes.Buffer)
 		cc.Private = &typeDefs
+		cc.TypeDefs = typeDefinitions
 		cc.Declarations = &declarations
 		cc.Generic = cc.Prelude
 		cc.Symbols = make(map[string]struct{})
@@ -168,6 +170,9 @@ func compilePackage(pkg source.Package, compiled map[string]bool, byPath map[str
 	}
 	fmt.Fprintf(public, "\n#endif // GO_%s_H\n", pkg.Ident)
 	if err := public.Close(); err != nil {
+		return err
+	}
+	if err := typeDefinitions.Emit(&typeDefs); err != nil {
 		return err
 	}
 	if _, err := private.Write(typeDefs.Bytes()); err != nil {

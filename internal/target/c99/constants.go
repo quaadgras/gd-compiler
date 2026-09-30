@@ -11,6 +11,9 @@ import (
 )
 
 func (c99 Target) Literal(lit source.Literal) error {
+	if tv := lit.TypeAndValue(); tv.Value != nil && tv.Type != nil {
+		return c99.Constant(tv) // with the literal's type, from the type checker.
+	}
 	if len(lit.Value) > 2 {
 		if lit.Value[0] == '0' && lit.Value[1] == 'o' {
 			lit.Value = "0" + strings.TrimPrefix(lit.Value[2:], "_")

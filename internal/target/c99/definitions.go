@@ -5,6 +5,7 @@ import (
 	"go/ast"
 	"go/constant"
 	"go/types"
+	"io"
 	"math"
 	"strconv"
 	"strings"
@@ -62,8 +63,12 @@ func (c99 Target) FunctionName(name source.DefinedFunction) string {
 	return fmt.Sprintf("%s_go_%s_package", name.String, name.Package)
 }
 
-// DefinedConstant writes the name of a constant (shadowing follows C's block scopes).
+// DefinedConstant writes the value of a constant (so that constants of other files and
+// packages need not be declared).
 func (c99 Target) DefinedConstant(name source.DefinedConstant) error {
+	if tv := name.TypeAndValue(); tv.Value != nil {
+		return c99.Constant(tv)
+	}
 	_, err := c99.Write([]byte(name.String))
 	return err
 }
@@ -81,10 +86,7 @@ func (c99 Target) TypeDefinition(spec source.TypeDefinition) error {
 	}
 
 	header := c99.Private
-	suffix := ""
-	if spec.Exported {
-		suffix = "_go_" + c99.CurrentPackage + "_package"
-	}
+	suffix := "_go_" + c99.CurrentPackage + "_package"
 	if !spec.Global {
 		header = c99
 		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
@@ -92,11 +94,13 @@ func (c99 Target) TypeDefinition(spec source.TypeDefinition) error {
 	// Type descriptors are always qualified by the package, as they have external linkage.
 	rsuffix := "_go_" + c99.CurrentPackage + "_package"
 	ctype := c99.TypeOf(spec.Type.TypeAndValue().Type)
-	fmt.Fprintln(header)
-	fmt.Fprintf(header, "typedef %s %s%s;", ctype, spec.Name.String, suffix)
 	if spec.Global {
-		fmt.Fprintln(header)
-		fmt.Fprintf(header, "extern const go_type go_type_%s%s;", spec.Name.String, rsuffix)
+		c99.defineType(spec.Name.String+suffix, []types.Type{spec.Type.TypeAndValue().Type}, func(w io.Writer) {
+			fmt.Fprintf(w, "\ntypedef %s %s%s;", ctype, spec.Name.String, suffix)
+		})
+		fmt.Fprintf(c99.Declarations, "\nextern const go_type go_type_%s%s;", spec.Name.String, rsuffix)
+	} else {
+		fmt.Fprintf(header, "typedef %s %s%s;", ctype, spec.Name.String, suffix)
 	}
 
 	switch rtype := spec.Type.TypeAndValue().Type.(type) {
@@ -109,7 +113,7 @@ func (c99 Target) TypeDefinition(spec source.TypeDefinition) error {
 			field := rtype.Field(i)
 			fmt.Fprintf(c99, "{.name=%q,.type=%s,.offset=offsetof(%s%s, %s),.exported=%v,.embedded=%v}",
 				field.Name(), c99.ReflectTypeOf(field.Type()),
-				spec.Name.String, suffix, field.Name(), field.Exported(), field.Anonymous())
+				spec.Name.String, suffix, fieldName(field, i), field.Exported(), field.Anonymous())
 		}
 		if rtype.NumFields() == 0 {
 			fmt.Fprintf(c99, "{0}") // C has no empty arrays.
@@ -133,7 +137,7 @@ func (c99 Target) TypeDefinition(spec source.TypeDefinition) error {
 }
 
 func kindOf(t types.Type) string {
-	switch t := t.(type) {
+	switch t := t.Underlying().(type) {
 	case *types.Basic:
 		if t.Kind() == types.UnsafePointer {
 			return "unsafe_pointer"
@@ -379,7 +383,7 @@ func (c99 Target) StaticInitializer(expr source.Expression, t types.Type) (strin
 			if !ok {
 				return "", false
 			}
-			elems = append(elems, "."+field.Name()+" = "+value)
+			elems = append(elems, "."+fieldName(field, fieldIndex(typ, field))+" = "+value)
 		}
 		if len(elems) == 0 {
 			elems = append(elems, "0")
@@ -392,6 +396,29 @@ func (c99 Target) StaticInitializer(expr source.Expression, t types.Type) (strin
 func isBasic(t types.Type) bool {
 	_, ok := t.Underlying().(*types.Basic)
 	return ok
+}
+
+// Constant writes a constant (of type tv.Type), in an expression. Constants of complex
+// types are complex values, whatever the kind of the constant (1 and 1.5 may be complex).
+func (c99 Target) Constant(tv types.TypeAndValue) error {
+	if basic, ok := tv.Type.Underlying().(*types.Basic); ok && basic.Info()&types.IsComplex != 0 {
+		value := constant.ToComplex(tv.Value)
+		ctor := "go_complex128"
+		if basic.Kind() == types.Complex64 {
+			ctor = "go_complex64"
+		}
+		fmt.Fprintf(c99, "%s(", ctor)
+		if err := c99.ConstantValue(constant.ToFloat(constant.Real(value)), false); err != nil {
+			return err
+		}
+		fmt.Fprintf(c99, ", ")
+		if err := c99.ConstantValue(constant.ToFloat(constant.Imag(value)), false); err != nil {
+			return err
+		}
+		fmt.Fprintf(c99, ")")
+		return nil
+	}
+	return c99.ConstantValue(tv.Value, false)
 }
 
 // ConstantValue writes a constant value computed by the type checker, as a C constant

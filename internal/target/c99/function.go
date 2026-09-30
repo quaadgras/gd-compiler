@@ -16,10 +16,9 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 	if instance == "" && !decl.IsClosure && IsGeneric(decl) {
 		return nil // compiled as instances, where they are used.
 	}
-	body, ok := decl.Body.Get()
-	if !ok {
-		return decl.Errorf("function missing body")
-	}
+	// Functions without a body are implemented elsewhere (in assembly, or linked from the
+	// runtime): they are only declared, so programs that don't call them can be linked.
+	body, hasBody := decl.Body.Get()
 	receiver, isMethod := decl.Receiver.Get()
 	var fnName = decl.Name.String
 	if fnName == "init" && !isMethod && !decl.IsClosure {
@@ -112,6 +111,9 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 			decl(c99.Declarations)
 			fmt.Fprintf(c99.Declarations, ";")
 		}
+		if !hasBody {
+			return nil
+		}
 		decl(c99)
 		fmt.Fprintf(c99, " {")
 	}
@@ -123,7 +125,7 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 	indent := "\n" + strings.Repeat("\t", c99.Tabs)
 	if closure {
 		for _, v := range c99.Environment {
-			fmt.Fprintf(c99, "%s%s* %s = ((go_env_%s*)go_env)->%[3]s;", indent, c99.TypeOf(subst(v.Type())), v.Name(), fnName)
+			fmt.Fprintf(c99, "%s%s* %s = ((go_env_%s*)go_env)->%[3]s;", indent, c99.TypeOf(subst(v.Type())), source.CIdent(v.Name()), fnName)
 		}
 	}
 	var params []source.Field

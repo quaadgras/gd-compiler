@@ -5,6 +5,8 @@ import (
 	"go/types"
 	"io"
 	"strings"
+
+	"github.com/quaadgras/gd-compiler/internal/source"
 )
 
 // MapFuncsOf returns the names of the hash and equality functions for map keys of type
@@ -80,7 +82,7 @@ func (c99 Target) keyParts(t types.Type, k, x, y string, hashes, equals *[]strin
 			if field.Name() == "_" {
 				continue // blank fields are ignored by ==.
 			}
-			sub := "." + field.Name()
+			sub := "." + source.CIdent(field.Name())
 			if err := c99.keyParts(field.Type(), k+sub, x+sub, y+sub, hashes, equals); err != nil {
 				return err
 			}
