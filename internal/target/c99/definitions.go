@@ -160,6 +160,26 @@ func (c99 Target) VariableDefinition(spec source.VariableDefinition) error {
 	if !ok && !hasValue {
 		return fmt.Errorf("missing type for value %s", name.String)
 	}
+	// var a, b = f(): the first variable evaluates the tuple into a temporary (written
+	// with the variable's value, as for package-level variables, it's in init).
+	var tupleValue source.Expression
+	var declareTuple bool
+	if result, isTuple := spec.Result.Get(); isTuple && hasValue {
+		node := source.LocationOf(assignValue).Node
+		temp, ok := c99.Closures.tuples[node]
+		if result == 0 || !ok {
+			ts := tupleTypes(assignValue)
+			if result >= len(ts) {
+				return spec.Location.Errorf("unsupported declaration of multiple variables")
+			}
+			temp = tupleVar{name: fmt.Sprintf("go_var_%d", c99.Closures.count), types: ts}
+			c99.Closures.count++
+			c99.Closures.tuples[node] = temp
+			tupleValue, declareTuple = assignValue, true
+		}
+		assignValue = c99.element(temp.types[result], fmt.Sprintf("%s.r%d", temp.name, result))
+		spec.Value = xyz.New(assignValue)
+	}
 	if ok {
 		rtype = vtype.TypeAndValue().Type
 		ztype = c99.TypeOf(vtype.TypeAndValue().Type)
@@ -222,6 +242,14 @@ func (c99 Target) VariableDefinition(spec source.VariableDefinition) error {
 	}
 	if c99.Tabs > 0 {
 		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
+	}
+	if declareTuple {
+		value, ts, err := c99.tupleValue(tupleValue, -1)
+		if err != nil {
+			return spec.Location.Errorf("%w", err)
+		}
+		temp := c99.Closures.tuples[source.LocationOf(tupleValue).Node]
+		fmt.Fprintf(c99, "%s %s = %s; ", c99.TupleOf(ts), temp.name, value)
 	}
 	if name.String == "_" {
 		fmt.Fprintf(c99, "go_ignore(")

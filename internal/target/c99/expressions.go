@@ -66,14 +66,14 @@ func (c99 Target) ExpressionBinary(expr source.ExpressionBinary) error {
 		}
 	}
 	switch expr.Operation.Value {
-	case token.NEQ:
-		switch etype := expr.X.TypeAndValue().Type.(type) {
-		case *types.Basic:
-			switch etype.Kind() {
-			case types.String, types.UntypedString:
-				fmt.Fprintf(c99, "(!go_string_eq(%s, %s))", c99.toString(expr.X), c99.toString(expr.Y))
-				return nil
+	case token.EQL, token.NEQ:
+		if basic, ok := expr.X.TypeAndValue().Type.Underlying().(*types.Basic); ok && basic.Info()&types.IsString != 0 {
+			not := ""
+			if expr.Operation.Value == token.NEQ {
+				not = "!"
 			}
+			fmt.Fprintf(c99, "(%sgo_string_eq(%s, %s))", not, c99.toString(expr.X), c99.toString(expr.Y))
+			return nil
 		}
 	}
 	if err := c99.Expression(expr.X); err != nil {

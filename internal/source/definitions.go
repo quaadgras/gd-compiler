@@ -51,6 +51,10 @@ type VariableDefinition struct {
 	Name  DefinedVariable
 	Type  xyz.Maybe[Type]
 	Value xyz.Maybe[Expression]
+
+	// Result is the index of the variable's value, when the Value is a tuple shared with
+	// the other variables of the declaration (var a, b = f()).
+	Result xyz.Maybe[int]
 }
 
 // const Name = Value

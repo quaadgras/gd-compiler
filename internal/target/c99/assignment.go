@@ -17,7 +17,10 @@ import (
 // turn, when that is equivalent).
 func (c99 Target) StatementAssignment(stmt source.StatementAssignment) error {
 	if len(stmt.Variables) != len(stmt.Values) {
-		return stmt.Location.Errorf("unsupported assignment of multiple results")
+		if len(stmt.Values) != 1 {
+			return stmt.Location.Errorf("unsupported assignment")
+		}
+		return c99.assignTuple(stmt)
 	}
 	if len(stmt.Variables) == 1 {
 		return c99.assignment(stmt)

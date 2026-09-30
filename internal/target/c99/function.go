@@ -41,25 +41,9 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 	}()
 
 	return_type := func(w io.Writer) {
-		results, ok := decl.Type.Results.Get()
-		if ok {
-			switch len(results.Fields) {
-			case 1:
-				fmt.Fprintf(w, "%s ", c99.Type(results.Fields[0].Type))
-			default:
-				fmt.Fprintf(w, ".{")
-				for i, field := range results.Fields {
-					if i > 0 {
-						fmt.Fprintf(w, ", ")
-					}
-					fmt.Fprintf(w, "%s", c99.Type(field.Type))
-				}
-				fmt.Fprintf(w, "} ")
-			}
-		} else {
-			fmt.Fprintf(w, "void ")
-		}
+		fmt.Fprintf(w, "%s ", c99.TupleOf(c99.Results))
 	}
+
 	// Package-level functions have external linkage and a package qualified name, closures
 	// are only referenced from the file they are defined in.
 	var suffix string
@@ -180,9 +164,6 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 				i++
 			}
 		}
-		if len(c99.ResultVars) > 1 {
-			return decl.Errorf("multiple results are not supported for functions with named results or defer")
-		}
 	}
 	if decl.Name.String == "main" && !isMethod && !closure {
 		c99.ResultVars = []string{"0"} // C's main returns int.
@@ -246,8 +227,12 @@ func (c99 Target) parameterName(name source.DefinedVariable) string {
 // returnValues returns the result variables of the function being compiled, for a return
 // statement (with a leading space when there are any).
 func (c99 Target) returnValues() string {
-	if len(c99.ResultVars) == 0 {
+	switch len(c99.ResultVars) {
+	case 0:
 		return ""
+	case 1:
+		return " " + c99.ResultVars[0]
+	default:
+		return fmt.Sprintf(" (%s){ %s }", c99.TupleOf(c99.Results), strings.Join(c99.ResultVars, ", "))
 	}
-	return " " + strings.Join(c99.ResultVars, ", ")
 }

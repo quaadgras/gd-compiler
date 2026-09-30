@@ -149,32 +149,63 @@ func reevaluate(arg source.Expression) bool {
 	return arg.TypeAndValue().Value != nil || isNil(arg)
 }
 
-// StatementReturn sets the result variables, runs the deferred calls, and returns.
+// StatementReturn returns the results (a tuple for multiple results). When the function
+// has result variables (they are named, or it has deferred calls), they are set, and the
+// deferred calls run, before returning them.
 func (c99 Target) StatementReturn(stmt source.StatementReturn) error {
-	if len(stmt.Results) > 1 {
-		return stmt.Location.Errorf("multiple return values are not supported")
+	results := stmt.Results
+	var tuple string // return f(), where f has multiple results.
+	if len(results) == 1 && len(c99.Results) > 1 {
+		value, ts, err := c99.tupleValue(results[0], len(c99.Results))
+		if err != nil {
+			return stmt.Location.Errorf("%w", err)
+		}
+		if c99.TupleOf(ts) != c99.TupleOf(c99.Results) {
+			return stmt.Location.Errorf("unsupported return of %s results", results[0].TypeAndValue().Type)
+		}
+		tuple = value
 	}
-	if !c99.Frame && (len(stmt.Results) > 0 || len(c99.ResultVars) == 0) {
+	value := func(i int) error {
+		return c99.ExpressionAs(results[i], c99.Results[i])
+	}
+	if !c99.Frame && (len(results) > 0 || len(c99.ResultVars) == 0) {
 		fmt.Fprintf(c99, "return")
-		for i, result := range stmt.Results {
+		switch {
+		case tuple != "":
+			fmt.Fprintf(c99, " %s", tuple)
+		case len(results) == 1:
 			fmt.Fprintf(c99, " ")
-			var target types.Type
-			if i < len(c99.Results) {
-				target = c99.Results[i]
+			return value(0)
+		case len(results) > 1:
+			fmt.Fprintf(c99, " (%s){ ", c99.TupleOf(c99.Results))
+			for i := range results {
+				if i > 0 {
+					fmt.Fprintf(c99, ", ")
+				}
+				if err := value(i); err != nil {
+					return err
+				}
 			}
-			if err := c99.ExpressionAs(result, target); err != nil {
-				return err
-			}
+			fmt.Fprintf(c99, " }")
 		}
 		return nil
 	}
 	fmt.Fprintf(c99, "{ ")
-	for i, result := range stmt.Results {
-		fmt.Fprintf(c99, "%s = ", c99.ResultVars[i])
-		if err := c99.ExpressionAs(result, c99.Results[i]); err != nil {
-			return err
+	if tuple != "" {
+		name := fmt.Sprintf("go_return_%d", c99.Closures.count)
+		c99.Closures.count++
+		fmt.Fprintf(c99, "%s %s = %s; ", c99.TupleOf(c99.Results), name, tuple)
+		for i, rv := range c99.ResultVars {
+			fmt.Fprintf(c99, "%s = %s.r%d; ", rv, name, i)
 		}
-		fmt.Fprintf(c99, "; ")
+	} else {
+		for i := range results {
+			fmt.Fprintf(c99, "%s = ", c99.ResultVars[i])
+			if err := value(i); err != nil {
+				return err
+			}
+			fmt.Fprintf(c99, "; ")
+		}
 	}
 	if c99.Frame {
 		fmt.Fprintf(c99, "go_frame_return(go_fr); ")

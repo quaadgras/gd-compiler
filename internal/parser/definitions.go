@@ -48,9 +48,13 @@ func loadDefinitions(pkg *source.Package, node ast.Decl, global bool) []source.D
 					for i, name := range spec.Names {
 						var value xyz.Maybe[source.Expression]
 						var typed source.Typed
-						if len(spec.Values) > 0 {
+						var result xyz.Maybe[int]
+						if len(spec.Values) == len(spec.Names) {
 							value = xyz.New(loadExpression(pkg, spec.Values[i]))
 							typed = typedIn(pkg, spec.Values[i])
+						} else if len(spec.Values) == 1 { // var a, b = f()
+							value = xyz.New(loadExpression(pkg, spec.Values[0]))
+							result = xyz.New(i)
 						}
 						var vtype xyz.Maybe[source.Type]
 						if spec.Type != nil {
@@ -64,6 +68,7 @@ func loadDefinitions(pkg *source.Package, node ast.Decl, global bool) []source.D
 							Typed:    typed,
 							Type:     vtype,
 							Value:    value,
+							Result:   result,
 						}))
 					}
 				}

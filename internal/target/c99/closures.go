@@ -23,6 +23,15 @@ type Closures struct {
 	// need a frame for panics to unwind to. Their named results are boxed, as they are
 	// read after a panic recovers (and may be set by deferred calls).
 	frames map[ast.Node]bool
+
+	// tuples are the temporaries holding the values of var declarations of several
+	// variables from a single tuple (var a, b = f()), by the AST node of the value.
+	tuples map[ast.Node]tupleVar
+}
+
+type tupleVar struct {
+	name  string
+	types []types.Type
 }
 
 // NewClosures analyzes the closures in files.
@@ -31,6 +40,7 @@ func NewClosures(info *types.Info, files []*ast.File) *Closures {
 		captures: make(map[*ast.FuncLit][]*types.Var),
 		captured: make(map[types.Object]bool),
 		frames:   make(map[ast.Node]bool),
+		tuples:   make(map[ast.Node]tupleVar),
 		info:     info,
 	}
 	for _, file := range files {
@@ -183,12 +193,5 @@ func (c99 Target) InvokerOf(sig *types.Signature) (string, error) {
 }
 
 func (c99 Target) resultTypeOf(sig *types.Signature) (string, error) {
-	switch sig.Results().Len() {
-	case 0:
-		return "void", nil
-	case 1:
-		return c99.TypeOf(sig.Results().At(0).Type()), nil
-	default:
-		return "", fmt.Errorf("multiple return values are not supported for func values")
-	}
+	return c99.TupleOfResults(sig), nil
 }

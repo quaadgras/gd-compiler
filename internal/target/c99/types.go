@@ -236,14 +236,7 @@ func (c99 Target) TypeOf(t types.Type) string {
 		for i := 0; i < typ.NumMethods(); i++ {
 			method := typ.Method(i)
 			sig := method.Type().(*types.Signature)
-			switch sig.Results().Len() {
-			case 0:
-				builder.WriteString("void")
-			case 1:
-				builder.WriteString(c99.TypeOf(sig.Results().At(0).Type()))
-			default:
-				panic("interface methods with multiple return values are not supported")
-			}
+			builder.WriteString(c99.TupleOfResults(sig))
 			builder.WriteString("(*")
 			builder.WriteString(method.Name())
 			builder.WriteString(")(void*")
