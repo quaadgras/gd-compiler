@@ -61,7 +61,7 @@ type ConstantDefinition struct {
 	Global bool
 
 	Name  DefinedConstant
-	Value Expression
+	Value xyz.Maybe[Expression]
 }
 
 // type Name[TypeParameters] Type

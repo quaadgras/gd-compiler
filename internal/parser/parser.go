@@ -14,16 +14,16 @@ import (
 
 func Load(dir string, test bool) (map[string]source.Package, error) {
 	config := &packages.Config{
-		Mode: packages.NeedName | packages.NeedFiles | packages.NeedCompiledGoFiles | packages.NeedImports | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedSyntax,
-
-		Tests: true,
+		Mode:  packages.NeedName | packages.NeedFiles | packages.NeedCompiledGoFiles | packages.NeedImports | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedSyntax,
+		Dir:   dir,
+		Tests: test,
 	}
-	packages, err := packages.Load(config, dir)
+	pkgs, err := packages.Load(config, ".")
 	if err != nil {
 		return nil, err
 	}
 	var results = make(map[string]source.Package)
-	for _, pkg := range packages {
+	for _, pkg := range pkgs {
 		loadPackage(config, results, pkg, test)
 	}
 	return results, nil
@@ -228,30 +228,6 @@ func loadPackage(config *packages.Config, into map[string]source.Package, pkg *p
 		loaded.Files = append(loaded.Files, loadFile(&loaded, file))
 	}
 	into[pkg.Name] = loaded
-	for _, imp := range pkg.Imports {
-		if strings.HasPrefix(imp.Name, "internal/") {
-			continue
-		}
-		switch imp.Name {
-		case "reflect", "testing", "runtime", "os", "syscall", "unsafe", "math",
-			"os/exec", "os/signal", "runtime/cgo", "runtime/debug", "runtime/race",
-			"sync/atomic", "hash/maphash", "unique", "weak", "net", "internal/reflectlite",
-			"internal/sysrand", "embed", "builtin", "iter", "plugin", "structs", "time":
-			continue
-		}
-		if _, ok := into[imp.Name]; !ok {
-			into[imp.Name] = loaded
-
-			packages, err := packages.Load(config, imp.Name)
-			if err != nil {
-				return err
-			}
-			for _, pkg := range packages {
-				if err := loadPackage(config, into, pkg, false); err != nil {
-					return err
-				}
-			}
-		}
-	}
+	// Skip loading dependencies for now - only compile the requested package
 	return nil
 }

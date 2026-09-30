@@ -3,6 +3,7 @@ package parser
 import (
 	"go/ast"
 	"go/token"
+	"go/types"
 	"reflect"
 	"strings"
 
@@ -25,12 +26,22 @@ func loadDefinitions(pkg *source.Package, node ast.Decl, global bool) []source.D
 			case *ast.ValueSpec:
 				if decl.Tok == token.CONST {
 					for i, name := range spec.Names {
+						// The value may be implied by a previous spec (iota), so take the
+						// type and value from the constant itself.
+						var typed source.Typed
+						if obj, ok := pkg.Defs[name].(*types.Const); ok {
+							typed = source.Typed{TV: types.TypeAndValue{Type: obj.Type(), Value: obj.Val()}, PKG: pkg.Name}
+						}
+						var value xyz.Maybe[source.Expression]
+						if i < len(spec.Values) {
+							value = xyz.New(loadExpression(pkg, spec.Values[i]))
+						}
 						defs = append(defs, source.Definitions.Constant.New(source.ConstantDefinition{
 							Location: locationIn(pkg, spec, spec.Pos()),
 							Name:     source.DefinedConstant(loadIdentifier(pkg, name)),
-							Typed:    typedIn(pkg, spec.Values[i]),
+							Typed:    typed,
 							Global:   global,
-							Value:    loadExpression(pkg, spec.Values[i]),
+							Value:    value,
 						}))
 					}
 				} else {

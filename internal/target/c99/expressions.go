@@ -42,7 +42,7 @@ func (c99 Target) ExpressionBinary(expr source.ExpressionBinary) error {
 	}
 	switch expr.X.TypeAndValue().Type.Underlying().(type) {
 	case *types.Pointer:
-		fmt.Fprintf(c99, ".address")
+		fmt.Fprintf(c99, ".ptr")
 	}
 	switch expr.Operation.Value {
 	case token.LOR:
@@ -57,7 +57,7 @@ func (c99 Target) ExpressionBinary(expr source.ExpressionBinary) error {
 	}
 	switch expr.X.TypeAndValue().Type.Underlying().(type) {
 	case *types.Pointer:
-		fmt.Fprintf(c99, ".address")
+		fmt.Fprintf(c99, ".ptr")
 	}
 	return nil
 }
@@ -213,9 +213,9 @@ func (c99 Target) ExpressionUnary(e source.ExpressionUnary) error {
 	case token.AND:
 		ident := source.Expressions.DefinedVariable.Get(e.X)
 		if !c99.StackAllocated(ident) {
-			fmt.Fprintf(c99, "%s{.address=%s}", c99.TypeOf(e.TypeAndValue().Type), c99.toString(e.X))
+			fmt.Fprintf(c99, "(%s){.ptr=%s}", c99.TypeOf(e.TypeAndValue().Type), c99.toString(e.X))
 		} else {
-			fmt.Fprintf(c99, "%s{.address=&%s}", c99.TypeOf(e.TypeAndValue().Type), c99.toString(e.X))
+			fmt.Fprintf(c99, "(%s){.ptr=&%s}", c99.TypeOf(e.TypeAndValue().Type), c99.toString(e.X))
 		}
 		return nil
 	default:

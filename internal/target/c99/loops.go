@@ -84,7 +84,7 @@ func (c99 Target) StatementRange(stmt source.StatementRange) error {
 		if !hasKey || key.String == "_" {
 			key.String = "go_iter"
 		}
-		fmt.Fprintf(c99, "for (go_ii %s; %[1]s < go_slice_len(%[2]s); %[1]s++) {", c99.toString(key), c99.toString(stmt.X))
+		fmt.Fprintf(c99, "for (go_ii %s = 0; %[1]s < go_slice_len(%[2]s); %[1]s++) {", c99.toString(key), c99.toString(stmt.X))
 		val, hasVal := stmt.Value.Get()
 		if hasVal {
 			fmt.Fprintf(c99, "\n%s%s ", strings.Repeat("\t", c99.Tabs+1), c99.TypeOf(typ.Elem()))

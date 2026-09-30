@@ -40,6 +40,8 @@ func loadType(pkg *source.Package, node ast.Node) source.Type {
 		return source.Types.Unknown.New(loadTypeUnknown(pkg, typ))
 	case *ast.IndexExpr:
 		return source.Types.Unknown.New(loadTypeUnknown(pkg, typ))
+	case *ast.IndexListExpr:
+		return source.Types.Unknown.New(loadTypeUnknown(pkg, typ))
 	default:
 		panic("unexpected type " + reflect.TypeOf(node).String())
 	}

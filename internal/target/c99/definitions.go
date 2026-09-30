@@ -3,6 +3,7 @@ package c99
 import (
 	"fmt"
 	"go/ast"
+	"go/constant"
 	"go/types"
 	"strconv"
 	"strings"
@@ -241,6 +242,24 @@ func (c99 Target) VariableDefinition(spec source.VariableDefinition) error {
 	return nil
 }
 
+// ConstantValue writes a constant value computed by the type checker.
+func (c99 Target) ConstantValue(value constant.Value) error {
+	switch value.Kind() {
+	case constant.Bool:
+		fmt.Fprintf(c99, "%t", constant.BoolVal(value))
+	case constant.String:
+		fmt.Fprintf(c99, "go_string_new(%q)", constant.StringVal(value))
+	case constant.Int:
+		fmt.Fprintf(c99, "%s", value.ExactString())
+	case constant.Float:
+		f, _ := constant.Float64Val(value)
+		fmt.Fprintf(c99, "%s", strconv.FormatFloat(f, 'g', -1, 64))
+	default:
+		return fmt.Errorf("unsupported constant value %v", value)
+	}
+	return nil
+}
+
 func (c99 Target) ConstantDefinition(def source.ConstantDefinition) error {
 	if c99.Tabs > 0 {
 		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
@@ -254,8 +273,16 @@ func (c99 Target) ConstantDefinition(def source.ConstantDefinition) error {
 	} else {
 		fmt.Fprintf(c99, "go_ignore(")
 	}
-	if err := c99.Expression(def.Value); err != nil {
-		return err
+	if value, ok := def.Value.Get(); ok {
+		if err := c99.Expression(value); err != nil {
+			return err
+		}
+	} else {
+		// The value is implied by a previous spec (iota), so use the value computed by
+		// the type checker.
+		if err := c99.ConstantValue(def.TypeAndValue().Value); err != nil {
+			return def.Location.Errorf("%w", err)
+		}
 	}
 	if def.Name.String == "_" {
 		fmt.Fprintf(c99, ")")
