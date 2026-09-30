@@ -117,16 +117,3 @@ func (c99 Target) StatementDefinitions(defs source.StatementDefinitions) error {
 	}
 	return nil
 }
-
-func (c99 Target) ArrayStrippedTypeOf(typ types.Type) (types.Type, string) {
-	var suffix string
-	for {
-		if arr, ok := typ.(*types.Array); ok {
-			typ = arr.Elem()
-			suffix += fmt.Sprintf("[%d]", arr.Len())
-			continue
-		}
-		break
-	}
-	return typ, suffix
-}

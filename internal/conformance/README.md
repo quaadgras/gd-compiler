@@ -16,6 +16,11 @@ Each test case is compiled with `gd build`, the emitted C is compiled with `$GD_
 `-lm -pthread`), and then, for `// run` tests, executed and its combined output compared
 against the `.out` file. `// compile` and `// build` tests only need to compile.
 
+All of the C (emitted code and runtime) must also be portable C11, so it is first checked
+with `$GD_STRICT` (default `gcc -std=c11 -pedantic-errors -fsyntax-only`, `off` to
+disable). clang, and so Fil-C, accepts many extensions that other C compilers (MSVC, console
+toolchains) reject. Failures at this stage are reported as `c11:`.
+
 ## status.txt
 
 `path<TAB>pass|fail|skip<TAB>reason`, recorded with [Fil-C](https://fil-c.org/) as the C
@@ -23,7 +28,7 @@ compiler (`GD_CC=filcc GD_LDFLAGS=-static`), as the output of other C compilers 
 slightly. A test fails `go test` only when `status.txt` says it
 passes and it no longer does. Newly passing tests are listed at the end of the run.
 
-Failure reasons are the stage (`gd`, `cc`, `exit`, `output`) plus a normalized first line
+Failure reasons are the stage (`gd`, `c11`, `cc`, `exit`, `output`) plus a normalized first line
 of the error, so the backlog can be ranked by cause:
 
 ```sh

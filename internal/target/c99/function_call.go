@@ -213,7 +213,10 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 		if variadic {
 			fmt.Fprintf(c99, ")")
 		} else {
-			fmt.Fprintf(c99, ".{}")
+			if len(expr.Arguments) > 0 || hasReceiver {
+				fmt.Fprintf(c99, ", ")
+			}
+			fmt.Fprintf(c99, "(go_ll){0}")
 		}
 	}
 	fmt.Fprintf(c99, ")")

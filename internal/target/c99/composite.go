@@ -16,19 +16,30 @@ func (c99 Target) DataComposite(data source.DataComposite) error {
 	}
 	switch typ := dtype.TypeAndValue().Type.Underlying().(type) {
 	case *types.Array:
-		fmt.Fprintf(c99, "(%s)", c99.Type(dtype))
-		fmt.Fprintf(c99, "{")
+		fmt.Fprintf(c99, "(%s){{", c99.Type(dtype))
+		if len(data.Elements) == 0 {
+			fmt.Fprintf(c99, "0")
+		}
 		for i, elem := range data.Elements {
 			if i > 0 {
 				fmt.Fprintf(c99, ", ")
+			}
+			if xyz.ValueOf(elem) == source.Expressions.KeyValue {
+				pair := source.Expressions.KeyValue.Get(elem)
+				fmt.Fprintf(c99, "[%s]=", c99.toString(pair.Key))
+				elem = pair.Value
 			}
 			if err := c99.Compile(elem); err != nil {
 				return err
 			}
 		}
-		fmt.Fprintf(c99, "}")
+		fmt.Fprintf(c99, "}}")
 		return nil
 	case *types.Slice:
+		if len(data.Elements) == 0 {
+			fmt.Fprintf(c99, "go_slice_make(%s, 0, 0)", c99.TypeOf(typ.Elem()))
+			return nil
+		}
 		fmt.Fprintf(c99, "go_slice_literal(%d, %s, ", len(data.Elements), c99.TypeOf(typ.Elem()))
 		for i, elem := range data.Elements {
 			if i > 0 {
@@ -69,6 +80,9 @@ func (c99 Target) DataComposite(data source.DataComposite) error {
 		return nil
 	case *types.Struct:
 		fmt.Fprintf(c99, "(%s){", c99.Type(dtype))
+		if len(data.Elements) == 0 {
+			fmt.Fprintf(c99, "0") // C has no empty initializers before C23.
+		}
 		for i, elem := range data.Elements {
 			if i > 0 {
 				fmt.Fprintf(c99, ", ")

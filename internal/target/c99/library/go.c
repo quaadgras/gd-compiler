@@ -83,18 +83,18 @@ go_kv go_make(go_ii key_size, go_ii elem_size, go_hash hash_func, go_same same_f
     go_kv map = (go_kv)hashmap_new(key_size+elem_size, 0, 0, 0,
         map_hash, map_compare, NULL, meta);
     for (go_ii i = 0; i < argc; i++) {
-        hashmap_set(map, init + i * (key_size + elem_size));
+        hashmap_set(map, (char*)init + i * (key_size + elem_size));
     }
     return map;
 }
-void go_map_set(go_kv m, void *key, void *val) {
+void go_map_set(go_kv m, const void *key, const void *val) {
     map_metadata *meta = hashmap_udata(m);
     void* staging = meta->staging;
     memcpy(staging, key, meta->key_size);
-    memcpy(staging + meta->key_size, val, meta->val_size);
+    memcpy((char*)staging + meta->key_size, val, meta->val_size);
     hashmap_set(m, staging);
 }
-go_tf go_map_get(go_kv m, void *key, void *val) {
+go_tf go_map_get(go_kv m, const void *key, void *val) {
     map_metadata *meta = hashmap_udata(m);
     const void* ptr = hashmap_get(m, key);
     if (ptr) {
@@ -118,7 +118,7 @@ void go_routine(int(trampoline)(void*), go_fn fn, size_t arg_size, void* arg) {
     thrd_t thread;
     void *data = malloc(sizeof(go_fn) + arg_size);
     memcpy(data, &fn, sizeof(go_fn));
-    memcpy(data + sizeof(go_fn), arg, arg_size);
+    memcpy((char*)data + sizeof(go_fn), arg, arg_size);
     thrd_create(&thread, trampoline, data);
 }
 
@@ -126,7 +126,7 @@ void* go_index(go_ll s, go_ii elem_size, go_ii i) {
     if (i < 0 || i >= s.len) {
         go_panic("index out of range");
     }
-    return (void*)s.ptr.ptr + i * elem_size;
+    return (char*)s.ptr.ptr + i * elem_size;
 }
 
 go_ll go_slice(go_ll s, go_ii elem_size, go_ii low, go_ii high, go_ii cap) {

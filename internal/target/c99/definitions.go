@@ -5,6 +5,7 @@ import (
 	"go/ast"
 	"go/constant"
 	"go/types"
+	"math"
 	"strconv"
 	"strings"
 
@@ -73,9 +74,9 @@ func (c99 Target) TypeDefinition(spec source.TypeDefinition) error {
 		header = c99
 		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 	}
-	ftype, array := c99.ArrayStrippedTypeOf(spec.Type.TypeAndValue().Type)
+	ctype := c99.TypeOf(spec.Type.TypeAndValue().Type)
 	fmt.Fprintln(header)
-	fmt.Fprintf(header, "typedef %s %s%s%s;", c99.TypeOf(ftype), spec.Name.String, suffix, array)
+	fmt.Fprintf(header, "typedef %s %s%s;", ctype, spec.Name.String, suffix)
 	if spec.Global {
 		fmt.Fprintln(header)
 		fmt.Fprintf(header, "extern const go_type go_type_%s%s;", spec.Name.String, suffix)
@@ -92,6 +93,9 @@ func (c99 Target) TypeDefinition(spec source.TypeDefinition) error {
 			fmt.Fprintf(c99, "{.name=%q,.type=%s,.offset=offsetof(%s%s, %s),.exported=%v,.embedded=%v}",
 				field.Name(), c99.ReflectTypeOf(field.Type()),
 				spec.Name.String, suffix, field.Name(), field.Exported(), field.Anonymous())
+		}
+		if rtype.NumFields() == 0 {
+			fmt.Fprintf(c99, "{0}") // C has no empty arrays.
 		}
 		fmt.Fprintf(c99, "};")
 	default:
@@ -161,7 +165,7 @@ func (c99 Target) VariableDefinition(spec source.VariableDefinition) error {
 				fmt.Fprintf(c99, "null")
 				return nil
 			}
-			fmt.Fprintf(c99, "{}")
+			fmt.Fprintf(c99, "{0}")
 			return nil
 		}
 	} else {
@@ -180,22 +184,19 @@ func (c99 Target) VariableDefinition(spec source.VariableDefinition) error {
 		}
 	}
 	if spec.Global {
-		ftype, array := c99.ArrayStrippedTypeOf(rtype)
-		fmt.Fprintf(c99, "%s ", c99.TypeOf(ftype))
+		fmt.Fprintf(c99, "%s ", c99.TypeOf(rtype))
 		if err := c99.definedVariable(true, name); err != nil {
 			return err
 		}
-		fmt.Fprint(c99, array)
 		fmt.Fprintf(c99, ";")
 		if spec.Global {
 			c99.Writer = c99.Private
 			defer fmt.Fprintln(c99.Private)
 		}
-		fmt.Fprintf(c99, "extern %s ", c99.TypeOf(ftype))
+		fmt.Fprintf(c99, "extern %s ", c99.TypeOf(rtype))
 		if err := c99.definedVariable(true, name); err != nil {
 			return err
 		}
-		fmt.Fprint(c99, array)
 		fmt.Fprintf(c99, ";")
 		c99.Writer = c99.Init
 		c99.Tabs = 1
@@ -215,12 +216,10 @@ func (c99 Target) VariableDefinition(spec source.VariableDefinition) error {
 				return err
 			}
 		} else {
-			ftype, array := c99.ArrayStrippedTypeOf(rtype)
-			fmt.Fprintf(c99, "%s ", c99.TypeOf(ftype))
+			fmt.Fprintf(c99, "%s ", c99.TypeOf(rtype))
 			if err := c99.definedVariable(true, name); err != nil {
 				return err
 			}
-			fmt.Fprint(c99, array)
 		}
 		stackAllocated := c99.StackAllocated(name)
 		stackAllocated = true
@@ -242,22 +241,72 @@ func (c99 Target) VariableDefinition(spec source.VariableDefinition) error {
 	return nil
 }
 
-// ConstantValue writes a constant value computed by the type checker.
-func (c99 Target) ConstantValue(value constant.Value) error {
+// ConstantValue writes a constant value computed by the type checker, as a C constant
+// expression (so that it is valid in static initializers when global is true).
+func (c99 Target) ConstantValue(value constant.Value, global bool) error {
 	switch value.Kind() {
 	case constant.Bool:
 		fmt.Fprintf(c99, "%t", constant.BoolVal(value))
 	case constant.String:
-		fmt.Fprintf(c99, "go_string_new(%q)", constant.StringVal(value))
+		str := constant.StringVal(value)
+		if !global {
+			fmt.Fprintf(c99, "(go_ss)")
+		}
+		fmt.Fprintf(c99, "{ .ptr = %s, .len = %d }", cString(str), len(str))
 	case constant.Int:
-		fmt.Fprintf(c99, "%s", value.ExactString())
+		// C integer literals have the type of the smallest of int, long, long long that fits,
+		// so give them an explicit suffix.
+		if v, exact := constant.Int64Val(value); exact {
+			if v == math.MinInt64 {
+				fmt.Fprintf(c99, "(-9223372036854775807LL-1)")
+			} else {
+				fmt.Fprintf(c99, "%dLL", v)
+			}
+		} else if v, exact := constant.Uint64Val(value); exact {
+			fmt.Fprintf(c99, "%dULL", v)
+		} else {
+			return fmt.Errorf("constant %v overflows 64 bits", value)
+		}
 	case constant.Float:
 		f, _ := constant.Float64Val(value)
-		fmt.Fprintf(c99, "%s", strconv.FormatFloat(f, 'g', -1, 64))
+		s := strconv.FormatFloat(f, 'g', -1, 64)
+		if !strings.ContainsAny(s, ".e") {
+			s += ".0"
+		}
+		fmt.Fprintf(c99, "%s", s)
 	default:
 		return fmt.Errorf("unsupported constant value %v", value)
 	}
 	return nil
+}
+
+// cString quotes s as a C string literal. Unlike %q, hex escapes are ended by splitting
+// the literal, as C hex escapes consume every following hex digit.
+func cString(s string) string {
+	var b strings.Builder
+	b.WriteByte('"')
+	hex := false
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		if hex && strings.IndexByte("0123456789abcdefABCDEF", c) >= 0 {
+			b.WriteString(`""`)
+		}
+		hex = false
+		switch {
+		case c == '"' || c == '\\':
+			b.WriteByte('\\')
+			b.WriteByte(c)
+		case c == '\n':
+			b.WriteString(`\n`)
+		case c < 0x20 || c >= 0x7f || c == '?':
+			fmt.Fprintf(&b, `\x%02x`, c)
+			hex = true
+		default:
+			b.WriteByte(c)
+		}
+	}
+	b.WriteByte('"')
+	return b.String()
 }
 
 func (c99 Target) ConstantDefinition(def source.ConstantDefinition) error {
@@ -273,16 +322,18 @@ func (c99 Target) ConstantDefinition(def source.ConstantDefinition) error {
 	} else {
 		fmt.Fprintf(c99, "go_ignore(")
 	}
-	if value, ok := def.Value.Get(); ok {
+	// Use the exact value computed by the type checker, as Go constant expressions (such
+	// as 1<<63, or iota) don't mean the same thing in C, or may be implied by a previous spec.
+	if tv := def.TypeAndValue(); tv.Value != nil && tv.Value.Kind() != constant.Complex {
+		if err := c99.ConstantValue(tv.Value, def.Global); err != nil {
+			return def.Location.Errorf("%w", err)
+		}
+	} else if value, ok := def.Value.Get(); ok {
 		if err := c99.Expression(value); err != nil {
 			return err
 		}
 	} else {
-		// The value is implied by a previous spec (iota), so use the value computed by
-		// the type checker.
-		if err := c99.ConstantValue(def.TypeAndValue().Value); err != nil {
-			return def.Location.Errorf("%w", err)
-		}
+		return def.Location.Errorf("constant %s has no value", def.Name.String)
 	}
 	if def.Name.String == "_" {
 		fmt.Fprintf(c99, ")")

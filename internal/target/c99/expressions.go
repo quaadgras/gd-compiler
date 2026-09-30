@@ -97,7 +97,7 @@ func (c99 Target) ExpressionFunction(e source.ExpressionFunction) error {
 }
 
 func (c99 Target) ExpressionIndex(expr source.ExpressionIndex) error {
-	switch expr.X.TypeAndValue().Type.(type) {
+	switch xtype := expr.X.TypeAndValue().Type.Underlying().(type) {
 	case *types.Slice:
 		elemType := c99.TypeOf(expr.X.TypeAndValue().Type.(*types.Slice).Elem())
 		fmt.Fprintf(c99, "go_slice_index(")
@@ -132,7 +132,22 @@ func (c99 Target) ExpressionIndex(expr source.ExpressionIndex) error {
 		if err := c99.Expression(expr.X); err != nil {
 			return err
 		}
-		fmt.Fprintf(c99, "[")
+		fmt.Fprintf(c99, ".a[")
+		if err := c99.Expression(expr.Index); err != nil {
+			return err
+		}
+		fmt.Fprintf(c99, "]")
+		return nil
+	case *types.Pointer:
+		array, ok := xtype.Elem().Underlying().(*types.Array)
+		if !ok {
+			return fmt.Errorf("unsupported index of type %s", xtype)
+		}
+		fmt.Fprintf(c99, "go_pointer_get(")
+		if err := c99.Expression(expr.X); err != nil {
+			return err
+		}
+		fmt.Fprintf(c99, ", %s).a[", c99.ArrayTypeOf(array))
 		if err := c99.Expression(expr.Index); err != nil {
 			return err
 		}

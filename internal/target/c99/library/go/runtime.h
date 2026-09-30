@@ -51,9 +51,9 @@ static inline go_ll StackRecord_Stack_go_runtime_package(StackRecord_go_runtime_
     return (go_ll){};
 }
 
-static const go_ss Compiler_go_runtime_package = go_string_new("gd");
-static const go_ss GOARCH_go_runtime_package = go_string_new(go_ARCH);
-static const go_ss GOOS_go_runtime_package = go_string_new(go_OS);
+static const go_ss Compiler_go_runtime_package = go_string_const("gd");
+static const go_ss GOARCH_go_runtime_package = go_string_const(go_ARCH);
+static const go_ss GOOS_go_runtime_package = go_string_const(go_OS);
 extern go_ii MemProfileRate_go_runtime_package;
 
 static inline go_aaiitfzz BlockProfile_go_runtime_package(go_ll p) { return (go_aaiitfzz){}; }

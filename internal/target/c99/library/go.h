@@ -45,9 +45,10 @@ struct go_if;
 typedef void* go_kv;
 typedef struct { void* ptr; /*size_t off;*/ } go_pt;
 typedef struct { go_pt ptr; go_ii len; go_ii cap; } go_ll;
-typedef const struct { const char *ptr; const go_ii len; } go_ss;
+typedef struct { const char *ptr; go_ii len; } go_ss;
 
-typedef struct {} go_az;
+// C has no empty structs.
+typedef struct { char _; } go_az;
 
 typedef enum {
     go_kind_invalid = 0,
@@ -122,10 +123,10 @@ typedef struct { go_pt ptr; const go_type* go_type; } go_vv;
 static inline go_aaf4f4zz go_complex64(go_f4 real, go_f4 imag) { return (go_aaf4f4zz){real, imag}; }
 static inline go_aaf8f8zz go_complex128(go_f8 real, go_f8 imag) { return (go_aaf8f8zz){real, imag}; }
 
-typedef struct {} go_tuple;
+typedef struct { char _; } go_tuple;
 
 #define go_ignore(x) (void)(x)
-#define go_split() go_ll go_defers = {};
+#define go_split() go_ll go_defers = {0};
 #define go_defer(fn, T, ...) do { \
     go_defers = go_append(go_defers, sizeof(fn), &fn); \
     go_defers = go_append(go_defers, sizeof(T), &(T){__VA_ARGS__}); \
@@ -167,14 +168,15 @@ void go_slice_clear(go_ll s);
 go_kv go_make(go_ii key_size, go_ii elem_size, go_hash hash_func, go_same same_func, go_ii hint, go_ii argc, void* init);
 #define go_map_make(K, V, hint) go_make(sizeof(go_##K), sizeof(go_##V), go_hash_##K, go_same_##K, hint, 0, nil)
 #define go_map_literal(K, V, count, ...) go_make(sizeof(go_##K), sizeof(go_##V), go_hash_##K, go_same_##K, count, count, &(go_map_entry__##K##__##V[]){__VA_ARGS__})
-void go_map_set(go_kv m, void* key, void* val);
-go_tf go_map_get(go_kv m, void* key, void* val);
+void go_map_set(go_kv m, const void* key, const void* val);
+go_tf go_map_get(go_kv m, const void* key, void* val);
 
 #define go_string_new(str) (go_ss){ .ptr = str, .len = -1 }
+#define go_string_const(str) { .ptr = str, .len = -1 } // for static initializers.
 go_ii go_string_len(go_ss s);
 go_tf go_string_eq(go_ss a, go_ss b);
 
-#define go_chan_make(T, length) ((go_ch){})
+#define go_chan_make(T, length) ((go_ch)nil)
 go_ch go_chan(go_ii elem_size, go_ii cap);
 void go_send(go_ch c, go_ii size, const void* v);
 go_tf go_recv(go_ch c, go_ii size, void* v);

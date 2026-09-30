@@ -6,6 +6,7 @@ import (
 	"go/types"
 	"io"
 	"reflect"
+	"regexp"
 	"strings"
 
 	"github.com/quaadgras/gd-compiler/internal/source"
@@ -140,6 +141,23 @@ func (c99 Target) Mangle(t types.Type) string {
 	}
 }
 
+// ArrayTypeOf returns the C type of a Go array, which is wrapped in a struct, as C arrays
+// can't be assigned, passed or returned by value. The typedef is written to the package's
+// private header, so that it is visible to every file in the package.
+func (c99 Target) ArrayTypeOf(typ *types.Array) string {
+	elem := c99.TypeOf(typ.Elem())
+	symbol := fmt.Sprintf("go_arr%d_%s", typ.Len(), identifier.ReplaceAllString(elem, "_"))
+	c99.Requires(symbol, c99.Private, func(w io.Writer) error {
+		// C has no zero length arrays, so [0]T has room for one element.
+		fmt.Fprintf(w, "\n#ifndef %[1]s_defined\n#define %[1]s_defined\ntypedef struct { %[2]s a[%[3]d]; } %[1]s;\n#endif",
+			symbol, elem, max(typ.Len(), 1))
+		return nil
+	})
+	return symbol
+}
+
+var identifier = regexp.MustCompile(`[^A-Za-z0-9_]+`)
+
 func (c99 Target) InterfaceTypeOf(t types.Type) string {
 	typ, ok := t.(*types.Named)
 	if !ok {
@@ -185,7 +203,7 @@ func (c99 Target) TypeOf(t types.Type) string {
 	case *types.Basic:
 		return "go_" + c99.Mangle(typ)
 	case *types.Array:
-		return fmt.Sprintf("%s[%d]", c99.TypeOf(typ.Elem()), typ.Len())
+		return c99.ArrayTypeOf(typ)
 	case *types.Signature:
 		return "go_fn"
 	case *types.Named:
@@ -245,11 +263,9 @@ func (c99 Target) TypeOf(t types.Type) string {
 		builder.WriteString("struct { ")
 		for i := 0; i < typ.NumFields(); i++ {
 			field := typ.Field(i)
-			ftype, array := c99.ArrayStrippedTypeOf(field.Type())
-			builder.WriteString(c99.TypeOf(ftype))
+			builder.WriteString(c99.TypeOf(field.Type()))
 			builder.WriteString(" ")
 			builder.WriteString(field.Name())
-			builder.WriteString(array)
 			builder.WriteString("; ")
 		}
 		builder.WriteString("}")
@@ -260,6 +276,9 @@ func (c99 Target) TypeOf(t types.Type) string {
 		return "void"
 	case *types.Alias:
 		return c99.TypeOf(typ.Rhs())
+	case *types.TypeParam:
+		// Type parameters in generics - treat as void* for now
+		return "void*"
 	default:
 		panic("unsupported type " + reflect.TypeOf(typ).String())
 	}

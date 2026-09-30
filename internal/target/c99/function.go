@@ -90,7 +90,7 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 				for _, param := range decl.Type.Arguments.Fields {
 					names, _ := param.Names.Get()
 					for _, name := range names {
-						if i > 0 {
+						if i > 0 || isMethod {
 							fmt.Fprintf(w, ", ")
 						}
 						fmt.Fprintf(w, "%s %s", c99.Type(param.Type), c99.toString(name))
@@ -133,26 +133,26 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 			name = names[0].String
 		}
 		if !ast.IsExported(fnName) {
-			fmt.Fprintf(c99, "static")
+			fmt.Fprintf(c99, "static ")
 		}
 		return_type(c99)
 		fmt.Fprintf(c99, `I_%s%s(void* %s`, fnName, suffix, name)
-		{
-			var i int
-			for _, param := range decl.Type.Arguments.Fields {
-				names, ok := param.Names.Get()
-				if !ok {
-					return param.Location.Errorf("missing names for function argument")
-				}
-				for _, name := range names {
-					fmt.Fprintf(c99, ", ")
-					fmt.Fprintf(c99, "%s: %s", c99.toString(name), c99.Type(param.Type))
-					i++
-				}
+		var args strings.Builder
+		for _, param := range decl.Type.Arguments.Fields {
+			names, ok := param.Names.Get()
+			if !ok {
+				return param.Location.Errorf("missing names for function argument")
+			}
+			for _, name := range names {
+				fmt.Fprintf(c99, ", %s %s", c99.Type(param.Type), c99.toString(name))
+				fmt.Fprintf(&args, ", %s", c99.toString(name))
 			}
 		}
-		fmt.Fprintf(c99, ") ")
-		fmt.Fprintf(c99, "{ return %s%s(*(%s*)%s); }", fnName, suffix, c99.Type(field.Type), name)
+		fmt.Fprintf(c99, ") { ")
+		if _, ok := decl.Type.Results.Get(); ok {
+			fmt.Fprintf(c99, "return ")
+		}
+		fmt.Fprintf(c99, "%s%s(*(%s*)%s%s); }", fnName, suffix, c99.Type(field.Type), name, args.String())
 		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 	}
 	return nil

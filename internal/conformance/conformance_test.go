@@ -31,6 +31,10 @@ var (
 	ldflags = strings.Fields(env("GD_LDFLAGS", "-lm -pthread"))
 )
 
+// The C emitted by gd must be portable C11, so it is also checked with a strict compiler,
+// as clang (and so Fil-C) accepts many extensions. GD_STRICT=off disables the check.
+var strict = strings.Fields(env("GD_STRICT", "gcc -std=c11 -pedantic-errors -fsyntax-only"))
+
 const (
 	statusFile = "status.txt"
 	testdata   = "testdata"
@@ -247,11 +251,21 @@ func runCase(t *testing.T, root, name string) Status {
 		return failure("gd", out, err, dir)
 	}
 
-	// C -> executable
 	sources, err := cSources(filepath.Join(dir, ".c"))
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	// Strict C11, the runtime library may still use newer features behind preprocessor
+	// checks.
+	if len(strict) > 0 && strict[0] != "off" {
+		args := append(append([]string{}, strict[1:]...), "-I", filepath.Join(dir, ".c"))
+		if out, err := command(t, dir, time.Minute, strict[0], append(args, sources...)...); err != nil {
+			return failure("c11", out, err, dir)
+		}
+	}
+
+	// C -> executable
 	args := append([]string{}, cflags...)
 	args = append(args, "-I", filepath.Join(dir, ".c"))
 	link := recipe.Action == "run" || (recipe.Action == "build" && isMain(src))
@@ -351,7 +365,7 @@ func failure(stage string, out []byte, err error, dir string) Status {
 			first = line
 		}
 		// Prefer the most specific line for the stage.
-		if (stage == "cc" && strings.Contains(line, "error:")) || strings.HasPrefix(line, "panic:") {
+		if ((stage == "cc" || stage == "c11") && strings.Contains(line, "error:")) || strings.HasPrefix(line, "panic:") {
 			first = line
 			break
 		}
