@@ -19,10 +19,14 @@ func (c99 Target) StatementFor(stmt source.StatementFor) error {
 	if hasInit {
 		tabs := c99.Tabs
 		c99.Tabs = -c99.Tabs
+		c99.Header = true
 		if err := c99.Statement(init); err != nil {
 			return err
 		}
+		c99.Header = false
 		c99.Tabs = tabs
+	} else {
+		fmt.Fprintf(c99, ";")
 	}
 	fmt.Fprintf(c99, " ")
 	condition, hasCondition := stmt.Condition.Get()
@@ -31,7 +35,7 @@ func (c99 Target) StatementFor(stmt source.StatementFor) error {
 			return err
 		}
 	} else {
-		fmt.Fprintf(c99, "go_true")
+		fmt.Fprintf(c99, "true")
 	}
 	fmt.Fprintf(c99, "; ")
 	// Each iteration has its own copy of the loop variables (since Go 1.22), which matters
@@ -55,10 +59,12 @@ func (c99 Target) StatementFor(stmt source.StatementFor) error {
 	}
 	if hasStatement {
 		c99.Tabs = -c99.Tabs
+		c99.Header = true
 		stmt, _ := statement.Get()
 		if err := c99.Compile(stmt); err != nil {
 			return err
 		}
+		c99.Header = false
 		c99.Tabs = -c99.Tabs
 	}
 	fmt.Fprintf(c99, ") {")

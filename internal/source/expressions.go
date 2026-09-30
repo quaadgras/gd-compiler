@@ -65,6 +65,12 @@ func (d DefinedFunction) sources() Location { return d.Location }
 
 type DefinedVariable Identifier
 
+// Defines reports whether this identifier declares the variable (rather than using it, or
+// assigning it in a := statement that redeclares it).
+func (v DefinedVariable) Defines() bool {
+	return v.Unique != nil && v.Unique.Pos() == v.Location.Open
+}
+
 func (d DefinedVariable) sources() Location { return d.Location }
 
 type DefinedConstant Identifier

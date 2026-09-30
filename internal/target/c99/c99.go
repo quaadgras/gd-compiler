@@ -3,6 +3,7 @@ package c99
 import (
 	"bytes"
 	"fmt"
+	"go/ast"
 	"go/types"
 	"io"
 	"reflect"
@@ -46,6 +47,14 @@ type Target struct {
 
 	// Order of evaluation of the statement being compiled, see [Order].
 	Order *Order
+
+	// Header is set while compiling the init and post statements of a for statement,
+	// which can't declare temporaries.
+	Header bool
+
+	// Substitutes are C expressions to write instead of the expressions (by AST node)
+	// that they have already been evaluated into.
+	Substitutes map[ast.Node]string
 
 	// Initializers of package-level variables, which are written to the package's init
 	// function after all of its files are compiled, in the order given by the type
@@ -130,6 +139,12 @@ func (c99 Target) Requires(symbol string, w io.Writer, fn func(w io.Writer) erro
 }
 
 func (c99 Target) Compile(node source.Node) error {
+	if c99.Substitutes != nil {
+		if name, ok := c99.Substitutes[source.LocationOf(node).Node]; ok {
+			fmt.Fprint(c99, name)
+			return nil
+		}
+	}
 	rtype := reflect.TypeOf(node)
 	method := reflect.ValueOf(&c99).MethodByName(rtype.Name())
 	if !method.IsValid() {

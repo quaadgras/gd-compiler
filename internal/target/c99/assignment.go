@@ -2,6 +2,7 @@ package c99
 
 import (
 	"fmt"
+	"go/ast"
 	"go/token"
 	"go/types"
 	"io"
@@ -10,7 +11,114 @@ import (
 	"runtime.link/xyz"
 )
 
+// StatementAssignment assigns (or defines) variables. Go evaluates all of the values before
+// assigning any of them, so with more than one variable, the values are evaluated into
+// temporaries first (except in the header of a for statement, where they are assigned in
+// turn, when that is equivalent).
 func (c99 Target) StatementAssignment(stmt source.StatementAssignment) error {
+	if len(stmt.Variables) != len(stmt.Values) {
+		return stmt.Location.Errorf("unsupported assignment of multiple results")
+	}
+	if len(stmt.Variables) == 1 {
+		return c99.assignment(stmt)
+	}
+	if c99.Header {
+		for i := 1; i < len(stmt.Values); i++ {
+			for _, name := range namesIn(stmt.Values[i]) {
+				for _, earlier := range stmt.Variables[:i] {
+					if earlier := namesIn(earlier); len(earlier) > 0 && earlier[0] == name {
+						return stmt.Location.Errorf("unsupported assignment in for statement that depends on its order")
+					}
+				}
+			}
+		}
+		if stmt.Token.Value == token.DEFINE {
+			return c99.defineMany(stmt)
+		}
+		for i := range stmt.Variables {
+			if i > 0 {
+				fmt.Fprintf(c99, ", ")
+			}
+			if err := c99.assignment(source.StatementAssignment{Location: stmt.Location, Token: stmt.Token,
+				Variables: stmt.Variables[i : i+1], Values: stmt.Values[i : i+1]}); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	subs := make(map[ast.Node]string)
+	for k, v := range c99.Substitutes {
+		subs[k] = v
+	}
+	for _, value := range stmt.Values {
+		if reevaluate(value) {
+			continue
+		}
+		name := fmt.Sprintf("go_assign_%d", c99.Closures.count)
+		c99.Closures.count++
+		fmt.Fprintf(c99, "%s %s = ", c99.TypeOf(types.Default(value.TypeAndValue().Type)), name)
+		if err := c99.Expression(value); err != nil {
+			return err
+		}
+		fmt.Fprintf(c99, "; ")
+		subs[source.LocationOf(value).Node] = name
+	}
+	c99.Substitutes = subs
+	for i := range stmt.Variables {
+		if i > 0 {
+			fmt.Fprintf(c99, "; ")
+		}
+		if err := c99.assignment(source.StatementAssignment{Location: stmt.Location, Token: stmt.Token,
+			Variables: stmt.Variables[i : i+1], Values: stmt.Values[i : i+1]}); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// defineMany defines several variables in the init statement of a for statement, which
+// can only be a single C declaration, so they must have the same type.
+func (c99 Target) defineMany(stmt source.StatementAssignment) error {
+	var ctype string
+	for i, variable := range stmt.Variables {
+		if xyz.ValueOf(variable) != source.Expressions.DefinedVariable {
+			return stmt.Location.Errorf("unsupported definition")
+		}
+		name := source.Expressions.DefinedVariable.Get(variable)
+		t := c99.TypeOf(types.Default(stmt.Values[i].TypeAndValue().Type))
+		if (ctype != "" && t != ctype) || !c99.StackAllocated(name) || !name.Defines() {
+			return stmt.Location.Errorf("unsupported definition of variables with different types in for statement")
+		}
+		if i == 0 {
+			fmt.Fprintf(c99, "%s ", t)
+		} else {
+			fmt.Fprintf(c99, ", ")
+		}
+		ctype = t
+		fmt.Fprintf(c99, "%s = ", name.String)
+		if err := c99.ExpressionAs(stmt.Values[i], types.Default(stmt.Values[i].TypeAndValue().Type)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// namesIn returns the identifiers used in expr.
+func namesIn(expr source.Expression) []string {
+	var names []string
+	if node := source.LocationOf(expr).Node; node != nil {
+		ast.Inspect(node, func(node ast.Node) bool {
+			if id, ok := node.(*ast.Ident); ok {
+				names = append(names, id.Name)
+			}
+			return true
+		})
+	}
+	return names
+}
+
+// assignment assigns (or defines) a single variable.
+func (c99 Target) assignment(stmt source.StatementAssignment) error {
 	if stmt.Token.Value == token.DEFINE {
 		var names []source.DefinedVariable
 		for i, variable := range stmt.Variables {
@@ -24,6 +132,11 @@ func (c99 Target) StatementAssignment(stmt source.StatementAssignment) error {
 					}
 					fmt.Fprintf(c99, ")")
 					break
+				}
+				if !ident.Defines() { // redeclared by :=, so assigned.
+					return c99.assignment(source.StatementAssignment{Location: stmt.Location,
+						Token:     source.WithLocation[token.Token]{Value: token.ASSIGN, SourceLocation: stmt.Token.SourceLocation},
+						Variables: stmt.Variables, Values: stmt.Values})
 				}
 				names = append(names, ident)
 			default:

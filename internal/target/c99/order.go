@@ -166,7 +166,7 @@ func (c99 Target) hoisted(node ast.Node, t types.Type, render func(Target) error
 // ordered. Statements that declare variables are not put in a block.
 func (c99 Target) ordered(exprs []source.Expression, roots []source.Expression, declares bool, render func(Target) error) error {
 	order := c99.orderOf(exprs, roots...)
-	if order == nil || c99.Tabs < 0 { // no temporaries in the header of a for statement.
+	if order == nil || c99.Header { // no temporaries in the header of a for statement.
 		return render(c99)
 	}
 	var buf strings.Builder
