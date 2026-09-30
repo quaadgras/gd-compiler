@@ -31,6 +31,8 @@ void init_go_os_package(void) {
     static go_tf done = false;
     if (done) return;
     done = true;
+    init_go_errors_package();
+    init_go_io_package();
     go_ll args = go_slice_make(go_ss, go_argc, go_argc);
     for (int i = 0; i < go_argc; i++) ((go_ss*)args.ptr.ptr)[i] = go_string_new(go_argv[i]);
     S(Args) = args;

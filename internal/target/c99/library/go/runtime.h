@@ -2,7 +2,6 @@
 #define go_runtime_package_imported
 #include <go.h>
 #include <threads.h>
-#include <go/errors.h>
 
 typedef struct { go_ii f1; go_if f2; } go_aaiitfzz;
 typedef struct { go_up f1; go_ss f2; go_ii f3; go_tf f4; } go_aaupssiitfzz;
@@ -82,7 +81,7 @@ static inline void Breakpoint_go_runtime_package(void) {
 static inline go_aaupssiitfzz Caller_go_runtime_package(go_ii skip) { return (go_aaupssiitfzz){0}; }
 static inline go_ii Callers_go_runtime_package(go_ii skip, go_ll pc) { return 0; }
 static inline void GC_go_runtime_package(void) {}
-static inline go_ii GOMAXPROCS_go_runtime_package(go_ii n) { return -1; }
+static inline go_ii GOMAXPROCS_go_runtime_package(go_ii n) { return 1; }
 static inline void Goexit_go_runtime_package(void) { thrd_exit(0); }
 static inline go_aaiitfzz GoroutineProfile_go_runtime_package(go_ll p) { return (go_aaiitfzz){0}; }
 static inline void Gosched_go_runtime_package(void) { thrd_yield(); }
@@ -102,7 +101,13 @@ static inline void SetDefaultGOMAXPROCS_go_runtime_package(void) {}
 static inline void SetFinalizer_go_runtime_package(go_vv obj, go_vv finalizer) {}
 static inline go_ii SetMutexProfileFraction_go_runtime_package(go_ii rate) { return -1; }
 static inline go_ii Stack_go_runtime_package(go_ll buf, go_tf all) { return 0; }
-static inline go_if StartTrace_go_runtime_package(void) { return New_go_errors_package(go_string_new("tracing not supported")); }
+static go_ss go_runtime_trace_error(void* e) { (void)e; return go_string_new("tracing not supported"); }
+static const go_type go_runtime_trace_error_type = {.name="*runtime.traceError", .kind=go_kind_pointer, .size=sizeof(go_pt)};
+static go_error go_runtime_trace_error_methods = {.Error = go_runtime_trace_error};
+static inline go_if StartTrace_go_runtime_package(void) {
+    static go_pt data;
+    return (go_if){ (go_pt){ &data }, &go_runtime_trace_error_type, &go_runtime_trace_error_methods };
+}
 static inline void StopTrace_go_runtime_package(void) {}
 static inline go_aaiitfzz ThreadCreateProfile_go_runtime_package(go_ll p) { return (go_aaiitfzz){0}; }
 static inline void UnlockOSThread_go_runtime_package(void) {}

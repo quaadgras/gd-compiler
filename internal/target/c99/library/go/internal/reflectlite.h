@@ -7,6 +7,8 @@
 
 #define go_rl(name) name##_go_internal_reflectlite_package
 
+typedef go_u1 Kind_go_internal_abi_package; // reflectlite.Kind (C11 allows the same typedef twice)
+
 // A Value is the type and data of a value, which can be set when it's addressable.
 typedef struct { const go_type* typ; void* ptr; go_tf addressable; } go_rl(Value);
 

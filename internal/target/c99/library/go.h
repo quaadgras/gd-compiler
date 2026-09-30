@@ -247,7 +247,7 @@ go_ll go_append_string(go_ll s, go_ss t);
 go_ll go_slice(go_ll s, go_ii elem_size, go_i8 low, go_i8 high, go_i8 max);
 void* go_index(go_ll s, go_ii elem_size, go_ii i);
 
-#define go_slice_make(T, length, capacity) (go_ll){ .ptr = go_new(sizeof(T)*capacity, nil), .len = length, .cap = capacity }
+#define go_slice_make(T, length, capacity) (go_ll){ .ptr = go_new(sizeof(T)*go_make_cap(length, capacity), nil), .len = length, .cap = capacity }
 #define go_slice_index(s, T, i) (*(T*)go_index(s, sizeof(T), i))
 #define go_slice_copy(T, dst, src) go_copy(sizeof(T), dst, src)
 #define go_slice_literal(length, T, ...) (go_ll){ .ptr = go_new(sizeof(T)*length, &(T[]){__VA_ARGS__}), .len = length, .cap = length }
@@ -263,6 +263,11 @@ void go_map_set(go_kv m, const void* key, const void* val);
 go_ii go_map_len(go_kv m);
 void go_map_delete(go_kv m, const void* key);
 go_tf go_map_get(go_kv m, const void* key, void* val);
+// A map iterator (for range) iterates over the entries of the map when it started (from a
+// random one, as Go does), skipping those deleted since.
+typedef struct { go_kv m; char* entries; go_ii n, i, start; } go_map_iter;
+go_map_iter go_map_range(go_kv m);
+go_tf go_map_next(go_map_iter* it, void* key, void* val); // val may be NULL.
 
 #define go_string_new(str) (go_ss){ .ptr = str, .len = -1 }
 #define go_string_const(str) { .ptr = str, .len = -1 } // for static initializers.
@@ -313,6 +318,11 @@ go_tf go_same_ss(const void* a, const void* b);
 // Runtime errors panic with a value of type runtime.Error, holding the message (a string).
 extern const go_type go_type_runtime_error;
 _Noreturn void go_panic_error(const char* format, ...);
+static inline go_ii go_make_cap(go_ii len, go_ii cap) { // (of make([]T, len, cap))
+    if (len < 0) go_panic_error("runtime error: makeslice: len out of range");
+    if (cap < len) go_panic_error("runtime error: makeslice: cap out of range");
+    return cap;
+}
 static inline go_u8 go_shift_count(go_i8 n) { if (n < 0) go_panic_error("runtime error: negative shift amount"); return (go_u8)n; }
 static inline void go_panic(const char* msg) { go_panic_error("%s", msg); }
 static inline void* go_nil_check(void* p) {

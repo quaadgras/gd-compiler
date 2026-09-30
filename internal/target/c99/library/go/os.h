@@ -4,6 +4,7 @@
 // the subset of it that doesn't need an operating system interface beyond C's (files,
 // standard streams, the environment, and exiting).
 // gd:import io
+// gd:import errors
 #include <go.h>
 #include <stdio.h>
 #include <go/errors.h>

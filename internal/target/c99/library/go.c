@@ -149,6 +149,38 @@ go_tf go_map_get(go_kv m, const void *key, void *val) {
     return false;
 }
 
+go_map_iter go_map_range(go_kv m) {
+    go_map_iter it = { m };
+    go_ii n = go_map_len(m);
+    if (n == 0) return it;
+    map_metadata *meta = hashmap_udata(m);
+    size_t size = meta->val_offset + meta->val_size;
+    it.entries = go_new((go_ii)(n * size), NULL).ptr;
+    size_t i = 0;
+    void* item;
+    while (hashmap_iter(m, &i, &item) && it.n < n) memcpy(it.entries + it.n++ * size, item, size);
+    it.start = (go_ii)(go_rand() % (go_u8)it.n);
+    return it;
+}
+
+go_tf go_map_next(go_map_iter* it, void* key, void* val) {
+    if (it->n == 0) return false;
+    map_metadata *meta = hashmap_udata(it->m);
+    size_t size = meta->val_offset + meta->val_size;
+    while (it->i < it->n) {
+        const char* entry = it->entries + ((it->i++ + it->start) % it->n) * size;
+        const char* current = hashmap_get(it->m, entry);
+        if (!current) {
+            if (meta->key_same(entry, entry)) continue; // deleted.
+            current = entry; // NaN keys are never found.
+        }
+        memcpy(key, current, meta->key_size);
+        if (val) memcpy(val, current + meta->val_offset, meta->val_size);
+        return true;
+    }
+    return false;
+}
+
 go_u8 go_hash_ss(const void *item, go_u8 seed0, go_u8 seed1) {
     const go_ss *s = item;
     if (s->ptr == NULL) return 0;

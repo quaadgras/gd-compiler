@@ -50,7 +50,7 @@ func (c99 Target) methodTable(t types.Type) string {
 	if len(entries) == 0 {
 		return ""
 	}
-	symbol := "go_methods_" + identifier.ReplaceAllString(typeName(t), "_")
+	symbol := "go_methods_" + mangle(typeName(t))
 	c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
 		fmt.Fprintf(w, "static const go_method %s[] = { %s };\n", symbol, strings.Join(entries, ", "))
 		return nil
@@ -254,7 +254,7 @@ func (c99 Target) methodValue(sel source.Selection, fn source.DefinedFunction) e
 		if sig.Results().Len() > 0 {
 			ret = "return "
 		}
-		symbol := "go_method_expr_" + identifier.ReplaceAllString(typeName(xtype)+"_"+obj.Name(), "_")
+		symbol := "go_method_expr_" + mangle(typeName(xtype)+"."+obj.Name())
 		c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
 			fmt.Fprintf(w, "static %s %s(%s) { %s%s); }\n", c99.TupleOfResults(sig), symbol, strings.Join(params, ", "), ret, call)
 			return nil
@@ -264,7 +264,7 @@ func (c99 Target) methodValue(sel source.Selection, fn source.DefinedFunction) e
 	}
 	if isInterface {
 		ctype := c99.InterfaceTypeOf(iface)
-		symbol := "go_method_value_" + identifier.ReplaceAllString(typeName(xtype)+"_"+name, "_")
+		symbol := "go_method_value_" + mangle(typeName(xtype)+"."+name)
 		c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
 			fmt.Fprintf(w, "static inline go_fn %s(go_if v) { go_nil_check(v.vtable); return go_make_closure(go_interface_methods(%s, v)->%s, v.ptr.ptr); }\n",
 				symbol, ctype, name)

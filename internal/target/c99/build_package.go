@@ -5,6 +5,7 @@ import (
 	"embed"
 	"fmt"
 	"go/ast"
+	"go/build"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -21,7 +22,11 @@ var (
 )
 
 func Build(dir string, test bool) error {
-	packages, err := parser.Load(dir, test)
+	overlay, err := standardOverlay()
+	if err != nil {
+		return err
+	}
+	packages, err := parser.Load(dir, test, overlay)
 	if err != nil {
 		return err
 	}
@@ -39,8 +44,10 @@ func Build(dir string, test bool) error {
 	if err := os.CopyFS("./.c", stdlib); err != nil {
 		return err
 	}
-	if err := os.RemoveAll("./.c/hooks"); err != nil { // copied with their packages.
-		return err
+	for _, dir := range []string{"./.c/hooks", "./.c/overlay"} { // (hooks are copied with their packages)
+		if err := os.RemoveAll(dir); err != nil {
+			return err
+		}
 	}
 
 	// The packages to compile: those that the package in dir imports (transitively), other
@@ -90,6 +97,45 @@ func Build(dir string, test bool) error {
 		}
 	}
 	return nil
+}
+
+// standardOverlay returns the files that replace those of standard library packages (by
+// path), as their Go source is coupled to the Go runtime: library/overlay has the Go
+// source of the packages that replace them, whose files replace those of the originals,
+// which are otherwise ignored.
+func standardOverlay() (map[string][]byte, error) {
+	overlay := make(map[string][]byte)
+	err := fs.WalkDir(library, "library/overlay", func(path string, d fs.DirEntry, err error) error {
+		if err != nil || !d.IsDir() || path == "library/overlay" {
+			return err
+		}
+		importPath := strings.TrimPrefix(path, "library/overlay/")
+		pkg, err := build.Default.Import(importPath, "", 0)
+		if err != nil {
+			return err
+		}
+		for _, name := range pkg.GoFiles {
+			overlay[filepath.Join(pkg.Dir, name)] = []byte("//go:build ignore\n\npackage " + pkg.Name + "\n")
+		}
+		entries, err := fs.ReadDir(library, path)
+		if err != nil {
+			return err
+		}
+		for _, entry := range entries {
+			if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".go") {
+				continue
+			}
+			src, err := fs.ReadFile(library, path+"/"+entry.Name())
+			if err != nil {
+				return err
+			}
+			// (the files are ignored by the Go toolchain when building gd)
+			src = []byte(strings.Replace(string(src), "//go:build ignore\n", "", 1))
+			overlay[filepath.Join(pkg.Dir, "gd_"+entry.Name())] = src
+		}
+		return nil
+	})
+	return overlay, err
 }
 
 // hasNativeInit reports whether the package with the path is native, and implemented by a

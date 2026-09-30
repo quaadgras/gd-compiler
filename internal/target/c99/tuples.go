@@ -105,7 +105,7 @@ func (c99 Target) tupleValue(expr source.Expression, n int) (string, []types.Typ
 			}
 			ts := []types.Type{target, types.Typ[types.Bool]}
 			tuple := c99.TupleOf(ts)
-			symbol := "go_assert2_" + identifier.ReplaceAllString(typeName(target), "_")
+			symbol := "go_assert2_" + mangle(typeName(target))
 			c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
 				if target.Underlying().(*types.Interface).Empty() {
 					fmt.Fprintf(w, "static inline %s %s(go_vv v) { %[1]s r = { v, v.go_type != NULL }; return r; }\n", tuple, symbol)

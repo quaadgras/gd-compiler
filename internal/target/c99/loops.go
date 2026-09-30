@@ -216,7 +216,50 @@ func (c99 Target) StatementRange(stmt source.StatementRange) error {
 		fmt.Fprintf(c99, "}")
 		return nil
 	}
+	if typ, ok := stmt.X.TypeAndValue().Type.Underlying().(*types.Map); ok {
+		return c99.rangeMap(stmt, typ)
+	}
 	return stmt.Errorf("range over unsupported type %T", stmt.X.TypeAndValue().Type)
+}
+
+// rangeMap writes a range over a map, see go_map_range.
+func (c99 Target) rangeMap(stmt source.StatementRange, typ *types.Map) error {
+	n := c99.Closures.count
+	c99.Closures.count++
+	it, k, v := fmt.Sprintf("go_mi_%d", n), fmt.Sprintf("go_mk_%d", n), fmt.Sprintf("go_mv_%d", n)
+	indent := "\n" + strings.Repeat("\t", c99.Tabs+1)
+	key, hasKey := stmt.Key.Get()
+	val, hasVal := stmt.Value.Get()
+	hasKey = hasKey && key.String != "_"
+	hasVal = hasVal && val.String != "_"
+	vp := "NULL"
+	if hasVal {
+		vp = "&" + v
+	}
+	fmt.Fprintf(c99, "{ go_map_iter %[1]s = go_map_range(%[2]s); for (;;) { %[3]s %[4]s; %[5]s %[6]s; if (!go_map_next(&%[1]s, &%[4]s, %[7]s)) break;",
+		it, c99.toString(stmt.X), c99.TypeOf(typ.Key()), k, c99.TypeOf(typ.Elem()), v, vp)
+	if !hasVal {
+		fmt.Fprintf(c99, " (void)%s;", v)
+	}
+	if hasKey {
+		fmt.Fprintf(c99, "%s%s", indent, c99.bind(key, typ.Key(), k))
+	}
+	if hasVal {
+		fmt.Fprintf(c99, "%s%s", indent, c99.bind(val, typ.Elem(), v))
+	}
+	if err := c99.loopBody(stmt.Label, stmt.Body.Statements); err != nil {
+		return err
+	}
+	fmt.Fprintf(c99, "\n%s}}", strings.Repeat("\t", c99.Tabs))
+	return nil
+}
+
+// bind defines the variable of a range statement (or assigns it, for range with =).
+func (c99 Target) bind(name source.DefinedVariable, t types.Type, value string) string {
+	if !name.Defines() {
+		return fmt.Sprintf("%s = %s;", c99.toString(source.Expressions.DefinedVariable.New(name)), value)
+	}
+	return c99.declare(name, t, value)
 }
 
 func (c99 Target) StatementContinue(stmt source.StatementContinue) error {

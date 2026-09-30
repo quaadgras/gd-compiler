@@ -15,11 +15,14 @@ import (
 
 // Load loads the package in dir, and the packages it imports, in dependency order (the
 // package in dir is last).
-func Load(dir string, test bool) ([]source.Package, error) {
+// Load loads the package in dir (and its dependencies, in dependency order), with the
+// contents of the files in overlay (by path) replacing those on disk.
+func Load(dir string, test bool, overlay map[string][]byte) ([]source.Package, error) {
 	config := &packages.Config{
-		Mode:  packages.NeedName | packages.NeedFiles | packages.NeedCompiledGoFiles | packages.NeedImports | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedSyntax | packages.NeedDeps,
-		Dir:   dir,
-		Tests: test,
+		Mode:    packages.NeedName | packages.NeedFiles | packages.NeedCompiledGoFiles | packages.NeedImports | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedSyntax | packages.NeedDeps,
+		Dir:     dir,
+		Tests:   test,
+		Overlay: overlay,
 	}
 	pkgs, err := packages.Load(config, ".")
 	if err != nil {

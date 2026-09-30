@@ -309,7 +309,7 @@ func (c99 Target) ReflectTypeOf(t types.Type) string {
 		panic("unsupported type " + reflect.TypeOf(typ).String())
 	}
 	name := typeName(t)
-	symbol := "go_rtype_" + identifier.ReplaceAllString(name, "_")
+	symbol := "go_rtype_" + mangle(name)
 	c99.staticDescriptor(symbol, name, t)
 	return "&" + symbol
 }
@@ -349,7 +349,7 @@ func (c99 Target) descriptorFields(t types.Type) string {
 				fields = append(fields, fmt.Sprintf("{.name=%s, .type=%s, .offset=offsetof(%s, %s), .exported=%t, .embedded=%t}",
 					cString(field.Name()), c99.ReflectTypeOf(field.Type()), ctype, fieldName(field, i), field.Exported(), field.Anonymous()))
 			}
-			symbol := "go_fields_" + identifier.ReplaceAllString(typeName(t), "_")
+			symbol := "go_fields_" + mangle(typeName(t))
 			c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
 				fmt.Fprintf(w, "static const go_field %s[] = {%s};\n", symbol, strings.Join(fields, ", "))
 				return nil
@@ -454,4 +454,21 @@ func fieldIndex(typ *types.Struct, field *types.Var) int {
 		}
 	}
 	return -1
+}
+
+// mangle returns a C identifier for s (a type name), different for different names:
+// letters and digits are kept, and other characters are escaped (as _XX, _ as __).
+func mangle(s string) string {
+	var b strings.Builder
+	for i := 0; i < len(s); i++ {
+		switch c := s[i]; {
+		case c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9':
+			b.WriteByte(c)
+		case c == '_':
+			b.WriteString("__")
+		default:
+			fmt.Fprintf(&b, "_%02x", c)
+		}
+	}
+	return b.String()
 }
