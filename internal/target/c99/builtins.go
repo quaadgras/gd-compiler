@@ -209,8 +209,19 @@ func (c99 Target) len(expr source.FunctionCall) error {
 	if len(expr.Arguments) != 1 {
 		return fmt.Errorf("len expects exactly one argument, got %d", len(expr.Arguments))
 	}
-	fmt.Fprintf(c99, "go_slice_len(")
-	if err := c99.Expression(expr.Arguments[0]); err != nil {
+	if tv := expr.TypeAndValue(); tv.Value != nil { // arrays, and constant strings.
+		return c99.ConstantValue(tv.Value, false)
+	}
+	arg := expr.Arguments[0]
+	switch typ := arg.TypeAndValue().Type.Underlying().(type) {
+	case *types.Basic:
+		fmt.Fprintf(c99, "go_string_len(")
+	case *types.Slice:
+		fmt.Fprintf(c99, "go_slice_len(")
+	default:
+		return expr.Errorf("unsupported len of %s", typ)
+	}
+	if err := c99.Expression(arg); err != nil {
 		return err
 	}
 	fmt.Fprintf(c99, ")")

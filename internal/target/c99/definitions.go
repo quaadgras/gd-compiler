@@ -182,21 +182,18 @@ func (c99 Target) VariableDefinition(spec source.VariableDefinition) error {
 		}
 	}
 	if spec.Global {
-		fmt.Fprintf(c99, "%s ", c99.TypeOf(rtype))
-		if err := c99.definedVariable(true, name); err != nil {
-			return err
+		if name.String != "_" {
+			fmt.Fprintf(c99, "%s ", c99.TypeOf(rtype))
+			if err := c99.definedVariable(true, name); err != nil {
+				return err
+			}
+			fmt.Fprintf(c99, ";")
+			fmt.Fprintf(c99.Private, "extern %s %s;\n", c99.TypeOf(rtype), name.String)
 		}
-		fmt.Fprintf(c99, ";")
-		if spec.Global {
-			c99.Writer = c99.Private
-			defer fmt.Fprintln(c99.Private)
+		if !hasValue {
+			return nil // C zero initializes globals.
 		}
-		fmt.Fprintf(c99, "extern %s ", c99.TypeOf(rtype))
-		if err := c99.definedVariable(true, name); err != nil {
-			return err
-		}
-		fmt.Fprintf(c99, ";")
-		c99.Writer = c99.Init
+		c99.Writer = c99.Initializers.For(name.Unique)
 		c99.Tabs = 1
 	}
 	if c99.Tabs > 0 {

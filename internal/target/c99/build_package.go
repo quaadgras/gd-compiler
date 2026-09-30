@@ -70,6 +70,7 @@ func Build(dir string, test bool) error {
 		fmt.Fprintln(init, "#include <go/"+pkg.Name+"/private.h>")
 		fmt.Fprintf(init, "\nvoid init_go_%s_package() {", pkg.Name)
 
+		inits := new(Initializers)
 		for _, file := range pkg.Files {
 			out, err := os.Create("./.c/go/" + pkg.Name + "/" + filepath.Base(file.FileSet.File(file.Open).Name()) + ".c")
 			if err != nil {
@@ -84,6 +85,7 @@ func Build(dir string, test bool) error {
 			cc.Generic = cc.Prelude
 			cc.Init = init
 			cc.Symbols = make(map[string]struct{})
+			cc.Initializers = inits
 			if err := cc.File(file); err != nil {
 				return err
 			}
@@ -96,6 +98,9 @@ func Build(dir string, test bool) error {
 			}
 		}
 
+		if err := inits.WriteTo(init, pkg.InitOrder); err != nil {
+			return err
+		}
 		fmt.Fprintln(init, "\n}")
 		if err := init.Close(); err != nil {
 			return err

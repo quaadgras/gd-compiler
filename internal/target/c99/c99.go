@@ -27,6 +27,70 @@ type Target struct {
 	CurrentClosures int
 
 	Symbols map[string]struct{}
+
+	// Initializers of package-level variables, which are written to the package's init
+	// function after all of its files are compiled, in the order given by the type
+	// checker.
+	Initializers *Initializers
+}
+
+// Initializers of package-level variables, see [Initializers.WriteTo].
+type Initializers struct {
+	order []types.Object
+	code  map[types.Object]*bytes.Buffer
+	funcs []string // init functions, in declaration order.
+}
+
+// For returns the buffer for the initializer of the package-level variable v.
+func (inits *Initializers) For(v types.Object) *bytes.Buffer {
+	if inits.code == nil {
+		inits.code = make(map[types.Object]*bytes.Buffer)
+	}
+	buf := new(bytes.Buffer)
+	inits.order = append(inits.order, v)
+	inits.code[v] = buf
+	return buf
+}
+
+// Func returns the name to use for the next init function of the package (which may have
+// many), without the package suffix.
+func (inits *Initializers) Func(suffix string) string {
+	name := fmt.Sprintf("go_init_%d", len(inits.funcs))
+	inits.funcs = append(inits.funcs, name+suffix)
+	return name
+}
+
+// WriteTo writes the initializers in the order that the spec requires: dependencies first,
+// otherwise in declaration order (as computed by the type checker, see
+// [types.Info.InitOrder]), followed by calls to the init functions.
+func (inits *Initializers) WriteTo(w io.Writer, order []*types.Initializer) error {
+	write := func(v types.Object) error {
+		buf, ok := inits.code[v]
+		if !ok {
+			return nil
+		}
+		delete(inits.code, v)
+		_, err := w.Write(buf.Bytes())
+		return err
+	}
+	for _, init := range order {
+		for _, v := range init.Lhs {
+			if err := write(v); err != nil {
+				return err
+			}
+		}
+	}
+	for _, v := range inits.order { // not in the type checker's order, keep declaration order.
+		if err := write(v); err != nil {
+			return err
+		}
+	}
+	for _, fn := range inits.funcs {
+		if _, err := fmt.Fprintf(w, "\n\t%s();", fn); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (c99 Target) Requires(symbol string, w io.Writer, fn func(w io.Writer) error) error {

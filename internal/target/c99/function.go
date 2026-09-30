@@ -26,6 +26,9 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 	}
 	receiver, isMethod := decl.Receiver.Get()
 	var fnName = decl.Name.String
+	if fnName == "init" && !isMethod && !decl.IsClosure {
+		fnName = c99.Initializers.Func("_go_" + c99.PackageOf(c99.CurrentPackage) + "_package")
+	}
 	if isMethod {
 		fnName = fmt.Sprintf(`%s_%s`, receiver.Fields[0].Type.TypeAndValue().Type.(*types.Named).Obj().Name(), fnName)
 	}
