@@ -11,8 +11,8 @@ import (
 
 func (c99 Target) StatementFor(stmt source.StatementFor) error {
 	if stmt.Label != "" {
-		fmt.Fprintf(c99, " %s: ", stmt.Label)
-		defer fmt.Fprintf(c99, " %s_end:;\n", stmt.Label)
+		fmt.Fprintf(c99, "go_label_%s:; ", stmt.Label)
+		defer fmt.Fprintf(c99, " go_break_%s:;", stmt.Label)
 	}
 	fmt.Fprintf(c99, "for (")
 	init, hasInit := stmt.Init.Get()
@@ -68,12 +68,8 @@ func (c99 Target) StatementFor(stmt source.StatementFor) error {
 		c99.Tabs = -c99.Tabs
 	}
 	fmt.Fprintf(c99, ") {")
-	for _, stmt := range stmt.Body.Statements {
-		c99.Tabs++
-		if err := c99.Statement(stmt); err != nil {
-			return err
-		}
-		c99.Tabs--
+	if err := c99.loopBody(stmt.Label, stmt.Body.Statements); err != nil {
+		return err
 	}
 	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 	fmt.Fprintf(c99, "}")
@@ -82,8 +78,8 @@ func (c99 Target) StatementFor(stmt source.StatementFor) error {
 
 func (c99 Target) StatementRange(stmt source.StatementRange) error {
 	if stmt.Label != "" {
-		fmt.Fprintf(c99, "%s: ", stmt.Label)
-		defer fmt.Fprintf(c99, " %s_end:;\n", stmt.Label)
+		fmt.Fprintf(c99, "go_label_%s:; ", stmt.Label)
+		defer fmt.Fprintf(c99, " go_break_%s:;", stmt.Label)
 	}
 	switch typ := stmt.X.TypeAndValue().Type.Underlying().(type) {
 	case *types.Basic:
@@ -104,12 +100,8 @@ func (c99 Target) StatementRange(stmt source.StatementRange) error {
 		if boxed { // a new variable for each iteration, captured by a closure.
 			fmt.Fprintf(c99, "\n%s%s* %s = %s(%s);", strings.Repeat("\t", c99.Tabs+1), rtype, key.String, c99.BoxOf(key.Unique.Type()), iter_name)
 		}
-		for _, stmt := range stmt.Body.Statements {
-			c99.Tabs++
-			if err := c99.Statement(stmt); err != nil {
-				return err
-			}
-			c99.Tabs--
+		if err := c99.loopBody(stmt.Label, stmt.Body.Statements); err != nil {
+			return err
 		}
 		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 		fmt.Fprintf(c99, "}")
@@ -139,12 +131,8 @@ func (c99 Target) StatementRange(stmt source.StatementRange) error {
 				fmt.Fprintf(c99, "%s%s %s = %s;", indent, c99.TypeOf(typ.Elem()), c99.toString(val), elem)
 			}
 		}
-		for _, stmt := range stmt.Body.Statements {
-			c99.Tabs++
-			if err := c99.Statement(stmt); err != nil {
-				return err
-			}
-			c99.Tabs--
+		if err := c99.loopBody(stmt.Label, stmt.Body.Statements); err != nil {
+			return err
 		}
 		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 		fmt.Fprintf(c99, "}")
@@ -156,7 +144,7 @@ func (c99 Target) StatementRange(stmt source.StatementRange) error {
 func (c99 Target) StatementContinue(stmt source.StatementContinue) error {
 	label, hasLabel := stmt.Label.Get()
 	if hasLabel {
-		fmt.Fprintf(c99, "goto %s", label.String)
+		fmt.Fprintf(c99, "goto go_continue_%s", label.String)
 	} else {
 		fmt.Fprintf(c99, "continue")
 	}
@@ -178,12 +166,8 @@ func (c99 Target) rangeString(stmt source.StatementRange) error {
 	if value, ok := stmt.Value.Get(); ok && value.String != "_" {
 		fmt.Fprintf(c99, "%s%s", indent, c99.declare(value, types.Typ[types.Int32], r))
 	}
-	for _, stmt := range stmt.Body.Statements {
-		c99.Tabs++
-		if err := c99.Statement(stmt); err != nil {
-			return err
-		}
-		c99.Tabs--
+	if err := c99.loopBody(stmt.Label, stmt.Body.Statements); err != nil {
+		return err
 	}
 	fmt.Fprintf(c99, "\n%s}}", strings.Repeat("\t", c99.Tabs))
 	return nil
@@ -196,4 +180,43 @@ func (c99 Target) declare(name source.DefinedVariable, t types.Type, value strin
 		return fmt.Sprintf("%s* %s = %s(%s);", c99.TypeOf(t), name.String, c99.BoxOf(t), value)
 	}
 	return fmt.Sprintf("%s %s = %s;", c99.TypeOf(t), name.String, value)
+}
+
+// loopBody writes the body of a loop: continue goes to the end of it (for a labeled loop,
+// continue L goes to go_continue_L), and break exits the loop (rather than a switch that
+// contains it).
+func (c99 Target) loopBody(label string, body []source.Statement) error {
+	c99.BreakLabel = ""
+	for _, stmt := range body {
+		c99.Tabs++
+		if err := c99.Statement(stmt); err != nil {
+			return err
+		}
+		c99.Tabs--
+	}
+	if label != "" {
+		fmt.Fprintf(c99, "\n%sgo_continue_%s:;", strings.Repeat("\t", c99.Tabs+1), label)
+	}
+	return nil
+}
+
+// StatementLabel writes a labeled statement, with a label after it for break L (the
+// statement after a label may be a declaration in Go, but not C11, so the label is on an
+// empty statement).
+func (c99 Target) StatementLabel(stmt source.StatementLabel) error {
+	fmt.Fprintf(c99, "go_label_%s:;", stmt.Label.String)
+	if err := c99.Statement(stmt.Statement); err != nil {
+		return err
+	}
+	fmt.Fprintf(c99, " go_break_%s:;", stmt.Label.String)
+	return nil
+}
+
+func (c99 Target) StatementGoto(stmt source.StatementGoto) error {
+	label, ok := stmt.Label.Get()
+	if !ok {
+		return stmt.Location.Errorf("goto without a label")
+	}
+	fmt.Fprintf(c99, "goto go_label_%s", label.String)
+	return nil
 }

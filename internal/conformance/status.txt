@@ -286,12 +286,12 @@ finprofiled.go	skip	gc:memstats runtime.MemProfileRate
 fixedbugs/arm64bitfieldoverlap.go	skip	gc:flags -N
 fixedbugs/bug000.go	pass	
 fixedbugs/bug002.go	pass	
-fixedbugs/bug003.go	fail	c11: error: expected expression before ')' token
-fixedbugs/bug004.go	fail	c11: error: expected expression before ')' token
-fixedbugs/bug005.go	fail	gd: unsupported node type: StatementLabel
+fixedbugs/bug003.go	pass	
+fixedbugs/bug004.go	pass	
+fixedbugs/bug005.go	pass	
 fixedbugs/bug006.go	fail	gd: internal error: package "os" without types was imported from "test"
 fixedbugs/bug007.go	fail	gd: panic: unexpected kindOf: test.Point
-fixedbugs/bug008.go	fail	c11: error: expected expression before ')' token
+fixedbugs/bug008.go	pass	
 fixedbugs/bug009.go	pass	
 fixedbugs/bug010.go	pass	
 fixedbugs/bug011.go	pass	
@@ -346,8 +346,8 @@ fixedbugs/bug072.go	skip	todo:errorcheck
 fixedbugs/bug073.go	pass	
 fixedbugs/bug074.go	skip	todo:errorcheck
 fixedbugs/bug075.go	pass	
-fixedbugs/bug076.go	fail	gd: unsupported node type: StatementLabel
-fixedbugs/bug077.go	fail	gd: unsupported node type: StatementLabel
+fixedbugs/bug076.go	pass	
+fixedbugs/bug077.go	pass	
 fixedbugs/bug078.go	fail	gd: unsupported node type: StatementSelect
 fixedbugs/bug080.go	fail	c11: error: incompatible type for argument 1 of 'f2_go_main_package'
 fixedbugs/bug081.go	skip	todo:errorcheck
@@ -392,7 +392,7 @@ fixedbugs/bug122.go	skip	todo:errorcheck
 fixedbugs/bug123.go	skip	todo:errorcheck
 fixedbugs/bug126.go	skip	todo:errorcheck
 fixedbugs/bug127.go	skip	todo:errorcheck
-fixedbugs/bug128.go	fail	c11: error: expected expression before ')' token
+fixedbugs/bug128.go	pass	
 fixedbugs/bug129.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/bug130.go	fail	gd: internal error: package "os" without types was imported from "test"
 fixedbugs/bug131.go	skip	todo:errorcheck
@@ -401,9 +401,9 @@ fixedbugs/bug133.go	skip	todo:errorcheck
 fixedbugs/bug13343.go	skip	todo:errorcheck
 fixedbugs/bug135.go	fail	gd: unsupported type assertion to interface test.Foo
 fixedbugs/bug136.go	skip	todo:errorcheck
-fixedbugs/bug137.go	fail	gd: unsupported node type: StatementLabel
+fixedbugs/bug137.go	pass	
 fixedbugs/bug139.go	pass	
-fixedbugs/bug140.go	fail	gd: unsupported node type: StatementLabel
+fixedbugs/bug140.go	fail	c11: error: implicit declaration of function 'main_go_main_package'; did you mean 'init_go_main_package'? [-Wimplicit-functio…
 fixedbugs/bug141.go	fail	gd: internal error: package "os" without types was imported from "test"
 fixedbugs/bug142.go	pass	
 fixedbugs/bug143.go	fail	gd: unsupported type *types.Named
@@ -439,7 +439,7 @@ fixedbugs/bug174.go	pass
 fixedbugs/bug175.go	skip	todo:errorcheck
 fixedbugs/bug176.go	skip	todo:errorcheck
 fixedbugs/bug177.go	fail	gd: internal error: package "reflect" without types was imported from "test"
-fixedbugs/bug178.go	fail	gd: unsupported node type: StatementGoto
+fixedbugs/bug178.go	pass	
 fixedbugs/bug179.go	skip	todo:errorcheck
 fixedbugs/bug180.go	pass	
 fixedbugs/bug181.go	skip	todo:errorcheck
@@ -495,7 +495,7 @@ fixedbugs/bug232.go	pass
 fixedbugs/bug233.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/bug234.go	fail	gd: unsupported builtin function
 fixedbugs/bug235.go	fail	c11: error: unknown type name 'T_go_bug235_package'
-fixedbugs/bug236.go	fail	c11: error: switch quantity not an integer
+fixedbugs/bug236.go	pass	
 fixedbugs/bug237.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/bug238.go	skip	todo:errorcheck
 fixedbugs/bug239.go	pass	
@@ -628,7 +628,7 @@ fixedbugs/bug371.go	skip	todo:errorcheck
 fixedbugs/bug372.go	pass	
 fixedbugs/bug373.go	skip	todo:errorcheck
 fixedbugs/bug374.go	skip	todo:errorcheck
-fixedbugs/bug375.go	fail	c11: error: switch quantity not an integer
+fixedbugs/bug375.go	fail	c11: error: invalid operands to binary == (have 'go_vv' and 'go_ss')
 fixedbugs/bug376.go	skip	todo:errorcheck
 fixedbugs/bug377.go	skip	todo:compiledir
 fixedbugs/bug378.go	fail	gd: panic: unexpected kindOf: test.Header
@@ -648,7 +648,7 @@ fixedbugs/bug389.go	skip	todo:errorcheck
 fixedbugs/bug390.go	skip	todo:errorcheck
 fixedbugs/bug391.go	fail	c11: error: unknown type name 'T_go_bug_package'
 fixedbugs/bug392.go	skip	todo:compiledir
-fixedbugs/bug393.go	fail	c11: error: switch quantity not an integer
+fixedbugs/bug393.go	fail	c11: error: invalid operands to binary == (have 'go_vv' and 'int')
 fixedbugs/bug394.go	skip	todo:errorcheck
 fixedbugs/bug396.go	skip	todo:compiledir
 fixedbugs/bug397.go	skip	gc:diagnostics -d=panic
@@ -707,7 +707,7 @@ fixedbugs/bug451.go	skip	todo:errorcheck
 fixedbugs/bug452.go	pass	
 fixedbugs/bug453.go	pass	
 fixedbugs/bug454.go	fail	gd: range over unsupported type *types.Pointer
-fixedbugs/bug455.go	fail	c11: error: expected expression before ')' token
+fixedbugs/bug455.go	fail	c11: error: incompatible types when returning type 'go_pt' but 'go_if' was expected
 fixedbugs/bug456.go	pass	
 fixedbugs/bug457.go	pass	
 fixedbugs/bug458.go	pass	
@@ -746,7 +746,7 @@ fixedbugs/bug491.go	fail	gd: unsupported builtin function
 fixedbugs/bug492.go	skip	todo:rundir
 fixedbugs/bug493.go	fail	gd: append expects exactly two arguments, got 1
 fixedbugs/bug494.go	fail	c11: error: unknown type name 'MyInt_go_main_package'
-fixedbugs/bug495.go	fail	gd: unsupported node type: StatementGoto
+fixedbugs/bug495.go	pass	
 fixedbugs/bug496.go	pass	
 fixedbugs/bug497.go	fail	c11: error: unknown type name 'T_go_main_package'
 fixedbugs/bug498.go	pass	
@@ -854,7 +854,7 @@ fixedbugs/issue13162.go	fail	gd: internal error: package "fmt" without types was
 fixedbugs/issue13169.go	fail	gd: unsupported call for function of type xyz.Case
 fixedbugs/issue13171.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue13248.go	skip	todo:errorcheck
-fixedbugs/issue13261.go	fail	c11: error: switch quantity not an integer
+fixedbugs/issue13261.go	pass	
 fixedbugs/issue13262.go	pass	
 fixedbugs/issue13263.go	pass	
 fixedbugs/issue13265.go	skip	todo:errorcheck
@@ -872,7 +872,7 @@ fixedbugs/issue13485.go	skip	todo:errorcheck
 fixedbugs/issue13539.go	skip	todo:errorcheck
 fixedbugs/issue13559.go	skip	todo:errorcheck
 fixedbugs/issue13587.go	skip	gc:diagnostics -d=wb
-fixedbugs/issue13684.go	fail	gd: unsupported node type: StatementGoto
+fixedbugs/issue13684.go	pass	
 fixedbugs/issue13777.go	skip	todo:rundir
 fixedbugs/issue13779.go	skip	todo:errorcheck
 fixedbugs/issue13799.go	skip	gc:diagnostics -m
@@ -921,7 +921,7 @@ fixedbugs/issue15528.go	fail	gd: internal error: package "fmt" without types was
 fixedbugs/issue15548.go	skip	todo:compiledir
 fixedbugs/issue15550.go	fail	c11: error: expected identifier or '(' before 'void'
 fixedbugs/issue15572.go	skip	todo:compiledir
-fixedbugs/issue15585.go	fail	gd: unsupported node type: StatementLabel
+fixedbugs/issue15585.go	fail	c11: error: expected expression before '^' token
 fixedbugs/issue15602.go	fail	gd: unsupported type assertion to interface error
 fixedbugs/issue15604.go	fail	gd: internal error: package "os" without types was imported from "test"
 fixedbugs/issue15609.go	skip	todo:runindir
@@ -1039,7 +1039,7 @@ fixedbugs/issue19632.go	fail	gd: internal error: package "strings" without types
 fixedbugs/issue19658.go	skip	gc:toolchain
 fixedbugs/issue19667.go	skip	todo:errorcheck
 fixedbugs/issue19671.go	pass	
-fixedbugs/issue19678.go	fail	gd: unsupported node type: StatementLabel
+fixedbugs/issue19678.go	pass	
 fixedbugs/issue19679.go	fail	gd: panic: runtime error: invalid memory address or nil pointer dereference
 fixedbugs/issue19696.go	pass	
 fixedbugs/issue19699.go	skip	todo:compiledir
@@ -1048,7 +1048,7 @@ fixedbugs/issue19705.go	pass
 fixedbugs/issue19710.go	fail	gd: unsupported len of map
 fixedbugs/issue19743.go	skip	gc:diagnostics -m
 fixedbugs/issue19764.go	skip	todo:rundir
-fixedbugs/issue19783.go	fail	gd: unsupported node type: StatementGoto
+fixedbugs/issue19783.go	pass	
 fixedbugs/issue19799.go	skip	gc:stack-introspection runtime.Callers
 fixedbugs/issue19880.go	skip	todo:errorcheck
 fixedbugs/issue19911.go	fail	gd: internal error: package "fmt" without types was imported from "test"
@@ -1190,9 +1190,9 @@ fixedbugs/issue24763.go	pass
 fixedbugs/issue24799.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue24801.go	skip	todo:compiledir
 fixedbugs/issue24817.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue24937.go	fail	c11: error: switch quantity not an integer
+fixedbugs/issue24937.go	pass	
 fixedbugs/issue24939.go	pass	
-fixedbugs/issue25006.go	fail	c11: error: case label does not reduce to an integer constant
+fixedbugs/issue25006.go	pass	
 fixedbugs/issue25055.go	skip	todo:compiledir
 fixedbugs/issue25101.go	fail	c11: error: 'struct <anonymous>' has no member named 'm_go_p_package'
 fixedbugs/issue25322.go	fail	gd: internal error: package "fmt" without types was imported from "test"
@@ -1200,7 +1200,7 @@ fixedbugs/issue25507.go	skip	todo:errorcheck
 fixedbugs/issue25516.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
 fixedbugs/issue25727.go	skip	todo:errorcheck
 fixedbugs/issue25741.go	pass	
-fixedbugs/issue25776.go	fail	c11: error: case label does not reduce to an integer constant
+fixedbugs/issue25776.go	fail	c11: error: incompatible type for argument 3 of 'TriDense_ScaleTri_go_main_package'
 fixedbugs/issue25897a.go	fail	gd: internal error: package "reflect" without types was imported from "test"
 fixedbugs/issue25897b.go	fail	gd: internal error: package "reflect" without types was imported from "test"
 fixedbugs/issue25958.go	skip	todo:errorcheck
@@ -1260,10 +1260,10 @@ fixedbugs/issue28085.go	skip	todo:errorcheck
 fixedbugs/issue28268.go	skip	todo:errorcheck
 fixedbugs/issue28390.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue28430.go	fail	gd: function missing body
-fixedbugs/issue28445.go	fail	c11: error: switch quantity not an integer
+fixedbugs/issue28445.go	pass	
 fixedbugs/issue28450.go	skip	todo:errorcheck
 fixedbugs/issue28601.go	pass	
-fixedbugs/issue28616.go	fail	gd: unsupported node type: StatementGoto
+fixedbugs/issue28616.go	pass	
 fixedbugs/issue28688.go	skip	gc:flags -gcflags=-d=softfloat
 fixedbugs/issue28748.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue28797.go	fail	gd: internal error: package "fmt" without types was imported from "test"
@@ -1272,8 +1272,8 @@ fixedbugs/issue29013a.go	fail	c11: error: unknown type name 'TestSuite_go_main_p
 fixedbugs/issue29013b.go	fail	c11: error: unknown type name 'TestSuite_go_main_package'
 fixedbugs/issue29190.go	fail	gd: internal error: package "strings" without types was imported from "test"
 fixedbugs/issue29215.go	pass	
-fixedbugs/issue29218.go	fail	c11: error: switch quantity not an integer
-fixedbugs/issue29220.go	fail	c11: error: expected expression before ')' token
+fixedbugs/issue29218.go	pass	
+fixedbugs/issue29220.go	pass	
 fixedbugs/issue29264.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue29304.go	fail	gd: internal error: package "errors" without types was imported from "test"
 fixedbugs/issue29312.go	fail	gd: internal error: package "fmt" without types was imported from "test"
@@ -1338,7 +1338,7 @@ fixedbugs/issue32175.go	pass
 fixedbugs/issue32187.go	fail	gd: internal error: package "log" without types was imported from "test"
 fixedbugs/issue32288.go	fail	gd: range over unsupported type *types.Array
 fixedbugs/issue32347.go	pass	
-fixedbugs/issue32454.go	fail	c11: error: switch quantity not an integer
+fixedbugs/issue32454.go	pass	
 fixedbugs/issue32477.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue32560.go	pass	
 fixedbugs/issue32595.go	skip	todo:rundir
@@ -1423,7 +1423,7 @@ fixedbugs/issue39541.go	fail	gd: internal error: package "reflect" without types
 fixedbugs/issue39651.go	pass	
 fixedbugs/issue40152.go	fail	c11: error: invalid operands to binary == (have 'int' and 'go_vv')
 fixedbugs/issue40252.go	skip	todo:rundir
-fixedbugs/issue40367.go	fail	gd: unsupported node type: StatementLabel
+fixedbugs/issue40367.go	pass	
 fixedbugs/issue40629.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue4066.go	pass	
 fixedbugs/issue40746.go	pass	
@@ -1483,7 +1483,7 @@ fixedbugs/issue43428.go	skip	todo:errorcheck
 fixedbugs/issue43444.go	fail	c11: error: initialization of 'void *' from 'go_ii' {aka 'long int'} makes pointer from integer without a cast [-Wint-convers…
 fixedbugs/issue43479.go	skip	todo:compiledir
 fixedbugs/issue4348.go	skip	upstream:skip
-fixedbugs/issue43480.go	fail	c11: error: case label does not reduce to an integer constant
+fixedbugs/issue43480.go	fail	exit: exit status 2 panic: 10000000000000000
 fixedbugs/issue4353.go	pass	
 fixedbugs/issue43551.go	skip	todo:compiledir
 fixedbugs/issue43570.go	fail	gd: internal error: package "fmt" without types was imported from "test"
@@ -1533,7 +1533,7 @@ fixedbugs/issue4517a.go	skip	todo:errorcheck
 fixedbugs/issue4517b.go	skip	todo:errorcheck
 fixedbugs/issue4517c.go	skip	todo:errorcheck
 fixedbugs/issue4517d.go	skip	todo:errorcheck
-fixedbugs/issue4518.go	fail	c11: error: expected expression before ')' token
+fixedbugs/issue4518.go	fail	c11: error: incompatible type for argument 1 of 'F_go_main_package'
 fixedbugs/issue45242.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue45258.go	fail	c11: error: incompatible types when returning type 'go_pt' but 'go_if' was expected
 fixedbugs/issue4529.go	fail	c11: error: conflicting types for 'Init_go_main_package'; have 'void(go_ss, go_pt, struct <anonymous>)'
@@ -1553,7 +1553,7 @@ fixedbugs/issue4585.go	fail	gd: unsupported len of map
 fixedbugs/issue45851.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue4590.go	skip	todo:rundir
 fixedbugs/issue45913.go	skip	todo:errorcheck
-fixedbugs/issue45947.go	fail	gd: unsupported node type: StatementLabel
+fixedbugs/issue45947.go	pass	
 fixedbugs/issue45948.go	skip	gc:flags -N
 fixedbugs/issue4610.go	skip	todo:errorcheck
 fixedbugs/issue4614.go	fail	gd: unsupported conversion to uintptr
@@ -1583,7 +1583,7 @@ fixedbugs/issue47201.go	skip	todo:errorcheck
 fixedbugs/issue47227.go	skip	gc:build cgo
 fixedbugs/issue47317.go	skip	todo:builddir
 fixedbugs/issue4734.go	pass	
-fixedbugs/issue4748.go	fail	gd: unsupported node type: StatementGoto
+fixedbugs/issue4748.go	pass	
 fixedbugs/issue4752.go	fail	c11: error: expected expression before '^' token
 fixedbugs/issue47712.go	pass	
 fixedbugs/issue4776.go	skip	todo:errorcheck
@@ -1621,12 +1621,12 @@ fixedbugs/issue49029.go	fail	c11: error: macro "go_ignore" passed 5 arguments, b
 fixedbugs/issue49094.go	skip	todo:compiledir
 fixedbugs/issue4909a.go	skip	todo:errorcheck
 fixedbugs/issue4909b.go	skip	todo:errorcheck
-fixedbugs/issue49100.go	fail	exit: timeout
-fixedbugs/issue49100b.go	fail	exit: timeout
+fixedbugs/issue49100.go	pass	
+fixedbugs/issue49100b.go	pass	
 fixedbugs/issue49110.go	fail	gd: internal error: package "reflect" without types was imported from "test"
 fixedbugs/issue49122.go	pass	
 fixedbugs/issue49143.go	skip	todo:compiledir
-fixedbugs/issue49145.go	fail	gd: unsupported node type: StatementLabel
+fixedbugs/issue49145.go	pass	
 fixedbugs/issue49240.go	fail	c11: error: unterminated argument list invoking macro "go_call"
 fixedbugs/issue49249.go	skip	gc:flags -l
 fixedbugs/issue49282.go	fail	c11: error: initialization of 'struct <anonymous> *' from incompatible pointer type 'struct <anonymous> *' [-Wincompatible-po…
@@ -1806,7 +1806,7 @@ fixedbugs/issue61127.go	pass
 fixedbugs/issue61187.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue6131.go	pass	
 fixedbugs/issue6140.go	fail	gd: panic: interface conversion: types.Type is *types.Named, not *types.Pointer
-fixedbugs/issue61778.go	fail	c11: error: switch quantity not an integer
+fixedbugs/issue61778.go	pass	
 fixedbugs/issue61895.go	pass	
 fixedbugs/issue61908.go	pass	
 fixedbugs/issue61992.go	pass	
@@ -1828,7 +1828,7 @@ fixedbugs/issue63489b.go	skip	todo:errorcheck
 fixedbugs/issue63490.go	fail	c11: error: unknown type name 'ResourceFunc_go_main_package'
 fixedbugs/issue63505.go	fail	c11: error: incompatible type for argument 1 of 'RegisterExplainer_go_main_package'
 fixedbugs/issue63657.go	pass	
-fixedbugs/issue63955.go	fail	gd: unsupported node type: StatementLabel
+fixedbugs/issue63955.go	pass	
 fixedbugs/issue6399.go	fail	c11: error: incompatible types when assigning to type 'go_if' from type 'Bar_go_main_package' {aka 'go_az'}
 fixedbugs/issue6402.go	skip	todo:errorcheck
 fixedbugs/issue6403.go	skip	todo:errorcheck
@@ -1887,7 +1887,7 @@ fixedbugs/issue6703y.go	skip	todo:errorcheck
 fixedbugs/issue6703z.go	skip	todo:errorcheck
 fixedbugs/issue67141.go	skip	todo:errorcheck
 fixedbugs/issue67160.go	fail	c11: error: unknown type name 'T_go_main_package'
-fixedbugs/issue67190.go	fail	c11: error: switch quantity not an integer
+fixedbugs/issue67190.go	pass	
 fixedbugs/issue67255.go	fail	c11: error: incompatible types when assigning to type 'go_vv' from type 'go_ll'
 fixedbugs/issue67329.go	skip	gc:diagnostics -d=ssa/check_bce/debug=1
 fixedbugs/issue6750.go	skip	todo:errorcheck
@@ -1916,7 +1916,7 @@ fixedbugs/issue6964.go	skip	todo:errorcheck
 fixedbugs/issue6977.go	skip	todo:errorcheck
 fixedbugs/issue69825.go	skip	gc:flags -d=libfuzzer
 fixedbugs/issue70156.go	fail	gd: internal error: package "reflect" without types was imported from "test"
-fixedbugs/issue70175.go	fail	gd: unsupported node type: StatementLabel
+fixedbugs/issue70175.go	fail	c11: error: duplicate label 'go_label__'
 fixedbugs/issue70189.go	fail	gd: range over unsupported type *types.Map
 fixedbugs/issue7023.go	skip	todo:compiledir
 fixedbugs/issue7044.go	fail	gd: internal error: package "fmt" without types was imported from "test"
@@ -1930,7 +1930,7 @@ fixedbugs/issue7129.go	skip	todo:errorcheck
 fixedbugs/issue7150.go	skip	todo:errorcheck
 fixedbugs/issue7153.go	skip	todo:errorcheck
 fixedbugs/issue71675.go	fail	gd: range over unsupported type *types.Signature
-fixedbugs/issue71680.go	fail	c11: error: expected expression before ')' token
+fixedbugs/issue71680.go	pass	
 fixedbugs/issue71759.go	pass	
 fixedbugs/issue71852.go	fail	gd: internal error: package "math" without types was imported from "test"
 fixedbugs/issue71857.go	fail	gd: internal error: package "sync/atomic" without types was imported from "test"
@@ -1985,10 +1985,10 @@ fixedbugs/issue75278.go	skip	gc:diagnostics -m=2
 fixedbugs/issue75327.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue75365.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue7538a.go	skip	todo:errorcheck
-fixedbugs/issue7538b.go	fail	gd: unsupported node type: StatementLabel
+fixedbugs/issue7538b.go	pass	
 fixedbugs/issue7547.go	pass	
 fixedbugs/issue7550.go	fail	c11: error: incompatible type for argument 2 of 'go_append_aazz'
-fixedbugs/issue75569.go	fail	gd: unsupported node type: StatementLabel
+fixedbugs/issue75569.go	pass	
 fixedbugs/issue75764.go	skip	gc:stack-introspection runtime.Callers
 fixedbugs/issue7590.go	fail	c11: error: unknown type name 'S_go_p_package'
 fixedbugs/issue76008.go	skip	gc:stack-introspection runtime.Caller
@@ -1996,7 +1996,7 @@ fixedbugs/issue7648.go	skip	todo:compiledir
 fixedbugs/issue76709.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue7675.go	skip	todo:errorcheck
 fixedbugs/issue7690.go	skip	gc:stack-introspection runtime.Stack
-fixedbugs/issue76950.go	fail	gd: unsupported node type: StatementGoto
+fixedbugs/issue76950.go	pass	
 fixedbugs/issue77303.go	fail	c11: error: invalid operands to binary == (have 'go_arr3_zeroSizeSpecial' and 'go_arr3_zeroSizeSpecial')
 fixedbugs/issue7740.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue7742.go	pass	
@@ -2058,7 +2058,7 @@ fixedbugs/issue7998.go	fail	gd: unsupported node type: StatementSelect
 fixedbugs/issue80004.go	fail	gd: internal error: package "runtime" without types was imported from "test"
 fixedbugs/issue8004.go	fail	gd: internal error: package "reflect" without types was imported from "test"
 fixedbugs/issue80096.go	pass	
-fixedbugs/issue80097.go	fail	gd: unsupported node type: StatementLabel
+fixedbugs/issue80097.go	fail	c11: error: invalid operands to binary != (have 'go_arr65536_go_pt' and 'go_arr65536_go_pt')
 fixedbugs/issue8011.go	fail	output: mismatch
 fixedbugs/issue80127.go	pass	
 fixedbugs/issue8017.go	fail	gd: unsupported node type: StatementSelect
@@ -2067,7 +2067,7 @@ fixedbugs/issue80196.go	fail	c11: error: unknown type name 'S_go_main_package'
 fixedbugs/issue8028.go	fail	c11: error: unknown type name 'T_go_p_package'
 fixedbugs/issue8036.go	fail	gd: internal error: package "runtime" without types was imported from "test"
 fixedbugs/issue8039.go	fail	gd: unsupported defer of builtin copy
-fixedbugs/issue8042.go	fail	gd: unsupported node type: StatementGoto
+fixedbugs/issue8042.go	fail	gd: unsupported node type: StatementSelect
 fixedbugs/issue8047.go	pass	
 fixedbugs/issue8047b.go	pass	
 fixedbugs/issue8048.go	fail	gd: internal error: package "runtime" without types was imported from "test"
@@ -2078,7 +2078,7 @@ fixedbugs/issue80577.go	fail	gd: internal error: package "math/bits" without typ
 fixedbugs/issue8060.go	skip	todo:compiledir
 fixedbugs/issue8073.go	pass	
 fixedbugs/issue8074.go	fail	c11: error: unterminated argument list invoking macro "go_call"
-fixedbugs/issue8076.go	fail	gd: unsupported node type: StatementLabel
+fixedbugs/issue8076.go	pass	
 fixedbugs/issue8079.go	pass	
 fixedbugs/issue80976.go	fail	c11: error: unknown type name 'HashSet_go_main_package'
 fixedbugs/issue81165.go	fail	c11: error: request for member 'go_type' in something not a structure or union
@@ -2090,7 +2090,7 @@ fixedbugs/issue8158.go	fail	gd: internal error: package "runtime" without types 
 fixedbugs/issue8183.go	skip	todo:errorcheck
 fixedbugs/issue8280.go	skip	todo:compiledir
 fixedbugs/issue8311.go	skip	todo:errorcheck
-fixedbugs/issue8325.go	fail	c11: error: expected expression before ')' token
+fixedbugs/issue8325.go	pass	
 fixedbugs/issue8336.go	fail	gd: unsupported node type: StatementSelect
 fixedbugs/issue8347.go	fail	gd: unsupported node type: StatementSelect
 fixedbugs/issue8385.go	skip	todo:errorcheck
@@ -2108,9 +2108,9 @@ fixedbugs/issue8745.go	skip	todo:errorcheck
 fixedbugs/issue8761.go	fail	c11: error: incompatible types when initializing type 'void *' using type 'go_vv'
 fixedbugs/issue8836.go	skip	todo:errorcheck
 fixedbugs/issue887.go	pass	
-fixedbugs/issue8947.go	fail	c11: error: switch quantity not an integer
+fixedbugs/issue8947.go	fail	c11: error: invalid operands to binary == (have 'T_go_main_package' {aka 'go_arr2_go_ii'} and 'T_go_main_package' {aka 'go_ar…
 fixedbugs/issue8961.go	pass	
-fixedbugs/issue9006.go	fail	c11: error: switch quantity not an integer
+fixedbugs/issue9006.go	fail	c11: error: invalid operands to binary == (have 'T1_go_main_package' and 'T1_go_main_package')
 fixedbugs/issue9017.go	skip	todo:errorcheck
 fixedbugs/issue9036.go	skip	todo:errorcheck
 fixedbugs/issue9076.go	skip	todo:errorcheck
@@ -2240,7 +2240,7 @@ ken/for.go	pass
 ken/interbasic.go	fail	c11: error: invalid operands to binary != (have 'go_if' and 'go_if')
 ken/interfun.go	fail	gd: unsupported type assertion to interface test.I2
 ken/intervar.go	fail	c11: error: incompatible types when assigning to type 'go_if' from type 'go_pt'
-ken/label.go	fail	gd: unsupported node type: StatementGoto
+ken/label.go	pass	
 ken/litfun.go	pass	
 ken/mfunc.go	pass	
 ken/modconst.go	fail	gd: internal error: package "math/rand" without types was imported from "test"
@@ -2256,7 +2256,7 @@ ken/simparray.go	pass
 ken/simpbool.go	pass	
 ken/simpconv.go	fail	c11: error: two or more data types in declaration specifiers
 ken/simpfun.go	pass	
-ken/simpswitch.go	fail	c11: error: case label does not reduce to an integer constant
+ken/simpswitch.go	pass	
 ken/simpvar.go	pass	
 ken/slicearray.go	fail	c11: error: called object is not a function or function pointer
 ken/sliceslice.go	fail	c11: error: called object is not a function or function pointer

@@ -2,6 +2,8 @@ package c99
 
 import (
 	"fmt"
+	"go/token"
+	"go/types"
 	"strings"
 
 	"github.com/quaadgras/gd-compiler/internal/source"
@@ -51,30 +53,86 @@ func (c99 Target) StatementIf(stmt source.StatementIf) error {
 	return nil
 }
 
+// StatementSwitch dispatches with gotos (C switches only support integers): the tag is
+// evaluated once, then the case expressions in order, until one matches. break exits the
+// switch, and fallthrough continues into the next case.
 func (c99 Target) StatementSwitch(stmt source.StatementSwitch) error {
+	n := c99.Closures.count
+	c99.Closures.count++
+	end := fmt.Sprintf("go_switch_%d_end", n)
+	indent := "\n" + strings.Repeat("\t", c99.Tabs+1)
 	fmt.Fprintf(c99, "{")
 	if init, ok := stmt.Init.Get(); ok {
-		c99.Tabs = -c99.Tabs
 		if err := c99.Statement(init); err != nil {
 			return err
 		}
-		c99.Tabs = -c99.Tabs
+		fmt.Fprintf(c99, ";")
 	}
-	fmt.Fprintf(c99, "switch (")
-	if value, ok := stmt.Value.Get(); ok {
-		if err := c99.Expression(value); err != nil {
+	value, hasTag := stmt.Value.Get()
+	var tag source.Expression
+	if hasTag {
+		t := types.Default(value.TypeAndValue().Type)
+		name := fmt.Sprintf("go_tag_%d", n)
+		fmt.Fprint(c99, indent)
+		if err := c99.ordered([]source.Expression{value}, nil, true, func(c99 Target) error {
+			fmt.Fprintf(c99, "%s %s = ", c99.TypeOf(t), name)
+			return c99.Expression(value)
+		}); err != nil {
 			return err
 		}
+		fmt.Fprintf(c99, ";")
+		tag = c99.element(t, name)
 	}
-	fmt.Fprintf(c99, ") {")
-	for _, clause := range stmt.Clauses {
-		c99.Tabs++
-		if err := c99.SwitchCaseClause(clause); err != nil {
-			return err
+	defaultCase := end
+	for i, clause := range stmt.Clauses {
+		label := fmt.Sprintf("go_switch_%d_case_%d", n, i)
+		if len(clause.Expressions) == 0 {
+			defaultCase = label
 		}
-		c99.Tabs--
+		for _, expr := range clause.Expressions {
+			fmt.Fprint(c99, indent)
+			if err := c99.ordered([]source.Expression{expr}, nil, false, func(c99 Target) error {
+				fmt.Fprintf(c99, "if (")
+				if hasTag {
+					if err := c99.ExpressionBinary(source.ExpressionBinary{
+						Typed:     source.Typed{TV: types.TypeAndValue{Type: types.Typ[types.Bool]}},
+						X:         tag,
+						Operation: source.WithLocation[token.Token]{Value: token.EQL},
+						Y:         expr,
+					}); err != nil {
+						return err
+					}
+				} else if err := c99.Expression(expr); err != nil {
+					return err
+				}
+				fmt.Fprintf(c99, ") goto %s", label)
+				return nil
+			}); err != nil {
+				return err
+			}
+			fmt.Fprintf(c99, ";")
+		}
 	}
-	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
-	fmt.Fprintf(c99, "}}")
+	fmt.Fprintf(c99, "%sgoto %s;", indent, defaultCase)
+	c99.BreakLabel = end
+	for i, clause := range stmt.Clauses {
+		fmt.Fprintf(c99, "%sgo_switch_%d_case_%d:; {", indent, n, i)
+		c99.Tabs += 2
+		for _, stmt := range clause.Body {
+			if err := c99.Statement(stmt); err != nil {
+				return err
+			}
+		}
+		c99.Tabs -= 2
+		fmt.Fprintf(c99, "%s}", indent)
+		if !clause.Fallsthrough {
+			fmt.Fprintf(c99, " goto %s;", end)
+		}
+	}
+	fmt.Fprintf(c99, "%s%s:;\n%s}", indent, end, strings.Repeat("\t", c99.Tabs))
 	return nil
 }
+
+// StatementFallthrough is implemented by the clause that falls through, see
+// [Target.StatementSwitch].
+func (c99 Target) StatementFallthrough(stmt source.StatementFallthrough) error { return nil }

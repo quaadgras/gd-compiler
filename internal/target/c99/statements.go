@@ -41,6 +41,15 @@ func (c99 Target) Statement(stmt source.Statement) error {
 	case source.Statements.Defer:
 		call := source.Statements.Defer.Get(stmt).Call
 		exprs = append([]source.Expression{call.Function}, call.Arguments...)
+	case source.Statements.Definitions:
+		for _, def := range source.Statements.Definitions.Get(stmt) {
+			if xyz.ValueOf(def) == source.Definitions.Variable {
+				if value, ok := source.Definitions.Variable.Get(def).Value.Get(); ok {
+					exprs = append(exprs, value)
+				}
+			}
+		}
+		declares = true
 	}
 	if err := c99.ordered(exprs, roots, declares, func(cc Target) error { return cc.Compile(value) }); err != nil {
 		return err
@@ -84,7 +93,9 @@ func (c99 Target) StatementBreak(stmt source.StatementBreak) error {
 
 	label, hasLabel := stmt.Label.Get()
 	if hasLabel {
-		fmt.Fprintf(c99, "goto %s_end", label.String)
+		fmt.Fprintf(c99, "goto go_break_%s", label.String)
+	} else if c99.BreakLabel != "" { // in a switch.
+		fmt.Fprintf(c99, "goto %s", c99.BreakLabel)
 	} else {
 		fmt.Fprintf(c99, "break")
 	}

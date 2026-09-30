@@ -48,6 +48,9 @@ type Target struct {
 	// Order of evaluation of the statement being compiled, see [Order].
 	Order *Order
 
+	// BreakLabel is where break goes, within a switch (which are not C switches).
+	BreakLabel string
+
 	// Header is set while compiling the init and post statements of a for statement,
 	// which can't declare temporaries.
 	Header bool

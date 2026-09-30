@@ -242,58 +242,67 @@ func (c99 Target) VariableDefinition(spec source.VariableDefinition) error {
 		c99.Symbols = c99.Initializers.Symbols
 		c99.Tabs = 1
 	}
-	if c99.Tabs > 0 {
-		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
-	}
-	if declareTuple {
-		value, ts, err := c99.tupleValue(tupleValue, -1)
-		if err != nil {
-			return spec.Location.Errorf("%w", err)
+	// the definition, in order (see [Order]), for package-level variables (their init
+	// statements are not otherwise statements). The value callbacks above write with c99.
+	emit := func(cc Target) error {
+		c99 = cc
+		if c99.Tabs > 0 {
+			fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 		}
-		temp := c99.Closures.tuples[source.LocationOf(tupleValue).Node]
-		fmt.Fprintf(c99, "%s %s = %s; ", c99.TupleOf(ts), temp.name, value)
-	}
-	if name.String == "_" {
-		fmt.Fprintf(c99, "go_ignore(")
-		if err := value(); err != nil {
-			return err
+		if declareTuple {
+			value, ts, err := c99.tupleValue(tupleValue, -1)
+			if err != nil {
+				return spec.Location.Errorf("%w", err)
+			}
+			temp := c99.Closures.tuples[source.LocationOf(tupleValue).Node]
+			fmt.Fprintf(c99, "%s %s = %s; ", c99.TupleOf(ts), temp.name, value)
 		}
-		fmt.Fprintf(c99, ")")
-	} else {
-		if spec.Global {
-			if err := c99.definedVariable(true, name); err != nil {
+		if name.String == "_" {
+			fmt.Fprintf(c99, "go_ignore(")
+			if err := value(); err != nil {
 				return err
 			}
-		} else if !c99.StackAllocated(name) { // captured by a closure, so boxed.
-			fmt.Fprintf(c99, "%s* %s = ", c99.TypeOf(rtype), name.String)
-			if !hasValue {
-				fmt.Fprintf(c99, "go_new(sizeof(%s), NULL).ptr", c99.TypeOf(rtype))
-			} else {
-				fmt.Fprintf(c99, "%s(", c99.BoxOf(rtype))
-				if err := value(); err != nil {
+			fmt.Fprintf(c99, ")")
+		} else {
+			if spec.Global {
+				if err := c99.definedVariable(true, name); err != nil {
 					return err
 				}
-				fmt.Fprintf(c99, ")")
+			} else if !c99.StackAllocated(name) { // captured by a closure, so boxed.
+				fmt.Fprintf(c99, "%s* %s = ", c99.TypeOf(rtype), name.String)
+				if !hasValue {
+					fmt.Fprintf(c99, "go_new(sizeof(%s), NULL).ptr", c99.TypeOf(rtype))
+				} else {
+					fmt.Fprintf(c99, "%s(", c99.BoxOf(rtype))
+					if err := value(); err != nil {
+						return err
+					}
+					fmt.Fprintf(c99, ")")
+				}
+				if c99.Tabs > 0 {
+					fmt.Fprintf(c99, ";")
+				}
+				return nil
+			} else {
+				fmt.Fprintf(c99, "%s ", c99.TypeOf(rtype))
+				if err := c99.definedVariable(true, name); err != nil {
+					return err
+				}
 			}
-			if c99.Tabs > 0 {
-				fmt.Fprintf(c99, ";")
-			}
-			return nil
-		} else {
-			fmt.Fprintf(c99, "%s ", c99.TypeOf(rtype))
-			if err := c99.definedVariable(true, name); err != nil {
+			fmt.Fprint(c99, " = ")
+			if err := value(); err != nil {
 				return err
 			}
 		}
-		fmt.Fprint(c99, " = ")
-		if err := value(); err != nil {
-			return err
+		if c99.Tabs > 0 || spec.Global {
+			fmt.Fprintf(c99, ";")
 		}
+		return nil
 	}
-	if c99.Tabs > 0 || spec.Global {
-		fmt.Fprintf(c99, ";")
+	if spec.Global && hasValue {
+		return c99.ordered([]source.Expression{assignValue}, nil, false, emit)
 	}
-	return nil
+	return emit(c99)
 }
 
 // StaticInitializer returns a C static initializer for expr (of type t) when it is a
