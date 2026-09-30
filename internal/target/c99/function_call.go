@@ -108,17 +108,9 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 						c99.InterfaceTypeOf(left.X.TypeAndValue().Type), x, defined.String)
 				} else {
 					receiver = xyz.New(left.X)
-					rtype := left.X.TypeAndValue().Type
-					for {
-						pointer, ok := rtype.Underlying().(*types.Pointer)
-						if !ok {
-							break
-						}
-						rtype = pointer.Elem()
-					}
-					named, ok := rtype.(*types.Named)
+					named, ok := types.Unalias(derefType(left.X.TypeAndValue().Type)).(*types.Named)
 					if !ok {
-						return left.Errorf("unsupported receiver type %s", rtype)
+						return left.Errorf("unsupported receiver type %s", left.X.TypeAndValue().Type)
 					}
 					fmt.Fprintf(c99, `%s_%s`, named.Obj().Name(), c99.FunctionName(defined))
 				}
@@ -151,25 +143,44 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 				fmt.Fprint(c99, value)
 				return nil
 			}
-			symbol := fmt.Sprintf("go_interface_pack__%s", c99.TypeOf(expr.Arguments[0].TypeAndValue().Type))
+			dynamic := expr.Arguments[0].TypeAndValue().Type
+			if _, ok := dynamic.Underlying().(*types.Interface); ok {
+				return expr.Errorf("unsupported conversion between interfaces")
+			}
+			rtype, err := c99.reflectTypeOf(dynamic)
+			if err != nil {
+				return expr.Errorf("%w", err)
+			}
+			ctype2 := c99.TypeOf(dynamic)
+			symbol := "go_interface_pack_" + identifier.ReplaceAllString(ctype2, "_")
 			c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
-				fmt.Fprintf(w, "static inline go_if %s(%[2]s v, void* vtable) { return go_interface_new(sizeof(%[2]s), &v, &go_type_%[2]s, vtable); }\n",
-					symbol, c99.TypeOf(expr.Arguments[0].TypeAndValue().Type))
+				fmt.Fprintf(w, "static inline go_if %s(%s v, const go_type* t, void* vtable) { return go_interface_new(sizeof(v), &v, t, vtable); }\n",
+					symbol, ctype2)
 				return nil
 			})
 			fmt.Fprintf(c99, "%s(", symbol)
 			if err := c99.Expression(expr.Arguments[0]); err != nil {
 				return err
 			}
-			fmt.Fprintf(c99, ", &(%s){", c99.InterfaceTypeOf(ctype.TypeAndValue().Type))
+			fmt.Fprintf(c99, ", %s, &(%s){", rtype, c99.InterfaceTypeOf(ctype.TypeAndValue().Type))
+			named, ok := types.Unalias(derefType(dynamic)).(*types.Named)
+			if !ok {
+				return expr.Errorf("unsupported conversion of %s to an interface", dynamic)
+			}
+			_, isPointer := dynamic.Underlying().(*types.Pointer)
 			for i := range typ.NumMethods() {
 				if i > 0 {
 					fmt.Fprintf(c99, ", ")
 				}
 				method := typ.Method(i)
-				named := expr.Arguments[0].TypeAndValue().Type.(*types.Named)
-				fmt.Fprintf(c99, `.%s = I_%s_%s_go_%s_package`,
-					method.Name(), named.Obj().Name(), method.Name(), named.Obj().Pkg().Name())
+				prefix := "I_"
+				if obj, _, _ := types.LookupFieldOrMethod(dynamic, true, method.Pkg(), method.Name()); isPointer && obj != nil {
+					if _, ptrRecv := obj.Type().(*types.Signature).Recv().Type().Underlying().(*types.Pointer); !ptrRecv {
+						prefix = "IP_" // the receiver is the value pointed to.
+					}
+				}
+				fmt.Fprintf(c99, `.%s = %s%s_%s_go_%s_package`,
+					method.Name(), prefix, named.Obj().Name(), method.Name(), named.Obj().Pkg().Name())
 			}
 			fmt.Fprintf(c99, "})")
 			return nil
@@ -210,9 +221,11 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 	if hasReceiver && deferred.Receiver != "" {
 		fmt.Fprint(c99, deferred.Receiver)
 	} else if hasReceiver {
-		if err := c99.Expression(recv); err != nil {
+		value, err := c99.receiverOf(function, recv)
+		if err != nil {
 			return err
 		}
+		fmt.Fprint(c99, value)
 	}
 	var variadic bool
 	for i, arg := range expr.Arguments {
@@ -299,4 +312,27 @@ func (c99 Target) conversion(expr source.FunctionCall, t types.Type) (bool, erro
 func isNumeric(t types.Type) bool {
 	basic, ok := t.Underlying().(*types.Basic)
 	return ok && basic.Info()&(types.IsInteger|types.IsFloat) != 0
+}
+
+// receiverOf returns the receiver of the method call of method (a selector), adjusted for
+// the method's receiver type, as Go takes the address of addressable values for methods
+// with pointer receivers (x.M() is (&x).M()), and dereferences pointers for methods with
+// value receivers (p.M() is (*p).M()).
+func (c99 Target) receiverOf(method, x source.Expression) (string, error) {
+	value := c99.toString(x)
+	sel := source.Expressions.Selector.Get(method)
+	fn := source.Expressions.DefinedFunction.Get(sel.Selection)
+	obj, ok := fn.Unique.(*types.Func)
+	if !ok {
+		return value, nil
+	}
+	_, wantPointer := obj.Type().(*types.Signature).Recv().Type().Underlying().(*types.Pointer)
+	_, isPointer := x.TypeAndValue().Type.Underlying().(*types.Pointer)
+	switch {
+	case wantPointer && !isPointer:
+		return fmt.Sprintf("((go_pt){ .ptr = &(%s) })", value), nil
+	case !wantPointer && isPointer:
+		return fmt.Sprintf("go_pointer_get(%s, %s)", value, c99.TypeOf(derefType(x.TypeAndValue().Type))), nil
+	}
+	return value, nil
 }

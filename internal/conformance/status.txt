@@ -24,11 +24,11 @@ abi/leaf2.go	fail	gd: internal error: package "fmt" without types was imported f
 abi/many_int_input.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 abi/many_intstar_input.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 abi/map.go	skip	gc:finalizers runtime.SetFinalizer
-abi/method_wrapper.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+abi/method_wrapper.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
 abi/more_intstar_input.go	pass	
 abi/named_results.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 abi/named_return_stuff.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-abi/open_defer_1.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+abi/open_defer_1.go	fail	c11: error: unknown type name 'T_go_main_package'
 abi/part_live.go	fail	gd: internal error: package "runtime" without types was imported from "test"
 abi/part_live_2.go	fail	gd: internal error: package "runtime" without types was imported from "test"
 abi/reg_not_ssa.go	fail	c11: error: unknown type name 'T_go_main_package'
@@ -44,7 +44,7 @@ abi/struct_lower_1.go	fail	gd: internal error: package "fmt" without types was i
 abi/too_big_to_ssa.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 abi/uglyfib.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 abi/wrapdefer_largetmp.go	fail	c11: error: unknown type name 'T_go_main_package'
-abi/zombie_struct_select.go	fail	c11: error: 'go_type_patchlist_go_main_package' undeclared here (not in a function)
+abi/zombie_struct_select.go	pass	
 alg.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 alias.go	skip	todo:errorcheck
 alias1.go	fail	gd: panic: runtime error: invalid memory address or nil pointer dereference
@@ -60,7 +60,7 @@ asmhdr.go	skip	todo:buildrundir
 assign.go	skip	todo:errorcheck
 assign1.go	skip	todo:errorcheck
 atomicload.go	fail	gd: unsupported call for function of type xyz.Case
-bigalg.go	fail	gd: panic: variant access violation
+bigalg.go	fail	gd: panic: unsupported type *types.Slice
 bigmap.go	fail	c11: error: unknown type name 'T_go_main_package'
 blank.go	fail	gd: internal error: package "os" without types was imported from "test"
 blank1.go	skip	todo:errorcheck
@@ -196,10 +196,10 @@ codegen/unique.go	skip	gc:asmcheck
 codegen/unsafe.go	skip	gc:asmcheck
 codegen/writebarrier.go	skip	gc:asmcheck
 codegen/zerosize.go	skip	gc:asmcheck
-complit.go	fail	gd: panic: variant access violation
+complit.go	fail	gd: unsupported conversion to string
 complit1.go	skip	todo:errorcheck
 complit2.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-compos.go	fail	gd: panic: variant access violation
+compos.go	fail	c11: error: two or more data types in declaration specifiers
 const.go	fail	gd: internal error: package "os" without types was imported from "test"
 const1.go	skip	todo:errorcheck
 const2.go	skip	todo:errorcheck
@@ -222,7 +222,7 @@ convlit1.go	skip	todo:errorcheck
 copy.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 copy1.go	skip	todo:errorcheck
 crlf.go	skip	todo:runoutput
-ddd.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+ddd.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
 ddd1.go	skip	todo:errorcheck
 ddd2.go	skip	todo:rundir
 decl.go	pass	
@@ -294,7 +294,7 @@ fixedbugs/bug007.go	fail	gd: panic: unexpected kindOf: test.Point
 fixedbugs/bug008.go	fail	c11: error: expected expression before ')' token
 fixedbugs/bug009.go	pass	
 fixedbugs/bug010.go	pass	
-fixedbugs/bug011.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/bug011.go	pass	
 fixedbugs/bug012.go	fail	c11: error: integer constant is so large that it is unsigned
 fixedbugs/bug013.go	pass	
 fixedbugs/bug014.go	skip	todo:errorcheck
@@ -304,9 +304,9 @@ fixedbugs/bug017.go	pass
 fixedbugs/bug020.go	fail	gd: unsupported index of type source.ExpressionIndex
 fixedbugs/bug021.go	fail	c11: error: invalid operands to binary + (have 'go_ss' and 'go_ss')
 fixedbugs/bug022.go	skip	todo:errorcheck
-fixedbugs/bug023.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/bug023.go	pass	
 fixedbugs/bug024.go	pass	
-fixedbugs/bug026.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/bug026.go	fail	c11: error: incompatible type for argument 3 of 'Vector_Insert_go_main_package'
 fixedbugs/bug027.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/bug028.go	pass	
 fixedbugs/bug030.go	skip	todo:errorcheck
@@ -341,7 +341,7 @@ fixedbugs/bug067.go	fail	gd: unsupported call for function of type xyz.Case
 fixedbugs/bug068.go	skip	todo:errorcheck
 fixedbugs/bug069.go	pass	
 fixedbugs/bug070.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/bug071.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/bug071.go	fail	gd: panic: unsupported type *types.Chan
 fixedbugs/bug072.go	skip	todo:errorcheck
 fixedbugs/bug073.go	pass	
 fixedbugs/bug074.go	skip	todo:errorcheck
@@ -362,12 +362,12 @@ fixedbugs/bug089.go	fail	gd: function missing body
 fixedbugs/bug090.go	skip	todo:errorcheck
 fixedbugs/bug091.go	skip	todo:errorcheck
 fixedbugs/bug092.go	pass	
-fixedbugs/bug093.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/bug093.go	pass	
 fixedbugs/bug094.go	pass	
-fixedbugs/bug096.go	fail	gd: panic: variant access violation
+fixedbugs/bug096.go	pass	
 fixedbugs/bug097.go	fail	gd: panic: interface conversion: types.Type is *types.Named, not *types.Slice
-fixedbugs/bug098.go	fail	gd: panic: variant access violation
-fixedbugs/bug099.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/bug098.go	fail	c11: error: 'go_hash_ii' undeclared (first use in this function); did you mean 'go_hash_ss'?
+fixedbugs/bug099.go	fail	c11: error: incompatible types when returning type 'go_pt' but 'go_if' was expected
 fixedbugs/bug101.go	pass	
 fixedbugs/bug102.go	fail	gd: unsupported conversion to string
 fixedbugs/bug103.go	skip	todo:errorcheck
@@ -377,7 +377,7 @@ fixedbugs/bug107.go	skip	todo:errorcheck
 fixedbugs/bug108.go	skip	todo:errorcheck
 fixedbugs/bug109.go	pass	
 fixedbugs/bug110.go	fail	c11: error: stray '@' in program
-fixedbugs/bug111.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/bug111.go	fail	c11: error: incompatible types when returning type 'go_pt' but 'go_if' was expected
 fixedbugs/bug112.go	fail	c11: error: unknown type name 'T_go_main_package'
 fixedbugs/bug113.go	fail	c11: error: incompatible types when assigning to type 'go_if' from type 'int'
 fixedbugs/bug114.go	pass	
@@ -385,7 +385,7 @@ fixedbugs/bug115.go	fail	c11: error: expected expression before '^' token
 fixedbugs/bug116.go	pass	
 fixedbugs/bug117.go	skip	todo:errorcheck
 fixedbugs/bug118.go	fail	gd: unsupported node type: StatementSelect
-fixedbugs/bug119.go	fail	gd: panic: variant access violation
+fixedbugs/bug119.go	pass	
 fixedbugs/bug120.go	fail	gd: internal error: package "os" without types was imported from "test"
 fixedbugs/bug121.go	skip	todo:errorcheck
 fixedbugs/bug122.go	skip	todo:errorcheck
@@ -399,7 +399,7 @@ fixedbugs/bug131.go	skip	todo:errorcheck
 fixedbugs/bug132.go	skip	todo:errorcheck
 fixedbugs/bug133.go	skip	todo:errorcheck
 fixedbugs/bug13343.go	skip	todo:errorcheck
-fixedbugs/bug135.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/bug135.go	fail	gd: unsupported type assertion to interface test.Foo
 fixedbugs/bug136.go	skip	todo:errorcheck
 fixedbugs/bug137.go	fail	gd: unsupported node type: StatementLabel
 fixedbugs/bug139.go	pass	
@@ -501,7 +501,7 @@ fixedbugs/bug238.go	skip	todo:errorcheck
 fixedbugs/bug239.go	pass	
 fixedbugs/bug240.go	skip	todo:errorcheck
 fixedbugs/bug241.go	skip	todo:errorcheck
-fixedbugs/bug242.go	fail	gd: panic: variant access violation
+fixedbugs/bug242.go	fail	gd: range over unsupported type *types.Array
 fixedbugs/bug243.go	fail	gd: internal error: package "errors" without types was imported from "test"
 fixedbugs/bug244.go	fail	c11: error: 'go_hash_ii' undeclared (first use in this function); did you mean 'go_hash_ss'?
 fixedbugs/bug245.go	fail	gd: function missing body
@@ -538,17 +538,17 @@ fixedbugs/bug277.go	fail	gd: unsupported conversion to test.A
 fixedbugs/bug278.go	skip	todo:errorcheck
 fixedbugs/bug279.go	fail	gd: unsupported call of invalid type
 fixedbugs/bug280.go	skip	todo:errorcheck
-fixedbugs/bug281.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/bug281.go	fail	c11: error: unknown type name 'Point_go_main_package'
 fixedbugs/bug282.go	skip	todo:compiledir
 fixedbugs/bug283.go	fail	c11: error: unknown type name 'Point_go_bug283_package'
 fixedbugs/bug284.go	skip	todo:errorcheck
-fixedbugs/bug285.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
-fixedbugs/bug286.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/bug285.go	fail	gd: unsupported type *types.Named
+fixedbugs/bug286.go	fail	gd: panic: unsupported type assertion to interface test.J
 fixedbugs/bug287.go	skip	todo:errorcheck
 fixedbugs/bug288.go	pass	
 fixedbugs/bug289.go	skip	todo:errorcheck
 fixedbugs/bug290.go	fail	gd: panic: unsupported type *types.Slice
-fixedbugs/bug291.go	fail	gd: panic: variant access violation
+fixedbugs/bug291.go	pass	
 fixedbugs/bug292.go	pass	
 fixedbugs/bug293.go	pass	
 fixedbugs/bug294.go	fail	gd: unsupported conversion to test.F
@@ -607,7 +607,7 @@ fixedbugs/bug348.go	skip	gc:stack-introspection runtime.Caller
 fixedbugs/bug349.go	skip	todo:errorcheck
 fixedbugs/bug350.go	skip	todo:errorcheck
 fixedbugs/bug351.go	skip	todo:errorcheck
-fixedbugs/bug352.go	fail	gd: panic: variant access violation
+fixedbugs/bug352.go	fail	output: mismatch
 fixedbugs/bug353.go	skip	todo:errorcheck
 fixedbugs/bug354.go	fail	gd: panic: unsupported type *types.Slice
 fixedbugs/bug355.go	pass	
@@ -633,7 +633,7 @@ fixedbugs/bug376.go	skip	todo:errorcheck
 fixedbugs/bug377.go	skip	todo:compiledir
 fixedbugs/bug378.go	fail	gd: panic: unexpected kindOf: test.Header
 fixedbugs/bug379.go	skip	todo:errorcheck
-fixedbugs/bug380.go	fail	gd: panic: variant access violation
+fixedbugs/bug380.go	fail	c11: error: 'go_hash_ii' undeclared (first use in this function); did you mean 'go_hash_ss'?
 fixedbugs/bug381.go	skip	todo:errorcheck
 fixedbugs/bug382.go	skip	todo:compiledir
 fixedbugs/bug383.go	skip	todo:errorcheck
@@ -662,7 +662,7 @@ fixedbugs/bug405.go	pass
 fixedbugs/bug406.go	fail	gd: panic: unsupported type *types.Slice
 fixedbugs/bug407.go	skip	todo:compiledir
 fixedbugs/bug409.go	pass	
-fixedbugs/bug410.go	fail	c11: error: 'go_pt' has no member named 'num'
+fixedbugs/bug410.go	pass	
 fixedbugs/bug411.go	pass	
 fixedbugs/bug412.go	skip	todo:errorcheck
 fixedbugs/bug413.go	skip	todo:errorcheck
@@ -693,12 +693,12 @@ fixedbugs/bug438.go	pass
 fixedbugs/bug439.go	pass	
 fixedbugs/bug440_32.go	pass	
 fixedbugs/bug440_64.go	pass	
-fixedbugs/bug441.go	fail	gd: unsupported node type: DefinedType
+fixedbugs/bug441.go	fail	gd: panic: unsupported node type: DefinedType
 fixedbugs/bug442.go	fail	gd: panic: unsupported type *types.Interface
 fixedbugs/bug443.go	fail	gd: panic: unexpected kindOf: test.T1
 fixedbugs/bug444.go	fail	gd: internal error: package "reflect" without types was imported from "test"
 fixedbugs/bug445.go	fail	c11: error: expected expression before '^' token
-fixedbugs/bug446.go	fail	gd: unsupported node type: DefinedType
+fixedbugs/bug446.go	fail	gd: panic: unsupported node type: DefinedType
 fixedbugs/bug447.go	skip	todo:runoutput
 fixedbugs/bug448.go	skip	todo:compiledir
 fixedbugs/bug449.go	skip	todo:runoutput
@@ -707,7 +707,7 @@ fixedbugs/bug451.go	skip	todo:errorcheck
 fixedbugs/bug452.go	pass	
 fixedbugs/bug453.go	pass	
 fixedbugs/bug454.go	fail	gd: range over unsupported type *types.Pointer
-fixedbugs/bug455.go	fail	gd: panic: variant access violation
+fixedbugs/bug455.go	fail	c11: error: expected expression before ')' token
 fixedbugs/bug456.go	pass	
 fixedbugs/bug457.go	pass	
 fixedbugs/bug458.go	pass	
@@ -726,7 +726,7 @@ fixedbugs/bug471.go	fail	gd: unsupported node type: StatementSelect
 fixedbugs/bug472.go	skip	todo:rundir
 fixedbugs/bug473.go	fail	c11: error: incompatible types when returning type 'go_ii' {aka 'long int'} but 'go_vv' was expected
 fixedbugs/bug474.go	fail	gd: internal error: package "sync" without types was imported from "test"
-fixedbugs/bug475.go	fail	c11: error: 'go_type_s1_go_p_package' undeclared here (not in a function)
+fixedbugs/bug475.go	fail	c11: error: initializer element is not constant
 fixedbugs/bug476.go	fail	c11: error: incompatible types when returning type 'int' but 'go_if' was expected
 fixedbugs/bug477.go	fail	gd: panic: unsupported type *types.Struct
 fixedbugs/bug478.go	skip	todo:compiledir
@@ -745,7 +745,7 @@ fixedbugs/bug490.go	fail	c11: error: invalid operands to binary == (have 'go_vv'
 fixedbugs/bug491.go	fail	gd: unsupported builtin function
 fixedbugs/bug492.go	skip	todo:rundir
 fixedbugs/bug493.go	fail	gd: append expects exactly two arguments, got 1
-fixedbugs/bug494.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/bug494.go	fail	c11: error: unknown type name 'MyInt_go_main_package'
 fixedbugs/bug495.go	fail	gd: unsupported node type: StatementGoto
 fixedbugs/bug496.go	pass	
 fixedbugs/bug497.go	fail	c11: error: unknown type name 'T_go_main_package'
@@ -760,7 +760,7 @@ fixedbugs/bug505.go	fail	gd: panic: unexpected kindOf: test.I
 fixedbugs/bug506.go	skip	todo:rundir
 fixedbugs/bug507.go	skip	todo:compiledir
 fixedbugs/bug508.go	fail	c11: error: 'go_hash_tf' undeclared (first use in this function); did you mean 'go_hash_ss'?
-fixedbugs/bug509.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/bug509.go	fail	gd: unsupported type test.A
 fixedbugs/bug510.go	skip	todo:rundir
 fixedbugs/bug511.go	skip	todo:compiledir
 fixedbugs/bug512.go	fail	gd: internal error: package "sync" without types was imported from "test"
@@ -792,7 +792,7 @@ fixedbugs/issue10047.go	fail	gd: panic: runtime error: invalid memory address or
 fixedbugs/issue10066.go	skip	todo:compiledir
 fixedbugs/issue10135.go	pass	
 fixedbugs/issue10219.go	skip	todo:compiledir
-fixedbugs/issue10253.go	fail	gd: panic: variant access violation
+fixedbugs/issue10253.go	fail	gd: unsupported index of type source.ExpressionIndex
 fixedbugs/issue10284.go	fail	gd: panic: unsupported basic type unsafe.Pointer
 fixedbugs/issue10320.go	pass	
 fixedbugs/issue10332.go	fail	gd: internal error: package "fmt" without types was imported from "test"
@@ -834,7 +834,7 @@ fixedbugs/issue11790.go	fail	gd: internal error: package "fmt" without types was
 fixedbugs/issue11945.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue11987.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue12006.go	skip	gc:diagnostics -m
-fixedbugs/issue12108.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/issue12108.go	fail	c11: error: incompatible type for argument 1 of 'f_go_main_package'
 fixedbugs/issue12133.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue12226.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue12347.go	pass	
@@ -854,7 +854,7 @@ fixedbugs/issue13162.go	fail	gd: internal error: package "fmt" without types was
 fixedbugs/issue13169.go	fail	gd: unsupported call for function of type xyz.Case
 fixedbugs/issue13171.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue13248.go	skip	todo:errorcheck
-fixedbugs/issue13261.go	fail	gd: panic: variant access violation
+fixedbugs/issue13261.go	fail	c11: error: switch quantity not an integer
 fixedbugs/issue13262.go	pass	
 fixedbugs/issue13263.go	pass	
 fixedbugs/issue13265.go	skip	todo:errorcheck
@@ -908,7 +908,7 @@ fixedbugs/issue15084.go	fail	gd: panic: unsupported type *types.Interface
 fixedbugs/issue15091.go	skip	todo:errorcheck
 fixedbugs/issue15141.go	pass	
 fixedbugs/issue15175.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue15252.go	fail	gd: panic: variant access violation
+fixedbugs/issue15252.go	pass	
 fixedbugs/issue15277.go	skip	gc:memstats runtime.ReadMemStats
 fixedbugs/issue15281.go	skip	gc:memstats runtime.ReadMemStats
 fixedbugs/issue15303.go	fail	gd: internal error: package "os" without types was imported from "test"
@@ -997,7 +997,7 @@ fixedbugs/issue18393.go	skip	todo:errorcheck
 fixedbugs/issue18410.go	fail	c11: error: initializer element is not constant
 fixedbugs/issue18419.go	skip	todo:errorcheck
 fixedbugs/issue18459.go	skip	todo:errorcheck
-fixedbugs/issue18595.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/issue18595.go	fail	gd: unsupported conversion to test.I
 fixedbugs/issue18636.go	skip	gc:import runtime/debug
 fixedbugs/issue18640.go	fail	gd: panic: unexpected kindOf: test.b
 fixedbugs/issue18655.go	skip	todo:errorcheck
@@ -1031,7 +1031,7 @@ fixedbugs/issue19359.go	fail	gd: internal error: package "fmt" without types was
 fixedbugs/issue19467.go	skip	todo:rundir
 fixedbugs/issue19482.go	skip	todo:errorcheck
 fixedbugs/issue19507.go	skip	upstream:build arm
-fixedbugs/issue19515.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/issue19515.go	pass	
 fixedbugs/issue19548.go	skip	todo:rundir
 fixedbugs/issue19555.go	fail	c11: error: expected expression before '^' token
 fixedbugs/issue19610.go	skip	todo:errorcheck
@@ -1087,7 +1087,7 @@ fixedbugs/issue20923.go	fail	gd: unsupported node type: StatementSelect
 fixedbugs/issue21048.go	fail	gd: panic: unsupported type *types.Array
 fixedbugs/issue21120.go	skip	todo:rundir
 fixedbugs/issue21221.go	fail	gd: unsupported call of unsafe.Pointer
-fixedbugs/issue21253.go	fail	c11: error: 'go_type_m_go_p_package' undeclared here (not in a function); did you mean 'go_type_I_go_p_package'?
+fixedbugs/issue21253.go	fail	c11: error: initializer element is not constant
 fixedbugs/issue21256.go	skip	todo:errorcheck
 fixedbugs/issue21273.go	skip	todo:errorcheck
 fixedbugs/issue21317.go	skip	gc:build !js && !wasip1 && gc
@@ -1144,7 +1144,7 @@ fixedbugs/issue23298.go	fail	c11: error: unknown type name 'T_go_p_package'
 fixedbugs/issue23305.go	pass	
 fixedbugs/issue23311.go	skip	todo:compiledir
 fixedbugs/issue23414.go	fail	c11: error: invalid operands to binary == (have 'go_az' and 'go_az')
-fixedbugs/issue23489.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/issue23489.go	pass	
 fixedbugs/issue23504.go	pass	
 fixedbugs/issue23521.go	skip	gc:diagnostics -m
 fixedbugs/issue23522.go	fail	gd: internal error: package "math" without types was imported from "test"
@@ -1200,7 +1200,7 @@ fixedbugs/issue25507.go	skip	todo:errorcheck
 fixedbugs/issue25516.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
 fixedbugs/issue25727.go	skip	todo:errorcheck
 fixedbugs/issue25741.go	pass	
-fixedbugs/issue25776.go	fail	gd: panic: variant access violation
+fixedbugs/issue25776.go	fail	c11: error: case label does not reduce to an integer constant
 fixedbugs/issue25897a.go	fail	gd: internal error: package "reflect" without types was imported from "test"
 fixedbugs/issue25897b.go	fail	gd: internal error: package "reflect" without types was imported from "test"
 fixedbugs/issue25958.go	skip	todo:errorcheck
@@ -1272,7 +1272,7 @@ fixedbugs/issue29013a.go	fail	gd: panic: unsupported type *types.Slice
 fixedbugs/issue29013b.go	fail	gd: panic: unsupported type *types.Slice
 fixedbugs/issue29190.go	fail	gd: internal error: package "strings" without types was imported from "test"
 fixedbugs/issue29215.go	fail	gd: unsupported slice of string
-fixedbugs/issue29218.go	fail	gd: panic: variant access violation
+fixedbugs/issue29218.go	fail	c11: error: switch quantity not an integer
 fixedbugs/issue29220.go	fail	gd: panic: unsupported conversion to string
 fixedbugs/issue29264.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue29304.go	fail	gd: internal error: package "errors" without types was imported from "test"
@@ -1338,7 +1338,7 @@ fixedbugs/issue32175.go	pass
 fixedbugs/issue32187.go	fail	gd: internal error: package "log" without types was imported from "test"
 fixedbugs/issue32288.go	fail	gd: panic: unsupported type *types.Array
 fixedbugs/issue32347.go	pass	
-fixedbugs/issue32454.go	fail	gd: panic: variant access violation
+fixedbugs/issue32454.go	fail	c11: error: switch quantity not an integer
 fixedbugs/issue32477.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue32560.go	pass	
 fixedbugs/issue32595.go	skip	todo:rundir
@@ -1425,7 +1425,7 @@ fixedbugs/issue40152.go	fail	c11: error: invalid operands to binary == (have 'in
 fixedbugs/issue40252.go	skip	todo:rundir
 fixedbugs/issue40367.go	fail	gd: unsupported node type: StatementLabel
 fixedbugs/issue40629.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue4066.go	fail	c11: error: 'go_type_terr_go_main_package' undeclared (first use in this function)
+fixedbugs/issue4066.go	pass	
 fixedbugs/issue40746.go	pass	
 fixedbugs/issue4085a.go	skip	todo:errorcheck
 fixedbugs/issue4085b.go	fail	gd: internal error: package "strings" without types was imported from "test"
@@ -1440,7 +1440,7 @@ fixedbugs/issue41500.go	skip	todo:errorcheck
 fixedbugs/issue41575.go	skip	todo:errorcheck
 fixedbugs/issue4162.go	fail	c11: error: stray '@' in program
 fixedbugs/issue41635.go	skip	gc:diagnostics -m
-fixedbugs/issue4167.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/issue4167.go	fail	gd: range over unsupported type *types.Named
 fixedbugs/issue41680.go	pass	
 fixedbugs/issue41736.go	fail	gd: unsupported builtin function
 fixedbugs/issue41780.go	fail	gd: panic: unsupported type *types.Array
@@ -1501,7 +1501,7 @@ fixedbugs/issue43942.go	fail	gd: internal error: package "log" without types was
 fixedbugs/issue43962.go	skip	todo:errorcheck
 fixedbugs/issue4396a.go	fail	c11: error: conflicting types for 's'; have 'struct <anonymous>'
 fixedbugs/issue4396b.go	fail	gd: panic: unsupported type *types.Array
-fixedbugs/issue4399.go	fail	c11: error: 'go_pt' has no member named 'a'
+fixedbugs/issue4399.go	pass	
 fixedbugs/issue4405.go	skip	todo:errorcheck
 fixedbugs/issue44266.go	skip	todo:errorcheck
 fixedbugs/issue4429.go	skip	todo:errorcheck
@@ -1511,7 +1511,7 @@ fixedbugs/issue44335.go	skip	todo:compiledir
 fixedbugs/issue44344.go	pass	
 fixedbugs/issue44355.go	skip	todo:compiledir
 fixedbugs/issue44370.go	skip	todo:compiledir
-fixedbugs/issue44378.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/issue44378.go	fail	gd: panic: runtime error: invalid memory address or nil pointer dereference
 fixedbugs/issue44383.go	pass	
 fixedbugs/issue44432.go	skip	gc:diagnostics -d=panic
 fixedbugs/issue44465.go	skip	gc:flags -d=ssa/check/seed
@@ -1535,7 +1535,7 @@ fixedbugs/issue4517c.go	skip	todo:errorcheck
 fixedbugs/issue4517d.go	skip	todo:errorcheck
 fixedbugs/issue4518.go	fail	c11: error: expected expression before ')' token
 fixedbugs/issue45242.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue45258.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/issue45258.go	fail	c11: error: incompatible types when returning type 'go_pt' but 'go_if' was expected
 fixedbugs/issue4529.go	fail	gd: panic: unsupported type *types.Chan
 fixedbugs/issue45323.go	fail	gd: function missing body
 fixedbugs/issue45344.go	fail	gd: panic: unsupported type *types.Map
@@ -1582,7 +1582,7 @@ fixedbugs/issue47185.go	skip	gc:build cgo
 fixedbugs/issue47201.go	skip	todo:errorcheck
 fixedbugs/issue47227.go	skip	gc:build cgo
 fixedbugs/issue47317.go	skip	todo:builddir
-fixedbugs/issue4734.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/issue4734.go	fail	gd: panic: unsupported type *types.Struct
 fixedbugs/issue4748.go	fail	gd: unsupported node type: StatementGoto
 fixedbugs/issue4752.go	fail	c11: error: expected expression before '^' token
 fixedbugs/issue47712.go	pass	
@@ -1633,7 +1633,7 @@ fixedbugs/issue49282.go	fail	c11: error: initialization of 'struct <anonymous> *
 fixedbugs/issue4932.go	skip	todo:compiledir
 fixedbugs/issue49368.go	skip	todo:errorcheck
 fixedbugs/issue49378.go	fail	gd: missing names for function argument
-fixedbugs/issue49512.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/issue49512.go	fail	gd: missing names for function argument
 fixedbugs/issue49592.go	fail	c11: error: invalid operands to binary == (have 'void *' and 'go_pt')
 fixedbugs/issue49611.go	pass	
 fixedbugs/issue49619.go	pass	
@@ -1666,13 +1666,13 @@ fixedbugs/issue51733.go	skip	gc:build cgo
 fixedbugs/issue51839.go	pass	
 fixedbugs/issue51913.go	pass	
 fixedbugs/issue52020.go	fail	gd: unsupported type struct
-fixedbugs/issue52072.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/issue52072.go	pass	
 fixedbugs/issue52127.go	skip	gc:toolchain
 fixedbugs/issue52128.go	skip	todo:compiledir
 fixedbugs/issue52193.go	skip	gc:diagnostics -m
 fixedbugs/issue52278.go	skip	gc:flags -d=ssa/check/on
 fixedbugs/issue52279.go	skip	todo:rundir
-fixedbugs/issue5231.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/issue5231.go	fail	c11: error: request for member 'NotVariadic_go_p_package' in something not a structure or union
 fixedbugs/issue52438.go	pass	
 fixedbugs/issue5244.go	pass	
 fixedbugs/issue52535.go	fail	c11: error: 'go_hash_ii' undeclared (first use in this function); did you mean 'go_hash_ss'?
@@ -1691,13 +1691,13 @@ fixedbugs/issue52846.go	fail	gd: panic: unexpected kindOf: test.S
 fixedbugs/issue52856.go	skip	todo:rundir
 fixedbugs/issue52862.go	skip	todo:compiledir
 fixedbugs/issue52870.go	fail	c11: error: unknown type name 'T3_go_p_package'; did you mean 'S1_go_p_package'?
-fixedbugs/issue52871.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/issue52871.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
 fixedbugs/issue52907.go	fail	gd: missing names for function argument
 fixedbugs/issue5291.go	skip	todo:rundir
-fixedbugs/issue52953.go	fail	gd: panic: variant access violation
+fixedbugs/issue52953.go	pass	
 fixedbugs/issue53018.go	fail	gd: range over unsupported type *types.Chan
 fixedbugs/issue53137.go	fail	gd: panic: unsupported type *types.TypeParam
-fixedbugs/issue53309.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/issue53309.go	fail	gd: unsupported index of type source.ExpressionIndex
 fixedbugs/issue53439.go	fail	gd: unsupported node type: BuiltinFunction
 fixedbugs/issue53454.go	fail	gd: function missing body
 fixedbugs/issue5358.go	skip	todo:errorcheck
@@ -1705,7 +1705,7 @@ fixedbugs/issue53600.go	fail	gd: internal error: package "math" without types wa
 fixedbugs/issue53619.go	fail	c11: error: invalid operands to binary != (have 'go_vv' and 'int')
 fixedbugs/issue53635.go	fail	gd: unsupported index of type source.ExpressionIndex
 fixedbugs/issue53653.go	fail	gd: internal error: package "math" without types was imported from "test"
-fixedbugs/issue53702.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/issue53702.go	fail	gd: panic: unsupported type *types.Array
 fixedbugs/issue5373.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue53982.go	fail	gd: missing names for function argument
 fixedbugs/issue54159.go	skip	gc:diagnostics -m=2
@@ -1741,7 +1741,7 @@ fixedbugs/issue5614.go	skip	todo:compiledir
 fixedbugs/issue56141.go	skip	gc:flags -d=libfuzzer
 fixedbugs/issue56220.go	skip	todo:errorcheck
 fixedbugs/issue56280.go	skip	gc:diagnostics -m
-fixedbugs/issue56727.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/issue56727.go	fail	gd: composite literal missing type
 fixedbugs/issue56768.go	fail	gd: composite literal missing type
 fixedbugs/issue56777.go	pass	
 fixedbugs/issue56778.go	skip	todo:compiledir
@@ -1750,8 +1750,8 @@ fixedbugs/issue5698.go	skip	todo:errorcheck
 fixedbugs/issue56990.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue5704.go	fail	gd: unsupported conversion to test.mybytes
 fixedbugs/issue57184.go	fail	gd: internal error: package "log" without types was imported from "test"
-fixedbugs/issue57309.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
-fixedbugs/issue5753.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/issue57309.go	fail	gd: panic: unsupported conversion to test.I
+fixedbugs/issue5753.go	fail	c11: error: 'Thing_go_main_package' {aka 'go_az'} has no member named 'broken_go_main_package'
 fixedbugs/issue5755.go	skip	todo:compiledir
 fixedbugs/issue57778.go	fail	gd: panic: unsupported type *types.Slice
 fixedbugs/issue57823.go	skip	gc:finalizers runtime.SetFinalizer
@@ -1772,7 +1772,7 @@ fixedbugs/issue5841.go	pass
 fixedbugs/issue58439.go	pass	
 fixedbugs/issue5856.go	skip	gc:stack-introspection runtime.Caller
 fixedbugs/issue58563.go	skip	todo:compiledir
-fixedbugs/issue58572.go	fail	gd: panic: variant access violation
+fixedbugs/issue58572.go	fail	gd: panic: unsupported type *types.Map
 fixedbugs/issue58671.go	fail	gd: missing names for function argument
 fixedbugs/issue58826.go	skip	gc:flags -dynlink
 fixedbugs/issue5910.go	skip	todo:compiledir
@@ -1827,7 +1827,7 @@ fixedbugs/issue63489a.go	skip	todo:errorcheck
 fixedbugs/issue63489b.go	skip	todo:errorcheck
 fixedbugs/issue63490.go	fail	gd: panic: unsupported type *types.Array
 fixedbugs/issue63505.go	fail	gd: panic: unsupported type *types.Map
-fixedbugs/issue63657.go	fail	gd: panic: variant access violation
+fixedbugs/issue63657.go	pass	
 fixedbugs/issue63955.go	fail	gd: unsupported node type: StatementLabel
 fixedbugs/issue6399.go	fail	c11: error: incompatible types when assigning to type 'go_if' from type 'Bar_go_main_package' {aka 'go_az'}
 fixedbugs/issue6402.go	skip	todo:errorcheck
@@ -1841,12 +1841,12 @@ fixedbugs/issue64715.go	pass
 fixedbugs/issue64826.go	pass	
 fixedbugs/issue6500.go	skip	todo:errorcheck
 fixedbugs/issue6513.go	skip	todo:compiledir
-fixedbugs/issue65362.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/issue65362.go	fail	gd: missing names for function argument
 fixedbugs/issue65417.go	fail	gd: internal error: package "strings" without types was imported from "test"
 fixedbugs/issue65593.go	fail	gd: range over unsupported type *types.Chan
 fixedbugs/issue6572.go	skip	todo:errorcheck
 fixedbugs/issue65778.go	skip	gc:godebug gotypesalias=1
-fixedbugs/issue65808.go	fail	c11: error: 'go_type_stringers_go_main_package' undeclared here (not in a function); did you mean 'go_type_Stringer_go_main_p…
+fixedbugs/issue65808.go	fail	c11: error: incompatible type for argument 1 of 'toString_go_main_package'
 fixedbugs/issue65893.go	pass	
 fixedbugs/issue65957.go	skip	todo:rundir
 fixedbugs/issue65962.go	fail	gd: unsupported type assertion to interface T
@@ -1856,7 +1856,7 @@ fixedbugs/issue66096.go	fail	gd: panic: unsupported type *types.Map
 fixedbugs/issue66261.go	fail	gd: missing names for function argument
 fixedbugs/issue66575.go	pass	
 fixedbugs/issue66585.go	pass	
-fixedbugs/issue66663.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/issue66663.go	fail	gd: unsupported index of type source.ExpressionIndex
 fixedbugs/issue6671.go	skip	todo:errorcheck
 fixedbugs/issue66873.go	fail	gd: missing names for function argument
 fixedbugs/issue6703a.go	skip	todo:errorcheck
@@ -1944,7 +1944,7 @@ fixedbugs/issue72844.go	fail	gd: unsupported len of
 fixedbugs/issue72860.go	pass	
 fixedbugs/issue7310.go	skip	todo:errorcheck
 fixedbugs/issue7316.go	skip	todo:runoutput
-fixedbugs/issue73180.go	fail	c11: error: 'go_pt' has no member named 'f'
+fixedbugs/issue73180.go	pass	
 fixedbugs/issue73200.go	pass	
 fixedbugs/issue73309.go	fail	gd: panic: unsupported type *types.Alias
 fixedbugs/issue73309b.go	fail	gd: range over unsupported type *types.Named
@@ -1956,13 +1956,13 @@ fixedbugs/issue7366.go	fail	gd: panic: unsupported type *types.Array
 fixedbugs/issue73716.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue73748a.go	skip	gc:import runtime/trace
 fixedbugs/issue73748b.go	skip	gc:import runtime/trace
-fixedbugs/issue73823.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
-fixedbugs/issue73888.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
-fixedbugs/issue73888b.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/issue73823.go	fail	gd: unsupported assignment of multiple results in for statement
+fixedbugs/issue73888.go	fail	gd: panic: unexpected kindOf: test.SourceRange
+fixedbugs/issue73888b.go	fail	gd: panic: unexpected kindOf: test.SourceRange
 fixedbugs/issue73916.go	fail	gd: missing names for function argument
 fixedbugs/issue73916b.go	pass	
-fixedbugs/issue73917.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
-fixedbugs/issue73920.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/issue73917.go	fail	gd: unsupported node type: DefinedType
+fixedbugs/issue73920.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
 fixedbugs/issue7405.go	fail	c11: error: unknown type name 'T2_go_p_package'
 fixedbugs/issue7419.go	fail	gd: internal error: package "os" without types was imported from "test"
 fixedbugs/issue74379.go	fail	gd: internal error: package "errors" without types was imported from "test"
@@ -2024,7 +2024,7 @@ fixedbugs/issue78303_2.go	fail	gd: unsupported slice of untyped string
 fixedbugs/issue78313.go	pass	
 fixedbugs/issue78314.go	skip	todo:errorcheck
 fixedbugs/issue78355.go	skip	todo:errorcheck
-fixedbugs/issue78404.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+fixedbugs/issue78404.go	fail	gd: unsupported index of type source.ExpressionIndex
 fixedbugs/issue78408.go	fail	gd: range over unsupported type *types.Signature
 fixedbugs/issue78410.go	fail	gd: unsupported index of type source.ExpressionIndex
 fixedbugs/issue78599.go	fail	gd: internal error: package "iter" without types was imported from "test"
@@ -2080,8 +2080,8 @@ fixedbugs/issue8073.go	pass
 fixedbugs/issue8074.go	fail	c11: error: 'go_hash_f8' undeclared (first use in this function); did you mean 'go_hash_ss'?
 fixedbugs/issue8076.go	fail	gd: unsupported node type: StatementLabel
 fixedbugs/issue8079.go	pass	
-fixedbugs/issue80976.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
-fixedbugs/issue81165.go	fail	gd: panic: interface conversion: types.Type is *types.Alias, not *types.Named
+fixedbugs/issue80976.go	fail	c11: error: unknown type name 'HashSet_go_main_package'
+fixedbugs/issue81165.go	fail	c11: error: request for member 'go_type' in something not a structure or union
 fixedbugs/issue8132.go	fail	gd: internal error: package "runtime" without types was imported from "test"
 fixedbugs/issue8139.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue8154.go	pass	
@@ -2142,7 +2142,7 @@ float_lit2.go	fail	gd: internal error: package "fmt" without types was imported 
 float_lit3.go	skip	todo:errorcheck
 floatcmp.go	fail	gd: internal error: package "math" without types was imported from "test"
 for.go	fail	gd: range over unsupported type *types.Array
-func.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+func.go	pass	
 func1.go	skip	todo:errorcheck
 func2.go	fail	gd: function missing body
 func3.go	skip	todo:errorcheck
@@ -2198,7 +2198,7 @@ inline_variadic.go	skip	gc:diagnostics -m
 int_lit.go	fail	gd: internal error: package "os" without types was imported from "test"
 intcvt.go	pass	
 interface/assertinline.go	skip	gc:diagnostics -d=typeassert
-interface/bigdata.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+interface/bigdata.go	fail	c11: error: incompatible type for argument 2 of 'test_go_main_package'
 interface/convert.go	fail	gd: unsupported conversion to string
 interface/convert1.go	pass	
 interface/convert2.go	pass	
@@ -2212,11 +2212,11 @@ interface/fake.go	fail	gd: internal error: package "reflect" without types was i
 interface/noeq.go	fail	c11: error: incompatible type for argument 1 of 'cmp_go_main_package'
 interface/pointer.go	skip	todo:errorcheck
 interface/private.go	skip	todo:errorcheck
-interface/receiver.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+interface/receiver.go	fail	gd: unsupported type assertion to interface test.P
 interface/receiver1.go	skip	todo:errorcheck
 interface/recursive.go	fail	c11: error: incompatible types when returning type 'T_go_recursive_package' {aka 'long int'} but 'go_if' was expected
 interface/recursive1.go	skip	todo:compiledir
-interface/returntype.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+interface/returntype.go	fail	gd: panic: unsupported type assertion to interface test.I2
 interface/struct.go	fail	gd: internal error: package "os" without types was imported from "test"
 internal/runtime/sys/inlinegcpc.go	skip	gc:diagnostics -m
 intrinsic.go	skip	gc:diagnostics -d=ssa/intrinsics/debug
@@ -2238,22 +2238,22 @@ ken/divmod.go	pass
 ken/embed.go	fail	gd: panic: interface conversion: types.Type is *types.Basic, not *types.Struct
 ken/for.go	pass	
 ken/interbasic.go	fail	c11: error: invalid operands to binary != (have 'go_if' and 'go_if')
-ken/interfun.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
-ken/intervar.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+ken/interfun.go	fail	gd: unsupported type assertion to interface test.I2
+ken/intervar.go	fail	gd: unsupported conversion to string
 ken/label.go	fail	gd: unsupported node type: StatementGoto
 ken/litfun.go	pass	
 ken/mfunc.go	pass	
 ken/modconst.go	fail	gd: internal error: package "math/rand" without types was imported from "test"
-ken/ptrfun.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+ken/ptrfun.go	pass	
 ken/ptrvar.go	fail	c11: error: conflicting types for 'g2'; have 'struct <anonymous>'
 ken/range.go	fail	gd: range over unsupported type *types.Array
-ken/rob1.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+ken/rob1.go	fail	gd: unsupported conversion to string
 ken/rob2.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 ken/robfor.go	fail	c11: error: invalid operands to binary + (have 'go_ss' and 'go_ss')
-ken/robfunc.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+ken/robfunc.go	fail	c11: error: invalid operands to binary + (have 'go_ss' and 'go_ss')
 ken/shift.go	fail	output: mismatch
 ken/simparray.go	pass	
-ken/simpbool.go	fail	c11: error: 'go_pt' has no member named 'a'
+ken/simpbool.go	pass	
 ken/simpconv.go	fail	c11: error: two or more data types in declaration specifiers
 ken/simpfun.go	pass	
 ken/simpswitch.go	fail	gd: unsupported conversion to string
@@ -2296,9 +2296,9 @@ mergemul.go	skip	todo:runoutput
 method.go	fail	gd: panic: unexpected kindOf: test.T
 method1.go	skip	todo:errorcheck
 method2.go	skip	todo:errorcheck
-method3.go	fail	gd: unsupported node type: DefinedType
+method3.go	fail	gd: panic: unsupported node type: DefinedType
 method4.go	skip	todo:rundir
-method5.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+method5.go	fail	gd: unsupported conversion to test.Tbigv
 method6.go	skip	todo:errorcheck
 method7.go	fail	gd: panic: unsupported node type: DefinedType
 named.go	fail	gd: missing names for function argument
@@ -2435,8 +2435,8 @@ typeparam/chansimp.go	skip	todo:rundir
 typeparam/combine.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 typeparam/cons.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 typeparam/dedup.go	skip	todo:rundir
-typeparam/devirtualize1.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
-typeparam/devirtualize2.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+typeparam/devirtualize1.go	fail	gd: panic: unsupported type assertion to interface interface
+typeparam/devirtualize2.go	fail	gd: panic: unsupported type assertion to interface interface
 typeparam/dictionaryCapture-noinline.go	skip	gc:flags -gcflags="-l"
 typeparam/dictionaryCapture.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 typeparam/dottype.go	fail	gd: unsupported type assertion to interface T
@@ -2486,10 +2486,10 @@ typeparam/issue47723.go	fail	gd: unsupported index of type source.ExpressionInde
 typeparam/issue47740.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 typeparam/issue47740b.go	fail	gd: internal error: package "reflect" without types was imported from "test"
 typeparam/issue47775.go	skip	todo:rundir
-typeparam/issue47775b.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+typeparam/issue47775b.go	fail	gd: missing names for function argument
 typeparam/issue47797.go	fail	gd: panic: unsupported type *types.TypeParam
 typeparam/issue47877.go	fail	gd: panic: unsupported type *types.Map
-typeparam/issue47878.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+typeparam/issue47878.go	fail	gd: unsupported function type *types.Named
 typeparam/issue47892.go	skip	todo:rundir
 typeparam/issue47892b.go	skip	todo:compiledir
 typeparam/issue47896.go	fail	gd: internal error: package "database/sql" without types was imported from "test"
@@ -2506,9 +2506,9 @@ typeparam/issue48013.go	fail	gd: internal error: package "fmt" without types was
 typeparam/issue48016.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 typeparam/issue48030.go	fail	gd: unsupported index of type source.ExpressionIndex
 typeparam/issue48042.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/issue48047.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+typeparam/issue48047.go	fail	c11: error: incompatible types when initializing type 'void *' using type 'BImpl_go_main_package' {aka 'go_az'}
 typeparam/issue48049.go	fail	gd: unsupported index of type source.ExpressionIndex
-typeparam/issue48056.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+typeparam/issue48056.go	fail	c11: error: implicit declaration of function 'A_Work_go_p_package'; did you mean 'BImpl_Work_go_p_package'? [-Wimplicit-funct…
 typeparam/issue48094.go	skip	todo:rundir
 typeparam/issue48094b.go	skip	todo:compiledir
 typeparam/issue48137.go	fail	gd: unsupported index of type source.ExpressionIndex
@@ -2526,7 +2526,7 @@ typeparam/issue48317.go	fail	gd: internal error: package "encoding/json" without
 typeparam/issue48318.go	fail	gd: internal error: package "encoding/xml" without types was imported from "test"
 typeparam/issue48337a.go	skip	todo:rundir
 typeparam/issue48337b.go	skip	todo:rundir
-typeparam/issue48344.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+typeparam/issue48344.go	fail	gd: unsupported index of type source.ExpressionIndex
 typeparam/issue48424.go	fail	c11: error: passing argument 1 of 'identity_go_main_package' makes pointer from integer without a cast [-Wint-conversion]
 typeparam/issue48453.go	fail	gd: unsupported type *types.TypeParam
 typeparam/issue48454.go	skip	todo:rundir
@@ -2545,13 +2545,13 @@ typeparam/issue48716.go	skip	todo:rundir
 typeparam/issue48838.go	fail	gd: unsupported index of type source.ExpressionIndex
 typeparam/issue48962.go	skip	todo:errorcheck
 typeparam/issue49027.go	skip	todo:rundir
-typeparam/issue49049.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+typeparam/issue49049.go	fail	gd: unsupported index of type source.ExpressionIndex
 typeparam/issue49241.go	skip	todo:rundir
 typeparam/issue49246.go	skip	todo:compiledir
 typeparam/issue49295.go	fail	gd: internal error: package "io" without types was imported from "test"
 typeparam/issue49309.go	fail	c11: error: incompatible type for argument 1 of 'test2_go_main_package'
 typeparam/issue49421.go	fail	c11: error: passing argument 1 of 'bar_go_main_package' makes pointer from integer without a cast [-Wint-conversion]
-typeparam/issue49432.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+typeparam/issue49432.go	fail	gd: unsupported conversion to test.Handler
 typeparam/issue49497.go	skip	todo:rundir
 typeparam/issue49516.go	fail	gd: panic: unsupported type *types.Slice
 typeparam/issue49524.go	skip	todo:rundir
@@ -2569,7 +2569,7 @@ typeparam/issue50109.go	fail	gd: internal error: package "fmt" without types was
 typeparam/issue50109b.go	fail	gd: unsupported index of type source.ExpressionIndex
 typeparam/issue50121.go	skip	todo:rundir
 typeparam/issue50121b.go	skip	todo:rundir
-typeparam/issue50147.go	fail	c11: error: 'go_type_go_pt' undeclared (first use in this function); did you mean 'go_type_uint'?
+typeparam/issue50147.go	fail	gd: unsupported type *T
 typeparam/issue50177.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 typeparam/issue50193.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 typeparam/issue50259.go	fail	gd: panic: unexpected kindOf: test.T
@@ -2601,14 +2601,14 @@ typeparam/issue51236.go	fail	c11: error: incompatible type for argument 1 of 'ex
 typeparam/issue51245.go	pass	
 typeparam/issue51250a.go	skip	todo:rundir
 typeparam/issue51303.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/issue51355.go	fail	gd: panic: variant access violation
+typeparam/issue51355.go	fail	gd: unsupported call for function of type xyz.Case
 typeparam/issue51367.go	skip	todo:rundir
 typeparam/issue51423.go	skip	todo:compiledir
 typeparam/issue51521.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 typeparam/issue51522a.go	fail	gd: unsupported index of type source.ExpressionIndex
 typeparam/issue51522b.go	fail	gd: unsupported index of type source.ExpressionIndex
 typeparam/issue51700.go	fail	gd: unsupported type assertion to interface interface
-typeparam/issue51765.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+typeparam/issue51765.go	pass	
 typeparam/issue51832.go	fail	gd: unsupported index of type source.ExpressionIndex
 typeparam/issue51836.go	skip	todo:compiledir
 typeparam/issue51840.go	fail	gd: range over unsupported type *types.TypeParam
@@ -2618,7 +2618,7 @@ typeparam/issue52026.go	fail	gd: panic: unsupported type *types.TypeParam
 typeparam/issue52117.go	skip	todo:compiledir
 typeparam/issue52124.go	fail	gd: panic: unexpected kindOf: any
 typeparam/issue52228.go	fail	gd: unsupported type assertion to interface test.SomeInterface
-typeparam/issue52241.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+typeparam/issue52241.go	fail	c11: error: 'Collector_go_main_package' {aka 'go_az'} has no member named 'Collect_go_main_package'
 typeparam/issue53087.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 typeparam/issue53254.go	fail	gd: unsupported index of type source.ExpressionIndex
 typeparam/issue53390.go	fail	gd: unsupported node type: BuiltinFunction
@@ -2631,7 +2631,7 @@ typeparam/issue54225.go	fail	gd: unsupported index of type source.ExpressionInde
 typeparam/issue54302.go	skip	todo:rundir
 typeparam/issue54456.go	fail	gd: internal error: package "reflect" without types was imported from "test"
 typeparam/issue54497.go	skip	gc:diagnostics -m
-typeparam/issue54535.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+typeparam/issue54535.go	fail	gd: panic: interface conversion: types.Type is *types.Named, not *types.Slice
 typeparam/issue54537.go	fail	gd: unsupported index of type source.ExpressionIndex
 typeparam/issue54765.go	skip	gc:build cgo
 typeparam/issue55101.go	fail	gd: panic: unsupported type *types.TypeParam
@@ -2655,7 +2655,7 @@ typeparam/mdempsky/16.go	fail	gd: internal error: package "fmt" without types wa
 typeparam/mdempsky/17.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 typeparam/mdempsky/18.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 typeparam/mdempsky/19.go	fail	gd: unsupported index of type source.ExpressionIndex
-typeparam/mdempsky/2.go	fail	gd: unsupported call for function of type xyz.Case
+typeparam/mdempsky/2.go	fail	gd: panic: unsupported call for function of type xyz.Case
 typeparam/mdempsky/20.go	fail	gd: unsupported index of type source.ExpressionIndex
 typeparam/mdempsky/21.go	fail	gd: unsupported index of type source.ExpressionIndex
 typeparam/mdempsky/3.go	skip	todo:compiledir
@@ -2682,7 +2682,7 @@ typeparam/select.go	skip	todo:rundir
 typeparam/sets.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 typeparam/setsimp.go	skip	todo:rundir
 typeparam/settable.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/shape1.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, not *types.Named
+typeparam/shape1.go	fail	c11: error: request for member 'vtable' in something not a structure or union
 typeparam/shape_assert.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 typeparam/sliceimp.go	skip	todo:rundir
 typeparam/slices.go	fail	gd: internal error: package "fmt" without types was imported from "test"

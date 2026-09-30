@@ -82,17 +82,19 @@ func (c99 Target) TypeDefinition(spec source.TypeDefinition) error {
 		header = c99
 		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 	}
+	// Type descriptors are always qualified by the package, as they have external linkage.
+	rsuffix := "_go_" + c99.CurrentPackage + "_package"
 	ctype := c99.TypeOf(spec.Type.TypeAndValue().Type)
 	fmt.Fprintln(header)
 	fmt.Fprintf(header, "typedef %s %s%s;", ctype, spec.Name.String, suffix)
 	if spec.Global {
 		fmt.Fprintln(header)
-		fmt.Fprintf(header, "extern const go_type go_type_%s%s;", spec.Name.String, suffix)
+		fmt.Fprintf(header, "extern const go_type go_type_%s%s;", spec.Name.String, rsuffix)
 	}
 
 	switch rtype := spec.Type.TypeAndValue().Type.(type) {
 	case *types.Struct:
-		fmt.Fprintf(c99, "\nconst go_field go_fields_%s%s[] = {", spec.Name.String, suffix)
+		fmt.Fprintf(c99, "\nconst go_field go_fields_%s%s[] = {", spec.Name.String, rsuffix)
 		for i := range rtype.NumFields() {
 			if i > 0 {
 				fmt.Fprintf(c99, ", ")
@@ -110,13 +112,13 @@ func (c99 Target) TypeDefinition(spec source.TypeDefinition) error {
 	}
 
 	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
-	fmt.Fprintf(c99, "const go_type go_type_%s%s = {", spec.Name.String, suffix)
-	fmt.Fprintf(c99, ".name=%q,", spec.Name.String)
+	fmt.Fprintf(c99, "const go_type go_type_%s%s = {", spec.Name.String, rsuffix)
+	fmt.Fprintf(c99, ".name=%q,", c99.CurrentPackage+"."+spec.Name.String)
 	kind := kindOf(spec.Type.TypeAndValue().Type)
 	fmt.Fprintf(c99, ".kind=go_kind_%s", kind)
 	switch rtype := spec.Type.TypeAndValue().Type.(type) {
 	case *types.Struct:
-		fmt.Fprintf(c99, ", .data={.fields={&go_fields_%s%s[0], %d}}", spec.Name.String, suffix, rtype.NumFields())
+		fmt.Fprintf(c99, ", .data={.fields={&go_fields_%s%s[0], %d}}", spec.Name.String, rsuffix, rtype.NumFields())
 	}
 	fmt.Fprintf(c99, "}")
 	fmt.Fprintf(c99, ";\n")

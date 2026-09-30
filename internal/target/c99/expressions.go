@@ -369,6 +369,22 @@ func (c99 Target) ExpressionSlice(e source.ExpressionSlice) error {
 func (c99 Target) ExpressionUnary(e source.ExpressionUnary) error {
 	switch e.Operation.Value {
 	case token.AND:
+		if xyz.ValueOf(e.X) == source.Expressions.Composite { // &T{...} is allocated.
+			fmt.Fprintf(c99, "go_new(sizeof(%s), &", c99.TypeOf(e.X.TypeAndValue().Type))
+			if err := c99.Expression(e.X); err != nil {
+				return err
+			}
+			fmt.Fprintf(c99, ")")
+			return nil
+		}
+		if xyz.ValueOf(e.X) != source.Expressions.DefinedVariable {
+			fmt.Fprintf(c99, "((go_pt){ .ptr = &(")
+			if err := c99.Expression(e.X); err != nil {
+				return err
+			}
+			fmt.Fprintf(c99, ") })")
+			return nil
+		}
 		ident := source.Expressions.DefinedVariable.Get(e.X)
 		if !c99.StackAllocated(ident) {
 			fmt.Fprintf(c99, "(%s){.ptr=%s}", c99.TypeOf(e.TypeAndValue().Type), ident.String)

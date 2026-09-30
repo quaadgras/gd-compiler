@@ -22,7 +22,11 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 		fnName = c99.Initializers.Func("_go_" + c99.PackageOf(c99.CurrentPackage) + "_package")
 	}
 	if isMethod {
-		fnName = fmt.Sprintf(`%s_%s`, receiver.Fields[0].Type.TypeAndValue().Type.(*types.Named).Obj().Name(), fnName)
+		named, ok := types.Unalias(derefType(receiver.Fields[0].Type.TypeAndValue().Type)).(*types.Named)
+		if !ok {
+			return decl.Errorf("unsupported receiver type %s", receiver.Fields[0].Type.TypeAndValue().Type)
+		}
+		fnName = fmt.Sprintf(`%s_%s`, named.Obj().Name(), fnName)
 	}
 	c99.Order = nil
 	c99.Results = nil
@@ -184,33 +188,37 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 	fmt.Fprintf(c99, "}")
 	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
-	// Interface wrapper.
+	// Interface wrappers, that take the receiver from the data of an interface value: I_
+	// where it's the receiver, and IP_ (for methods with value receivers) where it's a
+	// pointer to the receiver.
 	if isMethod {
-		field := receiver.Fields[0]
-		var name = "_"
-		names, hasName := field.Names.Get()
-		if hasName {
-			name = names[0].String
-		}
-		return_type(c99)
-		fmt.Fprintf(c99, `I_%s%s(void* %s`, fnName, suffix, name)
-		var args strings.Builder
+		recvType := receiver.Fields[0].Type.TypeAndValue().Type
+		var params, args []string
 		for _, param := range decl.Type.Arguments.Fields {
-			names, ok := param.Names.Get()
-			if !ok {
-				return param.Location.Errorf("missing names for function argument")
-			}
-			for _, name := range names {
-				fmt.Fprintf(c99, ", %s %s", c99.Type(param.Type), c99.toString(name))
-				fmt.Fprintf(&args, ", %s", c99.toString(name))
+			names, _ := param.Names.Get()
+			for range max(len(names), 1) {
+				args = append(args, fmt.Sprintf("p%d", len(args)))
+				params = append(params, c99.Type(param.Type)+" "+args[len(args)-1])
 			}
 		}
-		fmt.Fprintf(c99, ") { ")
-		if _, ok := decl.Type.Results.Get(); ok {
-			fmt.Fprintf(c99, "return ")
+		ret := ""
+		if len(c99.Results) > 0 {
+			ret = "return "
 		}
-		fmt.Fprintf(c99, "%s%s(*(%s*)%s%s); }", fnName, suffix, c99.Type(field.Type), name, args.String())
-		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
+		header := c99.Private
+		if exported {
+			header = c99.Exports
+		}
+		wrapper := func(prefix, recv string) {
+			sig := fmt.Sprintf("%s %s%s%s(%s)", c99.TupleOf(c99.Results), prefix, fnName, suffix,
+				strings.Join(append([]string{"void* go_recv"}, params...), ", "))
+			fmt.Fprintf(header, "\n%s;", sig)
+			fmt.Fprintf(c99, "%s { %s%s%s(%s); }\n", sig, ret, fnName, suffix, strings.Join(append([]string{recv}, args...), ", "))
+		}
+		wrapper("I_", fmt.Sprintf("*(%s*)go_recv", c99.TypeOf(recvType)))
+		if _, isPointer := recvType.Underlying().(*types.Pointer); !isPointer {
+			wrapper("IP_", fmt.Sprintf("go_pointer_get(*(go_pt*)go_recv, %s)", c99.TypeOf(recvType)))
+		}
 	}
 	return nil
 }
@@ -235,4 +243,12 @@ func (c99 Target) returnValues() string {
 	default:
 		return fmt.Sprintf(" (%s){ %s }", c99.TupleOf(c99.Results), strings.Join(c99.ResultVars, ", "))
 	}
+}
+
+// derefType returns the element type of a pointer type, or t.
+func derefType(t types.Type) types.Type {
+	if pointer, ok := t.Underlying().(*types.Pointer); ok {
+		return pointer.Elem()
+	}
+	return t
 }

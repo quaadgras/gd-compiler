@@ -168,8 +168,14 @@ func (c99 Target) toString(node source.Node) string {
 }
 
 func (c99 Target) Selection(sel source.Selection) error {
-	if sel.X.TypeAndValue().Type != nil {
-		if err := c99.Compile(sel.X); err != nil {
+	if xtype := sel.X.TypeAndValue().Type; xtype != nil {
+		if pointer, ok := xtype.Underlying().(*types.Pointer); ok { // p.f is (*p).f
+			fmt.Fprintf(c99, "go_pointer_get(")
+			if err := c99.Compile(sel.X); err != nil {
+				return err
+			}
+			fmt.Fprintf(c99, ", %s)", c99.TypeOf(pointer.Elem()))
+		} else if err := c99.Compile(sel.X); err != nil {
 			return err
 		}
 		for _, elem := range sel.Path {

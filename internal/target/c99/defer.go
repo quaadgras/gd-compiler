@@ -76,8 +76,21 @@ func (c99 Target) StatementDefer(stmt source.StatementDefer) error {
 		case source.Expressions.Selector:
 			left := source.Expressions.Selector.Get(function)
 			if xyz.ValueOf(left.Selection) == source.Expressions.DefinedFunction {
-				if source.Expressions.DefinedFunction.Get(left.Selection).Method {
-					deferred.Receiver = store(c99.TypeOf(left.X.TypeAndValue().Type), c99.toString(left.X))
+				if method := source.Expressions.DefinedFunction.Get(left.Selection); method.Method {
+					rtype := left.X.TypeAndValue().Type
+					if fn, ok := method.Unique.(*types.Func); ok {
+						if _, iface := rtype.Underlying().(*types.Interface); !iface {
+							rtype = fn.Type().(*types.Signature).Recv().Type()
+						}
+					}
+					value := c99.toString(left.X)
+					if _, iface := rtype.Underlying().(*types.Interface); !iface {
+						var err error
+						if value, err = c99.receiverOf(function, left.X); err != nil {
+							return err
+						}
+					}
+					deferred.Receiver = store(c99.TypeOf(rtype), value)
 				}
 			} else {
 				deferred.Callee = store("go_fn", c99.toString(function))
