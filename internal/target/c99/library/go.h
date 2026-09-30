@@ -156,7 +156,7 @@ static inline go_aaf4f4zz go_aaf4f4zz_quo(go_aaf4f4zz n, go_aaf4f4zz m) {
 
 typedef struct { char _; } go_tuple;
 
-#define go_ignore(x) (void)(x)
+#define go_ignore(...) ((void)(__VA_ARGS__)) // (values may have commas)
 // Every function starts with go_split, which takes the token that allows recover to
 // stop a panic, see go_recover.
 #define go_split() go_tf go_can_recover = go_take_recover(); (void)go_can_recover;
@@ -253,7 +253,8 @@ void* go_index(go_ll s, go_ii elem_size, go_ii i);
 #define go_slice_literal(length, T, ...) (go_ll){ .ptr = go_new(sizeof(T)*length, &(T[]){__VA_ARGS__}), .len = length, .cap = length }
 #define go_variadic(length, T, ...) go_slice_literal(length, T, __VA_ARGS__) // may be kept by the callee.
 static inline go_ii go_slice_len(go_ll s) { return s.len; }
-void go_slice_clear(go_ll s);
+void go_slice_clear(go_ll s, size_t elem_size);
+void go_map_clear(go_kv m);
 
 // go_make makes a map, with argc entries from init, each stride bytes, with the value at
 // val_offset (for map literals).

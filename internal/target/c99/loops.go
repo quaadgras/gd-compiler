@@ -174,7 +174,9 @@ func (c99 Target) StatementRange(stmt source.StatementRange) error {
 		if boxed {
 			iter_name = "go_iter_" + key.String
 		}
-		fmt.Fprintf(c99, "for (%s %s = 0; %[2]s < %[3]s; %[2]s++) {", rtype, iter_name, c99.toString(stmt.X))
+		n := c99.Closures.count // (the bound is evaluated once)
+		c99.Closures.count++
+		fmt.Fprintf(c99, "for (%[1]s %[2]s = 0, go_rn_%[4]d = %[3]s; %[2]s < go_rn_%[4]d; %[2]s++) {", rtype, iter_name, c99.toString(stmt.X), n)
 		if boxed { // a new variable for each iteration, captured by a closure.
 			fmt.Fprintf(c99, "\n%s%s* %s = %s(%s);", strings.Repeat("\t", c99.Tabs+1), rtype, key.String, c99.BoxOf(subst(key.Unique.Type())), iter_name)
 		}
@@ -184,36 +186,22 @@ func (c99 Target) StatementRange(stmt source.StatementRange) error {
 		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 		fmt.Fprintf(c99, "}")
 		return nil
-	case *types.Slice:
-		key, hasKey := stmt.Key.Get()
-		if !hasKey || key.String == "_" {
-			key.String = "go_iter"
-			hasKey = false
-		}
+	case *types.Slice: // (the slice is evaluated once)
+		n := c99.Closures.count
+		c99.Closures.count++
+		slice, index := fmt.Sprintf("go_rs_%d", n), fmt.Sprintf("go_ri_%d", n)
 		indent := "\n" + strings.Repeat("\t", c99.Tabs+1)
-		index := key.String
-		boxed := hasKey && !c99.StackAllocated(key)
-		if boxed {
-			index = "go_iter_" + key.String
+		fmt.Fprintf(c99, "{ go_ll %[1]s = %[2]s; for (go_ii %[3]s = 0; %[3]s < go_slice_len(%[1]s); %[3]s++) {", slice, c99.toString(stmt.X), index)
+		if key, ok := stmt.Key.Get(); ok && key.String != "_" {
+			fmt.Fprintf(c99, "%s%s", indent, c99.bind(key, types.Typ[types.Int], index))
 		}
-		fmt.Fprintf(c99, "for (go_ii %s = 0; %[1]s < go_slice_len(%[2]s); %[1]s++) {", index, c99.toString(stmt.X))
-		if boxed { // a new variable for each iteration, captured by a closure.
-			fmt.Fprintf(c99, "%sgo_ii* %s = %s(%s);", indent, key.String, c99.BoxOf(subst(key.Unique.Type())), index)
-		}
-		val, hasVal := stmt.Value.Get()
-		if hasVal {
-			elem := fmt.Sprintf("go_slice_index(%s, %s, %s)", c99.toString(stmt.X), c99.TypeOf(typ.Elem()), index)
-			if !c99.StackAllocated(val) {
-				fmt.Fprintf(c99, "%s%s* %s = %s(%s);", indent, c99.TypeOf(typ.Elem()), val.String, c99.BoxOf(typ.Elem()), elem)
-			} else {
-				fmt.Fprintf(c99, "%s%s %s = %s;", indent, c99.TypeOf(typ.Elem()), c99.toString(val), elem)
-			}
+		if val, ok := stmt.Value.Get(); ok && val.String != "_" {
+			fmt.Fprintf(c99, "%s%s", indent, c99.bind(val, typ.Elem(), fmt.Sprintf("go_slice_index(%s, %s, %s)", slice, c99.TypeOf(typ.Elem()), index)))
 		}
 		if err := c99.loopBody(stmt.Label, stmt.Body.Statements); err != nil {
 			return err
 		}
-		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
-		fmt.Fprintf(c99, "}")
+		fmt.Fprintf(c99, "\n%s}}", strings.Repeat("\t", c99.Tabs))
 		return nil
 	}
 	if typ, ok := stmt.X.TypeAndValue().Type.Underlying().(*types.Map); ok {

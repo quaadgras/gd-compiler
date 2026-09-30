@@ -227,11 +227,14 @@ func (c99 Target) clear(expr source.FunctionCall) error {
 	if len(expr.Arguments) != 1 {
 		return fmt.Errorf("clear expects exactly one argument, got %d", len(expr.Arguments))
 	}
-	fmt.Fprintf(c99, "go_slice_clear(")
-	if err := c99.Expression(expr.Arguments[0]); err != nil {
-		return err
+	switch typ := expr.Arguments[0].TypeAndValue().Type.Underlying().(type) {
+	case *types.Map:
+		fmt.Fprintf(c99, "go_map_clear(%s)", c99.toString(expr.Arguments[0]))
+	case *types.Slice:
+		fmt.Fprintf(c99, "go_slice_clear(%s, sizeof(%s))", c99.toString(expr.Arguments[0]), c99.TypeOf(typ.Elem()))
+	default:
+		return expr.Errorf("unsupported clear of %s", expr.Arguments[0].TypeAndValue().Type)
 	}
-	fmt.Fprintf(c99, ")")
 	return nil
 }
 

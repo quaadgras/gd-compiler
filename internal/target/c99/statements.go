@@ -131,7 +131,7 @@ func (c99 Target) StatementSend(stmt source.StatementSend) error {
 		return err
 	}
 	fmt.Fprint(c99, ", ")
-	if err := c99.Expression(stmt.Value); err != nil {
+	if err := c99.ExpressionAs(stmt.Value, stmt.X.TypeAndValue().Type.Underlying().(*types.Chan).Elem()); err != nil {
 		return err
 	}
 	fmt.Fprint(c99, ")")

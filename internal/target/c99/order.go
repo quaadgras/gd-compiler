@@ -35,6 +35,7 @@ func (c99 Target) orderOf(exprs []source.Expression, roots ...source.Expression)
 		root[source.LocationOf(expr).Node] = true
 	}
 	var events []ast.Node
+	spread := false
 	var visit func(node ast.Node) bool
 	visit = func(node ast.Node) bool {
 		switch expr := node.(type) {
@@ -55,6 +56,14 @@ func (c99 Target) orderOf(exprs []source.Expression, roots ...source.Expression)
 			for _, arg := range expr.Args {
 				ast.Inspect(arg, visit)
 			}
+			if len(expr.Args) == 1 { // f(g()), where g has several results, which are spread.
+				if call, ok := ast.Unparen(expr.Args[0]).(*ast.CallExpr); ok {
+					if tuple, ok := info.Types[call].Type.(*types.Tuple); ok && tuple.Len() > 1 {
+						events = append(events, call)
+						spread = true
+					}
+				}
+			}
 			if isEvent(info, expr) && !root[expr] {
 				events = append(events, expr)
 			}
@@ -73,7 +82,7 @@ func (c99 Target) orderOf(exprs []source.Expression, roots ...source.Expression)
 			ast.Inspect(node, visit)
 		}
 	}
-	if len(events) < 2 {
+	if len(events) < 2 && !spread {
 		return nil
 	}
 	order := &Order{
@@ -156,7 +165,11 @@ func (c99 Target) hoisted(node ast.Node, t types.Type, render func(Target) error
 	}
 	name := fmt.Sprintf("go_order_%d", c99.Closures.count)
 	c99.Closures.count++
-	order.temps = append(order.temps, fmt.Sprintf("%s %s = %s;", c99.TypeOf(t), name, buf.String()))
+	ctype := c99.TypeOf(t)
+	if tuple, ok := t.(*types.Tuple); ok {
+		ctype = c99.TupleOf(slicesOfTypes(tuple))
+	}
+	order.temps = append(order.temps, fmt.Sprintf("%s %s = %s;", ctype, name, buf.String()))
 	order.names[node] = name
 	fmt.Fprint(c99, name)
 	return true, nil
@@ -223,4 +236,12 @@ func (c99 Target) hoistLogical(expr source.ExpressionBinary) (bool, error) {
 	order.names[node] = name
 	fmt.Fprint(c99, name)
 	return true, nil
+}
+
+func slicesOfTypes(tuple *types.Tuple) []types.Type {
+	var ts []types.Type
+	for v := range tuple.Variables() {
+		ts = append(ts, v.Type())
+	}
+	return ts
 }

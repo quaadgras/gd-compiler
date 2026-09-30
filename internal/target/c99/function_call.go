@@ -5,6 +5,7 @@ import (
 	"go/types"
 	"hash/fnv"
 	"io"
+	"regexp"
 	"strings"
 
 	"github.com/quaadgras/gd-compiler/internal/source"
@@ -138,7 +139,13 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 		}
 	case source.Expressions.Selector:
 		left := source.Expressions.Selector.Get(function)
-		if xyz.ValueOf(left.Selection) == source.Expressions.DefinedFunction {
+		if xyz.ValueOf(left.Selection) == source.Expressions.DefinedFunction && left.X.TypeAndValue().IsType() {
+			// T.M(x): a method expression, called as a func value.
+			if err := c99.invoke(function, deferred.Callee); err != nil {
+				return err
+			}
+			invoked = true
+		} else if xyz.ValueOf(left.Selection) == source.Expressions.DefinedFunction {
 			defined := source.Expressions.DefinedFunction.Get(left.Selection)
 			if defined.Method {
 				_, isInterface = left.X.TypeAndValue().Type.Underlying().(*types.Interface)
@@ -196,6 +203,12 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 			return expr.Errorf("unsupported conversion from %s to %s", expr.Arguments[0].TypeAndValue().Type, ctype.TypeAndValue().Type)
 		}
 	default:
+		if tv := function.TypeAndValue(); tv.IsType() { // T[A](x), (*T)(x)...
+			if ok, err := c99.conversion(expr, tv.Type); ok || err != nil {
+				return err
+			}
+			return expr.Errorf("unsupported conversion from %s to %s", expr.Arguments[0].TypeAndValue().Type, tv.Type)
+		}
 		if _, ok := function.TypeAndValue().Type.Underlying().(*types.Signature); !ok {
 			return expr.Opening.Errorf("unsupported call for function of type %T", xyz.ValueOf(function))
 		}
@@ -224,6 +237,23 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 		fmt.Fprint(c99, value)
 	}
 	var variadic bool
+	if len(expr.Arguments) == 1 && len(deferred.Args) == 0 { // f(g()), where g has several results.
+		if tuple, ok := expr.Arguments[0].TypeAndValue().Type.(*types.Tuple); ok && tuple.Len() > 1 {
+			value := c99.toString(expr.Arguments[0]) // (a temporary, see [Order])
+			if !temporary.MatchString(value) {
+				return expr.Errorf("unsupported call with the results of another call, outside of a statement")
+			}
+			var args []source.Expression
+			for i := range tuple.Len() {
+				args = append(args, source.Expressions.DefinedVariable.New(source.DefinedVariable{
+					Typed:    source.Typed{TV: types.TypeAndValue{Type: tuple.At(i).Type()}},
+					Location: expr.Location,
+					String:   fmt.Sprintf("%s.r%d", value, i),
+				}))
+			}
+			expr.Arguments = args
+		}
+	}
 	for i, arg := range expr.Arguments {
 		if i > 0 || hasReceiver || isInterface || invoked {
 			fmt.Fprintf(c99, ", ")
@@ -523,3 +553,6 @@ func isInterfaceType(t types.Type) bool {
 	_, ok := t.Underlying().(*types.Interface)
 	return ok
 }
+
+// temporary matches the C names of temporaries (and of variables).
+var temporary = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*$`)

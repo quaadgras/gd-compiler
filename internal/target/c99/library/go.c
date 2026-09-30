@@ -60,8 +60,11 @@ go_ii go_copy(go_ii elem_size, go_ll dst, go_ll src) {
     memcpy(dst.ptr.ptr, src.ptr.ptr, n * elem_size);
     return n;
 }
-void go_slice_clear(go_ll s) {
-    memset(s.ptr.ptr, 0, s.cap * sizeof(s.ptr));
+void go_slice_clear(go_ll s, size_t elem_size) {
+    if (s.len > 0) memset(s.ptr.ptr, 0, (size_t)s.len * elem_size);
+}
+void go_map_clear(go_kv m) {
+    if (m) hashmap_clear(m, false);
 }
 
 go_ii go_string_len(go_ss s) {

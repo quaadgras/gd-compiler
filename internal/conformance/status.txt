@@ -15,7 +15,7 @@ abi/defer_recover_results.go	pass
 abi/double_nested_addressed_struct.go	pass	
 abi/double_nested_struct.go	pass	
 abi/f_ret_z_not.go	pass	
-abi/fibish.go	fail	exit: timeout
+abi/fibish.go	pass	
 abi/fibish_closure.go	fail	exit: timeout
 abi/fuzz_trailing_zero_field.go	pass	
 abi/idata.go	fail	c11: error: implicit declaration of function 'CallersFrames_go_runtime_package'; did you mean 'Callers_go_runtime_package'? […
@@ -75,7 +75,7 @@ chan/goroutines.go	fail	exit: timeout
 chan/nonblock.go	pass	
 chan/perm.go	skip	todo:errorcheck
 chan/powser1.go	pass	
-chan/powser2.go	fail	c11: error: incompatible type for argument 2 of 'go_send_if02'
+chan/powser2.go	pass	
 chan/select.go	pass	
 chan/select2.go	skip	gc:memstats runtime.MemProfileRate
 chan/select3.go	pass	
@@ -93,7 +93,7 @@ chanlinear.go	pass
 char_lit.go	pass	
 char_lit1.go	skip	gc:diagnostics -d=panic
 checkbce.go	skip	gc:diagnostics -d=ssa/check_bce/debug=3
-clear.go	fail	c11: error: incompatible type for argument 1 of 'go_slice_clear'
+clear.go	pass	
 clearfat.go	skip	todo:runoutput
 closedchan.go	pass	
 closure.go	skip	gc:memstats runtime.ReadMemStats
@@ -222,7 +222,7 @@ convlit1.go	skip	todo:errorcheck
 copy.go	pass	
 copy1.go	skip	todo:errorcheck
 crlf.go	skip	todo:runoutput
-ddd.go	fail	gd: panic: unsupported node type: Type
+ddd.go	fail	c11: error: incompatible types when assigning to type 'go_if' from type 'go_vv'
 ddd1.go	skip	todo:errorcheck
 ddd2.go	skip	todo:rundir
 decl.go	pass	
@@ -334,7 +334,7 @@ fixedbugs/bug060.go	pass
 fixedbugs/bug061.go	pass	
 fixedbugs/bug062.go	skip	todo:errorcheck
 fixedbugs/bug063.go	pass	
-fixedbugs/bug064.go	fail	c11: error: incompatible type for argument 1 of 'swap_go_main_package'
+fixedbugs/bug064.go	pass	
 fixedbugs/bug065.go	pass	
 fixedbugs/bug066.go	pass	
 fixedbugs/bug067.go	pass	
@@ -349,7 +349,7 @@ fixedbugs/bug075.go	pass
 fixedbugs/bug076.go	pass	
 fixedbugs/bug077.go	pass	
 fixedbugs/bug078.go	pass	
-fixedbugs/bug080.go	fail	c11: error: incompatible type for argument 1 of 'f2_go_main_package'
+fixedbugs/bug080.go	pass	
 fixedbugs/bug081.go	skip	todo:errorcheck
 fixedbugs/bug082.go	pass	
 fixedbugs/bug083.go	skip	todo:errorcheck
@@ -489,7 +489,7 @@ fixedbugs/bug227.go	pass
 fixedbugs/bug228.go	skip	todo:errorcheck
 fixedbugs/bug228a.go	skip	todo:errorcheck
 fixedbugs/bug229.go	skip	todo:errorcheck
-fixedbugs/bug230.go	fail	c11: error: incompatible type for argument 2 of 'go_send_if01'
+fixedbugs/bug230.go	pass	
 fixedbugs/bug231.go	skip	todo:errorcheck
 fixedbugs/bug232.go	pass	
 fixedbugs/bug233.go	pass	
@@ -528,7 +528,7 @@ fixedbugs/bug265.go	pass
 fixedbugs/bug266.go	pass	
 fixedbugs/bug267.go	pass	
 fixedbugs/bug269.go	pass	
-fixedbugs/bug271.go	fail	gd: unsupported type (int, int)
+fixedbugs/bug271.go	pass	
 fixedbugs/bug272.go	pass	
 fixedbugs/bug273.go	fail	exit: signal: trace/breakpoint trap BUG
 fixedbugs/bug274.go	skip	todo:errorcheck
@@ -693,12 +693,12 @@ fixedbugs/bug438.go	pass
 fixedbugs/bug439.go	pass	
 fixedbugs/bug440_32.go	pass	
 fixedbugs/bug440_64.go	pass	
-fixedbugs/bug441.go	fail	gd: panic: unsupported node type: DefinedType
+fixedbugs/bug441.go	pass	
 fixedbugs/bug442.go	pass	
 fixedbugs/bug443.go	pass	
 fixedbugs/bug444.go	pass	
 fixedbugs/bug445.go	pass	
-fixedbugs/bug446.go	fail	gd: panic: unsupported node type: DefinedType
+fixedbugs/bug446.go	pass	
 fixedbugs/bug447.go	skip	todo:runoutput
 fixedbugs/bug448.go	skip	todo:compiledir
 fixedbugs/bug449.go	skip	todo:runoutput
@@ -851,7 +851,7 @@ fixedbugs/issue12944.go	skip	todo:errorcheck
 fixedbugs/issue1304.go	pass	
 fixedbugs/issue13160.go	fail	c11: error: assignment to 'go_ii' {aka 'long int'} from 'go_ii *' {aka 'long int *'} makes integer from pointer without a cas…
 fixedbugs/issue13162.go	fail	exit: exit status 1 index after range with side-effect = -1 want 0
-fixedbugs/issue13169.go	fail	c11: error: incompatible type for argument 2 of 'go_send_vv'
+fixedbugs/issue13169.go	fail	exit: timeout
 fixedbugs/issue13171.go	pass	
 fixedbugs/issue13248.go	skip	todo:errorcheck
 fixedbugs/issue13261.go	pass	
@@ -913,7 +913,7 @@ fixedbugs/issue15277.go	skip	gc:memstats runtime.ReadMemStats
 fixedbugs/issue15281.go	skip	gc:memstats runtime.ReadMemStats
 fixedbugs/issue15303.go	pass	
 fixedbugs/issue15311.go	skip	todo:errorcheck
-fixedbugs/issue15329.go	fail	gd: panic: unsupported node type: DefinedType
+fixedbugs/issue15329.go	fail	exit: signal: trace/breakpoint trap filc safety error: cannot read pointer with null object.
 fixedbugs/issue15439.go	pass	
 fixedbugs/issue15470.go	skip	todo:compiledir
 fixedbugs/issue15514.go	skip	todo:errorcheck
@@ -981,13 +981,13 @@ fixedbugs/issue17551.go	pass
 fixedbugs/issue17588.go	skip	gc:diagnostics -d=panic
 fixedbugs/issue17596.go	pass	
 fixedbugs/issue17631.go	skip	todo:errorcheck
-fixedbugs/issue17640.go	fail	c11: error: macro "go_ignore" passed 5 arguments, but takes just 1
+fixedbugs/issue17640.go	pass	
 fixedbugs/issue17645.go	skip	todo:errorcheck
 fixedbugs/issue17710.go	pass	
 fixedbugs/issue17752.go	pass	
 fixedbugs/issue17758.go	skip	todo:errorcheck
 fixedbugs/issue17918.go	pass	
-fixedbugs/issue18089.go	fail	c11: error: macro "go_ignore" passed 2 arguments, but takes just 1
+fixedbugs/issue18089.go	pass	
 fixedbugs/issue18092.go	skip	todo:errorcheck
 fixedbugs/issue18149.go	skip	gc:stack-introspection runtime.Caller
 fixedbugs/issue18231.go	skip	todo:errorcheck
@@ -1161,7 +1161,7 @@ fixedbugs/issue23734.go	fail	exit: exit status 2 panic: didn't panic
 fixedbugs/issue23780.go	fail	cc: timeout
 fixedbugs/issue23781.go	fail	cc: timeout
 fixedbugs/issue23812.go	pass	
-fixedbugs/issue23814.go	fail	c11: error: macro "go_ignore" passed 2 arguments, but takes just 1
+fixedbugs/issue23814.go	pass	
 fixedbugs/issue23823.go	skip	todo:errorcheck
 fixedbugs/issue23837.go	pass	
 fixedbugs/issue23868.go	pass	
@@ -1258,8 +1258,8 @@ fixedbugs/issue28079b.go	skip	todo:errorcheck
 fixedbugs/issue28079c.go	skip	todo:errorcheck
 fixedbugs/issue28085.go	skip	todo:errorcheck
 fixedbugs/issue28268.go	skip	todo:errorcheck
-fixedbugs/issue28390.go	fail	c11: error: incompatible type for argument 1 of 'consume_go_main_package'
-fixedbugs/issue28430.go	fail	gd: unsupported type (int, error)
+fixedbugs/issue28390.go	pass	
+fixedbugs/issue28430.go	pass	
 fixedbugs/issue28445.go	pass	
 fixedbugs/issue28450.go	skip	todo:errorcheck
 fixedbugs/issue28601.go	pass	
@@ -1275,7 +1275,7 @@ fixedbugs/issue29215.go	pass
 fixedbugs/issue29218.go	pass	
 fixedbugs/issue29220.go	pass	
 fixedbugs/issue29264.go	pass	
-fixedbugs/issue29304.go	fail	gd: panic: unsupported node type: DefinedType
+fixedbugs/issue29304.go	pass	
 fixedbugs/issue29312.go	fail	cc: fatal error: bracket nesting level exceeded maximum of 256
 fixedbugs/issue29329.go	skip	gc:build cgo && linux && amd64
 fixedbugs/issue29350.go	pass	
@@ -1316,7 +1316,7 @@ fixedbugs/issue30907.go	skip	todo:compiledir
 fixedbugs/issue30908.go	skip	todo:rundir
 fixedbugs/issue30956.go	pass	
 fixedbugs/issue30977.go	pass	
-fixedbugs/issue31010.go	fail	c11: error: incompatible type for argument 1 of 'c_go_test_package'
+fixedbugs/issue31010.go	pass	
 fixedbugs/issue31053.go	skip	todo:errorcheck
 fixedbugs/issue31060.go	skip	todo:errorcheck
 fixedbugs/issue31252.go	skip	todo:compiledir
@@ -1407,7 +1407,7 @@ fixedbugs/issue38125.go	pass
 fixedbugs/issue38356.go	pass	
 fixedbugs/issue38359.go	pass	
 fixedbugs/issue38496.go	pass	
-fixedbugs/issue38690.go	fail	c11: error: macro "go_ignore" passed 10 arguments, but takes just 1
+fixedbugs/issue38690.go	pass	
 fixedbugs/issue38698.go	fail	c11: error: expected ';' before '}' token
 fixedbugs/issue38745.go	skip	todo:errorcheck
 fixedbugs/issue38746.go	pass	
@@ -1440,7 +1440,7 @@ fixedbugs/issue41500.go	skip	todo:errorcheck
 fixedbugs/issue41575.go	skip	todo:errorcheck
 fixedbugs/issue4162.go	pass	
 fixedbugs/issue41635.go	skip	gc:diagnostics -m
-fixedbugs/issue4167.go	fail	gd: panic: unsupported node type: Type
+fixedbugs/issue4167.go	pass	
 fixedbugs/issue41680.go	pass	
 fixedbugs/issue41736.go	pass	
 fixedbugs/issue41780.go	pass	
@@ -1477,7 +1477,7 @@ fixedbugs/issue43164.go	skip	todo:compiledir
 fixedbugs/issue43167.go	skip	todo:errorcheck
 fixedbugs/issue4323.go	pass	
 fixedbugs/issue4326.go	skip	todo:compiledir
-fixedbugs/issue43292.go	fail	c11: error: incompatible type for argument 2 of 'go_send_if01'
+fixedbugs/issue43292.go	pass	
 fixedbugs/issue43384.go	skip	todo:errorcheck
 fixedbugs/issue43428.go	skip	todo:errorcheck
 fixedbugs/issue43444.go	pass	
@@ -1491,7 +1491,7 @@ fixedbugs/issue4359.go	skip	todo:errorcheck
 fixedbugs/issue43619.go	pass	
 fixedbugs/issue43633.go	skip	todo:rundir
 fixedbugs/issue4365.go	skip	todo:errorcheck
-fixedbugs/issue43677.go	fail	c11: error: macro "go_ignore" passed 2 arguments, but takes just 1
+fixedbugs/issue43677.go	pass	
 fixedbugs/issue4370.go	skip	todo:compiledir
 fixedbugs/issue43701.go	pass	
 fixedbugs/issue43762.go	skip	todo:errorcheck
@@ -1525,7 +1525,7 @@ fixedbugs/issue44732.go	skip	todo:runindir
 fixedbugs/issue44739.go	pass	
 fixedbugs/issue44823.go	pass	
 fixedbugs/issue44830.go	fail	exit: exit status 2 panic: unexpected t.PkgPath():
-fixedbugs/issue4495.go	fail	gd: panic: unsupported node type: DefinedType
+fixedbugs/issue4495.go	pass	
 fixedbugs/issue45045.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue4510.go	skip	todo:errorcheck
 fixedbugs/issue45175.go	pass	
@@ -1533,7 +1533,7 @@ fixedbugs/issue4517a.go	skip	todo:errorcheck
 fixedbugs/issue4517b.go	skip	todo:errorcheck
 fixedbugs/issue4517c.go	skip	todo:errorcheck
 fixedbugs/issue4517d.go	skip	todo:errorcheck
-fixedbugs/issue4518.go	fail	c11: error: incompatible type for argument 1 of 'check_go_main_package'
+fixedbugs/issue4518.go	pass	
 fixedbugs/issue45242.go	pass	
 fixedbugs/issue45258.go	pass	
 fixedbugs/issue4529.go	fail	c11: error: too few arguments to function 'A_c_go_main_package'
@@ -1617,7 +1617,7 @@ fixedbugs/issue49003.go	skip	todo:errorcheck
 fixedbugs/issue49005a.go	skip	todo:errorcheck
 fixedbugs/issue49005b.go	skip	todo:errorcheck
 fixedbugs/issue49016.go	skip	todo:compiledir
-fixedbugs/issue49029.go	fail	c11: error: macro "go_ignore" passed 5 arguments, but takes just 1
+fixedbugs/issue49029.go	pass	
 fixedbugs/issue49094.go	skip	todo:compiledir
 fixedbugs/issue4909a.go	skip	todo:errorcheck
 fixedbugs/issue4909b.go	skip	todo:errorcheck
@@ -1648,7 +1648,7 @@ fixedbugs/issue50372.go	skip	todo:errorcheck
 fixedbugs/issue50439.go	pass	
 fixedbugs/issue5056.go	pass	
 fixedbugs/issue50671.go	pass	
-fixedbugs/issue50672.go	fail	c11: error: incompatible type for argument 2 of 'go_invoke_go_ii_go_ii__go_ii'
+fixedbugs/issue50672.go	pass	
 fixedbugs/issue50788.go	skip	todo:errorcheck
 fixedbugs/issue50854.go	pass	
 fixedbugs/issue5089.go	skip	todo:errorcheck
@@ -1657,7 +1657,7 @@ fixedbugs/issue51101.go	pass
 fixedbugs/issue5125.go	skip	todo:compiledir
 fixedbugs/issue51291.go	skip	todo:compiledir
 fixedbugs/issue51401.go	skip	gc:stack-introspection runtime.Callers
-fixedbugs/issue51437.go	fail	c11: error: incompatible types when initializing type 'T_go_test_package *' {aka 'go_az *'} using type 'T_go_test_package' {a…
+fixedbugs/issue51437.go	pass	
 fixedbugs/issue51475.go	pass	
 fixedbugs/issue51531.go	skip	todo:errorcheck
 fixedbugs/issue5162.go	skip	todo:runoutput
@@ -1697,7 +1697,7 @@ fixedbugs/issue5291.go	skip	todo:rundir
 fixedbugs/issue52953.go	pass	
 fixedbugs/issue53018.go	pass	
 fixedbugs/issue53137.go	pass	
-fixedbugs/issue53309.go	fail	gd: unsupported call for function of type xyz.Case
+fixedbugs/issue53309.go	pass	
 fixedbugs/issue53439.go	pass	
 fixedbugs/issue53454.go	pass	
 fixedbugs/issue5358.go	skip	todo:errorcheck
@@ -1741,11 +1741,11 @@ fixedbugs/issue5614.go	skip	todo:compiledir
 fixedbugs/issue56141.go	skip	gc:flags -d=libfuzzer
 fixedbugs/issue56220.go	skip	todo:errorcheck
 fixedbugs/issue56280.go	skip	gc:diagnostics -m
-fixedbugs/issue56727.go	fail	c11: error: macro "go_ignore" passed 5 arguments, but takes just 1
-fixedbugs/issue56768.go	fail	c11: error: macro "go_ignore" passed 5 arguments, but takes just 1
+fixedbugs/issue56727.go	pass	
+fixedbugs/issue56768.go	pass	
 fixedbugs/issue56777.go	pass	
 fixedbugs/issue56778.go	skip	todo:compiledir
-fixedbugs/issue56923.go	fail	gd: panic: unsupported index of test.EqFunc
+fixedbugs/issue56923.go	pass	
 fixedbugs/issue5698.go	skip	todo:errorcheck
 fixedbugs/issue56990.go	fail	c11: error: expected specifier-qualifier-list before 'FileMode_go_io_fs_package'
 fixedbugs/issue5704.go	pass	
@@ -1893,7 +1893,7 @@ fixedbugs/issue67329.go	skip	gc:diagnostics -d=ssa/check_bce/debug=1
 fixedbugs/issue6750.go	skip	todo:errorcheck
 fixedbugs/issue6772.go	skip	todo:errorcheck
 fixedbugs/issue6789.go	skip	todo:rundir
-fixedbugs/issue68054.go	fail	gd: unsupported index of test.Seq
+fixedbugs/issue68054.go	pass	
 fixedbugs/issue68227.go	pass	
 fixedbugs/issue68264.go	pass	
 fixedbugs/issue68292.go	skip	todo:errorcheck
@@ -1917,7 +1917,7 @@ fixedbugs/issue6977.go	skip	todo:errorcheck
 fixedbugs/issue69825.go	skip	gc:flags -d=libfuzzer
 fixedbugs/issue70156.go	pass	
 fixedbugs/issue70175.go	fail	c11: error: duplicate label 'go_label__'
-fixedbugs/issue70189.go	fail	c11: error: incompatible type for argument 1 of 'go_slice_clear'
+fixedbugs/issue70189.go	fail	exit: exit status 2 panic: 4
 fixedbugs/issue7023.go	skip	todo:compiledir
 fixedbugs/issue7044.go	pass	
 fixedbugs/issue70481.go	pass	
@@ -2000,7 +2000,7 @@ fixedbugs/issue76950.go	pass
 fixedbugs/issue77303.go	pass	
 fixedbugs/issue7740.go	pass	
 fixedbugs/issue7742.go	pass	
-fixedbugs/issue77435.go	fail	c11: error: incompatible type for argument 1 of 'go_slice_clear'
+fixedbugs/issue77435.go	pass	
 fixedbugs/issue7746.go	skip	todo:errorcheck
 fixedbugs/issue77534.go	pass	
 fixedbugs/issue7760.go	skip	todo:errorcheck
@@ -2016,7 +2016,7 @@ fixedbugs/issue7794.go	pass
 fixedbugs/issue78016.go	pass	
 fixedbugs/issue78028.go	pass	
 fixedbugs/issue78081.go	fail	exit: timeout
-fixedbugs/issue78262.go	fail	c11: error: macro "go_ignore" passed 2 arguments, but takes just 1
+fixedbugs/issue78262.go	fail	c11: error: 'A_go_main_package' {aka 'go_struct_e55c72d3b264b8e5'} has no member named 'b'
 fixedbugs/issue78295.go	pass	
 fixedbugs/issue78297.go	pass	
 fixedbugs/issue78303_1.go	pass	
@@ -2048,7 +2048,7 @@ fixedbugs/issue79812.go	fail	gd: unsupported conversion to float64
 fixedbugs/issue79874.go	fail	exit: exit status 2 panic: 38
 fixedbugs/issue79886.go	pass	
 fixedbugs/issue79887.go	pass	
-fixedbugs/issue79909.go	fail	exit: exit status 2 panic: unexpected result: 19
+fixedbugs/issue79909.go	pass	
 fixedbugs/issue7995.go	pass	
 fixedbugs/issue7995b.go	skip	todo:rundir
 fixedbugs/issue7996.go	pass	
@@ -2293,14 +2293,14 @@ mapclear.go	pass
 maplinear.go	fail	exit: timeout
 maymorestack.go	skip	gc:flags -gcflags=-d=maymorestack=main.mayMoreStack
 mergemul.go	skip	todo:runoutput
-method.go	fail	gd: panic: unsupported node type: DefinedType
+method.go	pass	
 method1.go	skip	todo:errorcheck
 method2.go	skip	todo:errorcheck
-method3.go	fail	gd: panic: unsupported node type: DefinedType
+method3.go	pass	
 method4.go	skip	todo:rundir
 method5.go	fail	exit: exit status 2 panic: not panicking
 method6.go	skip	todo:errorcheck
-method7.go	fail	gd: panic: unsupported node type: DefinedType
+method7.go	pass	
 named.go	pass	
 named1.go	skip	todo:errorcheck
 newexpr.go	fail	exit: exit status 2 panic: wrong value
@@ -2347,7 +2347,7 @@ reflectmethod4.go	fail	exit: exit status 2 panic: reflect.Value.Method is not su
 reflectmethod5.go	fail	exit: exit status 2 panic: (*reflect.ValueError) 0x?
 reflectmethod6.go	fail	exit: exit status 2 panic: (*reflect.ValueError) 0x?
 reflectmethod7.go	fail	exit: exit status 2 panic: FAIL
-reflectmethod8.go	fail	gd: panic: unsupported node type: DefinedType
+reflectmethod8.go	pass	
 rename.go	pass	
 rename1.go	skip	todo:errorcheck
 reorder.go	fail	exit: exit status 2 panic: failed
@@ -2366,7 +2366,7 @@ shift2.go	pass
 shift3.go	fail	gd: panic: unsupported constant value (1 + 0i)
 sieve.go	pass	
 sigchld.go	pass	
-simassign.go	fail	c11: error: incompatible type for argument 1 of 'swap_go_main_package'
+simassign.go	pass	
 simd.go	skip	gc:build goexperiment.simd && amd64
 simd/bug1.go	skip	gc:build amd64 && goexperiment.simd
 simd/bug2.go	skip	gc:build amd64 && goexperiment.simd
@@ -2386,7 +2386,7 @@ strcopy.go	pass
 strength.go	skip	todo:runoutput
 string_lit.go	pass	
 stringrange.go	fail	exit: exit status 1 after loop i is 0 not 17
-struct0.go	fail	c11: error: incompatible type for argument 2 of 'go_send_vv'
+struct0.go	pass	
 switch.go	fail	c11: error: used struct type value where scalar is required
 switch2.go	skip	todo:errorcheck
 switch3.go	skip	todo:errorcheck
@@ -2438,10 +2438,10 @@ typeparam/dedup.go	skip	todo:rundir
 typeparam/devirtualize1.go	pass	
 typeparam/devirtualize2.go	pass	
 typeparam/dictionaryCapture-noinline.go	skip	gc:flags -gcflags="-l"
-typeparam/dictionaryCapture.go	fail	c11: error: incompatible type for argument 1 of 'is77_go_main_package'
+typeparam/dictionaryCapture.go	fail	c11: error: 'go_if' has no member named 'a'
 typeparam/dottype.go	fail	gd: illegal type for print: (int, bool)
 typeparam/double.go	pass	
-typeparam/eface.go	fail	gd: panic: unsupported call for function of type xyz.Case
+typeparam/eface.go	pass	
 typeparam/equal.go	pass	
 typeparam/fact.go	pass	
 typeparam/factimp.go	skip	todo:rundir
@@ -2493,12 +2493,12 @@ typeparam/issue47878.go	pass
 typeparam/issue47892.go	skip	todo:rundir
 typeparam/issue47892b.go	skip	todo:compiledir
 typeparam/issue47896.go	fail	gd: panic: runtime error: invalid memory address or nil pointer dereference
-typeparam/issue47901.go	fail	gd: unsupported call for function of type xyz.Case
+typeparam/issue47901.go	pass	
 typeparam/issue47924.go	pass	
 typeparam/issue47925.go	pass	
-typeparam/issue47925b.go	fail	gd: unsupported call for function of type xyz.Case
-typeparam/issue47925c.go	fail	gd: unsupported call for function of type xyz.Case
-typeparam/issue47925d.go	fail	gd: unsupported call for function of type xyz.Case
+typeparam/issue47925b.go	pass	
+typeparam/issue47925c.go	pass	
+typeparam/issue47925d.go	pass	
 typeparam/issue47929.go	skip	gc:flags -p=p
 typeparam/issue47948.go	pass	
 typeparam/issue47966.go	pass	
@@ -2522,7 +2522,7 @@ typeparam/issue48276a.go	pass
 typeparam/issue48276b.go	pass	
 typeparam/issue48280.go	skip	todo:rundir
 typeparam/issue48306.go	skip	todo:rundir
-typeparam/issue48317.go	fail	gd: panic: unsupported node type: DefinedType
+typeparam/issue48317.go	fail	gd: unsupported call with the results of another call, outside of a statement
 typeparam/issue48318.go	fail	gd: panic: runtime error: invalid memory address or nil pointer dereference
 typeparam/issue48337a.go	skip	todo:rundir
 typeparam/issue48337b.go	skip	todo:rundir
@@ -2533,13 +2533,13 @@ typeparam/issue48454.go	skip	todo:rundir
 typeparam/issue48462.go	skip	todo:rundir
 typeparam/issue48537.go	pass	
 typeparam/issue48538.go	pass	
-typeparam/issue48598.go	fail	gd: panic: unsupported index of test.IteratorFunc
-typeparam/issue48602.go	fail	gd: panic: unsupported index of test.IteratorFunc
-typeparam/issue48604.go	fail	gd: panic: unsupported index of test.Bar
+typeparam/issue48598.go	pass	
+typeparam/issue48602.go	pass	
+typeparam/issue48604.go	pass	
 typeparam/issue48609.go	pass	
 typeparam/issue48617.go	pass	
 typeparam/issue48645a.go	pass	
-typeparam/issue48645b.go	fail	gd: panic: unsupported index of test.IteratorFunc
+typeparam/issue48645b.go	pass	
 typeparam/issue48711.go	skip	todo:errorcheck
 typeparam/issue48716.go	skip	todo:rundir
 typeparam/issue48838.go	pass	
@@ -2564,7 +2564,7 @@ typeparam/issue49659b.go	pass
 typeparam/issue49667.go	skip	todo:rundir
 typeparam/issue49875.go	pass	
 typeparam/issue49893.go	skip	todo:compiledir
-typeparam/issue50002.go	fail	gd: unsupported call for function of type xyz.Case
+typeparam/issue50002.go	pass	
 typeparam/issue50109.go	pass	
 typeparam/issue50109b.go	pass	
 typeparam/issue50121.go	skip	todo:rundir
@@ -2600,11 +2600,11 @@ typeparam/issue51233.go	skip	todo:errorcheck
 typeparam/issue51236.go	pass	
 typeparam/issue51245.go	pass	
 typeparam/issue51250a.go	skip	todo:rundir
-typeparam/issue51303.go	fail	gd: unsupported call for function of type xyz.Case
+typeparam/issue51303.go	pass	
 typeparam/issue51355.go	fail	c11: error: conflicting types for 'value'; have 'go_ss *'
 typeparam/issue51367.go	skip	todo:rundir
 typeparam/issue51423.go	skip	todo:compiledir
-typeparam/issue51521.go	fail	gd: panic: unsupported node type: Type
+typeparam/issue51521.go	fail	gd: panic: type parameter T was not substituted
 typeparam/issue51522a.go	pass	
 typeparam/issue51522b.go	pass	
 typeparam/issue51700.go	pass	
@@ -2624,8 +2624,8 @@ typeparam/issue53254.go	pass
 typeparam/issue53390.go	pass	
 typeparam/issue53406.go	pass	
 typeparam/issue53419.go	pass	
-typeparam/issue53477.go	fail	gd: unsupported call for function of type xyz.Case
-typeparam/issue53762.go	fail	gd: unsupported call for function of type xyz.Case
+typeparam/issue53477.go	fail	c11: error: unknown type name 'X_go_main_package'
+typeparam/issue53762.go	pass	
 typeparam/issue54135.go	pass	
 typeparam/issue54225.go	pass	
 typeparam/issue54302.go	skip	todo:rundir
@@ -2648,11 +2648,11 @@ typeparam/mapsimp.go	skip	todo:rundir
 typeparam/mdempsky/1.go	skip	todo:compiledir
 typeparam/mdempsky/10.go	skip	todo:rundir
 typeparam/mdempsky/12.go	skip	todo:rundir
-typeparam/mdempsky/13.go	fail	gd: panic: unsupported node type: DefinedType
-typeparam/mdempsky/14.go	fail	gd: panic: unsupported node type: DefinedType
+typeparam/mdempsky/13.go	fail	exit: signal: trace/breakpoint trap filc safety error: cannot read 24 bytes when upper - ptr = 1…
+typeparam/mdempsky/14.go	pass	
 typeparam/mdempsky/15.go	skip	gc:goexperiment fieldtrack
 typeparam/mdempsky/16.go	fail	c11: error: 'Error_go_runtime_package' has no member named 'Error'; did you mean 'error'?
-typeparam/mdempsky/17.go	fail	gd: unsupported type (k any, v any)
+typeparam/mdempsky/17.go	fail	c11: error: incompatible types when assigning to type 'go_vv' from type 'K_go_main_package' {aka 'long int'}
 typeparam/mdempsky/18.go	pass	
 typeparam/mdempsky/19.go	pass	
 typeparam/mdempsky/2.go	pass	
@@ -2670,8 +2670,8 @@ typeparam/min.go	pass
 typeparam/mincheck.go	skip	todo:errorcheck
 typeparam/minimp.go	skip	todo:rundir
 typeparam/mutualimp.go	skip	todo:compiledir
-typeparam/nested.go	fail	c11: error: redefinition of 'go_type_Int_4180000_go_main_package'
-typeparam/ordered.go	fail	gd: panic: unsupported call for function of type xyz.Case
+typeparam/nested.go	fail	c11: error: redefinition of 'go_type_Int_4180040_go_main_package'
+typeparam/ordered.go	pass	
 typeparam/orderedmap.go	skip	gc:finalizers runtime.SetFinalizer
 typeparam/orderedmapsimp.go	skip	todo:rundir
 typeparam/pair.go	pass	
