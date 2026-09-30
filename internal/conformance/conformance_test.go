@@ -3,6 +3,7 @@ package conformance
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
 	"errors"
 	"flag"
 	"fmt"
@@ -281,33 +282,33 @@ func runCase(t *testing.T, root, name string) Status {
 
 	// Strict C11, the runtime library may still use newer features behind preprocessor
 	// checks.
+	include := []string{"-I", filepath.Join(dir, ".c")}
 	if len(strict) > 0 && strict[0] != "off" {
-		args := append(append([]string{}, strict[1:]...), "-I", filepath.Join(dir, ".c"))
-		if out, err := command(t, dir, time.Minute, strict[0], append(args, sources...)...); err != nil {
-			return failure("c11", out, err, dir)
+		for _, source := range sources {
+			if _, out, err := cached(t, dir, strict, include, source, ""); err != nil {
+				return failure("c11", out, err, dir)
+			}
 		}
 	}
 
-	// C -> executable
-	args := append([]string{}, cflags...)
-	args = append(args, "-I", filepath.Join(dir, ".c"))
-	link := recipe.Action == "run" || (recipe.Action == "build" && isMain(src))
+	// C -> objects -> executable. Each file is compiled separately, and its object is cached
+	// (by its preprocessed source), as tests share the files of the packages they import.
+	var objects []string
+	for _, source := range sources {
+		object, out, err := cached(t, dir, append([]string{cc}, cflags...), include, source, ".o")
+		if err != nil {
+			return failure("cc", out, err, dir)
+		}
+		objects = append(objects, object)
+	}
+	if recipe.Action == "run" || (recipe.Action == "build" && isMain(src)) {
+		exe := filepath.Join(dir, "test.exe")
+		args := append(append(append(append([]string{}, cflags...), "-o", exe), objects...), ldflags...)
+		if out, err := command(t, dir, time.Minute, cc, args...); err != nil {
+			return failure("cc", out, err, dir)
+		}
+	}
 	exe := filepath.Join(dir, "test.exe")
-	if link {
-		args = append(args, "-o", exe)
-		args = append(args, sources...)
-		args = append(args, ldflags...)
-	} else {
-		args = append(args, "-c")
-		args = append(args, sources...)
-	}
-	objects := filepath.Join(dir, "obj")
-	if err := os.Mkdir(objects, 0755); err != nil {
-		t.Fatal(err)
-	}
-	if out, err := command(t, objects, time.Minute, cc, args...); err != nil {
-		return failure("cc", out, err, dir)
-	}
 	if recipe.Action != "run" {
 		return Status{Result: Pass}
 	}
@@ -330,6 +331,56 @@ func runCase(t *testing.T, root, name string) Status {
 		return Status{Fail, "output: mismatch"}
 	}
 	return Status{Result: Pass}
+}
+
+// cache of compiled objects (and of strict checks), by the hash of the preprocessed source
+// and the command.
+var cache = filepath.Join(os.TempDir(), "gd-conformance-cache")
+
+// cached runs the compiler command (with include flags) on source, unless it succeeded on the
+// same preprocessed source before. With an ext, it compiles an object, whose path it returns.
+func cached(t *testing.T, dir string, compiler, include []string, source, ext string) (string, []byte, error) {
+	pre := append(append(append([]string{}, compiler[1:]...), include...), "-E", "-P", source)
+	preprocessed, err := command(t, dir, time.Minute, compiler[0], pre...)
+	if err != nil {
+		return "", preprocessed, err
+	}
+	hash := sha256.New()
+	fmt.Fprintf(hash, "%q\n", compiler)
+	hash.Write(preprocessed)
+	key := filepath.Join(cache, fmt.Sprintf("%x", hash.Sum(nil))+ext)
+	if ext == "" {
+		key += ".ok"
+	}
+	if _, err := os.Stat(key); err == nil {
+		return key, nil, nil
+	}
+	if err := os.MkdirAll(cache, 0755); err != nil {
+		t.Fatal(err)
+	}
+	args := append(append(append([]string{}, compiler[1:]...), include...), source)
+	f, err := os.CreateTemp(cache, "*.tmp") // (tests run in parallel)
+	if err != nil {
+		t.Fatal(err)
+	}
+	f.Close()
+	tmp := f.Name()
+	defer os.Remove(tmp)
+	if ext != "" {
+		args = append(args, "-c", "-o", tmp)
+	}
+	if out, err := command(t, dir, time.Minute, compiler[0], args...); err != nil {
+		return "", out, err
+	}
+	if ext == "" {
+		if err := os.WriteFile(tmp, nil, 0644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := os.Rename(tmp, key); err != nil {
+		t.Fatal(err)
+	}
+	return key, nil, nil
 }
 
 func isMain(src []byte) bool {
