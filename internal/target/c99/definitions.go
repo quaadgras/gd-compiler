@@ -94,6 +94,9 @@ func (c99 Target) TypeDefinition(spec source.TypeDefinition) error {
 	// Type descriptors are always qualified by the package, as they have external linkage.
 	rsuffix := "_go_" + c99.CurrentPackage + "_package"
 	ctype := c99.TypeOf(spec.Type.TypeAndValue().Type)
+	if iface, ok := spec.Type.TypeAndValue().Type.Underlying().(*types.Interface); ok && iface.NumMethods() > 0 {
+		ctype = c99.InterfaceTypeOf(spec.Type.TypeAndValue().Type) // the table of methods.
+	}
 	if spec.Global {
 		c99.defineType(spec.Name.String+suffix, []types.Type{spec.Type.TypeAndValue().Type}, func(w io.Writer) {
 			fmt.Fprintf(w, "\ntypedef %s %s%s;", ctype, spec.Name.String, suffix)
@@ -133,6 +136,7 @@ func (c99 Target) TypeDefinition(spec source.TypeDefinition) error {
 	}
 	if obj, ok := spec.Name.Unique.(*types.TypeName); ok && spec.Global {
 		fmt.Fprint(c99, c99.methodTable(obj.Type()))
+		fmt.Fprint(c99, c99.equalField(obj.Type()))
 	}
 	fmt.Fprintf(c99, "}")
 	fmt.Fprintf(c99, ";\n")

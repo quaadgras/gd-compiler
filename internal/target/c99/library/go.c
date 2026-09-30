@@ -280,6 +280,38 @@ static void go_print_complex(double re, double im, int bits) {
     go_print_cstring("i)");
 }
 
+// go_aaf8f8zz_quo divides complex numbers, as Go does, see runtime/complex.go.
+go_aaf8f8zz go_aaf8f8zz_quo(go_aaf8f8zz n, go_aaf8f8zz m) {
+    double e, f;
+    if (fabs(m.f1) >= fabs(m.f2)) {
+        double ratio = m.f2 / m.f1, denom = m.f1 + ratio * m.f2;
+        e = (n.f1 + n.f2 * ratio) / denom;
+        f = (n.f2 - n.f1 * ratio) / denom;
+    } else {
+        double ratio = m.f1 / m.f2, denom = m.f2 + ratio * m.f1;
+        e = (n.f1 * ratio + n.f2) / denom;
+        f = (n.f2 * ratio - n.f1) / denom;
+    }
+    if (isnan(e) && isnan(f)) { // correct the result to infinities and zeros, as C99 G.5.1.
+        double a = n.f1, b = n.f2, c = m.f1, d = m.f2;
+        if (c == 0 && d == 0 && (!isnan(a) || !isnan(b))) {
+            e = copysign(INFINITY, c) * a;
+            f = copysign(INFINITY, c) * b;
+        } else if ((isinf(a) || isinf(b)) && isfinite(c) && isfinite(d)) {
+            a = copysign(isinf(a) ? 1.0 : 0.0, a);
+            b = copysign(isinf(b) ? 1.0 : 0.0, b);
+            e = INFINITY * (a * c + b * d);
+            f = INFINITY * (b * c - a * d);
+        } else if ((isinf(c) || isinf(d)) && isfinite(a) && isfinite(b)) {
+            c = copysign(isinf(c) ? 1.0 : 0.0, c);
+            d = copysign(isinf(d) ? 1.0 : 0.0, d);
+            e = 0 * (a * c + b * d);
+            f = 0 * (b * d - a * c);
+        }
+    }
+    return (go_aaf8f8zz){e, f};
+}
+
 void go_print_complex128(go_aaf8f8zz v) { go_print_complex(v.f1, v.f2, 64); }
 void go_print_complex64(go_aaf4f4zz v) { go_print_complex(v.f1, v.f2, 32); }
 
@@ -417,7 +449,41 @@ go_tf go_type_eq(const go_type* a, const go_type* b) {
     return a->kind == b->kind && strcmp(a->name, b->name) == 0;
 }
 
-const go_type go_type_runtime_error = {.name="runtime.Error", .kind=go_kind_string};
+go_tf go_vv_eq(go_vv a, go_vv b) {
+    if (!a.go_type || !b.go_type) return a.go_type == b.go_type;
+    if (!go_type_eq(a.go_type, b.go_type)) return false;
+    const void *x = a.ptr.ptr, *y = b.ptr.ptr;
+    switch (a.go_type->kind) {
+    case go_kind_bool: return *(const go_tf*)x == *(const go_tf*)y;
+    case go_kind_int8: case go_kind_uint8: return *(const go_u1*)x == *(const go_u1*)y;
+    case go_kind_int16: case go_kind_uint16: return *(const go_u2*)x == *(const go_u2*)y;
+    case go_kind_int32: case go_kind_uint32: return *(const go_u4*)x == *(const go_u4*)y;
+    case go_kind_int64: case go_kind_uint64: return *(const go_u8*)x == *(const go_u8*)y;
+    case go_kind_int: case go_kind_uint: return *(const go_ii*)x == *(const go_ii*)y;
+    case go_kind_uintptr: return *(const go_up*)x == *(const go_up*)y;
+    case go_kind_float32: return *(const go_f4*)x == *(const go_f4*)y;
+    case go_kind_float64: return *(const go_f8*)x == *(const go_f8*)y;
+    case go_kind_complex64: return ((const go_aaf4f4zz*)x)->f1 == ((const go_aaf4f4zz*)y)->f1 && ((const go_aaf4f4zz*)x)->f2 == ((const go_aaf4f4zz*)y)->f2;
+    case go_kind_complex128: return ((const go_aaf8f8zz*)x)->f1 == ((const go_aaf8f8zz*)y)->f1 && ((const go_aaf8f8zz*)x)->f2 == ((const go_aaf8f8zz*)y)->f2;
+    case go_kind_string: return go_string_eq(*(const go_ss*)x, *(const go_ss*)y);
+    case go_kind_pointer: case go_kind_unsafe_pointer: return ((const go_pt*)x)->ptr == ((const go_pt*)y)->ptr;
+    case go_kind_chan: return *(const go_ch*)x == *(const go_ch*)y;
+    case go_kind_struct: case go_kind_array:
+        if (a.go_type->equal) return a.go_type->equal(x, y);
+        break;
+    default: break;
+    }
+    go_panic_error("runtime error: comparing uncomparable type %s", a.go_type->name);
+}
+
+// Runtime errors are strings, with the methods of runtime.Error (sorted by name).
+static go_ss go_runtime_error_Error(void* e) { return *(go_ss*)e; }
+static void go_runtime_error_RuntimeError(void* e) { (void)e; }
+static const go_method go_runtime_error_methods[] = {
+    { "Error", "func() string", (void(*)(void))go_runtime_error_Error },
+    { "RuntimeError", "func()", (void(*)(void))go_runtime_error_RuntimeError },
+};
+const go_type go_type_runtime_error = {.name="runtime.Error", .kind=go_kind_string, .methods=go_runtime_error_methods, .nmethods=2};
 
 void go_panic_error(const char* format, ...) {
     va_list args;

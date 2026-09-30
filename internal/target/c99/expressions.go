@@ -63,6 +63,45 @@ func (c99 Target) ExpressionBinary(expr source.ExpressionBinary) error {
 		if isNil(y) {
 			return c99.compareNil(expr.Operation.Value, x)
 		}
+		not := ""
+		if expr.Operation.Value == token.NEQ {
+			not = "!"
+		}
+		_, xIface := x.TypeAndValue().Type.Underlying().(*types.Interface)
+		_, yIface := y.TypeAndValue().Type.Underlying().(*types.Interface)
+		if xIface || yIface { // compared as empty interfaces.
+			vv := func(e source.Expression) (string, error) {
+				if _, iface := e.TypeAndValue().Type.Underlying().(*types.Interface); iface {
+					return asEmptyInterface(c99.toString(e), e.TypeAndValue().Type), nil
+				}
+				return c99.AnyOf(e)
+			}
+			a, err := vv(x)
+			if err != nil {
+				return err
+			}
+			b, err := vv(y)
+			if err != nil {
+				return err
+			}
+			fmt.Fprintf(c99, "(%sgo_vv_eq(%s, %s))", not, a, b)
+			return nil
+		}
+		switch t := x.TypeAndValue().Type.Underlying().(type) {
+		case *types.Struct, *types.Array:
+			fmt.Fprintf(c99, "(%s%s)", not, c99.equality(c99.toString(x), c99.toString(y), x.TypeAndValue().Type))
+			return nil
+		case *types.Basic:
+			if t.Info()&types.IsComplex != 0 {
+				fmt.Fprintf(c99, "(%s%s)", not, c99.equality(c99.toString(x), c99.toString(y), x.TypeAndValue().Type))
+				return nil
+			}
+		}
+	}
+	if basic, ok := expr.TypeAndValue().Type.Underlying().(*types.Basic); ok && basic.Info()&types.IsComplex != 0 {
+		op := map[token.Token]string{token.ADD: "add", token.SUB: "sub", token.MUL: "mul", token.QUO: "quo"}[expr.Operation.Value]
+		fmt.Fprintf(c99, "%s_%s(%s, %s)", c99.TypeOf(expr.TypeAndValue().Type), op, c99.toString(expr.X), c99.toString(expr.Y))
+		return nil
 	}
 	switch expr.Operation.Value {
 	case token.AND_NOT:
@@ -187,6 +226,11 @@ func (c99 Target) DivisionOf(op token.Token, t types.Type) string {
 func isString(t types.Type) bool {
 	basic, ok := t.Underlying().(*types.Basic)
 	return ok && basic.Info()&types.IsString != 0
+}
+
+func isComplex(t types.Type) bool {
+	basic, ok := t.Underlying().(*types.Basic)
+	return ok && basic.Info()&types.IsComplex != 0
 }
 
 func isInteger(t types.Type) bool {
@@ -423,6 +467,15 @@ func (c99 Target) ExpressionSlice(e source.ExpressionSlice) error {
 }
 
 func (c99 Target) ExpressionUnary(e source.ExpressionUnary) error {
+	if basic, ok := e.X.TypeAndValue().Type.Underlying().(*types.Basic); ok && basic.Info()&types.IsComplex != 0 {
+		switch e.Operation.Value {
+		case token.SUB:
+			fmt.Fprintf(c99, "%s_neg(%s)", c99.TypeOf(e.X.TypeAndValue().Type), c99.toString(e.X))
+			return nil
+		case token.ADD:
+			return c99.Expression(e.X)
+		}
+	}
 	switch e.Operation.Value {
 	case token.AND:
 		if xyz.ValueOf(e.X) == source.Expressions.Composite { // &T{...} is allocated.

@@ -6,79 +6,79 @@
 # path	pass|fail|skip	reason
 235.go	fail	gd: unsupported type *types.Named
 64bit.go	skip	todo:runoutput
-abi/bad_internal_offsets.go	fail	c11: error: invalid operands to binary != (have 'StructF0S1_go_test_package' {aka 'go_struct_999fcc128d1a8290'} and 'StructF0…
+abi/bad_internal_offsets.go	pass	
 abi/bad_select_crash.go	skip	gc:goexperiment regabi,regabiargs
-abi/convF_criteria.go	fail	gd: unsupported builtin function
-abi/convT64_criteria.go	fail	gd: unsupported builtin function
+abi/convF_criteria.go	fail	gd: panic: unsupported unsafe.Sizeof
+abi/convT64_criteria.go	fail	gd: panic: unsupported unsafe.Sizeof
 abi/defer_aggregate.go	pass	
-abi/defer_recover_results.go	fail	c11: error: invalid operands to binary != (have 'S_go_main_package' {aka 'go_struct_aadfd7abe455ee6d'} and 'S_go_main_package…
-abi/double_nested_addressed_struct.go	fail	gd: unsupported builtin function
-abi/double_nested_struct.go	fail	gd: unsupported builtin function
-abi/f_ret_z_not.go	fail	gd: unsupported builtin function
-abi/fibish.go	fail	gd: unsupported builtin function
-abi/fibish_closure.go	fail	gd: unsupported builtin function
-abi/fuzz_trailing_zero_field.go	fail	c11: error: invalid operands to binary != (have 'S1_go_main_package' {aka 'go_struct_20e3e1e3a5c0c678'} and 'S1_go_main_packa…
-abi/idata.go	fail	gd: unsupported builtin function
-abi/leaf.go	fail	gd: unsupported builtin function
-abi/leaf2.go	fail	gd: unsupported builtin function
-abi/many_int_input.go	fail	gd: unsupported builtin function
-abi/many_intstar_input.go	fail	gd: unsupported builtin function
+abi/defer_recover_results.go	pass	
+abi/double_nested_addressed_struct.go	fail	gd: panic: unsupported unsafe.Sizeof
+abi/double_nested_struct.go	fail	gd: panic: unsupported unsafe.Sizeof
+abi/f_ret_z_not.go	fail	gd: panic: unsupported unsafe.Sizeof
+abi/fibish.go	fail	gd: panic: unsupported unsafe.Sizeof
+abi/fibish_closure.go	fail	gd: panic: unsupported unsafe.Sizeof
+abi/fuzz_trailing_zero_field.go	pass	
+abi/idata.go	fail	gd: panic: unsupported unsafe.Sizeof
+abi/leaf.go	fail	gd: panic: unsupported unsafe.Sizeof
+abi/leaf2.go	fail	gd: panic: unsupported unsafe.Sizeof
+abi/many_int_input.go	fail	gd: panic: unsupported unsafe.Sizeof
+abi/many_intstar_input.go	fail	gd: panic: unsupported unsafe.Sizeof
 abi/map.go	skip	gc:finalizers runtime.SetFinalizer
-abi/method_wrapper.go	fail	c11: error: invalid operands to binary != (have 'go_arr2_go_ii' and 'go_arr2_go_ii')
+abi/method_wrapper.go	pass	
 abi/more_intstar_input.go	pass	
-abi/named_results.go	fail	gd: unsupported builtin function
-abi/named_return_stuff.go	fail	gd: unsupported builtin function
+abi/named_results.go	fail	gd: panic: unsupported unsafe.Sizeof
+abi/named_return_stuff.go	fail	gd: panic: unsupported unsafe.Sizeof
 abi/open_defer_1.go	pass	
 abi/part_live.go	pass	
 abi/part_live_2.go	pass	
-abi/reg_not_ssa.go	fail	c11: error: invalid operands to binary != (have 'T_go_main_package' {aka 'go_struct_e671604c2868915c'} and 'T_go_main_package…
+abi/reg_not_ssa.go	pass	
 abi/result_live.go	skip	gc:diagnostics -live
 abi/result_regalloc.go	pass	
-abi/return_stuff.go	fail	gd: unsupported builtin function
-abi/s_sif_sif.go	fail	gd: unsupported builtin function
-abi/spills3.go	fail	gd: unsupported builtin function
-abi/spills4.go	fail	gd: unsupported builtin function
+abi/return_stuff.go	fail	gd: panic: unsupported unsafe.Sizeof
+abi/s_sif_sif.go	fail	gd: panic: unsupported unsafe.Sizeof
+abi/spills3.go	fail	gd: panic: unsupported unsafe.Sizeof
+abi/spills4.go	fail	gd: panic: unsupported unsafe.Sizeof
 abi/store_reg_args.go	pass	
-abi/struct_3_string_input.go	fail	gd: unsupported builtin function
-abi/struct_lower_1.go	fail	gd: unsupported builtin function
-abi/too_big_to_ssa.go	fail	gd: unsupported builtin function
-abi/uglyfib.go	fail	gd: unsupported builtin function
+abi/struct_3_string_input.go	fail	gd: panic: unsupported unsafe.Sizeof
+abi/struct_lower_1.go	fail	gd: panic: unsupported unsafe.Sizeof
+abi/too_big_to_ssa.go	fail	gd: panic: unsupported unsafe.Sizeof
+abi/uglyfib.go	fail	gd: panic: unsupported unsafe.Sizeof
 abi/wrapdefer_largetmp.go	pass	
 abi/zombie_struct_select.go	pass	
-alg.go	fail	gd: unsupported builtin function
+alg.go	fail	gd: panic: unsupported unsafe.Sizeof
 alias.go	skip	todo:errorcheck
 alias1.go	pass	
 alias2.go	skip	todo:errorcheck
 alias3.go	skip	todo:rundir
 align.go	pass	
-append.go	fail	gd: unsupported builtin function
+append.go	fail	gd: panic: unsupported unsafe.Sizeof
 append1.go	skip	todo:errorcheck
 arenas/smoke.go	skip	gc:goexperiment arenas
-args.go	fail	gd: unsupported builtin function
-armimm.go	fail	gd: unsupported builtin function
+args.go	fail	gd: panic: unsupported unsafe.Sizeof
+armimm.go	fail	gd: panic: unsupported unsafe.Sizeof
 asmhdr.go	skip	todo:buildrundir
 assign.go	skip	todo:errorcheck
 assign1.go	skip	todo:errorcheck
 atomicload.go	pass	
 bigalg.go	pass	
 bigmap.go	fail	c11: error: unknown type name 'T_go_main_package'
-blank.go	fail	gd: unsupported builtin function
+blank.go	fail	gd: panic: unsupported unsafe.Sizeof
 blank1.go	skip	todo:errorcheck
 bloop.go	skip	gc:diagnostics -m=2
 bom.go	skip	todo:runoutput
 bombad.go	skip	todo:errorcheck
 bounds.go	skip	gc:diagnostics -m
 cannotassign.go	skip	todo:errorcheck
-chan/doubleselect.go	fail	gd: unsupported builtin function
-chan/fifo.go	fail	gd: unsupported builtin function
-chan/goroutines.go	fail	gd: unsupported builtin function
-chan/nonblock.go	fail	gd: unsupported builtin function
+chan/doubleselect.go	fail	gd: panic: unsupported unsafe.Sizeof
+chan/fifo.go	fail	gd: panic: unsupported unsafe.Sizeof
+chan/goroutines.go	fail	gd: panic: unsupported unsafe.Sizeof
+chan/nonblock.go	fail	gd: panic: unsupported unsafe.Sizeof
 chan/perm.go	skip	todo:errorcheck
-chan/powser1.go	fail	gd: unsupported builtin function
-chan/powser2.go	fail	gd: unsupported builtin function
+chan/powser1.go	fail	gd: panic: unsupported unsafe.Sizeof
+chan/powser2.go	fail	gd: panic: unsupported unsafe.Sizeof
 chan/select.go	fail	exit: exit status 2 panic: fail
 chan/select2.go	skip	gc:memstats runtime.MemProfileRate
-chan/select3.go	fail	gd: unsupported builtin function
+chan/select3.go	fail	gd: panic: unsupported unsafe.Sizeof
 chan/select4.go	pass	
 chan/select5.go	skip	todo:runoutput
 chan/select6.go	pass	
@@ -89,13 +89,13 @@ chan/sieve1.go	pass
 chan/sieve2.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
 chan/zerosize.go	pass	
 chancap.go	fail	gd: unsupported type *types.Named
-chanlinear.go	fail	gd: unsupported builtin function
-char_lit.go	fail	gd: unsupported builtin function
+chanlinear.go	fail	gd: panic: unsupported unsafe.Sizeof
+char_lit.go	fail	gd: panic: unsupported unsafe.Sizeof
 char_lit1.go	skip	gc:diagnostics -d=panic
 checkbce.go	skip	gc:diagnostics -d=ssa/check_bce/debug=3
 clear.go	fail	c11: error: incompatible type for argument 1 of 'go_slice_clear'
 clearfat.go	skip	todo:runoutput
-closedchan.go	fail	gd: unsupported builtin function
+closedchan.go	fail	gd: panic: unsupported unsafe.Sizeof
 closure.go	skip	gc:memstats runtime.ReadMemStats
 closure1.go	pass	
 closure2.go	fail	gd: panic: interface conversion: ast.Expr is *ast.IndexExpr, not *ast.Ident
@@ -104,10 +104,10 @@ closure4.go	pass
 closure5.go	skip	todo:compiledir
 closure6.go	pass	
 closure7.go	pass	
-cmp.go	fail	gd: unsupported builtin function
+cmp.go	fail	gd: panic: unsupported unsafe.Sizeof
 cmp6.go	skip	todo:errorcheck
 cmplx.go	skip	todo:errorcheck
-cmplxdivide.go	fail	gd: unsupported builtin function
+cmplxdivide.go	fail	gd: panic: unsupported unsafe.Sizeof
 cmplxdivide1.go	skip	upstream:skip
 codegen/addrcalc.go	skip	gc:asmcheck
 codegen/alloc.go	skip	gc:asmcheck
@@ -198,19 +198,19 @@ codegen/writebarrier.go	skip	gc:asmcheck
 codegen/zerosize.go	skip	gc:asmcheck
 complit.go	pass	
 complit1.go	skip	todo:errorcheck
-complit2.go	fail	gd: unsupported builtin function
+complit2.go	fail	gd: panic: unsupported unsafe.Sizeof
 compos.go	pass	
-const.go	fail	gd: unsupported builtin function
+const.go	fail	gd: panic: unsupported unsafe.Sizeof
 const1.go	skip	todo:errorcheck
 const2.go	skip	todo:errorcheck
-const3.go	fail	gd: unsupported builtin function
+const3.go	fail	gd: panic: unsupported unsafe.Sizeof
 const4.go	fail	gd: unsupported len of *
 const5.go	skip	todo:errorcheck
 const6.go	skip	todo:errorcheck
 const7.go	skip	gc:toolchain
 const8.go	pass	
 convT2X.go	fail	gd: unsupported type *types.Named
-convert.go	fail	gd: unsupported builtin function
+convert.go	fail	gd: panic: unsupported unsafe.Sizeof
 convert1.go	skip	todo:errorcheck
 convert2.go	skip	todo:errorcheck
 convert3.go	skip	todo:errorcheck
@@ -219,7 +219,7 @@ convert5.go	skip	gc:flags -gcflags=-d=converthash=qy
 convinline.go	skip	todo:runoutput
 convlit.go	skip	todo:errorcheck
 convlit1.go	skip	todo:errorcheck
-copy.go	fail	gd: unsupported builtin function
+copy.go	fail	gd: panic: unsupported unsafe.Sizeof
 copy1.go	skip	todo:errorcheck
 crlf.go	skip	todo:runoutput
 ddd.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
@@ -227,7 +227,7 @@ ddd1.go	skip	todo:errorcheck
 ddd2.go	skip	todo:rundir
 decl.go	pass	
 declbad.go	skip	todo:errorcheck
-defer.go	fail	gd: unsupported builtin function
+defer.go	fail	gd: panic: unsupported unsafe.Sizeof
 defererrcheck.go	skip	gc:diagnostics -d=defer
 deferfin.go	skip	gc:finalizers runtime.SetFinalizer
 defernil.go	pass	
@@ -238,14 +238,14 @@ devirtualization_nil_panics.go	skip	gc:stack-introspection runtime.Callers
 devirtualization_with_type_assertions_interleaved.go	skip	gc:diagnostics -m
 directive.go	skip	todo:errorcheck
 directive2.go	skip	todo:errorcheck
-divide.go	fail	gd: unsupported builtin function
+divide.go	fail	gd: panic: unsupported unsafe.Sizeof
 divmod.go	pass	
 dwarf/dwarf.go	skip	todo:rundir
 dwarf/linedirectives.go	pass	
 embedfunc.go	skip	todo:errorcheck
 embedvers.go	skip	todo:errorcheck
 empty.go	pass	
-env.go	fail	gd: unsupported builtin function
+env.go	fail	gd: panic: unsupported unsafe.Sizeof
 eof.go	pass	
 eof1.go	pass	
 escape.go	fail	exit: exit status 2 panic: BUG: no escape
@@ -289,7 +289,7 @@ fixedbugs/bug002.go	pass
 fixedbugs/bug003.go	pass	
 fixedbugs/bug004.go	pass	
 fixedbugs/bug005.go	pass	
-fixedbugs/bug006.go	fail	gd: unsupported builtin function
+fixedbugs/bug006.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug007.go	pass	
 fixedbugs/bug008.go	pass	
 fixedbugs/bug009.go	pass	
@@ -307,7 +307,7 @@ fixedbugs/bug022.go	skip	todo:errorcheck
 fixedbugs/bug023.go	pass	
 fixedbugs/bug024.go	pass	
 fixedbugs/bug026.go	fail	c11: error: 'go_type_I_go_main_package' undeclared here (not in a function); did you mean 'go_type_Vector_go_main_package'?
-fixedbugs/bug027.go	fail	gd: unsupported builtin function
+fixedbugs/bug027.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug028.go	pass	
 fixedbugs/bug030.go	skip	todo:errorcheck
 fixedbugs/bug031.go	pass	
@@ -329,8 +329,8 @@ fixedbugs/bug055.go	pass
 fixedbugs/bug056.go	pass	
 fixedbugs/bug057.go	pass	
 fixedbugs/bug058.go	pass	
-fixedbugs/bug059.go	fail	gd: unsupported builtin function
-fixedbugs/bug060.go	fail	gd: unsupported builtin function
+fixedbugs/bug059.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/bug060.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug061.go	pass	
 fixedbugs/bug062.go	skip	todo:errorcheck
 fixedbugs/bug063.go	pass	
@@ -340,7 +340,7 @@ fixedbugs/bug066.go	pass
 fixedbugs/bug067.go	pass	
 fixedbugs/bug068.go	skip	todo:errorcheck
 fixedbugs/bug069.go	pass	
-fixedbugs/bug070.go	fail	gd: unsupported builtin function
+fixedbugs/bug070.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug071.go	pass	
 fixedbugs/bug072.go	skip	todo:errorcheck
 fixedbugs/bug073.go	pass	
@@ -386,15 +386,15 @@ fixedbugs/bug116.go	pass
 fixedbugs/bug117.go	skip	todo:errorcheck
 fixedbugs/bug118.go	pass	
 fixedbugs/bug119.go	pass	
-fixedbugs/bug120.go	fail	gd: unsupported builtin function
+fixedbugs/bug120.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug121.go	skip	todo:errorcheck
 fixedbugs/bug122.go	skip	todo:errorcheck
 fixedbugs/bug123.go	skip	todo:errorcheck
 fixedbugs/bug126.go	skip	todo:errorcheck
 fixedbugs/bug127.go	skip	todo:errorcheck
 fixedbugs/bug128.go	pass	
-fixedbugs/bug129.go	fail	gd: unsupported builtin function
-fixedbugs/bug130.go	fail	gd: unsupported builtin function
+fixedbugs/bug129.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/bug130.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug131.go	skip	todo:errorcheck
 fixedbugs/bug132.go	skip	todo:errorcheck
 fixedbugs/bug133.go	skip	todo:errorcheck
@@ -404,25 +404,25 @@ fixedbugs/bug136.go	skip	todo:errorcheck
 fixedbugs/bug137.go	pass	
 fixedbugs/bug139.go	pass	
 fixedbugs/bug140.go	fail	c11: error: implicit declaration of function 'main_go_main_package'; did you mean 'init_go_main_package'? [-Wimplicit-functio…
-fixedbugs/bug141.go	fail	gd: unsupported builtin function
+fixedbugs/bug141.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug142.go	pass	
 fixedbugs/bug143.go	fail	gd: unsupported type *types.Named
 fixedbugs/bug144.go	pass	
 fixedbugs/bug145.go	pass	
 fixedbugs/bug146.go	skip	todo:errorcheck
-fixedbugs/bug147.go	fail	gd: unsupported builtin function
+fixedbugs/bug147.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug148.go	fail	exit: exit status 2 panic: function should panic
 fixedbugs/bug149.go	pass	
 fixedbugs/bug150.go	pass	
 fixedbugs/bug151.go	pass	
 fixedbugs/bug1515.go	pass	
 fixedbugs/bug152.go	pass	
-fixedbugs/bug154.go	fail	gd: unsupported builtin function
+fixedbugs/bug154.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug155.go	pass	
 fixedbugs/bug156.go	pass	
 fixedbugs/bug157.go	pass	
 fixedbugs/bug158.go	pass	
-fixedbugs/bug159.go	fail	gd: unsupported builtin function
+fixedbugs/bug159.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug160.go	skip	todo:rundir
 fixedbugs/bug161.go	pass	
 fixedbugs/bug163.go	skip	todo:errorcheck
@@ -438,20 +438,20 @@ fixedbugs/bug173.go	pass
 fixedbugs/bug174.go	pass	
 fixedbugs/bug175.go	skip	todo:errorcheck
 fixedbugs/bug176.go	skip	todo:errorcheck
-fixedbugs/bug177.go	fail	gd: unsupported builtin function
+fixedbugs/bug177.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug178.go	pass	
 fixedbugs/bug179.go	skip	todo:errorcheck
 fixedbugs/bug180.go	pass	
 fixedbugs/bug181.go	skip	todo:errorcheck
 fixedbugs/bug182.go	skip	todo:errorcheck
 fixedbugs/bug183.go	skip	todo:errorcheck
-fixedbugs/bug184.go	fail	gd: unsupported builtin function
+fixedbugs/bug184.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug185.go	pass	
 fixedbugs/bug186.go	skip	todo:errorcheck
-fixedbugs/bug187.go	fail	gd: unsupported builtin function
+fixedbugs/bug187.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug188.go	skip	gc:diagnostics -d=panic
 fixedbugs/bug189.go	skip	todo:errorcheck
-fixedbugs/bug190.go	fail	c11: error: unknown type name 'S_go_main_package'
+fixedbugs/bug190.go	pass	
 fixedbugs/bug191.go	skip	todo:rundir
 fixedbugs/bug192.go	skip	todo:errorcheck
 fixedbugs/bug193.go	skip	todo:errorcheck
@@ -463,13 +463,13 @@ fixedbugs/bug197.go	skip	todo:errorcheck
 fixedbugs/bug198.go	skip	todo:errorcheck
 fixedbugs/bug199.go	pass	
 fixedbugs/bug200.go	skip	todo:errorcheck
-fixedbugs/bug201.go	fail	c11: error: incompatible types when assigning to type 'struct <anonymous>' from type 'go_if'
+fixedbugs/bug201.go	pass	
 fixedbugs/bug202.go	pass	
 fixedbugs/bug203.go	pass	
 fixedbugs/bug204.go	pass	
 fixedbugs/bug205.go	skip	todo:errorcheck
-fixedbugs/bug206.go	fail	gd: unsupported builtin function
-fixedbugs/bug207.go	fail	gd: unsupported builtin function
+fixedbugs/bug206.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/bug207.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug208.go	skip	todo:errorcheck
 fixedbugs/bug209.go	skip	todo:errorcheck
 fixedbugs/bug212.go	skip	todo:errorcheck
@@ -489,14 +489,14 @@ fixedbugs/bug227.go	pass
 fixedbugs/bug228.go	skip	todo:errorcheck
 fixedbugs/bug228a.go	skip	todo:errorcheck
 fixedbugs/bug229.go	skip	todo:errorcheck
-fixedbugs/bug230.go	fail	c11: error: incompatible types when returning type 'struct <anonymous>' but 'struct <anonymous>' was expected
+fixedbugs/bug230.go	fail	c11: error: incompatible type for argument 2 of 'go_send_if01'
 fixedbugs/bug231.go	skip	todo:errorcheck
 fixedbugs/bug232.go	pass	
-fixedbugs/bug233.go	fail	gd: unsupported builtin function
+fixedbugs/bug233.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug234.go	pass	
 fixedbugs/bug235.go	pass	
 fixedbugs/bug236.go	pass	
-fixedbugs/bug237.go	fail	gd: unsupported builtin function
+fixedbugs/bug237.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug238.go	skip	todo:errorcheck
 fixedbugs/bug239.go	pass	
 fixedbugs/bug240.go	skip	todo:errorcheck
@@ -516,23 +516,23 @@ fixedbugs/bug253.go	pass
 fixedbugs/bug254.go	pass	
 fixedbugs/bug255.go	skip	todo:errorcheck
 fixedbugs/bug256.go	skip	todo:errorcheck
-fixedbugs/bug257.go	fail	gd: unsupported builtin function
+fixedbugs/bug257.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug258.go	fail	c11: error: implicit declaration of function 'Pow_go_math_package'; did you mean 'Sqrt_go_math_package'? [-Wimplicit-function…
-fixedbugs/bug259.go	fail	gd: unsupported builtin function
-fixedbugs/bug260.go	fail	gd: unsupported builtin function
+fixedbugs/bug259.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/bug260.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug261.go	pass	
-fixedbugs/bug262.go	fail	gd: unsupported builtin function
+fixedbugs/bug262.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug263.go	fail	exit: exit status 2 panic: BUG: world!
 fixedbugs/bug264.go	pass	
-fixedbugs/bug265.go	fail	gd: unsupported builtin function
+fixedbugs/bug265.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug266.go	pass	
 fixedbugs/bug267.go	pass	
 fixedbugs/bug269.go	pass	
-fixedbugs/bug271.go	fail	gd: unsupported builtin function
+fixedbugs/bug271.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug272.go	pass	
 fixedbugs/bug273.go	fail	exit: signal: trace/breakpoint trap filc safety error: attempt to allocate object that is too bi…
 fixedbugs/bug274.go	skip	todo:errorcheck
-fixedbugs/bug275.go	fail	gd: unsupported builtin function
+fixedbugs/bug275.go	pass	
 fixedbugs/bug276.go	pass	
 fixedbugs/bug277.go	fail	gd: unsupported conversion from test.C to chan<- int
 fixedbugs/bug278.go	skip	todo:errorcheck
@@ -563,20 +563,20 @@ fixedbugs/bug303.go	fail	gd: unsupported type *types.Named
 fixedbugs/bug304.go	pass	
 fixedbugs/bug305.go	skip	todo:errorcheck
 fixedbugs/bug306.go	skip	todo:compiledir
-fixedbugs/bug307.go	fail	gd: unsupported builtin function
-fixedbugs/bug308.go	fail	gd: unsupported builtin function
+fixedbugs/bug307.go	pass	
+fixedbugs/bug308.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug309.go	pass	
 fixedbugs/bug311.go	fail	gd: range over unsupported type *types.Map
-fixedbugs/bug312.go	fail	c11: error: invalid operands to binary != (have 'go_vv' and 'long long int')
+fixedbugs/bug312.go	pass	
 fixedbugs/bug313.go	skip	todo:errorcheck
-fixedbugs/bug314.go	fail	c11: error: invalid initializer
-fixedbugs/bug315.go	fail	c11: error: invalid operands to binary / (have 'go_aaf8f8zz' and 'go_aaf8f8zz')
+fixedbugs/bug314.go	pass	
+fixedbugs/bug315.go	pass	
 fixedbugs/bug316.go	fail	c11: error: initializer element is not constant
 fixedbugs/bug317.go	pass	
 fixedbugs/bug318.go	skip	todo:errorcheck
 fixedbugs/bug319.go	pass	
 fixedbugs/bug320.go	pass	
-fixedbugs/bug321.go	fail	gd: unsupported builtin function
+fixedbugs/bug321.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug322.go	skip	todo:rundir
 fixedbugs/bug323.go	skip	todo:errorcheck
 fixedbugs/bug324.go	skip	todo:rundir
@@ -601,7 +601,7 @@ fixedbugs/bug342.go	skip	todo:errorcheck
 fixedbugs/bug343.go	pass	
 fixedbugs/bug344.go	skip	todo:errorcheck
 fixedbugs/bug345.go	skip	todo:errorcheck
-fixedbugs/bug346.go	fail	gd: unsupported builtin function
+fixedbugs/bug346.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug347.go	skip	gc:stack-introspection runtime.Caller
 fixedbugs/bug348.go	skip	gc:stack-introspection runtime.Caller
 fixedbugs/bug349.go	skip	todo:errorcheck
@@ -617,7 +617,7 @@ fixedbugs/bug358.go	skip	gc:diagnostics -d=panic
 fixedbugs/bug361.go	pass	
 fixedbugs/bug362.go	skip	todo:errorcheck
 fixedbugs/bug363.go	skip	todo:errorcheck
-fixedbugs/bug364.go	fail	gd: unsupported builtin function
+fixedbugs/bug364.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug365.go	skip	todo:errorcheck
 fixedbugs/bug366.go	pass	
 fixedbugs/bug367.go	skip	todo:rundir
@@ -628,7 +628,7 @@ fixedbugs/bug371.go	skip	todo:errorcheck
 fixedbugs/bug372.go	pass	
 fixedbugs/bug373.go	skip	todo:errorcheck
 fixedbugs/bug374.go	skip	todo:errorcheck
-fixedbugs/bug375.go	fail	c11: error: invalid operands to binary == (have 'go_vv' and 'go_ss')
+fixedbugs/bug375.go	pass	
 fixedbugs/bug376.go	skip	todo:errorcheck
 fixedbugs/bug377.go	skip	todo:compiledir
 fixedbugs/bug378.go	fail	c11: error: unknown type name 'X_go_main_package'; did you mean 'Header_go_main_package'?
@@ -641,21 +641,21 @@ fixedbugs/bug384.go	skip	todo:errorcheck
 fixedbugs/bug385_32.go	skip	upstream:build 386 || amd64p32 || arm
 fixedbugs/bug385_64.go	skip	todo:errorcheck
 fixedbugs/bug386.go	skip	todo:errorcheck
-fixedbugs/bug387.go	fail	gd: unsupported builtin function
+fixedbugs/bug387.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug388.go	skip	todo:errorcheck
 fixedbugs/bug388a.go	skip	todo:errorcheck
 fixedbugs/bug389.go	skip	todo:errorcheck
 fixedbugs/bug390.go	skip	todo:errorcheck
 fixedbugs/bug391.go	pass	
 fixedbugs/bug392.go	skip	todo:compiledir
-fixedbugs/bug393.go	fail	c11: error: invalid operands to binary == (have 'go_vv' and 'long long int')
+fixedbugs/bug393.go	pass	
 fixedbugs/bug394.go	skip	todo:errorcheck
 fixedbugs/bug396.go	skip	todo:compiledir
 fixedbugs/bug397.go	skip	gc:diagnostics -d=panic
 fixedbugs/bug398.go	skip	todo:errorcheck
 fixedbugs/bug399.go	pass	
-fixedbugs/bug401.go	fail	gd: unsupported builtin function
-fixedbugs/bug402.go	fail	gd: unsupported builtin function
+fixedbugs/bug401.go	pass	
+fixedbugs/bug402.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug403.go	pass	
 fixedbugs/bug404.go	skip	todo:compiledir
 fixedbugs/bug405.go	pass	
@@ -669,7 +669,7 @@ fixedbugs/bug413.go	skip	todo:errorcheck
 fixedbugs/bug414.go	skip	todo:rundir
 fixedbugs/bug415.go	skip	todo:compiledir
 fixedbugs/bug416.go	skip	todo:errorcheck
-fixedbugs/bug417.go	fail	c11: error: expected specifier-qualifier-list before 'go_arr1_S3_go_test_package'
+fixedbugs/bug417.go	pass	
 fixedbugs/bug418.go	skip	todo:errorcheck
 fixedbugs/bug419.go	pass	
 fixedbugs/bug420.go	fail	c11: error: '_' undeclared (first use in this function)
@@ -677,14 +677,14 @@ fixedbugs/bug421.go	skip	todo:errorcheck
 fixedbugs/bug422.go	pass	
 fixedbugs/bug423.go	pass	
 fixedbugs/bug424.go	skip	todo:rundir
-fixedbugs/bug425.go	fail	gd: unsupported builtin function
+fixedbugs/bug425.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug426.go	pass	
-fixedbugs/bug427.go	fail	c11: error: invalid operands to binary == (have 'S_go_main_package' {aka 'go_struct_b9ec856e6ec077f9'} and 'S_go_main_package…
+fixedbugs/bug427.go	pass	
 fixedbugs/bug428.go	pass	
 fixedbugs/bug430.go	pass	
 fixedbugs/bug431.go	pass	
 fixedbugs/bug432.go	pass	
-fixedbugs/bug433.go	fail	c11: error: invalid operands to binary != (have 'S_go_main_package' {aka 'go_struct_8ca8dbfb27d33684'} and 'S_go_main_package…
+fixedbugs/bug433.go	pass	
 fixedbugs/bug434.go	fail	c11: error: implicit declaration of function 'Float64bits_go_math_package' [-Wimplicit-function-declaration]
 fixedbugs/bug435.go	skip	todo:errorcheck
 fixedbugs/bug436.go	pass	
@@ -696,7 +696,7 @@ fixedbugs/bug440_64.go	pass
 fixedbugs/bug441.go	fail	gd: panic: unsupported node type: DefinedType
 fixedbugs/bug442.go	fail	gd: unsupported map key type interface
 fixedbugs/bug443.go	pass	
-fixedbugs/bug444.go	fail	gd: unsupported builtin function
+fixedbugs/bug444.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug445.go	pass	
 fixedbugs/bug446.go	fail	gd: panic: unsupported node type: DefinedType
 fixedbugs/bug447.go	skip	todo:runoutput
@@ -713,7 +713,7 @@ fixedbugs/bug457.go	pass
 fixedbugs/bug458.go	pass	
 fixedbugs/bug459.go	skip	todo:errorcheck
 fixedbugs/bug460.go	skip	todo:errorcheck
-fixedbugs/bug461.go	fail	gd: unsupported builtin function
+fixedbugs/bug461.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug462.go	skip	todo:errorcheck
 fixedbugs/bug463.go	skip	todo:errorcheck
 fixedbugs/bug464.go	skip	todo:errorcheck
@@ -721,7 +721,7 @@ fixedbugs/bug465.go	skip	todo:rundir
 fixedbugs/bug466.go	skip	todo:rundir
 fixedbugs/bug467.go	skip	todo:compiledir
 fixedbugs/bug468.go	skip	todo:rundir
-fixedbugs/bug470.go	fail	gd: unsupported builtin function
+fixedbugs/bug470.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug471.go	pass	
 fixedbugs/bug472.go	skip	todo:rundir
 fixedbugs/bug473.go	pass	
@@ -734,15 +734,15 @@ fixedbugs/bug479.go	skip	todo:rundir
 fixedbugs/bug480.go	skip	todo:compiledir
 fixedbugs/bug481.go	pass	
 fixedbugs/bug482.go	pass	
-fixedbugs/bug483.go	fail	gd: unsupported builtin function
+fixedbugs/bug483.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/bug484.go	pass	
 fixedbugs/bug485.go	pass	
 fixedbugs/bug486.go	pass	
 fixedbugs/bug487.go	skip	todo:errorcheck
 fixedbugs/bug488.go	skip	todo:errorcheck
 fixedbugs/bug489.go	pass	
-fixedbugs/bug490.go	fail	c11: error: invalid operands to binary == (have 'go_vv' and 'S_go_test_package' {aka 'go_az'})
-fixedbugs/bug491.go	fail	gd: unsupported builtin function
+fixedbugs/bug490.go	pass	
+fixedbugs/bug491.go	pass	
 fixedbugs/bug492.go	skip	todo:rundir
 fixedbugs/bug493.go	pass	
 fixedbugs/bug494.go	pass	
@@ -770,7 +770,7 @@ fixedbugs/bug515.go	skip	gc:build gccgo
 fixedbugs/bug516.go	fail	gd: unsupported conversion from
 fixedbugs/bug517.go	pass	
 fixedbugs/bug518.go	skip	todo:errorcheck
-fixedbugs/dse_move_auxint.go	fail	gd: unsupported builtin function
+fixedbugs/dse_move_auxint.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/gcc101994.go	pass	
 fixedbugs/gcc61204.go	pass	
 fixedbugs/gcc61244.go	pass	
@@ -783,7 +783,7 @@ fixedbugs/gcc61258.go	pass
 fixedbugs/gcc61264.go	fail	c11: error: lvalue required as left operand of assignment
 fixedbugs/gcc61265.go	pass	
 fixedbugs/gcc61273.go	pass	
-fixedbugs/gcc65755.go	fail	gd: unsupported builtin function
+fixedbugs/gcc65755.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/gcc67968.go	skip	todo:compiledir
 fixedbugs/gcc78763.go	pass	
 fixedbugs/gcc80226.go	pass	
@@ -795,7 +795,7 @@ fixedbugs/issue10219.go	skip	todo:compiledir
 fixedbugs/issue10253.go	pass	
 fixedbugs/issue10284.go	pass	
 fixedbugs/issue10320.go	pass	
-fixedbugs/issue10332.go	fail	gd: unsupported builtin function
+fixedbugs/issue10332.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue10353.go	pass	
 fixedbugs/issue10407.go	skip	todo:runoutput
 fixedbugs/issue10441.go	pass	
@@ -804,12 +804,12 @@ fixedbugs/issue10607.go	skip	gc:build linux && !ppc64 && gc && cgo
 fixedbugs/issue10607a.go	skip	upstream:skip
 fixedbugs/issue10654.go	pass	
 fixedbugs/issue10700.go	skip	todo:errorcheck
-fixedbugs/issue10925.go	fail	gd: unsupported builtin function
+fixedbugs/issue10925.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue10958.go	skip	upstream:build !nacl && !js && disabled_see_issue_18589
 fixedbugs/issue10975.go	skip	todo:errorcheck
 fixedbugs/issue10977.go	pass	
 fixedbugs/issue11053.go	skip	todo:rundir
-fixedbugs/issue11256.go	fail	gd: unsupported builtin function
+fixedbugs/issue11256.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue11286.go	pass	
 fixedbugs/issue11326.go	skip	todo:errorcheck
 fixedbugs/issue11326b.go	fail	c11: error: 'Inf' undeclared (first use in this function)
@@ -830,13 +830,13 @@ fixedbugs/issue11699.go	pass
 fixedbugs/issue11737.go	skip	todo:errorcheck
 fixedbugs/issue11750.go	pass	
 fixedbugs/issue11771.go	skip	gc:build !nacl && !js && !wasip1 && gc
-fixedbugs/issue11790.go	fail	gd: unsupported builtin function
-fixedbugs/issue11945.go	fail	gd: unsupported builtin function
-fixedbugs/issue11987.go	fail	gd: unsupported builtin function
+fixedbugs/issue11790.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue11945.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue11987.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue12006.go	skip	gc:diagnostics -m
 fixedbugs/issue12108.go	pass	
-fixedbugs/issue12133.go	fail	gd: unsupported builtin function
-fixedbugs/issue12226.go	fail	gd: unsupported builtin function
+fixedbugs/issue12133.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue12226.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue12347.go	pass	
 fixedbugs/issue12411.go	pass	
 fixedbugs/issue12413.go	pass	
@@ -849,10 +849,10 @@ fixedbugs/issue12677.go	skip	todo:compiledir
 fixedbugs/issue12686.go	pass	
 fixedbugs/issue12944.go	skip	todo:errorcheck
 fixedbugs/issue1304.go	pass	
-fixedbugs/issue13160.go	fail	gd: unsupported builtin function
-fixedbugs/issue13162.go	fail	gd: unsupported builtin function
+fixedbugs/issue13160.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue13162.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue13169.go	fail	c11: error: incompatible type for argument 2 of 'go_send_vv'
-fixedbugs/issue13171.go	fail	gd: unsupported builtin function
+fixedbugs/issue13171.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue13248.go	skip	todo:errorcheck
 fixedbugs/issue13261.go	pass	
 fixedbugs/issue13262.go	pass	
@@ -888,17 +888,17 @@ fixedbugs/issue14405.go	pass
 fixedbugs/issue14520.go	skip	todo:errorcheck
 fixedbugs/issue14520a.go	skip	todo:errorcheck
 fixedbugs/issue14540.go	skip	todo:errorcheck
-fixedbugs/issue14553.go	fail	gd: unsupported builtin function
-fixedbugs/issue14591.go	fail	gd: unsupported builtin function
+fixedbugs/issue14553.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue14591.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue14636.go	skip	gc:build !nacl && !js && !wasip1 && !android && gc
 fixedbugs/issue14646.go	skip	gc:stack-introspection runtime.Caller
-fixedbugs/issue14651.go	fail	gd: unsupported builtin function
+fixedbugs/issue14651.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue14652.go	pass	
-fixedbugs/issue14725.go	fail	gd: unsupported builtin function
+fixedbugs/issue14725.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue14729.go	skip	todo:errorcheck
 fixedbugs/issue14988.go	skip	todo:errorcheck
 fixedbugs/issue14999.go	skip	todo:errorcheck
-fixedbugs/issue15002.go	fail	gd: unsupported builtin function
+fixedbugs/issue15002.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue15013.go	pass	
 fixedbugs/issue15039.go	pass	
 fixedbugs/issue15042.go	pass	
@@ -907,23 +907,23 @@ fixedbugs/issue15071.go	skip	todo:rundir
 fixedbugs/issue15084.go	pass	
 fixedbugs/issue15091.go	skip	todo:errorcheck
 fixedbugs/issue15141.go	pass	
-fixedbugs/issue15175.go	fail	gd: unsupported builtin function
+fixedbugs/issue15175.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue15252.go	pass	
 fixedbugs/issue15277.go	skip	gc:memstats runtime.ReadMemStats
 fixedbugs/issue15281.go	skip	gc:memstats runtime.ReadMemStats
-fixedbugs/issue15303.go	fail	gd: unsupported builtin function
+fixedbugs/issue15303.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue15311.go	skip	todo:errorcheck
-fixedbugs/issue15329.go	fail	gd: unsupported builtin function
-fixedbugs/issue15439.go	fail	gd: unsupported builtin function
+fixedbugs/issue15329.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue15439.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue15470.go	skip	todo:compiledir
 fixedbugs/issue15514.go	skip	todo:errorcheck
-fixedbugs/issue15528.go	fail	gd: unsupported builtin function
+fixedbugs/issue15528.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue15548.go	skip	todo:compiledir
 fixedbugs/issue15550.go	fail	c11: error: expected identifier or '(' before 'void'
 fixedbugs/issue15572.go	skip	todo:compiledir
 fixedbugs/issue15585.go	pass	
 fixedbugs/issue15602.go	pass	
-fixedbugs/issue15604.go	fail	gd: unsupported builtin function
+fixedbugs/issue15604.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue15609.go	skip	todo:runindir
 fixedbugs/issue15611.go	skip	todo:errorcheck
 fixedbugs/issue15646.go	skip	todo:rundir
@@ -932,7 +932,7 @@ fixedbugs/issue15733.go	pass
 fixedbugs/issue15747.go	skip	gc:diagnostics -live
 fixedbugs/issue15747b.go	pass	
 fixedbugs/issue15838.go	skip	todo:compiledir
-fixedbugs/issue15895.go	fail	c11: error: invalid operands to binary == (have 'A_go_test_package' {aka 'go_arr1_go_ii'} and 'A_go_test_package' {aka 'go_ar…
+fixedbugs/issue15895.go	pass	
 fixedbugs/issue15898.go	skip	todo:errorcheck
 fixedbugs/issue15902.go	pass	
 fixedbugs/issue15920.go	skip	todo:compiledir
@@ -940,12 +940,12 @@ fixedbugs/issue15926.go	pass
 fixedbugs/issue15961.go	pass	
 fixedbugs/issue15975.go	fail	exit: signal: trace/breakpoint trap filc safety error: cannot read pointer with null object.
 fixedbugs/issue15988.go	pass	
-fixedbugs/issue15992.go	fail	gd: unsupported builtin function
+fixedbugs/issue15992.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue16008.go	skip	todo:errorcheck
-fixedbugs/issue16016.go	fail	gd: unsupported builtin function
+fixedbugs/issue16016.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue16037_run.go	skip	gc:toolchain
-fixedbugs/issue16095.go	fail	gd: unsupported builtin function
-fixedbugs/issue16130.go	fail	gd: unsupported builtin function
+fixedbugs/issue16095.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue16130.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue16133.go	skip	todo:errorcheck
 fixedbugs/issue16193.go	pass	
 fixedbugs/issue16241.go	skip	gc:diagnostics -m
@@ -953,7 +953,7 @@ fixedbugs/issue16241_64.go	skip	gc:diagnostics -m
 fixedbugs/issue16249.go	pass	
 fixedbugs/issue16306.go	pass	
 fixedbugs/issue16317.go	skip	todo:compiledir
-fixedbugs/issue16331.go	fail	gd: unsupported builtin function
+fixedbugs/issue16331.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue16369.go	skip	todo:errorcheck
 fixedbugs/issue16428.go	skip	todo:errorcheck
 fixedbugs/issue16439.go	skip	todo:errorcheck
@@ -963,7 +963,7 @@ fixedbugs/issue16733.go	pass
 fixedbugs/issue16741.go	pass	
 fixedbugs/issue16760.go	fail	exit: signal: trace/breakpoint trap filc safety error: cannot read pointer with null object.
 fixedbugs/issue16804.go	pass	
-fixedbugs/issue16870.go	fail	gd: unsupported builtin function
+fixedbugs/issue16870.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue16948.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
 fixedbugs/issue16949.go	skip	todo:errorcheck
 fixedbugs/issue16985.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
@@ -977,16 +977,16 @@ fixedbugs/issue17318.go	skip	gc:diagnostics -m
 fixedbugs/issue17328.go	skip	todo:errorcheck
 fixedbugs/issue17381.go	skip	gc:stack-introspection runtime.Callers
 fixedbugs/issue17449.go	skip	todo:errorcheck
-fixedbugs/issue17551.go	fail	gd: unsupported builtin function
+fixedbugs/issue17551.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue17588.go	skip	gc:diagnostics -d=panic
 fixedbugs/issue17596.go	pass	
 fixedbugs/issue17631.go	skip	todo:errorcheck
-fixedbugs/issue17640.go	fail	gd: unsupported builtin function
+fixedbugs/issue17640.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue17645.go	skip	todo:errorcheck
 fixedbugs/issue17710.go	pass	
 fixedbugs/issue17752.go	pass	
 fixedbugs/issue17758.go	skip	todo:errorcheck
-fixedbugs/issue17918.go	fail	gd: unsupported builtin function
+fixedbugs/issue17918.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue18089.go	fail	c11: error: macro "go_ignore" passed 2 arguments, but takes just 1
 fixedbugs/issue18092.go	skip	todo:errorcheck
 fixedbugs/issue18149.go	skip	gc:stack-introspection runtime.Caller
@@ -997,12 +997,12 @@ fixedbugs/issue18393.go	skip	todo:errorcheck
 fixedbugs/issue18410.go	pass	
 fixedbugs/issue18419.go	skip	todo:errorcheck
 fixedbugs/issue18459.go	skip	todo:errorcheck
-fixedbugs/issue18595.go	fail	c11: error: incompatible types when returning type 'struct <anonymous>' but 'struct <anonymous>' was expected
+fixedbugs/issue18595.go	fail	c11: error: incompatible types when assigning to type 'go_if' from type 'go_vv'
 fixedbugs/issue18636.go	skip	gc:import runtime/debug
 fixedbugs/issue18640.go	pass	
 fixedbugs/issue18655.go	skip	todo:errorcheck
-fixedbugs/issue18661.go	fail	gd: unsupported builtin function
-fixedbugs/issue18725.go	fail	gd: unsupported builtin function
+fixedbugs/issue18661.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue18725.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue18747.go	skip	todo:errorcheck
 fixedbugs/issue18808.go	pass	
 fixedbugs/issue18882.go	skip	todo:errorcheck
@@ -1013,21 +1013,21 @@ fixedbugs/issue18915.go	skip	todo:errorcheck
 fixedbugs/issue18994.go	pass	
 fixedbugs/issue19012.go	skip	todo:errorcheck
 fixedbugs/issue19028.go	skip	todo:rundir
-fixedbugs/issue19040.go	fail	gd: unsupported builtin function
+fixedbugs/issue19040.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue19056.go	skip	todo:errorcheck
 fixedbugs/issue19078.go	pass	
 fixedbugs/issue19084.go	pass	
-fixedbugs/issue19113.go	fail	gd: unsupported builtin function
+fixedbugs/issue19113.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue19137.go	pass	
 fixedbugs/issue19168.go	skip	gc:diagnostics -d=wb
-fixedbugs/issue19182.go	fail	gd: unsupported builtin function
-fixedbugs/issue19201.go	fail	gd: unsupported builtin function
-fixedbugs/issue19217.go	fail	gd: unsupported builtin function
-fixedbugs/issue19246.go	fail	gd: unsupported builtin function
+fixedbugs/issue19182.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue19201.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue19217.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue19246.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue19261.go	skip	gc:diagnostics -m
-fixedbugs/issue19275.go	fail	gd: unsupported builtin function
+fixedbugs/issue19275.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue19323.go	skip	todo:errorcheck
-fixedbugs/issue19359.go	fail	gd: unsupported builtin function
+fixedbugs/issue19359.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue19467.go	skip	todo:rundir
 fixedbugs/issue19482.go	skip	todo:errorcheck
 fixedbugs/issue19507.go	skip	upstream:build arm
@@ -1051,7 +1051,7 @@ fixedbugs/issue19764.go	skip	todo:rundir
 fixedbugs/issue19783.go	pass	
 fixedbugs/issue19799.go	skip	gc:stack-introspection runtime.Callers
 fixedbugs/issue19880.go	skip	todo:errorcheck
-fixedbugs/issue19911.go	fail	gd: unsupported builtin function
+fixedbugs/issue19911.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue19947.go	skip	todo:errorcheck
 fixedbugs/issue19977.go	skip	todo:errorcheck
 fixedbugs/issue20014.go	skip	todo:runindir
@@ -1068,7 +1068,7 @@ fixedbugs/issue20233.go	skip	todo:errorcheck
 fixedbugs/issue20245.go	skip	gc:diagnostics -d=panic
 fixedbugs/issue20250.go	skip	gc:diagnostics -live
 fixedbugs/issue20298.go	skip	todo:errorcheck
-fixedbugs/issue20333.go	fail	gd: unsupported builtin function
+fixedbugs/issue20333.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue20335.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
 fixedbugs/issue20415.go	skip	todo:errorcheck
 fixedbugs/issue20529.go	skip	todo:errorcheck
@@ -1096,16 +1096,16 @@ fixedbugs/issue21655.go	pass
 fixedbugs/issue21687.go	fail	exit: exit status 2 panic: 2
 fixedbugs/issue21709.go	skip	gc:diagnostics -m
 fixedbugs/issue21770.go	skip	todo:errorcheck
-fixedbugs/issue21808.go	fail	gd: unsupported builtin function
+fixedbugs/issue21808.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue21879.go	skip	gc:stack-introspection runtime.Callers
 fixedbugs/issue21882.go	skip	todo:errorcheck
-fixedbugs/issue21887.go	fail	gd: unsupported builtin function
+fixedbugs/issue21887.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue21934.go	skip	todo:errorcheck
-fixedbugs/issue21963.go	fail	gd: unsupported builtin function
+fixedbugs/issue21963.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue21979.go	skip	todo:errorcheck
 fixedbugs/issue21988.go	skip	todo:errorcheck
 fixedbugs/issue22063.go	skip	todo:errorcheck
-fixedbugs/issue22076.go	fail	c11: error: invalid operands to binary == (have 'go_if' and 'go_if')
+fixedbugs/issue22076.go	fail	c11: error: unknown type name 'span_go_bytes_package'; did you mean 'Reader_go_bytes_package'?
 fixedbugs/issue22083.go	skip	gc:import runtime/debug
 fixedbugs/issue22164.go	skip	todo:errorcheck
 fixedbugs/issue22198.go	pass	
@@ -1120,21 +1120,21 @@ fixedbugs/issue22389.go	skip	gc:diagnostics -d=panic
 fixedbugs/issue22429.go	pass	
 fixedbugs/issue22458.go	pass	
 fixedbugs/issue22581.go	skip	todo:errorcheck
-fixedbugs/issue22605.go	fail	gd: unsupported builtin function
+fixedbugs/issue22605.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue22660.go	skip	gc:build !js && !wasip1 && gc
 fixedbugs/issue22662.go	skip	gc:stack-introspection runtime.Caller
 fixedbugs/issue22662b.go	skip	gc:build !js && !wasip1 && gc
-fixedbugs/issue22683.go	fail	gd: unsupported builtin function
+fixedbugs/issue22683.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue22781.go	skip	gc:import runtime/debug
 fixedbugs/issue22794.go	skip	todo:errorcheck
 fixedbugs/issue22822.go	skip	todo:errorcheck
 fixedbugs/issue22877.go	skip	todo:builddir
-fixedbugs/issue22881.go	fail	gd: unsupported builtin function
+fixedbugs/issue22881.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue22904.go	skip	todo:errorcheck
 fixedbugs/issue22921.go	skip	gc:diagnostics -d=panic
 fixedbugs/issue22941.go	skip	todo:rundir
 fixedbugs/issue22962.go	skip	todo:compiledir
-fixedbugs/issue23017.go	fail	gd: unsupported builtin function
+fixedbugs/issue23017.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue23093.go	skip	todo:errorcheck
 fixedbugs/issue23094.go	skip	todo:errorcheck
 fixedbugs/issue23116.go	skip	todo:errorcheck
@@ -1143,27 +1143,27 @@ fixedbugs/issue23188.go	fail	exit: exit status 2 panic: ([]int) 0x?
 fixedbugs/issue23298.go	pass	
 fixedbugs/issue23305.go	pass	
 fixedbugs/issue23311.go	skip	todo:compiledir
-fixedbugs/issue23414.go	fail	c11: error: invalid operands to binary == (have 'go_az' and 'go_az')
+fixedbugs/issue23414.go	pass	
 fixedbugs/issue23489.go	pass	
 fixedbugs/issue23504.go	pass	
 fixedbugs/issue23521.go	skip	gc:diagnostics -m
 fixedbugs/issue23522.go	fail	c11: error: implicit declaration of function 'Copysign_go_math_package'; did you mean 'Sqrt_go_math_package'? [-Wimplicit-fun…
 fixedbugs/issue23536.go	pass	
-fixedbugs/issue23545.go	fail	c11: error: invalid operands to binary != (have 'OutputID_go_main_package' {aka 'go_arr32_go_vv'} and 'go_arr32_go_vv')
-fixedbugs/issue23546.go	fail	c11: error: invalid operands to binary == (have 'go_arr2_go_vv' and 'go_arr2_go_vv')
+fixedbugs/issue23545.go	pass	
+fixedbugs/issue23546.go	pass	
 fixedbugs/issue23586.go	skip	todo:errorcheck
 fixedbugs/issue23587.go	skip	todo:errorcheck
 fixedbugs/issue23609.go	skip	todo:errorcheck
 fixedbugs/issue23664.go	skip	todo:errorcheck
-fixedbugs/issue23719.go	fail	c11: error: invalid operands to binary == (have 'go_arr2_go_i4' and 'go_arr2_go_i4')
+fixedbugs/issue23719.go	pass	
 fixedbugs/issue23732.go	skip	todo:errorcheck
 fixedbugs/issue23734.go	fail	c11: error: incompatible type for argument 2 of 'go_map_get_go_vv_go_ii'
 fixedbugs/issue23780.go	fail	c11: error: invalid suffix "LL" on floating constant
 fixedbugs/issue23781.go	fail	c11: error: invalid suffix "LL" on floating constant
-fixedbugs/issue23812.go	fail	gd: unsupported builtin function
+fixedbugs/issue23812.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue23814.go	fail	c11: error: macro "go_ignore" passed 2 arguments, but takes just 1
 fixedbugs/issue23823.go	skip	todo:errorcheck
-fixedbugs/issue23837.go	fail	c11: error: invalid operands to binary == (have 'go_az' and 'go_az')
+fixedbugs/issue23837.go	pass	
 fixedbugs/issue23868.go	pass	
 fixedbugs/issue23870.go	pass	
 fixedbugs/issue23912.go	pass	
@@ -1179,7 +1179,7 @@ fixedbugs/issue24488.go	skip	gc:stack-introspection runtime.Stack
 fixedbugs/issue24491a.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue24491b.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue24503.go	pass	
-fixedbugs/issue24547.go	fail	gd: unsupported builtin function
+fixedbugs/issue24547.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue24651a.go	skip	gc:diagnostics -m
 fixedbugs/issue24651b.go	skip	gc:diagnostics -m
 fixedbugs/issue24693.go	skip	todo:rundir
@@ -1187,22 +1187,22 @@ fixedbugs/issue24755.go	skip	todo:errorcheck
 fixedbugs/issue24760.go	pass	
 fixedbugs/issue24761.go	skip	todo:compiledir
 fixedbugs/issue24763.go	pass	
-fixedbugs/issue24799.go	fail	gd: unsupported builtin function
+fixedbugs/issue24799.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue24801.go	skip	todo:compiledir
-fixedbugs/issue24817.go	fail	gd: unsupported builtin function
+fixedbugs/issue24817.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue24937.go	pass	
 fixedbugs/issue24939.go	pass	
 fixedbugs/issue25006.go	pass	
 fixedbugs/issue25055.go	skip	todo:compiledir
-fixedbugs/issue25101.go	fail	c11: error: incompatible type for argument 1 of 'go_method_value_interface_m_int__m'
-fixedbugs/issue25322.go	fail	gd: unsupported builtin function
+fixedbugs/issue25101.go	pass	
+fixedbugs/issue25322.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue25507.go	skip	todo:errorcheck
 fixedbugs/issue25516.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
 fixedbugs/issue25727.go	skip	todo:errorcheck
 fixedbugs/issue25741.go	pass	
 fixedbugs/issue25776.go	pass	
-fixedbugs/issue25897a.go	fail	gd: unsupported builtin function
-fixedbugs/issue25897b.go	fail	gd: unsupported builtin function
+fixedbugs/issue25897a.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue25897b.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue25958.go	skip	todo:errorcheck
 fixedbugs/issue25966.go	skip	gc:flags -N
 fixedbugs/issue25984.go	skip	todo:compiledir
@@ -1218,7 +1218,7 @@ fixedbugs/issue2615.go	fail	exit: exit status 2 panic: failed
 fixedbugs/issue26153.go	pass	
 fixedbugs/issue26163.go	skip	gc:flags -N -d=softfloat
 fixedbugs/issue26248.go	pass	
-fixedbugs/issue26335.go	fail	gd: unsupported builtin function
+fixedbugs/issue26335.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue26340.go	pass	
 fixedbugs/issue26341.go	skip	todo:compiledir
 fixedbugs/issue26407.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
@@ -1241,11 +1241,11 @@ fixedbugs/issue27518b.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue27557.go	skip	gc:diagnostics -m
 fixedbugs/issue27595.go	skip	todo:errorcheck
 fixedbugs/issue27695.go	skip	gc:import runtime/debug
-fixedbugs/issue27695b.go	fail	gd: unsupported builtin function
-fixedbugs/issue27695c.go	fail	gd: unsupported builtin function
+fixedbugs/issue27695b.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue27695c.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue27718.go	pass	
 fixedbugs/issue27732a.go	skip	gc:diagnostics -m
-fixedbugs/issue27829.go	fail	gd: unsupported builtin function
+fixedbugs/issue27829.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue27836.go	skip	todo:compiledir
 fixedbugs/issue27938.go	skip	gc:diagnostics -d=panic
 fixedbugs/issue27961.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
@@ -1258,15 +1258,15 @@ fixedbugs/issue28079b.go	skip	todo:errorcheck
 fixedbugs/issue28079c.go	skip	todo:errorcheck
 fixedbugs/issue28085.go	skip	todo:errorcheck
 fixedbugs/issue28268.go	skip	todo:errorcheck
-fixedbugs/issue28390.go	fail	gd: unsupported builtin function
+fixedbugs/issue28390.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue28430.go	fail	gd: unsupported type (int, error)
 fixedbugs/issue28445.go	pass	
 fixedbugs/issue28450.go	skip	todo:errorcheck
 fixedbugs/issue28601.go	pass	
 fixedbugs/issue28616.go	pass	
 fixedbugs/issue28688.go	skip	gc:flags -gcflags=-d=softfloat
-fixedbugs/issue28748.go	fail	gd: unsupported builtin function
-fixedbugs/issue28797.go	fail	gd: unsupported builtin function
+fixedbugs/issue28748.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue28797.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue28926.go	skip	todo:errorcheck
 fixedbugs/issue29013a.go	pass	
 fixedbugs/issue29013b.go	pass	
@@ -1274,9 +1274,9 @@ fixedbugs/issue29190.go	fail	gd: unsupported type *types.Named
 fixedbugs/issue29215.go	pass	
 fixedbugs/issue29218.go	pass	
 fixedbugs/issue29220.go	pass	
-fixedbugs/issue29264.go	fail	gd: unsupported builtin function
+fixedbugs/issue29264.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue29304.go	fail	gd: panic: unsupported node type: DefinedType
-fixedbugs/issue29312.go	fail	gd: unsupported builtin function
+fixedbugs/issue29312.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue29329.go	skip	gc:build cgo && linux && amd64
 fixedbugs/issue29350.go	pass	
 fixedbugs/issue29362.go	pass	
@@ -1289,23 +1289,23 @@ fixedbugs/issue29610.go	skip	todo:rundir
 fixedbugs/issue29612.go	skip	todo:runindir
 fixedbugs/issue29735.go	skip	gc:stack-introspection runtime.Callers
 fixedbugs/issue29855.go	skip	todo:errorcheck
-fixedbugs/issue29870.go	fail	gd: unsupported builtin function
+fixedbugs/issue29870.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue29870b.go	skip	todo:errorcheck
 fixedbugs/issue29919.go	skip	todo:rundir
 fixedbugs/issue29943.go	pass	
-fixedbugs/issue30041.go	fail	gd: unsupported builtin function
+fixedbugs/issue30041.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue30061.go	skip	gc:linkname
 fixedbugs/issue30085.go	skip	todo:errorcheck
 fixedbugs/issue30087.go	skip	todo:errorcheck
-fixedbugs/issue30116.go	fail	gd: unsupported builtin function
-fixedbugs/issue30116u.go	fail	gd: unsupported builtin function
-fixedbugs/issue30243.go	fail	gd: unsupported builtin function
+fixedbugs/issue30116.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue30116u.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue30243.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue30430.go	pass	
 fixedbugs/issue30476.go	skip	gc:finalizers runtime.SetFinalizer
-fixedbugs/issue30566a.go	fail	gd: unsupported builtin function
-fixedbugs/issue30566b.go	fail	gd: unsupported builtin function
-fixedbugs/issue30606.go	fail	gd: unsupported builtin function
-fixedbugs/issue30606b.go	fail	gd: unsupported builtin function
+fixedbugs/issue30566a.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue30566b.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue30606.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue30606b.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue30659.go	skip	todo:compiledir
 fixedbugs/issue30679.go	pass	
 fixedbugs/issue30709.go	pass	
@@ -1314,8 +1314,8 @@ fixedbugs/issue30862.go	skip	todo:runindir
 fixedbugs/issue30898.go	skip	gc:diagnostics -m
 fixedbugs/issue30907.go	skip	todo:compiledir
 fixedbugs/issue30908.go	skip	todo:rundir
-fixedbugs/issue30956.go	fail	gd: unsupported builtin function
-fixedbugs/issue30977.go	fail	c11: error: invalid operands to binary != (have 'T_go_main_package' {aka 'go_struct_f69ce62218073094'} and 'T_go_main_package…
+fixedbugs/issue30956.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue30977.go	pass	
 fixedbugs/issue31010.go	fail	c11: error: incompatible type for argument 1 of 'c_go_test_package'
 fixedbugs/issue31053.go	skip	todo:errorcheck
 fixedbugs/issue31060.go	skip	todo:errorcheck
@@ -1323,7 +1323,7 @@ fixedbugs/issue31252.go	skip	todo:compiledir
 fixedbugs/issue31412a.go	pass	
 fixedbugs/issue31412b.go	skip	todo:errorcheck
 fixedbugs/issue31419.go	pass	
-fixedbugs/issue31546.go	fail	gd: unsupported builtin function
+fixedbugs/issue31546.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue31573.go	skip	gc:diagnostics -m
 fixedbugs/issue31636.go	skip	todo:rundir
 fixedbugs/issue31637.go	skip	todo:compiledir
@@ -1332,10 +1332,10 @@ fixedbugs/issue31777.go	pass
 fixedbugs/issue31782.go	pass	
 fixedbugs/issue31915.go	skip	gc:flags -d=ssa/check/on
 fixedbugs/issue31959.go	skip	todo:rundir
-fixedbugs/issue31987.go	fail	gd: unsupported builtin function
+fixedbugs/issue31987.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue32133.go	skip	todo:errorcheck
 fixedbugs/issue32175.go	pass	
-fixedbugs/issue32187.go	fail	gd: unsupported builtin function
+fixedbugs/issue32187.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue32288.go	pass	
 fixedbugs/issue32347.go	pass	
 fixedbugs/issue32454.go	pass	
@@ -1352,13 +1352,13 @@ fixedbugs/issue32959.go	pass
 fixedbugs/issue33013.go	skip	todo:compiledir
 fixedbugs/issue33020.go	skip	todo:compiledir
 fixedbugs/issue33020a.go	skip	todo:compiledir
-fixedbugs/issue33062.go	fail	c11: error: invalid operands to binary != (have 'go_vv' and 'go_vv')
+fixedbugs/issue33062.go	pass	
 fixedbugs/issue33158.go	skip	todo:compiledir
 fixedbugs/issue33219.go	skip	todo:compiledir
 fixedbugs/issue33275.go	skip	upstream:skip
 fixedbugs/issue33275_run.go	skip	gc:toolchain
 fixedbugs/issue33308.go	skip	todo:errorcheck
-fixedbugs/issue33355.go	fail	c11: error: invalid operands to binary == (have 'go_if' and 'go_if')
+fixedbugs/issue33355.go	fail	c11: error: unknown type name 'span_go_bytes_package'; did you mean 'Reader_go_bytes_package'?
 fixedbugs/issue33386.go	skip	todo:errorcheck
 fixedbugs/issue33438.go	pass	
 fixedbugs/issue33460.go	skip	todo:errorcheck
@@ -1396,7 +1396,7 @@ fixedbugs/issue36723.go	skip	gc:flags -d=ssa/check/on
 fixedbugs/issue3705.go	skip	todo:errorcheck
 fixedbugs/issue37246.go	pass	
 fixedbugs/issue37513.go	skip	todo:buildrundir
-fixedbugs/issue37716.go	fail	gd: unsupported builtin function
+fixedbugs/issue37716.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue37753.go	pass	
 fixedbugs/issue3783.go	skip	todo:errorcheck
 fixedbugs/issue37837.go	skip	gc:diagnostics -m
@@ -1412,19 +1412,19 @@ fixedbugs/issue38698.go	fail	c11: error: expected ';' before '}' token
 fixedbugs/issue38745.go	skip	todo:errorcheck
 fixedbugs/issue38746.go	pass	
 fixedbugs/issue38905.go	pass	
-fixedbugs/issue38916.go	fail	c11: error: invalid operands to binary + (have 'go_aaf8f8zz' and 'go_aaf8f8zz')
+fixedbugs/issue38916.go	pass	
 fixedbugs/issue3925.go	skip	todo:errorcheck
 fixedbugs/issue39292.go	skip	gc:diagnostics -m
 fixedbugs/issue39459.go	pass	
 fixedbugs/issue39472.go	skip	gc:flags -N
 fixedbugs/issue39505.go	pass	
 fixedbugs/issue39505b.go	fail	exit: exit status 2 panic: bad
-fixedbugs/issue39541.go	fail	gd: unsupported builtin function
+fixedbugs/issue39541.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue39651.go	pass	
-fixedbugs/issue40152.go	fail	c11: error: invalid operands to binary == (have 'int' and 'go_vv')
+fixedbugs/issue40152.go	pass	
 fixedbugs/issue40252.go	skip	todo:rundir
 fixedbugs/issue40367.go	pass	
-fixedbugs/issue40629.go	fail	gd: unsupported builtin function
+fixedbugs/issue40629.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue4066.go	pass	
 fixedbugs/issue40746.go	pass	
 fixedbugs/issue4085a.go	skip	todo:errorcheck
@@ -1433,7 +1433,7 @@ fixedbugs/issue40917.go	skip	gc:flags -gcflags=-d=checkptr
 fixedbugs/issue40954.go	skip	gc:build cgo
 fixedbugs/issue4097.go	skip	todo:errorcheck
 fixedbugs/issue4099.go	skip	gc:diagnostics -m
-fixedbugs/issue41239.go	fail	gd: unsupported builtin function
+fixedbugs/issue41239.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue41247.go	skip	todo:errorcheck
 fixedbugs/issue41440.go	skip	todo:errorcheck
 fixedbugs/issue41500.go	skip	todo:errorcheck
@@ -1442,7 +1442,7 @@ fixedbugs/issue4162.go	pass
 fixedbugs/issue41635.go	skip	gc:diagnostics -m
 fixedbugs/issue4167.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
 fixedbugs/issue41680.go	pass	
-fixedbugs/issue41736.go	fail	gd: unsupported builtin function
+fixedbugs/issue41736.go	pass	
 fixedbugs/issue41780.go	pass	
 fixedbugs/issue41872.go	pass	
 fixedbugs/issue42032.go	skip	gc:build cgo
@@ -1486,9 +1486,9 @@ fixedbugs/issue4348.go	skip	upstream:skip
 fixedbugs/issue43480.go	pass	
 fixedbugs/issue4353.go	pass	
 fixedbugs/issue43551.go	skip	todo:compiledir
-fixedbugs/issue43570.go	fail	gd: unsupported builtin function
+fixedbugs/issue43570.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue4359.go	skip	todo:errorcheck
-fixedbugs/issue43619.go	fail	gd: unsupported builtin function
+fixedbugs/issue43619.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue43633.go	skip	todo:rundir
 fixedbugs/issue4365.go	skip	todo:errorcheck
 fixedbugs/issue43677.go	fail	c11: error: macro "go_ignore" passed 2 arguments, but takes just 1
@@ -1496,8 +1496,8 @@ fixedbugs/issue4370.go	skip	todo:compiledir
 fixedbugs/issue43701.go	pass	
 fixedbugs/issue43762.go	skip	todo:errorcheck
 fixedbugs/issue43835.go	fail	exit: exit status 2 panic: FAIL
-fixedbugs/issue43908.go	fail	gd: unsupported builtin function
-fixedbugs/issue43942.go	fail	gd: unsupported builtin function
+fixedbugs/issue43908.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue43942.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue43962.go	skip	todo:errorcheck
 fixedbugs/issue4396a.go	pass	
 fixedbugs/issue4396b.go	pass	
@@ -1522,9 +1522,9 @@ fixedbugs/issue4463.go	skip	todo:errorcheck
 fixedbugs/issue4468.go	skip	todo:errorcheck
 fixedbugs/issue4470.go	skip	todo:errorcheck
 fixedbugs/issue44732.go	skip	todo:runindir
-fixedbugs/issue44739.go	fail	gd: unsupported builtin function
-fixedbugs/issue44823.go	fail	gd: unsupported builtin function
-fixedbugs/issue44830.go	fail	gd: unsupported builtin function
+fixedbugs/issue44739.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue44823.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue44830.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue4495.go	fail	gd: panic: unsupported node type: DefinedType
 fixedbugs/issue45045.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue4510.go	skip	todo:errorcheck
@@ -1534,7 +1534,7 @@ fixedbugs/issue4517b.go	skip	todo:errorcheck
 fixedbugs/issue4517c.go	skip	todo:errorcheck
 fixedbugs/issue4517d.go	skip	todo:errorcheck
 fixedbugs/issue4518.go	fail	c11: error: incompatible type for argument 1 of 'check_go_main_package'
-fixedbugs/issue45242.go	fail	gd: unsupported builtin function
+fixedbugs/issue45242.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue45258.go	pass	
 fixedbugs/issue4529.go	fail	c11: error: too few arguments to function 'A_c_go_main_package'
 fixedbugs/issue45323.go	pass	
@@ -1549,16 +1549,16 @@ fixedbugs/issue45693.go	pass
 fixedbugs/issue45706.go	fail	gd: panic: interface conversion: ast.Expr is *ast.StarExpr, not *ast.Ident
 fixedbugs/issue45743.go	pass	
 fixedbugs/issue45804.go	skip	todo:errorcheck
-fixedbugs/issue4585.go	fail	c11: error: invalid operands to binary != (have 'U_go_main_package' {aka 'go_struct_c1850ed0a6f3035a'} and 'U_go_main_package…
-fixedbugs/issue45851.go	fail	gd: unsupported builtin function
+fixedbugs/issue4585.go	pass	
+fixedbugs/issue45851.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue4590.go	skip	todo:rundir
 fixedbugs/issue45913.go	skip	todo:errorcheck
 fixedbugs/issue45947.go	pass	
 fixedbugs/issue45948.go	skip	gc:flags -N
 fixedbugs/issue4610.go	skip	todo:errorcheck
 fixedbugs/issue4614.go	pass	
-fixedbugs/issue4618.go	fail	gd: unsupported builtin function
-fixedbugs/issue4620.go	fail	gd: unsupported builtin function
+fixedbugs/issue4618.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue4620.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue46234.go	skip	todo:buildrun
 fixedbugs/issue46304.go	pass	
 fixedbugs/issue46386.go	skip	gc:flags -p=main
@@ -1567,7 +1567,7 @@ fixedbugs/issue4654.go	skip	todo:errorcheck
 fixedbugs/issue46556.go	pass	
 fixedbugs/issue4663.go	skip	todo:errorcheck
 fixedbugs/issue46653.go	skip	todo:runindir
-fixedbugs/issue4667.go	fail	gd: unsupported builtin function
+fixedbugs/issue4667.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue46720.go	fail	gd: unsupported conversion from
 fixedbugs/issue46725.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue46749.go	skip	todo:errorcheck
@@ -1588,23 +1588,23 @@ fixedbugs/issue4752.go	pass
 fixedbugs/issue47712.go	pass	
 fixedbugs/issue4776.go	skip	todo:errorcheck
 fixedbugs/issue47771.go	pass	
-fixedbugs/issue4785.go	fail	c11: error: invalid operands to binary != (have 'go_vv' and 'int')
+fixedbugs/issue4785.go	pass	
 fixedbugs/issue47928.go	skip	gc:goexperiment fieldtrack
 fixedbugs/issue48026.go	skip	gc:flags -d=ssa/check/on
-fixedbugs/issue48033.go	fail	gd: unsupported builtin function
+fixedbugs/issue48033.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue48088.go	skip	todo:compiledir
 fixedbugs/issue48092.go	skip	gc:flags -B
 fixedbugs/issue48097.go	skip	todo:errorcheck
 fixedbugs/issue4813.go	skip	todo:errorcheck
 fixedbugs/issue48230.go	skip	todo:errorcheck
-fixedbugs/issue48289.go	fail	gd: unsupported builtin function
+fixedbugs/issue48289.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue48301.go	skip	todo:errorcheck
-fixedbugs/issue48357.go	fail	gd: unsupported builtin function
+fixedbugs/issue48357.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue48459.go	pass	
 fixedbugs/issue4847.go	skip	todo:errorcheck
 fixedbugs/issue48471.go	skip	todo:errorcheck
-fixedbugs/issue48473.go	fail	gd: unsupported builtin function
-fixedbugs/issue48476.go	fail	gd: unsupported builtin function
+fixedbugs/issue48473.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue48476.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue48536.go	fail	c11: error: invalid operands to binary != (have 'go_pt' and 'go_pt')
 fixedbugs/issue48558.go	skip	todo:errorcheck
 fixedbugs/issue48784.go	skip	todo:errorcheck
@@ -1623,7 +1623,7 @@ fixedbugs/issue4909a.go	skip	todo:errorcheck
 fixedbugs/issue4909b.go	skip	todo:errorcheck
 fixedbugs/issue49100.go	pass	
 fixedbugs/issue49100b.go	pass	
-fixedbugs/issue49110.go	fail	gd: unsupported builtin function
+fixedbugs/issue49110.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue49122.go	pass	
 fixedbugs/issue49143.go	skip	todo:compiledir
 fixedbugs/issue49145.go	pass	
@@ -1634,16 +1634,16 @@ fixedbugs/issue4932.go	skip	todo:compiledir
 fixedbugs/issue49368.go	skip	todo:errorcheck
 fixedbugs/issue49378.go	pass	
 fixedbugs/issue49512.go	pass	
-fixedbugs/issue49592.go	fail	c11: error: invalid operands to binary == (have 'void *' and 'go_pt')
+fixedbugs/issue49592.go	pass	
 fixedbugs/issue49611.go	pass	
 fixedbugs/issue49619.go	pass	
 fixedbugs/issue4964.go	skip	todo:rundir
-fixedbugs/issue49665.go	fail	gd: unsupported builtin function
+fixedbugs/issue49665.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue49767.go	skip	todo:errorcheck
 fixedbugs/issue49814.go	skip	todo:errorcheck
 fixedbugs/issue5002.go	pass	
 fixedbugs/issue50169.go	pass	
-fixedbugs/issue50190.go	fail	c11: error: invalid operands to binary == (have 'go_vv' and 'go_vv')
+fixedbugs/issue50190.go	fail	exit: exit status 2 panic: FAIL
 fixedbugs/issue50372.go	skip	todo:errorcheck
 fixedbugs/issue50439.go	pass	
 fixedbugs/issue5056.go	pass	
@@ -1682,10 +1682,10 @@ fixedbugs/issue5260.go	skip	todo:rundir
 fixedbugs/issue52612.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
 fixedbugs/issue52673.go	pass	
 fixedbugs/issue52697.go	skip	todo:errorcheck
-fixedbugs/issue52701.go	fail	c11: error: invalid operands to binary == (have 'T1_go_test_package' {aka 'go_az'} and 'T1_go_test_package' {aka 'go_az'})
+fixedbugs/issue52701.go	pass	
 fixedbugs/issue52748.go	skip	todo:errorcheck
-fixedbugs/issue52788.go	fail	gd: unsupported builtin function
-fixedbugs/issue52788a.go	fail	gd: unsupported builtin function
+fixedbugs/issue52788.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue52788a.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue52841.go	pass	
 fixedbugs/issue52846.go	pass	
 fixedbugs/issue52856.go	skip	todo:rundir
@@ -1701,20 +1701,20 @@ fixedbugs/issue53309.go	fail	gd: unsupported call for function of type xyz.Case
 fixedbugs/issue53439.go	fail	gd: unsupported unsafe.Offsetof
 fixedbugs/issue53454.go	pass	
 fixedbugs/issue5358.go	skip	todo:errorcheck
-fixedbugs/issue53600.go	fail	c11: error: 'MinInt64' undeclared (first use in this function)
-fixedbugs/issue53619.go	fail	c11: error: invalid operands to binary != (have 'go_vv' and 'int')
+fixedbugs/issue53600.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
+fixedbugs/issue53619.go	pass	
 fixedbugs/issue53635.go	pass	
-fixedbugs/issue53653.go	fail	c11: error: 'MinInt64' undeclared (first use in this function)
+fixedbugs/issue53653.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
 fixedbugs/issue53702.go	pass	
 fixedbugs/issue5373.go	fail	gd: panic: interface conversion: ast.Expr is *ast.IndexExpr, not *ast.Ident
 fixedbugs/issue53982.go	pass	
 fixedbugs/issue54159.go	skip	gc:diagnostics -m=2
-fixedbugs/issue54220.go	fail	gd: unsupported builtin function
+fixedbugs/issue54220.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue54280.go	skip	todo:errorcheck
 fixedbugs/issue54307.go	pass	
 fixedbugs/issue54343.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue54348.go	pass	
-fixedbugs/issue54467.go	fail	gd: unsupported builtin function
+fixedbugs/issue54467.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue54542.go	skip	gc:toolchain
 fixedbugs/issue54632.go	pass	
 fixedbugs/issue54638.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
@@ -1726,8 +1726,8 @@ fixedbugs/issue54912.go	skip	todo:rundir
 fixedbugs/issue5493.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue54959.go	pass	
 fixedbugs/issue54991.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
-fixedbugs/issue55122.go	fail	c11: error: invalid operands to binary == (have 'go_arr32_go_u1' and 'go_arr32_go_u1')
-fixedbugs/issue55122b.go	fail	c11: error: invalid operands to binary == (have 'go_arr32_go_u1' and 'go_arr32_go_u1')
+fixedbugs/issue55122.go	pass	
+fixedbugs/issue55122b.go	pass	
 fixedbugs/issue5515.go	pass	
 fixedbugs/issue55242.go	pass	
 fixedbugs/issue5581.go	skip	todo:errorcheck
@@ -1747,18 +1747,18 @@ fixedbugs/issue56777.go	pass
 fixedbugs/issue56778.go	skip	todo:compiledir
 fixedbugs/issue56923.go	fail	gd: panic: unsupported index of test.EqFunc
 fixedbugs/issue5698.go	skip	todo:errorcheck
-fixedbugs/issue56990.go	fail	gd: unsupported builtin function
+fixedbugs/issue56990.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue5704.go	pass	
-fixedbugs/issue57184.go	fail	gd: unsupported builtin function
+fixedbugs/issue57184.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue57309.go	pass	
 fixedbugs/issue5753.go	pass	
 fixedbugs/issue5755.go	skip	todo:compiledir
 fixedbugs/issue57778.go	pass	
 fixedbugs/issue57823.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue57846.go	pass	
-fixedbugs/issue5793.go	fail	gd: unsupported builtin function
+fixedbugs/issue5793.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/issue57955.go	pass	
-fixedbugs/issue5809.go	fail	gd: unsupported builtin function
+fixedbugs/issue5809.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue58161.go	skip	gc:flags -d=ssa/check/seed=1
 fixedbugs/issue5820.go	pass	
 fixedbugs/issue58293.go	pass	
@@ -1786,35 +1786,35 @@ fixedbugs/issue59367.go	pass
 fixedbugs/issue59378.go	pass	
 fixedbugs/issue59404.go	skip	gc:flags -gcflags=-l=4
 fixedbugs/issue59404part2.go	pass	
-fixedbugs/issue59411.go	fail	gd: unsupported builtin function
+fixedbugs/issue59411.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue5957.go	skip	todo:errorcheck
 fixedbugs/issue59572.go	pass	
-fixedbugs/issue5963.go	fail	gd: unsupported builtin function
+fixedbugs/issue5963.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue59638.go	skip	gc:flags -gcflags=-l=4
-fixedbugs/issue59680.go	fail	gd: unsupported builtin function
+fixedbugs/issue59680.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue59709.go	skip	todo:rundir
 fixedbugs/issue6004.go	skip	todo:errorcheck
 fixedbugs/issue6036.go	pass	
 fixedbugs/issue6055.go	fail	exit: signal: trace/breakpoint trap filc safety error: cannot read pointer with null object.
-fixedbugs/issue60582.go	fail	gd: unsupported builtin function
+fixedbugs/issue60582.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue60601.go	fail	gd: unsupported type *types.Named
 fixedbugs/issue60945.go	skip	todo:compiledir
 fixedbugs/issue60982.go	pass	
-fixedbugs/issue60990.go	fail	c11: error: invalid operands to binary == (have 'go_vv' and 'go_vv')
+fixedbugs/issue60990.go	pass	
 fixedbugs/issue60991.go	pass	
 fixedbugs/issue61127.go	pass	
-fixedbugs/issue61187.go	fail	gd: unsupported builtin function
+fixedbugs/issue61187.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue6131.go	pass	
 fixedbugs/issue6140.go	fail	gd: unsupported method value of *struct
 fixedbugs/issue61778.go	pass	
 fixedbugs/issue61895.go	pass	
 fixedbugs/issue61908.go	pass	
 fixedbugs/issue61992.go	pass	
-fixedbugs/issue62203.go	fail	gd: unsupported builtin function
+fixedbugs/issue62203.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue62313.go	pass	
-fixedbugs/issue62360.go	fail	gd: unsupported builtin function
+fixedbugs/issue62360.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue62469.go	pass	
-fixedbugs/issue6247.go	fail	c11: error: invalid operands to binary * (have 'go_aaf8f8zz' and 'go_aaf8f8zz')
+fixedbugs/issue6247.go	pass	
 fixedbugs/issue62498.go	skip	todo:rundir
 fixedbugs/issue62515.go	fail	gd: unsupported unsafe.Sizeof
 fixedbugs/issue6269.go	fail	c11: error: unknown type name 'collision_go_main_package'; did you mean 'foo_go_main_package'?
@@ -1850,7 +1850,7 @@ fixedbugs/issue65808.go	pass
 fixedbugs/issue65893.go	pass	
 fixedbugs/issue65957.go	skip	todo:rundir
 fixedbugs/issue65962.go	pass	
-fixedbugs/issue66066.go	fail	gd: unsupported builtin function
+fixedbugs/issue66066.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue66066b.go	pass	
 fixedbugs/issue66096.go	pass	
 fixedbugs/issue66261.go	pass	
@@ -1886,7 +1886,7 @@ fixedbugs/issue6703x.go	skip	todo:errorcheck
 fixedbugs/issue6703y.go	skip	todo:errorcheck
 fixedbugs/issue6703z.go	skip	todo:errorcheck
 fixedbugs/issue67141.go	skip	todo:errorcheck
-fixedbugs/issue67160.go	fail	c11: error: invalid operands to binary == (have 'U_go_main_package' {aka 'go_arr8_T_go_main_package'} and 'U_go_main_package'…
+fixedbugs/issue67160.go	pass	
 fixedbugs/issue67190.go	pass	
 fixedbugs/issue67255.go	pass	
 fixedbugs/issue67329.go	skip	gc:diagnostics -d=ssa/check_bce/debug=1
@@ -1894,7 +1894,7 @@ fixedbugs/issue6750.go	skip	todo:errorcheck
 fixedbugs/issue6772.go	skip	todo:errorcheck
 fixedbugs/issue6789.go	skip	todo:rundir
 fixedbugs/issue68054.go	fail	gd: unsupported index of test.Seq
-fixedbugs/issue68227.go	fail	gd: unsupported builtin function
+fixedbugs/issue68227.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue68264.go	pass	
 fixedbugs/issue68292.go	skip	todo:errorcheck
 fixedbugs/issue68322.go	fail	c11: error: implicit declaration of function 'Trunc_go_math_package'; did you mean 'Sqrt_go_math_package'? [-Wimplicit-functi…
@@ -1909,19 +1909,19 @@ fixedbugs/issue68809.go	pass
 fixedbugs/issue68816.go	fail	exit: signal: trace/breakpoint trap filc safety error: attempt to allocate object that is too bi…
 fixedbugs/issue6889.go	skip	todo:errorcheck
 fixedbugs/issue6899.go	fail	c11: error: implicit declaration of function 'Copysign_go_math_package'; did you mean 'Sqrt_go_math_package'? [-Wimplicit-fun…
-fixedbugs/issue6902.go	fail	gd: unsupported builtin function
+fixedbugs/issue6902.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue69434.go	fail	gd: range over unsupported type *types.Named
 fixedbugs/issue69507.go	fail	gd: range over unsupported type *types.Named
 fixedbugs/issue6964.go	skip	todo:errorcheck
 fixedbugs/issue6977.go	skip	todo:errorcheck
 fixedbugs/issue69825.go	skip	gc:flags -d=libfuzzer
-fixedbugs/issue70156.go	fail	gd: unsupported builtin function
+fixedbugs/issue70156.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue70175.go	fail	c11: error: duplicate label 'go_label__'
 fixedbugs/issue70189.go	fail	gd: range over unsupported type *types.Map
 fixedbugs/issue7023.go	skip	todo:compiledir
-fixedbugs/issue7044.go	fail	gd: unsupported builtin function
+fixedbugs/issue7044.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue70481.go	pass	
-fixedbugs/issue7050.go	fail	gd: unsupported builtin function
+fixedbugs/issue7050.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue7083.go	skip	gc:import runtime/debug
 fixedbugs/issue71184.go	pass	
 fixedbugs/issue71225.go	skip	gc:build cgo
@@ -1935,7 +1935,7 @@ fixedbugs/issue71759.go	pass
 fixedbugs/issue71852.go	fail	c11: error: implicit declaration of function 'Pow10_go_math_package'; did you mean 'Sqrt_go_math_package'? [-Wimplicit-functi…
 fixedbugs/issue71857.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
 fixedbugs/issue71932.go	pass	
-fixedbugs/issue72063.go	fail	gd: unsupported builtin function
+fixedbugs/issue72063.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue72090.go	fail	gd: range over unsupported type *types.Named
 fixedbugs/issue7214.go	skip	todo:errorcheck
 fixedbugs/issue7223.go	skip	todo:errorcheck
@@ -1952,8 +1952,8 @@ fixedbugs/issue7346.go	pass
 fixedbugs/issue73476.go	fail	exit: exit status 2 panic: runtime error: invalid memory address or nil pointer …
 fixedbugs/issue73483.go	skip	gc:build race && cgo
 fixedbugs/issue73491.go	pass	
-fixedbugs/issue7366.go	fail	c11: error: invalid operands to binary == (have 'T_go_main_package' {aka 'go_struct_f44187e72e2ead89'} and 'T_go_main_package…
-fixedbugs/issue73716.go	fail	gd: unsupported builtin function
+fixedbugs/issue7366.go	pass	
+fixedbugs/issue73716.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue73748a.go	skip	gc:import runtime/trace
 fixedbugs/issue73748b.go	skip	gc:import runtime/trace
 fixedbugs/issue73823.go	fail	gd: unsupported assignment of multiple results in for statement
@@ -1963,17 +1963,17 @@ fixedbugs/issue73916.go	pass
 fixedbugs/issue73916b.go	pass	
 fixedbugs/issue73917.go	pass	
 fixedbugs/issue73920.go	pass	
-fixedbugs/issue7405.go	fail	c11: error: invalid operands to binary == (have 'T1_go_test_package' {aka 'go_struct_683cbf3908bf1395'} and 'T1_go_test_packa…
-fixedbugs/issue7419.go	fail	gd: unsupported builtin function
-fixedbugs/issue74379.go	fail	gd: unsupported builtin function
-fixedbugs/issue74379b.go	fail	gd: unsupported builtin function
-fixedbugs/issue74379c.go	fail	gd: unsupported builtin function
+fixedbugs/issue7405.go	pass	
+fixedbugs/issue7419.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue74379.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue74379b.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue74379c.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue74626.go	skip	todo:errorcheck
 fixedbugs/issue74648.go	skip	todo:runindir
 fixedbugs/issue74836.go	pass	
 fixedbugs/issue74888.go	pass	
 fixedbugs/issue74908.go	pass	
-fixedbugs/issue74935.go	fail	gd: unsupported builtin function
+fixedbugs/issue74935.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue75022.go	skip	todo:errorcheck
 fixedbugs/issue75063.go	pass	
 fixedbugs/issue7525.go	skip	todo:errorcheck
@@ -1982,8 +1982,8 @@ fixedbugs/issue7525c.go	skip	todo:errorcheck
 fixedbugs/issue7525d.go	skip	todo:errorcheck
 fixedbugs/issue7525e.go	skip	todo:errorcheck
 fixedbugs/issue75278.go	skip	gc:diagnostics -m=2
-fixedbugs/issue75327.go	fail	gd: unsupported builtin function
-fixedbugs/issue75365.go	fail	gd: unsupported builtin function
+fixedbugs/issue75327.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue75365.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue7538a.go	skip	todo:errorcheck
 fixedbugs/issue7538b.go	pass	
 fixedbugs/issue7547.go	pass	
@@ -1993,12 +1993,12 @@ fixedbugs/issue75764.go	skip	gc:stack-introspection runtime.Callers
 fixedbugs/issue7590.go	pass	
 fixedbugs/issue76008.go	skip	gc:stack-introspection runtime.Caller
 fixedbugs/issue7648.go	skip	todo:compiledir
-fixedbugs/issue76709.go	fail	gd: unsupported builtin function
+fixedbugs/issue76709.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue7675.go	skip	todo:errorcheck
 fixedbugs/issue7690.go	skip	gc:stack-introspection runtime.Stack
 fixedbugs/issue76950.go	pass	
-fixedbugs/issue77303.go	fail	c11: error: invalid operands to binary == (have 'go_arr3_zeroSizeSpecial_go_test_package' and 'go_arr3_zeroSizeSpecial_go_tes…
-fixedbugs/issue7740.go	fail	gd: unsupported builtin function
+fixedbugs/issue77303.go	pass	
+fixedbugs/issue7740.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue7742.go	pass	
 fixedbugs/issue77435.go	fail	c11: error: incompatible type for argument 1 of 'go_slice_clear'
 fixedbugs/issue7746.go	skip	todo:errorcheck
@@ -2006,9 +2006,9 @@ fixedbugs/issue77534.go	pass
 fixedbugs/issue7760.go	skip	todo:errorcheck
 fixedbugs/issue77604.go	pass	
 fixedbugs/issue77613.go	fail	gd: unsupported type *types.Named
-fixedbugs/issue77635.go	fail	gd: unsupported builtin function
+fixedbugs/issue77635.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue77635b.go	pass	
-fixedbugs/issue77779.go	fail	gd: unsupported builtin function
+fixedbugs/issue77779.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue77815.go	pass	
 fixedbugs/issue77868.go	pass	
 fixedbugs/issue77919.go	pass	
@@ -2028,10 +2028,10 @@ fixedbugs/issue78404.go	fail	c11: error: unknown type name 'Iface__go_ii_go_main
 fixedbugs/issue78408.go	fail	gd: range over unsupported type *types.Signature
 fixedbugs/issue78410.go	pass	
 fixedbugs/issue78599.go	fail	gd: range over unsupported type *types.Named
-fixedbugs/issue7863.go	fail	gd: unsupported builtin function
+fixedbugs/issue7863.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue78641.go	pass	
 fixedbugs/issue7867.go	skip	todo:runoutput
-fixedbugs/issue7884.go	fail	gd: unsupported builtin function
+fixedbugs/issue7884.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue78892.go	pass	
 fixedbugs/issue79182.go	pass	
 fixedbugs/issue79186.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
@@ -2040,30 +2040,30 @@ fixedbugs/issue7921.go	skip	gc:diagnostics -m
 fixedbugs/issue79236.go	pass	
 fixedbugs/issue79236b.go	fail	gd: unsupported type *types.Named
 fixedbugs/issue79258.go	skip	todo:errorcheck
-fixedbugs/issue79274.go	fail	gd: unsupported builtin function
+fixedbugs/issue79274.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue79274a.go	skip	todo:compiledir
 fixedbugs/issue7944.go	pass	
 fixedbugs/issue79762.go	skip	gc:import runtime/debug
 fixedbugs/issue79812.go	fail	gd: unsupported conversion to float64
-fixedbugs/issue79874.go	fail	gd: unsupported builtin function
-fixedbugs/issue79886.go	fail	gd: unsupported builtin function
+fixedbugs/issue79874.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue79886.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue79887.go	pass	
-fixedbugs/issue79909.go	fail	gd: unsupported builtin function
-fixedbugs/issue7995.go	fail	gd: unsupported builtin function
+fixedbugs/issue79909.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue7995.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue7995b.go	skip	todo:rundir
 fixedbugs/issue7996.go	fail	gd: unsupported map key type interface
 fixedbugs/issue79960.go	pass	
 fixedbugs/issue7997.go	pass	
 fixedbugs/issue7998.go	pass	
 fixedbugs/issue80004.go	pass	
-fixedbugs/issue8004.go	fail	gd: unsupported builtin function
+fixedbugs/issue8004.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue80096.go	pass	
-fixedbugs/issue80097.go	fail	c11: error: invalid operands to binary != (have 'go_arr65536_go_pt' and 'go_arr65536_go_pt')
+fixedbugs/issue80097.go	pass	
 fixedbugs/issue8011.go	pass	
 fixedbugs/issue80127.go	pass	
 fixedbugs/issue8017.go	fail	gd: panic: unsupported len of
 fixedbugs/issue80188.go	pass	
-fixedbugs/issue80196.go	fail	c11: error: invalid operands to binary != (have 'S_go_main_package' {aka 'go_arr5_go_pt'} and 'S_go_main_package' {aka 'go_ar…
+fixedbugs/issue80196.go	pass	
 fixedbugs/issue8028.go	pass	
 fixedbugs/issue8036.go	pass	
 fixedbugs/issue8039.go	fail	gd: unsupported deferred of builtin copy
@@ -2083,10 +2083,10 @@ fixedbugs/issue8079.go	pass
 fixedbugs/issue80976.go	fail	c11: error: implicit declaration of function 'TypeMap_Set_go_main_package' [-Wimplicit-function-declaration]
 fixedbugs/issue81165.go	fail	c11: error: 'I_someType_FailedLink_go_main_package' undeclared here (not in a function); did you mean 'someTypeAlias_go_main_…
 fixedbugs/issue8132.go	pass	
-fixedbugs/issue8139.go	fail	gd: unsupported builtin function
+fixedbugs/issue8139.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue8154.go	pass	
 fixedbugs/issue8155.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
-fixedbugs/issue8158.go	fail	gd: unsupported builtin function
+fixedbugs/issue8158.go	fail	gd: panic: unsupported unsafe.Sizeof
 fixedbugs/issue8183.go	skip	todo:errorcheck
 fixedbugs/issue8280.go	skip	todo:compiledir
 fixedbugs/issue8311.go	skip	todo:errorcheck
@@ -2099,18 +2099,18 @@ fixedbugs/issue8440.go	skip	todo:errorcheck
 fixedbugs/issue8475.go	pass	
 fixedbugs/issue8501.go	skip	todo:errorcheck
 fixedbugs/issue8507.go	skip	todo:errorcheck
-fixedbugs/issue8606.go	fail	gd: unsupported builtin function
-fixedbugs/issue8606b.go	fail	gd: unsupported builtin function
-fixedbugs/issue8612.go	fail	c11: error: invalid operands to binary == (have 'S_go_test_package' {aka 'go_struct_3a47d2d0348b4e7c'} and 'go_vv')
+fixedbugs/issue8606.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue8606b.go	fail	gd: panic: unsupported unsafe.Sizeof
+fixedbugs/issue8612.go	pass	
 fixedbugs/issue8613.go	pass	
 fixedbugs/issue8620.go	pass	
 fixedbugs/issue8745.go	skip	todo:errorcheck
 fixedbugs/issue8761.go	pass	
 fixedbugs/issue8836.go	skip	todo:errorcheck
 fixedbugs/issue887.go	pass	
-fixedbugs/issue8947.go	fail	c11: error: invalid operands to binary == (have 'T_go_main_package' {aka 'go_arr2_go_ii'} and 'T_go_main_package' {aka 'go_ar…
+fixedbugs/issue8947.go	fail	c11: error: 'T_go_main_package' {aka 'const go_struct_f6626ba28a2c2707'} has no member named 'a'
 fixedbugs/issue8961.go	pass	
-fixedbugs/issue9006.go	fail	c11: error: invalid operands to binary == (have 'T1_go_main_package' {aka 'go_struct_7250e917533f472d'} and 'T1_go_main_packa…
+fixedbugs/issue9006.go	pass	
 fixedbugs/issue9017.go	skip	todo:errorcheck
 fixedbugs/issue9036.go	skip	todo:errorcheck
 fixedbugs/issue9076.go	skip	todo:errorcheck
@@ -2138,7 +2138,7 @@ fixedbugs/shrd_zero_count.go	pass
 fixedbugs/splitload_pointer_compare.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
 fixedbugs/walk_bounded_overshift_empty_bound.go	fail	gd: unsupported type *types.Named
 float_lit.go	pass	
-float_lit2.go	fail	gd: unsupported builtin function
+float_lit2.go	fail	gd: panic: unsupported unsafe.Sizeof
 float_lit3.go	skip	todo:errorcheck
 floatcmp.go	fail	c11: error: 'nan' redeclared as different kind of symbol
 for.go	fail	exit: exit status 2 panic: 1
@@ -2159,15 +2159,15 @@ gc1.go	pass
 gc2.go	skip	gc:memstats runtime.ReadMemStats
 gcgort.go	skip	gc:import runtime/debug
 gcstring.go	skip	gc:finalizers runtime.SetFinalizer
-genmeth.go	fail	gd: unsupported builtin function
-genmeth1.go	fail	gd: unsupported builtin function
-genmeth2.go	fail	gd: unsupported builtin function
-goprint.go	fail	gd: unsupported builtin function
+genmeth.go	fail	gd: panic: unsupported unsafe.Sizeof
+genmeth1.go	fail	gd: panic: unsupported unsafe.Sizeof
+genmeth2.go	fail	gd: panic: unsupported unsafe.Sizeof
+goprint.go	fail	gd: panic: unsupported unsafe.Sizeof
 goto.go	skip	todo:errorcheck
 heapsampling.go	skip	gc:memstats runtime.MemProfileRate
 helloworld.go	pass	
 if.go	pass	
-import.go	fail	gd: unsupported builtin function
+import.go	fail	gd: panic: unsupported unsafe.Sizeof
 import1.go	skip	todo:errorcheck
 import2.go	skip	todo:compiledir
 import4.go	skip	todo:errorcheck
@@ -2183,7 +2183,7 @@ init.go	skip	todo:errorcheck
 init1.go	skip	gc:memstats runtime.ReadMemStats
 initcomma.go	pass	
 initexp.go	skip	todo:errorcheck
-initialize.go	fail	gd: unsupported builtin function
+initialize.go	fail	gd: panic: unsupported unsafe.Sizeof
 initializerr.go	skip	todo:errorcheck
 initloop.go	skip	todo:errorcheck
 inline.go	skip	gc:diagnostics -m
@@ -2195,21 +2195,21 @@ inline_literal.go	skip	gc:stack-introspection runtime.FuncForPC
 inline_math_bits_rotate.go	skip	gc:diagnostics -m
 inline_sync.go	skip	gc:diagnostics -m
 inline_variadic.go	skip	gc:diagnostics -m
-int_lit.go	fail	gd: unsupported builtin function
+int_lit.go	fail	gd: panic: unsupported unsafe.Sizeof
 intcvt.go	pass	
 interface/assertinline.go	skip	gc:diagnostics -d=typeassert
 interface/bigdata.go	pass	
 interface/convert.go	pass	
 interface/convert1.go	pass	
 interface/convert2.go	pass	
-interface/embed.go	fail	gd: unsupported builtin function
+interface/embed.go	fail	gd: panic: unsupported unsafe.Sizeof
 interface/embed1.go	skip	todo:rundir
 interface/embed2.go	skip	todo:errorcheck
 interface/embed3.go	skip	todo:rundir
 interface/explicit.go	skip	todo:errorcheck
 interface/fail.go	pass	
-interface/fake.go	fail	gd: unsupported builtin function
-interface/noeq.go	fail	c11: error: invalid operands to binary == (have 'go_vv' and 'go_vv')
+interface/fake.go	fail	gd: panic: unsupported unsafe.Sizeof
+interface/noeq.go	pass	
 interface/pointer.go	skip	todo:errorcheck
 interface/private.go	skip	todo:errorcheck
 interface/receiver.go	pass	
@@ -2217,27 +2217,27 @@ interface/receiver1.go	skip	todo:errorcheck
 interface/recursive.go	pass	
 interface/recursive1.go	skip	todo:compiledir
 interface/returntype.go	pass	
-interface/struct.go	fail	gd: unsupported builtin function
+interface/struct.go	fail	gd: panic: unsupported unsafe.Sizeof
 internal/runtime/sys/inlinegcpc.go	skip	gc:diagnostics -m
 intrinsic.go	skip	gc:diagnostics -d=ssa/intrinsics/debug
 intrinsic_atomic.go	skip	gc:diagnostics -d=ssa/intrinsics/debug
 iota.go	pass	
 ken/array.go	pass	
-ken/chan.go	fail	gd: unsupported builtin function
+ken/chan.go	fail	gd: panic: unsupported unsafe.Sizeof
 ken/chan1.go	pass	
 ken/complit.go	pass	
 ken/convert.go	pass	
 ken/cplx0.go	fail	c11: error: initializer element is not constant
 ken/cplx1.go	fail	c11: error: initializer element is not constant
-ken/cplx2.go	fail	gd: unsupported builtin function
-ken/cplx3.go	fail	gd: unsupported builtin function
-ken/cplx4.go	fail	gd: unsupported builtin function
-ken/cplx5.go	fail	gd: unsupported builtin function
+ken/cplx2.go	fail	c11: error: initializer element is not constant
+ken/cplx3.go	fail	gd: panic: unsupported unsafe.Sizeof
+ken/cplx4.go	fail	gd: panic: unsupported unsafe.Sizeof
+ken/cplx5.go	pass	
 ken/divconst.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
 ken/divmod.go	pass	
 ken/embed.go	fail	c11: error: 'go_pt' has no member named 'a3'
 ken/for.go	pass	
-ken/interbasic.go	fail	c11: error: invalid operands to binary != (have 'go_vv' and 'go_vv')
+ken/interbasic.go	pass	
 ken/interfun.go	pass	
 ken/intervar.go	pass	
 ken/label.go	pass	
@@ -2248,7 +2248,7 @@ ken/ptrfun.go	pass
 ken/ptrvar.go	pass	
 ken/range.go	fail	gd: range over unsupported type *types.Map
 ken/rob1.go	pass	
-ken/rob2.go	fail	gd: unsupported builtin function
+ken/rob2.go	fail	gd: panic: unsupported unsafe.Sizeof
 ken/robfor.go	pass	
 ken/robfunc.go	pass	
 ken/shift.go	fail	output: mismatch
@@ -2274,7 +2274,7 @@ linkobj.go	skip	gc:build !nacl && !js && gc && !wasip1
 linkx.go	skip	upstream:skip
 linkx_run.go	skip	gc:build !nacl && !js && !wasip1 && gc
 literal.go	pass	
-literal2.go	fail	gd: unsupported builtin function
+literal2.go	fail	gd: panic: unsupported unsafe.Sizeof
 live.go	skip	gc:diagnostics -live
 live1.go	pass	
 live2.go	skip	gc:diagnostics -live
@@ -2287,10 +2287,10 @@ makemap.go	skip	todo:errorcheck
 makenew.go	skip	todo:errorcheck
 makeslice.go	fail	gd: unsupported type *types.Named
 mallocfin.go	skip	gc:finalizers runtime.SetFinalizer
-map.go	fail	gd: unsupported builtin function
+map.go	fail	gd: panic: unsupported unsafe.Sizeof
 map1.go	skip	todo:errorcheck
-mapclear.go	fail	gd: unsupported builtin function
-maplinear.go	fail	gd: unsupported builtin function
+mapclear.go	fail	gd: panic: unsupported unsafe.Sizeof
+maplinear.go	fail	gd: panic: unsupported unsafe.Sizeof
 maymorestack.go	skip	gc:flags -gcflags=-d=maymorestack=main.mayMoreStack
 mergemul.go	skip	todo:runoutput
 method.go	fail	gd: panic: unsupported node type: DefinedType
@@ -2303,9 +2303,9 @@ method6.go	skip	todo:errorcheck
 method7.go	fail	gd: panic: unsupported node type: DefinedType
 named.go	fail	gd: unsupported type *types.Named
 named1.go	skip	todo:errorcheck
-newexpr.go	fail	c11: error: invalid operands to binary != (have 'go_arr2_go_ii' and 'go_arr2_go_ii')
+newexpr.go	fail	exit: exit status 2 panic: wrong value
 newinline.go	skip	gc:build goexperiment.newinliner
-nil.go	fail	gd: unsupported builtin function
+nil.go	fail	gd: panic: unsupported unsafe.Sizeof
 nilcheck.go	skip	gc:diagnostics -d=nil
 nilptr.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
 nilptr2.go	fail	exit: signal: segmentation fault
@@ -2323,7 +2323,7 @@ opt_branchlikely.go	skip	gc:diagnostics -d=ssa/likelyadjust/debug=1,ssa/insert_r
 parentype.go	pass	
 peano.go	fail	exit: signal: trace/breakpoint trap filc safety error: stack overflow.
 phiopt.go	skip	gc:diagnostics -d=ssa/phiopt/debug=3
-print.go	fail	c11: error: 'struct <anonymous>' has no member named 'go_type'
+print.go	pass	
 printbig.go	pass	
 prove.go	skip	gc:diagnostics -d=ssa/prove/debug=1
 prove_constant_folding.go	skip	gc:diagnostics -d=ssa/prove/debug=2
@@ -2334,23 +2334,23 @@ range2.go	skip	todo:errorcheck
 range3.go	pass	
 range4.go	fail	gd: panic: interface conversion: ast.Expr is *ast.StarExpr, not *ast.Ident
 rangegen.go	skip	todo:runoutput
-recover.go	fail	gd: unsupported builtin function
-recover1.go	fail	c11: error: invalid operands to binary != (have 'go_vv' and 'go_vv')
+recover.go	fail	gd: panic: unsupported unsafe.Sizeof
+recover1.go	fail	exit: exit status 2 panic: nil
 recover2.go	fail	gd: unsupported type *types.Named
 recover3.go	fail	gd: unsupported type *types.Named
 recover4.go	skip	gc:import runtime/debug
 recover5.go	skip	todo:errorcheck
-reflectmethod1.go	fail	gd: unsupported builtin function
-reflectmethod2.go	fail	gd: unsupported builtin function
-reflectmethod3.go	fail	gd: unsupported builtin function
-reflectmethod4.go	fail	gd: unsupported builtin function
-reflectmethod5.go	fail	gd: unsupported builtin function
-reflectmethod6.go	fail	gd: unsupported builtin function
-reflectmethod7.go	fail	gd: unsupported builtin function
+reflectmethod1.go	fail	gd: panic: unsupported unsafe.Sizeof
+reflectmethod2.go	fail	gd: panic: unsupported unsafe.Sizeof
+reflectmethod3.go	fail	gd: panic: unsupported unsafe.Sizeof
+reflectmethod4.go	fail	gd: panic: unsupported unsafe.Sizeof
+reflectmethod5.go	fail	gd: panic: unsupported unsafe.Sizeof
+reflectmethod6.go	fail	gd: panic: unsupported unsafe.Sizeof
+reflectmethod7.go	fail	gd: panic: unsupported unsafe.Sizeof
 reflectmethod8.go	fail	gd: panic: unsupported node type: DefinedType
-rename.go	fail	gd: unsupported builtin function
+rename.go	fail	gd: panic: unsupported unsafe.Sizeof
 rename1.go	skip	todo:errorcheck
-reorder.go	fail	gd: unsupported builtin function
+reorder.go	fail	gd: panic: unsupported unsafe.Sizeof
 reorder2.go	fail	c11: error: 'log' redeclared as different kind of symbol
 retjmp.go	skip	todo:buildrundir
 return.go	skip	todo:errorcheck
@@ -2363,9 +2363,9 @@ rune.go	pass
 runtime.go	skip	todo:errorcheck
 shift1.go	skip	todo:errorcheck
 shift2.go	fail	c11: error: invalid operands to binary << (have 'double' and 'go_uu' {aka 'long int'})
-shift3.go	fail	gd: unsupported builtin function
+shift3.go	fail	gd: panic: unsupported unsafe.Sizeof
 sieve.go	pass	
-sigchld.go	fail	gd: unsupported builtin function
+sigchld.go	fail	gd: panic: unsupported unsafe.Sizeof
 simassign.go	fail	c11: error: incompatible type for argument 1 of 'swap_go_main_package'
 simd.go	skip	gc:build goexperiment.simd && amd64
 simd/bug1.go	skip	gc:build amd64 && goexperiment.simd
@@ -2380,14 +2380,14 @@ sliceopt.go	skip	gc:diagnostics -d=append,slice
 solitaire.go	pass	
 stack.go	fail	exit: signal: trace/breakpoint trap filc safety error: stack overflow.
 stackobj.go	skip	gc:finalizers runtime.SetFinalizer
-stackobj2.go	fail	gd: unsupported builtin function
+stackobj2.go	fail	gd: panic: unsupported unsafe.Sizeof
 stackobj3.go	skip	gc:finalizers runtime.SetFinalizer
-strcopy.go	fail	gd: unsupported builtin function
+strcopy.go	fail	gd: panic: unsupported unsafe.Sizeof
 strength.go	skip	todo:runoutput
-string_lit.go	fail	gd: unsupported builtin function
-stringrange.go	fail	gd: unsupported builtin function
+string_lit.go	fail	gd: panic: unsupported unsafe.Sizeof
+stringrange.go	fail	gd: panic: unsupported unsafe.Sizeof
 struct0.go	fail	gd: unsupported map key type interface
-switch.go	fail	gd: unsupported builtin function
+switch.go	fail	gd: panic: unsupported unsafe.Sizeof
 switch2.go	skip	todo:errorcheck
 switch3.go	skip	todo:errorcheck
 switch4.go	skip	todo:errorcheck
@@ -2421,39 +2421,39 @@ turing.go	pass
 typecheck.go	skip	todo:errorcheck
 typecheckloop.go	skip	todo:errorcheck
 typeparam/absdiff.go	pass	
-typeparam/absdiff2.go	fail	gd: unsupported builtin function
-typeparam/absdiff3.go	fail	gd: unsupported builtin function
+typeparam/absdiff2.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/absdiff3.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/absdiffimp.go	skip	todo:rundir
 typeparam/absdiffimp2.go	skip	todo:rundir
-typeparam/adder.go	fail	gd: unsupported builtin function
+typeparam/adder.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/aliasimp.go	skip	todo:rundir
 typeparam/append.go	fail	gd: unsupported type *types.Named
-typeparam/boundmethod.go	fail	gd: unsupported builtin function
+typeparam/boundmethod.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/builtins.go	pass	
 typeparam/chans.go	skip	gc:finalizers runtime.SetFinalizer
 typeparam/chansimp.go	skip	todo:rundir
-typeparam/combine.go	fail	gd: unsupported builtin function
-typeparam/cons.go	fail	gd: unsupported builtin function
+typeparam/combine.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/cons.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/dedup.go	skip	todo:rundir
 typeparam/devirtualize1.go	pass	
 typeparam/devirtualize2.go	pass	
 typeparam/dictionaryCapture-noinline.go	skip	gc:flags -gcflags="-l"
-typeparam/dictionaryCapture.go	fail	gd: unsupported builtin function
+typeparam/dictionaryCapture.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/dottype.go	fail	gd: illegal type for print: (int, bool)
-typeparam/double.go	fail	gd: unsupported builtin function
-typeparam/eface.go	fail	gd: unsupported call for function of type xyz.Case
-typeparam/equal.go	fail	c11: error: invalid operands to binary == (have 'go_ii' {aka 'long int'} and 'go_vv')
-typeparam/fact.go	fail	gd: unsupported builtin function
+typeparam/double.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/eface.go	fail	gd: panic: unsupported call for function of type xyz.Case
+typeparam/equal.go	fail	c11: error: unknown type name 'S_go_main_package'; did you mean 'C_go_main_package'?
+typeparam/fact.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/factimp.go	skip	todo:rundir
 typeparam/gencrawler.go	skip	todo:rundir
-typeparam/genembed.go	fail	gd: unsupported builtin function
-typeparam/genembed2.go	fail	gd: unsupported builtin function
+typeparam/genembed.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/genembed2.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/geninline.go	skip	todo:rundir
-typeparam/graph.go	fail	gd: unsupported builtin function
-typeparam/ifaceconv.go	fail	gd: unsupported builtin function
-typeparam/importtest.go	fail	gd: unsupported builtin function
-typeparam/index.go	fail	gd: unsupported builtin function
-typeparam/index2.go	fail	gd: unsupported builtin function
+typeparam/graph.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/ifaceconv.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/importtest.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/index.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/index2.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/interfacearg.go	pass	
 typeparam/issue23536.go	pass	
 typeparam/issue376214.go	pass	
@@ -2461,15 +2461,15 @@ typeparam/issue39755.go	pass
 typeparam/issue42758.go	fail	gd: panic: unsupported map key type interface
 typeparam/issue44688.go	fail	c11: error: unknown type name 'A2__go_ss_go_main_package'; did you mean 'A__go_ss_go_main_package'?
 typeparam/issue45547.go	pass	
-typeparam/issue45722.go	fail	gd: unsupported builtin function
+typeparam/issue45722.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/issue45738.go	pass	
-typeparam/issue45817.go	fail	gd: unsupported builtin function
+typeparam/issue45817.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/issue46461.go	pass	
 typeparam/issue46461b.go	skip	todo:compiledir
 typeparam/issue46472.go	pass	
 typeparam/issue46591.go	fail	gd: unsupported map key type interface
-typeparam/issue47258.go	fail	gd: unsupported builtin function
-typeparam/issue47272.go	fail	gd: unsupported builtin function
+typeparam/issue47258.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/issue47272.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/issue47514.go	pass	
 typeparam/issue47514b.go	pass	
 typeparam/issue47514c.go	skip	todo:rundir
@@ -2480,11 +2480,11 @@ typeparam/issue47684b.go	pass
 typeparam/issue47684c.go	pass	
 typeparam/issue47708.go	pass	
 typeparam/issue47710.go	pass	
-typeparam/issue47713.go	fail	gd: unsupported builtin function
-typeparam/issue47716.go	fail	gd: unsupported builtin function
+typeparam/issue47713.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/issue47716.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/issue47723.go	pass	
-typeparam/issue47740.go	fail	gd: unsupported builtin function
-typeparam/issue47740b.go	fail	gd: unsupported builtin function
+typeparam/issue47740.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/issue47740b.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/issue47775.go	skip	todo:rundir
 typeparam/issue47775b.go	pass	
 typeparam/issue47797.go	pass	
@@ -2492,7 +2492,7 @@ typeparam/issue47877.go	pass
 typeparam/issue47878.go	pass	
 typeparam/issue47892.go	skip	todo:rundir
 typeparam/issue47892b.go	skip	todo:compiledir
-typeparam/issue47896.go	fail	gd: unsupported builtin function
+typeparam/issue47896.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/issue47901.go	fail	gd: unsupported call for function of type xyz.Case
 typeparam/issue47924.go	pass	
 typeparam/issue47925.go	pass	
@@ -2502,10 +2502,10 @@ typeparam/issue47925d.go	fail	gd: unsupported call for function of type xyz.Case
 typeparam/issue47929.go	skip	gc:flags -p=p
 typeparam/issue47948.go	pass	
 typeparam/issue47966.go	pass	
-typeparam/issue48013.go	fail	gd: unsupported builtin function
-typeparam/issue48016.go	fail	gd: unsupported builtin function
+typeparam/issue48013.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/issue48016.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/issue48030.go	pass	
-typeparam/issue48042.go	fail	gd: unsupported builtin function
+typeparam/issue48042.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/issue48047.go	fail	c11: error: unknown type name 'B__go_ss_go_main_package'; did you mean 'A__go_ss_go_main_package'?
 typeparam/issue48049.go	fail	c11: error: unknown type name 'Fooer__go_u1_go_main_package'; did you mean 'fooer1__go_u1_go_main_package'?
 typeparam/issue48056.go	pass	
@@ -2516,14 +2516,14 @@ typeparam/issue48185a.go	skip	todo:rundir
 typeparam/issue48185b.go	skip	todo:rundir
 typeparam/issue48191.go	skip	gc:flags -c=2
 typeparam/issue48198.go	pass	
-typeparam/issue48225.go	fail	gd: unsupported builtin function
-typeparam/issue48253.go	fail	gd: unsupported builtin function
-typeparam/issue48276a.go	fail	gd: unsupported builtin function
+typeparam/issue48225.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/issue48253.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/issue48276a.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/issue48276b.go	pass	
 typeparam/issue48280.go	skip	todo:rundir
 typeparam/issue48306.go	skip	todo:rundir
-typeparam/issue48317.go	fail	gd: unsupported builtin function
-typeparam/issue48318.go	fail	gd: unsupported builtin function
+typeparam/issue48317.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/issue48318.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/issue48337a.go	skip	todo:rundir
 typeparam/issue48337b.go	skip	todo:rundir
 typeparam/issue48344.go	fail	c11: error: unknown type name 'G__go_ii_go_main_package'; did you mean 'Foo__go_ii_go_main_package'?
@@ -2538,7 +2538,7 @@ typeparam/issue48602.go	fail	gd: panic: unsupported index of test.IteratorFunc
 typeparam/issue48604.go	fail	gd: panic: unsupported index of test.Bar
 typeparam/issue48609.go	pass	
 typeparam/issue48617.go	fail	c11: error: unknown type name 'Foo__go_ii_go_main_package'; did you mean 'Bar__go_ii_go_main_package'?
-typeparam/issue48645a.go	fail	gd: unsupported builtin function
+typeparam/issue48645a.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/issue48645b.go	fail	gd: panic: unsupported index of test.IteratorFunc
 typeparam/issue48711.go	skip	todo:errorcheck
 typeparam/issue48716.go	skip	todo:rundir
@@ -2557,27 +2557,27 @@ typeparam/issue49516.go	pass
 typeparam/issue49524.go	skip	todo:rundir
 typeparam/issue49536.go	skip	todo:compiledir
 typeparam/issue49538.go	pass	
-typeparam/issue49547.go	fail	gd: unsupported builtin function
+typeparam/issue49547.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/issue49611.go	pass	
 typeparam/issue49659.go	skip	todo:compiledir
 typeparam/issue49659b.go	pass	
 typeparam/issue49667.go	skip	todo:rundir
 typeparam/issue49875.go	pass	
 typeparam/issue49893.go	skip	todo:compiledir
-typeparam/issue50002.go	fail	gd: unsupported builtin function
-typeparam/issue50109.go	fail	gd: unsupported builtin function
+typeparam/issue50002.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/issue50109.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/issue50109b.go	pass	
 typeparam/issue50121.go	skip	todo:rundir
 typeparam/issue50121b.go	skip	todo:rundir
 typeparam/issue50147.go	pass	
-typeparam/issue50177.go	fail	gd: unsupported builtin function
-typeparam/issue50193.go	fail	gd: unsupported builtin function
+typeparam/issue50177.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/issue50193.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/issue50259.go	pass	
 typeparam/issue50264.go	pass	
 typeparam/issue50317.go	skip	todo:errorcheck
 typeparam/issue50417.go	pass	
 typeparam/issue50417b.go	pass	
-typeparam/issue50419.go	fail	gd: unsupported builtin function
+typeparam/issue50419.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/issue50437.go	skip	todo:compiledir
 typeparam/issue50481b.go	skip	todo:rundir
 typeparam/issue50481c.go	skip	todo:rundir
@@ -2586,10 +2586,10 @@ typeparam/issue50486.go	skip	todo:compiledir
 typeparam/issue50552.go	skip	todo:compiledir
 typeparam/issue50561.go	skip	todo:compiledir
 typeparam/issue50598.go	skip	todo:rundir
-typeparam/issue50642.go	fail	gd: unsupported builtin function
-typeparam/issue50690a.go	fail	gd: unsupported builtin function
-typeparam/issue50690b.go	fail	gd: unsupported builtin function
-typeparam/issue50690c.go	fail	gd: unsupported builtin function
+typeparam/issue50642.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/issue50690a.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/issue50690b.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/issue50690c.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/issue50833.go	pass	
 typeparam/issue50841.go	skip	todo:compiledir
 typeparam/issue50993.go	skip	gc:flags -d=checkptr
@@ -2600,50 +2600,50 @@ typeparam/issue51233.go	skip	todo:errorcheck
 typeparam/issue51236.go	pass	
 typeparam/issue51245.go	pass	
 typeparam/issue51250a.go	skip	todo:rundir
-typeparam/issue51303.go	fail	gd: unsupported builtin function
+typeparam/issue51303.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/issue51355.go	fail	c11: error: conflicting types for 'value'; have 'go_ss *'
 typeparam/issue51367.go	skip	todo:rundir
 typeparam/issue51423.go	skip	todo:compiledir
-typeparam/issue51521.go	fail	gd: unsupported builtin function
-typeparam/issue51522a.go	fail	c11: error: invalid operands to binary != (have 'go_vv' and 'go_ii' {aka 'long int'})
-typeparam/issue51522b.go	fail	c11: error: invalid operands to binary == (have 'go_vv' and 'go_ii' {aka 'long int'})
-typeparam/issue51700.go	fail	c11: error: incompatible types when assigning to type 'struct <anonymous>' from type 'go_if'
+typeparam/issue51521.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/issue51522a.go	pass	
+typeparam/issue51522b.go	pass	
+typeparam/issue51700.go	pass	
 typeparam/issue51765.go	pass	
 typeparam/issue51832.go	pass	
 typeparam/issue51836.go	skip	todo:compiledir
 typeparam/issue51840.go	pass	
 typeparam/issue51909.go	pass	
-typeparam/issue51925.go	fail	gd: unsupported builtin function
+typeparam/issue51925.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/issue52026.go	fail	c11: error: unknown type name 'Option__go_ii_go_main_package'; did you mean 'Some__go_ii_go_main_package'?
 typeparam/issue52117.go	skip	todo:compiledir
 typeparam/issue52124.go	pass	
 typeparam/issue52228.go	pass	
 typeparam/issue52241.go	pass	
-typeparam/issue53087.go	fail	gd: unsupported builtin function
+typeparam/issue53087.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/issue53254.go	pass	
 typeparam/issue53390.go	fail	gd: unsupported unsafe.Alignof
 typeparam/issue53406.go	pass	
 typeparam/issue53419.go	pass	
 typeparam/issue53477.go	fail	gd: unsupported call for function of type xyz.Case
 typeparam/issue53762.go	fail	gd: unsupported call for function of type xyz.Case
-typeparam/issue54135.go	fail	c11: error: invalid operands to binary != (have 'go_vv' and 'go_if')
+typeparam/issue54135.go	fail	c11: error: unknown type name 'Bar__go_ii_go_main_package'; did you mean 'Baz_go_main_package'?
 typeparam/issue54225.go	pass	
 typeparam/issue54302.go	skip	todo:rundir
-typeparam/issue54456.go	fail	gd: unsupported builtin function
+typeparam/issue54456.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/issue54497.go	skip	gc:diagnostics -m
 typeparam/issue54535.go	pass	
 typeparam/issue54537.go	pass	
 typeparam/issue54765.go	skip	gc:build cgo
 typeparam/issue55101.go	pass	
 typeparam/issue58513.go	skip	gc:stack-introspection runtime.Caller
-typeparam/list.go	fail	gd: unsupported builtin function
-typeparam/list2.go	fail	gd: unsupported builtin function
+typeparam/list.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/list2.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/listimp.go	skip	todo:rundir
 typeparam/listimp2.go	skip	todo:rundir
 typeparam/lockable.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
-typeparam/map.go	fail	gd: unsupported builtin function
+typeparam/map.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/mapimp.go	skip	todo:rundir
-typeparam/maps.go	fail	gd: unsupported builtin function
+typeparam/maps.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/mapsimp.go	skip	todo:rundir
 typeparam/mdempsky/1.go	skip	todo:compiledir
 typeparam/mdempsky/10.go	skip	todo:rundir
@@ -2651,9 +2651,9 @@ typeparam/mdempsky/12.go	skip	todo:rundir
 typeparam/mdempsky/13.go	fail	gd: panic: unsupported node type: DefinedType
 typeparam/mdempsky/14.go	fail	gd: panic: unsupported node type: DefinedType
 typeparam/mdempsky/15.go	skip	gc:goexperiment fieldtrack
-typeparam/mdempsky/16.go	fail	gd: unsupported builtin function
-typeparam/mdempsky/17.go	fail	gd: unsupported builtin function
-typeparam/mdempsky/18.go	fail	gd: unsupported builtin function
+typeparam/mdempsky/16.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/mdempsky/17.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/mdempsky/18.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/mdempsky/19.go	pass	
 typeparam/mdempsky/2.go	pass	
 typeparam/mdempsky/20.go	pass	
@@ -2665,49 +2665,49 @@ typeparam/mdempsky/6.go	pass
 typeparam/mdempsky/7.go	skip	todo:compiledir
 typeparam/mdempsky/8.go	skip	todo:errorcheck
 typeparam/mdempsky/9.go	fail	c11: error: invalid suffix "LL" on floating constant
-typeparam/metrics.go	fail	gd: unsupported builtin function
-typeparam/min.go	fail	gd: unsupported builtin function
+typeparam/metrics.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/min.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/mincheck.go	skip	todo:errorcheck
 typeparam/minimp.go	skip	todo:rundir
 typeparam/mutualimp.go	skip	todo:compiledir
-typeparam/nested.go	fail	gd: unsupported builtin function
-typeparam/ordered.go	fail	gd: unsupported builtin function
+typeparam/nested.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/ordered.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/orderedmap.go	skip	gc:finalizers runtime.SetFinalizer
 typeparam/orderedmapsimp.go	skip	todo:rundir
-typeparam/pair.go	fail	gd: unsupported builtin function
+typeparam/pair.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/pairimp.go	skip	todo:rundir
 typeparam/pragma.go	skip	gc:diagnostics -m
 typeparam/recoverimp.go	skip	todo:rundir
 typeparam/select.go	skip	todo:rundir
-typeparam/sets.go	fail	gd: unsupported builtin function
+typeparam/sets.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/setsimp.go	skip	todo:rundir
-typeparam/settable.go	fail	gd: unsupported builtin function
+typeparam/settable.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/shape1.go	fail	output: mismatch
-typeparam/shape_assert.go	fail	gd: unsupported builtin function
+typeparam/shape_assert.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/sliceimp.go	skip	todo:rundir
-typeparam/slices.go	fail	gd: unsupported builtin function
-typeparam/smallest.go	fail	gd: unsupported builtin function
+typeparam/slices.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/smallest.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/smoketest.go	fail	c11: error: '__go_test_package' {aka 'go_az'} has no member named 'T2'
-typeparam/stringable.go	fail	gd: unsupported builtin function
-typeparam/stringer.go	fail	gd: unsupported builtin function
+typeparam/stringable.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/stringer.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/stringerimp.go	skip	todo:rundir
-typeparam/struct.go	fail	gd: unsupported builtin function
+typeparam/struct.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/structinit.go	skip	todo:rundir
-typeparam/subdict.go	fail	gd: unsupported builtin function
-typeparam/sum.go	fail	gd: unsupported builtin function
+typeparam/subdict.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeparam/sum.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/tparam1.go	skip	todo:errorcheck
 typeparam/typelist.go	pass	
 typeparam/typeswitch1.go	pass	
-typeparam/typeswitch2.go	fail	gd: unsupported builtin function
+typeparam/typeswitch2.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeparam/typeswitch3.go	fail	output: mismatch
 typeparam/typeswitch4.go	fail	output: mismatch
 typeparam/typeswitch5.go	fail	gd: panic: type parameter T was not substituted
 typeparam/typeswitch6.go	pass	
-typeparam/typeswitch7.go	fail	c11: error: conflicting types for 'f_go_main_package__go_ii'; have 'void(struct <anonymous>)'
+typeparam/typeswitch7.go	fail	output: mismatch
 typeparam/valimp.go	skip	todo:rundir
-typeparam/value.go	fail	gd: unsupported builtin function
-typeswitch.go	fail	gd: unsupported builtin function
-typeswitch1.go	fail	gd: unsupported builtin function
+typeparam/value.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeswitch.go	fail	gd: panic: unsupported unsafe.Sizeof
+typeswitch1.go	fail	gd: panic: unsupported unsafe.Sizeof
 typeswitch2.go	skip	todo:errorcheck
 typeswitch2b.go	skip	todo:errorcheck
 typeswitch3.go	skip	todo:errorcheck
@@ -2716,9 +2716,9 @@ uintptrescapes2.go	skip	gc:diagnostics -m
 uintptrescapes3.go	skip	gc:finalizers runtime.SetFinalizer
 uintptrkeepalive.go	skip	todo:errorcheck
 undef.go	skip	todo:errorcheck
-unsafe_slice_data.go	fail	gd: unsupported builtin function
+unsafe_slice_data.go	fail	gd: panic: unsupported unsafe.Sizeof
 unsafe_string.go	pass	
-unsafe_string_data.go	fail	gd: unsupported builtin function
+unsafe_string_data.go	fail	gd: panic: unsupported unsafe.Sizeof
 unsafebuiltins.go	fail	gd: constant 18446744073709551616 overflows 64 bits
 used.go	skip	todo:errorcheck
 utf.go	pass	
@@ -2728,7 +2728,7 @@ wasmexport.go	skip	upstream:build wasm
 wasmexport2.go	skip	upstream:build wasm
 wasmmemsize.go	skip	upstream:build wasm
 weak.go	skip	todo:errorcheck
-winbatch.go	fail	gd: unsupported builtin function
+winbatch.go	fail	gd: panic: unsupported unsafe.Sizeof
 writebarrier.go	skip	gc:diagnostics -d=wb
-zerodivide.go	fail	gd: unsupported builtin function
+zerodivide.go	fail	gd: panic: unsupported unsafe.Sizeof
 zerosize.go	fail	exit: exit status 2 panic: FAIL

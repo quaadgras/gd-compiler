@@ -161,8 +161,28 @@ var identifier = regexp.MustCompile(`[^A-Za-z0-9_]+`)
 
 func (c99 Target) InterfaceTypeOf(t types.Type) string {
 	typ, ok := t.(*types.Named)
-	if !ok {
-		return c99.TypeOf(t.Underlying())
+	if !ok { // a C struct type written out: the table of methods is a pointer to it.
+		iface := t.Underlying().(*types.Interface)
+		if iface.NumMethods() == 0 {
+			return "go_az"
+		}
+		var builder strings.Builder
+		builder.WriteString("struct { ")
+		for i := 0; i < iface.NumMethods(); i++ {
+			method := iface.Method(i)
+			sig := method.Type().(*types.Signature)
+			builder.WriteString(c99.TupleOfResults(sig))
+			builder.WriteString("(*")
+			builder.WriteString(source.CIdent(method.Name()))
+			builder.WriteString(")(void*")
+			for j := 0; j < sig.Params().Len(); j++ {
+				builder.WriteString(", ")
+				builder.WriteString(c99.TypeOf(sig.Params().At(j).Type()))
+			}
+			builder.WriteString(");")
+		}
+		builder.WriteString("}")
+		return builder.String()
 	}
 	if typ.Obj().Pkg() == nil {
 		return "go_" + typ.Obj().Name()
@@ -230,23 +250,7 @@ func (c99 Target) TypeOf(t types.Type) string {
 		if typ.NumMethods() == 0 {
 			return "go_vv"
 		}
-		var builder strings.Builder
-		builder.WriteString("struct { ")
-		for i := 0; i < typ.NumMethods(); i++ {
-			method := typ.Method(i)
-			sig := method.Type().(*types.Signature)
-			builder.WriteString(c99.TupleOfResults(sig))
-			builder.WriteString("(*")
-			builder.WriteString(source.CIdent(method.Name()))
-			builder.WriteString(")(void*")
-			for j := 0; j < sig.Params().Len(); j++ {
-				builder.WriteString(", ")
-				builder.WriteString(c99.TypeOf(sig.Params().At(j).Type()))
-			}
-			builder.WriteString(");")
-		}
-		builder.WriteString("}")
-		return builder.String()
+		return "go_if"
 	case *types.Struct:
 		if typ.NumFields() == 0 {
 			return "go_az"
@@ -310,7 +314,7 @@ func (c99 Target) ReflectTypeOf(t types.Type) string {
 	case *types.Slice:
 		data = fmt.Sprintf(".kind=go_kind_slice, .data={.slice={.elem=%s}}", c99.ReflectTypeOf(typ.Elem()))
 	case *types.Array:
-		data = fmt.Sprintf(".kind=go_kind_array, .data={.array={.elem=%s, .len=%d}}", c99.ReflectTypeOf(typ.Elem()), typ.Len())
+		data = fmt.Sprintf(".kind=go_kind_array, .data={.array={.elem=%s, .len=%d}}%s", c99.ReflectTypeOf(typ.Elem()), typ.Len(), c99.equalField(typ))
 	case *types.Map:
 		data = fmt.Sprintf(".kind=go_kind_map, .data={.map={.key=%s, .elem=%s}}", c99.ReflectTypeOf(typ.Key()), c99.ReflectTypeOf(typ.Elem()))
 	case *types.Chan:
@@ -320,7 +324,7 @@ func (c99 Target) ReflectTypeOf(t types.Type) string {
 	case *types.Interface:
 		data = ".kind=go_kind_interface" // TODO: methods.
 	case *types.Struct:
-		data = ".kind=go_kind_struct" // TODO: fields.
+		data = ".kind=go_kind_struct" + c99.equalField(typ) // TODO: fields.
 	default:
 		panic("unsupported type " + reflect.TypeOf(typ).String())
 	}

@@ -126,6 +126,7 @@ typedef struct go_type {
     go_type_data data;
     const go_method* methods; // sorted by name, like the methods of interfaces.
     go_ii nmethods;
+    go_tf (*equal)(const void*, const void*); // of structs and arrays, NULL if not comparable.
 } go_type;
 
 // The methods an interface requires, in the order of its table of methods.
@@ -136,6 +137,20 @@ typedef struct { go_pt ptr; const go_type* go_type; } go_vv;
 
 static inline go_aaf4f4zz go_complex64(go_f4 real, go_f4 imag) { return (go_aaf4f4zz){real, imag}; }
 static inline go_aaf8f8zz go_complex128(go_f8 real, go_f8 imag) { return (go_aaf8f8zz){real, imag}; }
+#define go_complex_ops(T, F) \
+    static inline T T##_add(T a, T b) { return (T){a.f1 + b.f1, a.f2 + b.f2}; } \
+    static inline T T##_sub(T a, T b) { return (T){a.f1 - b.f1, a.f2 - b.f2}; } \
+    static inline T T##_mul(T a, T b) { return (T){a.f1 * b.f1 - a.f2 * b.f2, a.f1 * b.f2 + a.f2 * b.f1}; } \
+    static inline T T##_neg(T a) { return (T){-a.f1, -a.f2}; }
+static inline go_aaf4f4zz go_aaf4f4zz_convert(go_aaf8f8zz a) { return (go_aaf4f4zz){(go_f4)a.f1, (go_f4)a.f2}; }
+static inline go_aaf8f8zz go_aaf8f8zz_convert(go_aaf4f4zz a) { return (go_aaf8f8zz){a.f1, a.f2}; }
+go_complex_ops(go_aaf4f4zz, go_f4)
+go_complex_ops(go_aaf8f8zz, go_f8)
+go_aaf8f8zz go_aaf8f8zz_quo(go_aaf8f8zz n, go_aaf8f8zz m);
+static inline go_aaf4f4zz go_aaf4f4zz_quo(go_aaf4f4zz n, go_aaf4f4zz m) {
+    go_aaf8f8zz q = go_aaf8f8zz_quo((go_aaf8f8zz){n.f1, n.f2}, (go_aaf8f8zz){m.f1, m.f2});
+    return (go_aaf4f4zz){(go_f4)q.f1, (go_f4)q.f2};
+}
 
 typedef struct { char _; } go_tuple;
 
@@ -190,6 +205,7 @@ go_tf go_take_recover(void);
 go_vv go_recover(go_tf can_recover);
 _Noreturn void go_panic_any(go_vv v);
 go_tf go_type_eq(const go_type* a, const go_type* b);
+go_tf go_vv_eq(go_vv a, go_vv b); // panics if the dynamic type is not comparable.
 static inline go_vv go_if_to_vv(go_if v) { return (go_vv){ .ptr = v.ptr, .go_type = v.go_type }; }
 _Noreturn void go_panic_assertion(const go_type* want, go_vv have);
 // go_implements reports whether t has the methods, filling table (if not NULL) with them.

@@ -184,6 +184,11 @@ func (c99 Target) Selection(sel source.Selection) error {
 			return c99.methodValue(sel, fn) // not called (calls are compiled by FunctionCall).
 		}
 	}
+	if xyz.ValueOf(sel.Selection) == source.Expressions.DefinedConstant && sel.X.TypeAndValue().Type == nil {
+		if obj, ok := source.Expressions.DefinedConstant.Get(sel.Selection).Unique.(*types.Const); ok { // pkg.Name
+			return c99.Constant(types.TypeAndValue{Type: obj.Type(), Value: obj.Val()})
+		}
+	}
 	if xtype := sel.X.TypeAndValue().Type; xtype != nil {
 		if pointer, ok := xtype.Underlying().(*types.Pointer); ok { // p.f is (*p).f
 			fmt.Fprintf(c99, "go_pointer_get(")

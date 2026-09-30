@@ -92,6 +92,15 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 			return c99.delete(expr)
 		case "min", "max":
 			return c99.minmax(expr, call.String)
+		case "complex", "complex_": // escaped, see source.CIdent.
+			fmt.Fprintf(c99, "((%s){ %s, %s })", c99.TypeOf(expr.TypeAndValue().Type), c99.toString(expr.Arguments[0]), c99.toString(expr.Arguments[1]))
+			return nil
+		case "real":
+			fmt.Fprintf(c99, "(%s).f1", c99.toString(expr.Arguments[0]))
+			return nil
+		case "imag":
+			fmt.Fprintf(c99, "(%s).f2", c99.toString(expr.Arguments[0]))
+			return nil
 		case "len":
 			return c99.len(expr)
 		case "cap":
@@ -312,6 +321,10 @@ func (c99 Target) conversion(expr source.FunctionCall, t types.Type) (bool, erro
 	}
 	if c99.TypeOf(t) == c99.TypeOf(from) { // the same C type.
 		return true, c99.Expression(arg)
+	}
+	if basic, ok := t.Underlying().(*types.Basic); ok && basic.Info()&types.IsComplex != 0 { // complex64 <-> complex128
+		fmt.Fprintf(c99, "%s_convert(%s)", c99.TypeOf(t), c99.toString(arg))
+		return true, nil
 	}
 	if types.IdenticalIgnoreTags(t.Underlying(), from.Underlying()) { // distinct C types.
 		symbol := "go_convert_" + identifier.ReplaceAllString(c99.TypeOf(from)+"_to_"+c99.TypeOf(t), "_")
