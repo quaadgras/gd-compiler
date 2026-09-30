@@ -331,7 +331,7 @@ func (c99 Target) ExpressionIndex(expr source.ExpressionIndex) error {
 		fmt.Fprintf(c99, "]")
 		return nil
 	default:
-		return fmt.Errorf("unsupported index of type %T", expr)
+		return expr.Location.Errorf("unsupported index of %s", expr.X.TypeAndValue().Type)
 	}
 }
 

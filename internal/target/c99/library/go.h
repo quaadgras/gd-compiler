@@ -244,10 +244,6 @@ go_vv go_any_new(size_t size, void* value, const go_type* go_type);
 go_u8 go_hash_ss(const void* item, go_u8 seed0, go_u8 seed1);
 go_tf go_same_ss(const void* a, const void* b);
 
-static inline go_type* go_type_pointer_to(const go_type* to) {
-    return go_new(sizeof(go_type), &(go_type){.name="*", .kind=go_kind_pointer, .data={.pointer={.elem=to}}}).ptr;
-}
-
 // Runtime errors panic with a value of type runtime.Error, holding the message (a string).
 extern const go_type go_type_runtime_error;
 _Noreturn void go_panic_error(const char* format, ...);
@@ -281,7 +277,7 @@ static const go_type go_type_complex128 = {.name="complex128", .kind=go_kind_com
 static const go_type go_type_byte = go_type_uint8;
 static const go_type go_type_rune = go_type_int32;
 static const go_type go_type_string = {.name="string", .kind=go_kind_string};
-static const go_type go_type_any_func = {.name="func", .kind=go_kind_func};
+static const go_type go_type_error = {.name="error", .kind=go_kind_interface};
 
 typedef struct { go_ss(*Error)(void*);} go_error;
 

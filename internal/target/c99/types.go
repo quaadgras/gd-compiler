@@ -277,20 +277,94 @@ func (c99 Target) TypeOf(t types.Type) string {
 	}
 }
 
+// ReflectTypeOf returns a C expression for a pointer to the type descriptor (go_type) of t,
+// a constant expression. Descriptors of types that are not named are static in each file
+// that uses them, so descriptors are compared by kind and name, see go_type_eq.
 func (c99 Target) ReflectTypeOf(t types.Type) string {
+	t = types.Unalias(t)
 	switch typ := t.(type) {
 	case *types.Basic:
-		return "&go_type_" + typ.Name()
+		return "&go_type_" + types.Default(typ).(*types.Basic).Name()
 	case *types.Named:
 		if typ.Obj().Pkg() == nil {
-			return "&@\"go." + typ.Obj().Name() + ".(type)\""
+			return "&go_type_" + typ.Obj().Name() // error
 		}
 		return "&go_type_" + typ.Obj().Name() + "_go_" + typ.Obj().Pkg().Name() + "_package"
+	case *types.TypeParam:
+		panic("unsupported type " + reflect.TypeOf(typ).String())
+	}
+	name := typeName(t)
+	symbol := "go_rtype_" + identifier.ReplaceAllString(name, "_")
+	var data string
+	switch typ := t.(type) {
 	case *types.Pointer:
-		return "go_type_pointer_to(" + c99.ReflectTypeOf(typ.Elem()) + ")"
+		data = fmt.Sprintf(".kind=go_kind_pointer, .data={.pointer={.elem=%s}}", c99.ReflectTypeOf(typ.Elem()))
+	case *types.Slice:
+		data = fmt.Sprintf(".kind=go_kind_slice, .data={.slice={.elem=%s}}", c99.ReflectTypeOf(typ.Elem()))
+	case *types.Array:
+		data = fmt.Sprintf(".kind=go_kind_array, .data={.array={.elem=%s, .len=%d}}", c99.ReflectTypeOf(typ.Elem()), typ.Len())
+	case *types.Map:
+		data = fmt.Sprintf(".kind=go_kind_map, .data={.map={.key=%s, .elem=%s}}", c99.ReflectTypeOf(typ.Key()), c99.ReflectTypeOf(typ.Elem()))
+	case *types.Chan:
+		data = fmt.Sprintf(".kind=go_kind_chan, .data={.chan={.elem=%s, .dir=%d}}", c99.ReflectTypeOf(typ.Elem()), typ.Dir())
 	case *types.Signature:
-		return "&go_type_any_func" // TODO: parameter and result types.
+		data = ".kind=go_kind_func" // TODO: parameter and result types.
+	case *types.Interface:
+		data = ".kind=go_kind_interface" // TODO: methods.
+	case *types.Struct:
+		data = ".kind=go_kind_struct" // TODO: fields.
 	default:
 		panic("unsupported type " + reflect.TypeOf(typ).String())
 	}
+	c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
+		fmt.Fprintf(w, "static const go_type %s = {.name=%s, %s};\n", symbol, cString(name), data)
+		return nil
+	})
+	return "&" + symbol
+}
+
+// typeName returns the name of t for its type descriptor, which identifies the type: like
+// types.TypeString, but without the names of parameters and results.
+func typeName(t types.Type) string {
+	qualifier := func(pkg *types.Package) string { return pkg.Name() }
+	switch typ := types.Unalias(t).(type) {
+	case *types.Pointer:
+		return "*" + typeName(typ.Elem())
+	case *types.Slice:
+		return "[]" + typeName(typ.Elem())
+	case *types.Array:
+		return fmt.Sprintf("[%d]%s", typ.Len(), typeName(typ.Elem()))
+	case *types.Map:
+		return "map[" + typeName(typ.Key()) + "]" + typeName(typ.Elem())
+	case *types.Chan:
+		switch typ.Dir() {
+		case types.SendOnly:
+			return "chan<- " + typeName(typ.Elem())
+		case types.RecvOnly:
+			return "<-chan " + typeName(typ.Elem())
+		}
+		return "chan " + typeName(typ.Elem())
+	case *types.Signature:
+		var params, results []string
+		for i := range typ.Params().Len() {
+			p := typeName(typ.Params().At(i).Type())
+			if typ.Variadic() && i == typ.Params().Len()-1 {
+				p = "..." + strings.TrimPrefix(p, "[]")
+			}
+			params = append(params, p)
+		}
+		for v := range typ.Results().Variables() {
+			results = append(results, typeName(v.Type()))
+		}
+		name := "func(" + strings.Join(params, ", ") + ")"
+		switch len(results) {
+		case 0:
+		case 1:
+			name += " " + results[0]
+		default:
+			name += " (" + strings.Join(results, ", ") + ")"
+		}
+		return name
+	}
+	return types.TypeString(t, qualifier)
 }
