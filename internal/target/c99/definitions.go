@@ -131,6 +131,9 @@ func (c99 Target) TypeDefinition(spec source.TypeDefinition) error {
 	case *types.Struct:
 		fmt.Fprintf(c99, ", .data={.fields={&go_fields_%s%s[0], %d}}", spec.Name.String, rsuffix, rtype.NumFields())
 	}
+	if obj, ok := spec.Name.Unique.(*types.TypeName); ok && spec.Global {
+		fmt.Fprint(c99, c99.methodTable(obj.Type()))
+	}
 	fmt.Fprintf(c99, "}")
 	fmt.Fprintf(c99, ";\n")
 	return nil

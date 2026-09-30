@@ -99,7 +99,22 @@ func (c99 Target) tupleValue(expr source.Expression, n int) (string, []types.Typ
 		}
 		target := typ.TypeAndValue().Type
 		if _, ok := target.Underlying().(*types.Interface); ok {
-			return "", nil, fmt.Errorf("unsupported type assertion to interface %s", target)
+			value, err := c99.AnyOf(assert.X)
+			if err != nil {
+				return "", nil, err
+			}
+			ts := []types.Type{target, types.Typ[types.Bool]}
+			tuple := c99.TupleOf(ts)
+			symbol := "go_assert2_" + identifier.ReplaceAllString(typeName(target), "_")
+			c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
+				if target.Underlying().(*types.Interface).Empty() {
+					fmt.Fprintf(w, "static inline %s %s(go_vv v) { %[1]s r = { v, v.go_type != NULL }; return r; }\n", tuple, symbol)
+				} else {
+					fmt.Fprintf(w, "static inline %[1]s %[2]s(go_vv v) { %[1]s r = {0}; r.r0 = %[3]s; return r; }\n", tuple, symbol, c99.toInterface("v", target, false, "&r.r1"))
+				}
+				return nil
+			})
+			return fmt.Sprintf("%s(%s)", symbol, value), ts, nil
 		}
 		rtype, err := c99.reflectTypeOf(target)
 		if err != nil {

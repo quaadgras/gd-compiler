@@ -60,6 +60,42 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 		suffix = "_go_" + c99.PackageOf(c99.CurrentPackage) + "_package"
 	}
 	closure := decl.IsClosure
+	// Interface wrappers, that take the receiver from the data of an interface value: I_
+	// where it's the receiver, and IP_ (for methods with value receivers) where it's a
+	// pointer to the receiver. They are declared with the method (as its body may need
+	// them, for its type's table of methods), and defined after it.
+	wrappers := func(define bool) {
+		recvType := receiver.Fields[0].Type.TypeAndValue().Type
+		var params, args []string
+		for _, param := range decl.Type.Arguments.Fields {
+			names, _ := param.Names.Get()
+			for range max(len(names), 1) {
+				args = append(args, fmt.Sprintf("p%d", len(args)))
+				params = append(params, c99.Type(param.Type)+" "+args[len(args)-1])
+			}
+		}
+		ret := ""
+		if len(c99.Results) > 0 {
+			ret = "return "
+		}
+		header, static := c99.Declarations, ""
+		if instance != "" {
+			header, static = c99.Prelude, "static "
+		}
+		wrapper := func(prefix, recv string) {
+			sig := fmt.Sprintf("%s%s %s%s%s(%s)", static, c99.TupleOf(c99.Results), prefix, fnName, suffix,
+				strings.Join(append([]string{"void* go_recv"}, params...), ", "))
+			if define {
+				fmt.Fprintf(c99, "%s { %s%s%s(%s); }\n", sig, ret, fnName, suffix, strings.Join(append([]string{recv}, args...), ", "))
+			} else {
+				fmt.Fprintf(header, "\n%s;", sig)
+			}
+		}
+		wrapper("I_", fmt.Sprintf("*(%s*)go_recv", c99.TypeOf(recvType)))
+		if _, isPointer := recvType.Underlying().(*types.Pointer); !isPointer {
+			wrapper("IP_", fmt.Sprintf("go_pointer_get(*(go_pt*)go_recv, %s)", c99.TypeOf(recvType)))
+		}
+	}
 	if decl.Name.String == "main" {
 		fmt.Fprintf(c99, "go_main() { init_go_%s_package();", c99.CurrentPackage)
 	} else {
@@ -110,6 +146,9 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 			fmt.Fprintln(c99.Declarations)
 			decl(c99.Declarations)
 			fmt.Fprintf(c99.Declarations, ";")
+		}
+		if isMethod {
+			wrappers(false)
 		}
 		if !hasBody {
 			return nil
@@ -196,37 +235,8 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 	fmt.Fprintf(c99, "}")
 	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
-	// Interface wrappers, that take the receiver from the data of an interface value: I_
-	// where it's the receiver, and IP_ (for methods with value receivers) where it's a
-	// pointer to the receiver.
 	if isMethod {
-		recvType := receiver.Fields[0].Type.TypeAndValue().Type
-		var params, args []string
-		for _, param := range decl.Type.Arguments.Fields {
-			names, _ := param.Names.Get()
-			for range max(len(names), 1) {
-				args = append(args, fmt.Sprintf("p%d", len(args)))
-				params = append(params, c99.Type(param.Type)+" "+args[len(args)-1])
-			}
-		}
-		ret := ""
-		if len(c99.Results) > 0 {
-			ret = "return "
-		}
-		header, static := c99.Declarations, ""
-		if instance != "" {
-			header, static = c99.Prelude, "static "
-		}
-		wrapper := func(prefix, recv string) {
-			sig := fmt.Sprintf("%s%s %s%s%s(%s)", static, c99.TupleOf(c99.Results), prefix, fnName, suffix,
-				strings.Join(append([]string{"void* go_recv"}, params...), ", "))
-			fmt.Fprintf(header, "\n%s;", sig)
-			fmt.Fprintf(c99, "%s { %s%s%s(%s); }\n", sig, ret, fnName, suffix, strings.Join(append([]string{recv}, args...), ", "))
-		}
-		wrapper("I_", fmt.Sprintf("*(%s*)go_recv", c99.TypeOf(recvType)))
-		if _, isPointer := recvType.Underlying().(*types.Pointer); !isPointer {
-			wrapper("IP_", fmt.Sprintf("go_pointer_get(*(go_pt*)go_recv, %s)", c99.TypeOf(recvType)))
-		}
+		wrappers(true)
 	}
 	return nil
 }

@@ -198,10 +198,11 @@ func (c99 Target) StatementSwitchType(stmt source.StatementSwitchType) error {
 			if isNil(expr) {
 				cond = dynamic + ".go_type == NULL"
 			} else if iface, ok := expr.TypeAndValue().Type.Underlying().(*types.Interface); ok {
-				if !iface.Empty() {
-					return stmt.Location.Errorf("unsupported type switch case %s (an interface with methods)", expr.TypeAndValue().Type)
-				}
 				cond = dynamic + ".go_type != NULL"
+				if !iface.Empty() {
+					methods, n := c99.interfaceMethods(expr.TypeAndValue().Type)
+					cond = fmt.Sprintf("go_implements(%s.go_type, %s, %d, NULL)", dynamic, methods, n)
+				}
 			} else {
 				rtype, err := c99.reflectTypeOf(expr.TypeAndValue().Type)
 				if err != nil {
@@ -221,10 +222,8 @@ func (c99 Target) StatementSwitchType(stmt source.StatementSwitchType) error {
 				t := subst(obj.Type())
 				value := original
 				if len(clause.Expressions) == 1 && !isNil(clause.Expressions[0]) {
-					if iface, ok := t.Underlying().(*types.Interface); ok {
-						if iface.Empty() {
-							value = dynamic
-						}
+					if _, ok := t.Underlying().(*types.Interface); ok {
+						value = c99.toInterface(dynamic, t, false, "NULL")
 					} else {
 						value = fmt.Sprintf("(*(%s*)%s.ptr.ptr)", c99.TypeOf(t), dynamic)
 					}

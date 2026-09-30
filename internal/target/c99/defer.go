@@ -291,7 +291,12 @@ func (c99 Target) reflectTypeOf(t types.Type) (s string, err error) {
 func (c99 Target) ExpressionTypeAssertion(e source.ExpressionTypeAssertion) error {
 	target := e.TypeAndValue().Type
 	if _, ok := target.Underlying().(*types.Interface); ok {
-		return e.Location.Errorf("unsupported type assertion to interface %s", target)
+		value, err := c99.AnyOf(e.X)
+		if err != nil {
+			return e.Location.Errorf("%w", err)
+		}
+		fmt.Fprint(c99, c99.toInterface(value, target, true, "NULL"))
+		return nil
 	}
 	rtype, err := c99.reflectTypeOf(target)
 	if err != nil {

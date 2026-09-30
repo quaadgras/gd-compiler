@@ -86,9 +86,9 @@ chan/select7.go	pass
 chan/select8.go	pass	
 chan/sendstmt.go	pass	
 chan/sieve1.go	pass	
-chan/sieve2.go	fail	gd: unsupported conversion to any
+chan/sieve2.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
 chan/zerosize.go	pass	
-chancap.go	fail	gd: unsupported type assertion to interface io.StringWriter
+chancap.go	fail	gd: unsupported type *types.Named
 chanlinear.go	fail	gd: unsupported builtin function
 char_lit.go	fail	gd: unsupported builtin function
 char_lit1.go	skip	gc:diagnostics -d=panic
@@ -214,7 +214,7 @@ convert.go	fail	gd: unsupported builtin function
 convert1.go	skip	todo:errorcheck
 convert2.go	skip	todo:errorcheck
 convert3.go	skip	todo:errorcheck
-convert4.go	fail	gd: panic: unsupported type assertion to interface error
+convert4.go	fail	gd: unsupported conversion from
 convert5.go	skip	gc:flags -gcflags=-d=converthash=qy
 convinline.go	skip	todo:runoutput
 convlit.go	skip	todo:errorcheck
@@ -358,7 +358,7 @@ fixedbugs/bug085.go	skip	todo:errorcheck
 fixedbugs/bug086.go	skip	todo:errorcheck
 fixedbugs/bug087.go	pass	
 fixedbugs/bug088.go	skip	todo:compiledir
-fixedbugs/bug089.go	fail	gd: unsupported type assertion to interface test.I2
+fixedbugs/bug089.go	pass	
 fixedbugs/bug090.go	skip	todo:errorcheck
 fixedbugs/bug091.go	skip	todo:errorcheck
 fixedbugs/bug092.go	pass	
@@ -399,7 +399,7 @@ fixedbugs/bug131.go	skip	todo:errorcheck
 fixedbugs/bug132.go	skip	todo:errorcheck
 fixedbugs/bug133.go	skip	todo:errorcheck
 fixedbugs/bug13343.go	skip	todo:errorcheck
-fixedbugs/bug135.go	fail	gd: unsupported type assertion to interface test.Foo
+fixedbugs/bug135.go	pass	
 fixedbugs/bug136.go	skip	todo:errorcheck
 fixedbugs/bug137.go	pass	
 fixedbugs/bug139.go	pass	
@@ -413,7 +413,7 @@ fixedbugs/bug146.go	skip	todo:errorcheck
 fixedbugs/bug147.go	fail	gd: unsupported builtin function
 fixedbugs/bug148.go	fail	exit: exit status 2 panic: function should panic
 fixedbugs/bug149.go	pass	
-fixedbugs/bug150.go	fail	c11: error: 'I_T_M_go_test_package' undeclared here (not in a function); did you mean 'T_M_go_test_package'?
+fixedbugs/bug150.go	pass	
 fixedbugs/bug151.go	pass	
 fixedbugs/bug1515.go	pass	
 fixedbugs/bug152.go	pass	
@@ -463,7 +463,7 @@ fixedbugs/bug197.go	skip	todo:errorcheck
 fixedbugs/bug198.go	skip	todo:errorcheck
 fixedbugs/bug199.go	pass	
 fixedbugs/bug200.go	skip	todo:errorcheck
-fixedbugs/bug201.go	fail	gd: unsupported type assertion to interface interface
+fixedbugs/bug201.go	fail	c11: error: incompatible types when assigning to type 'struct <anonymous>' from type 'go_if'
 fixedbugs/bug202.go	pass	
 fixedbugs/bug203.go	pass	
 fixedbugs/bug204.go	pass	
@@ -501,7 +501,7 @@ fixedbugs/bug238.go	skip	todo:errorcheck
 fixedbugs/bug239.go	pass	
 fixedbugs/bug240.go	skip	todo:errorcheck
 fixedbugs/bug241.go	skip	todo:errorcheck
-fixedbugs/bug242.go	fail	gd: unsupported type assertion to interface test.I
+fixedbugs/bug242.go	fail	exit: exit status 2 panic: fail
 fixedbugs/bug243.go	pass	
 fixedbugs/bug244.go	pass	
 fixedbugs/bug245.go	pass	
@@ -543,7 +543,7 @@ fixedbugs/bug282.go	skip	todo:compiledir
 fixedbugs/bug283.go	pass	
 fixedbugs/bug284.go	skip	todo:errorcheck
 fixedbugs/bug285.go	fail	gd: unsupported type *types.Named
-fixedbugs/bug286.go	fail	gd: panic: unsupported type assertion to interface test.J
+fixedbugs/bug286.go	pass	
 fixedbugs/bug287.go	skip	todo:errorcheck
 fixedbugs/bug288.go	pass	
 fixedbugs/bug289.go	skip	todo:errorcheck
@@ -559,7 +559,7 @@ fixedbugs/bug298.go	skip	todo:errorcheck
 fixedbugs/bug299.go	skip	todo:errorcheck
 fixedbugs/bug300.go	skip	todo:errorcheck
 fixedbugs/bug301.go	pass	
-fixedbugs/bug303.go	fail	gd: unsupported type assertion to interface io.StringWriter
+fixedbugs/bug303.go	fail	gd: unsupported type *types.Named
 fixedbugs/bug304.go	pass	
 fixedbugs/bug305.go	skip	todo:errorcheck
 fixedbugs/bug306.go	skip	todo:compiledir
@@ -586,7 +586,7 @@ fixedbugs/bug327.go	pass
 fixedbugs/bug328.go	pass	
 fixedbugs/bug329.go	fail	c11: error: initializer element is not constant
 fixedbugs/bug330.go	skip	todo:errorcheck
-fixedbugs/bug331.go	fail	gd: unsupported type assertion to interface io.StringWriter
+fixedbugs/bug331.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
 fixedbugs/bug332.go	skip	todo:errorcheck
 fixedbugs/bug333.go	pass	
 fixedbugs/bug334.go	pass	
@@ -745,7 +745,7 @@ fixedbugs/bug490.go	fail	c11: error: invalid operands to binary == (have 'go_vv'
 fixedbugs/bug491.go	fail	gd: unsupported builtin function
 fixedbugs/bug492.go	skip	todo:rundir
 fixedbugs/bug493.go	pass	
-fixedbugs/bug494.go	fail	exit: signal: trace/breakpoint trap filc safety error: argument size mismatch (actual = 8, expec…
+fixedbugs/bug494.go	pass	
 fixedbugs/bug495.go	pass	
 fixedbugs/bug496.go	pass	
 fixedbugs/bug497.go	pass	
@@ -922,7 +922,7 @@ fixedbugs/issue15548.go	skip	todo:compiledir
 fixedbugs/issue15550.go	fail	c11: error: expected identifier or '(' before 'void'
 fixedbugs/issue15572.go	skip	todo:compiledir
 fixedbugs/issue15585.go	pass	
-fixedbugs/issue15602.go	fail	gd: unsupported type assertion to interface error
+fixedbugs/issue15602.go	pass	
 fixedbugs/issue15604.go	fail	gd: unsupported builtin function
 fixedbugs/issue15609.go	skip	todo:runindir
 fixedbugs/issue15611.go	skip	todo:errorcheck
@@ -950,7 +950,7 @@ fixedbugs/issue16133.go	skip	todo:errorcheck
 fixedbugs/issue16193.go	pass	
 fixedbugs/issue16241.go	skip	gc:diagnostics -m
 fixedbugs/issue16241_64.go	skip	gc:diagnostics -m
-fixedbugs/issue16249.go	fail	exit: timeout
+fixedbugs/issue16249.go	pass	
 fixedbugs/issue16306.go	pass	
 fixedbugs/issue16317.go	skip	todo:compiledir
 fixedbugs/issue16331.go	fail	gd: unsupported builtin function
@@ -1035,7 +1035,7 @@ fixedbugs/issue19515.go	pass
 fixedbugs/issue19548.go	skip	todo:rundir
 fixedbugs/issue19555.go	pass	
 fixedbugs/issue19610.go	skip	todo:errorcheck
-fixedbugs/issue19632.go	fail	gd: unsupported type assertion to interface io.StringWriter
+fixedbugs/issue19632.go	fail	gd: unsupported type *types.Named
 fixedbugs/issue19658.go	skip	gc:toolchain
 fixedbugs/issue19667.go	skip	todo:errorcheck
 fixedbugs/issue19671.go	pass	
@@ -1105,7 +1105,7 @@ fixedbugs/issue21963.go	fail	gd: unsupported builtin function
 fixedbugs/issue21979.go	skip	todo:errorcheck
 fixedbugs/issue21988.go	skip	todo:errorcheck
 fixedbugs/issue22063.go	skip	todo:errorcheck
-fixedbugs/issue22076.go	fail	gd: unsupported type assertion to interface io.StringWriter
+fixedbugs/issue22076.go	fail	c11: error: invalid operands to binary == (have 'go_if' and 'go_if')
 fixedbugs/issue22083.go	skip	gc:import runtime/debug
 fixedbugs/issue22164.go	skip	todo:errorcheck
 fixedbugs/issue22198.go	pass	
@@ -1172,7 +1172,7 @@ fixedbugs/issue24159.go	skip	todo:errorcheck
 fixedbugs/issue24173.go	pass	
 fixedbugs/issue24187.go	skip	upstream:build amd64p32
 fixedbugs/issue24339.go	skip	todo:errorcheck
-fixedbugs/issue24419.go	fail	gd: unsupported type assertion to interface io.StringWriter
+fixedbugs/issue24419.go	fail	gd: unsupported type *types.Named
 fixedbugs/issue24449.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
 fixedbugs/issue24470.go	skip	gc:diagnostics -d=panic
 fixedbugs/issue24488.go	skip	gc:stack-introspection runtime.Stack
@@ -1209,7 +1209,7 @@ fixedbugs/issue25984.go	skip	todo:compiledir
 fixedbugs/issue25993.go	skip	gc:flags -d=ssa/check/on
 fixedbugs/issue26024.go	pass	
 fixedbugs/issue26043.go	pass	
-fixedbugs/issue26094.go	fail	gd: unsupported type assertion to interface io.StringWriter
+fixedbugs/issue26094.go	fail	gd: unsupported type *types.Named
 fixedbugs/issue26097.go	pass	
 fixedbugs/issue26105.go	pass	
 fixedbugs/issue26116.go	pass	
@@ -1270,7 +1270,7 @@ fixedbugs/issue28797.go	fail	gd: unsupported builtin function
 fixedbugs/issue28926.go	skip	todo:errorcheck
 fixedbugs/issue29013a.go	pass	
 fixedbugs/issue29013b.go	pass	
-fixedbugs/issue29190.go	fail	gd: unsupported type assertion to interface io.StringWriter
+fixedbugs/issue29190.go	fail	gd: unsupported type *types.Named
 fixedbugs/issue29215.go	pass	
 fixedbugs/issue29218.go	pass	
 fixedbugs/issue29220.go	pass	
@@ -1281,7 +1281,7 @@ fixedbugs/issue29329.go	skip	gc:build cgo && linux && amd64
 fixedbugs/issue29350.go	pass	
 fixedbugs/issue29362.go	pass	
 fixedbugs/issue29362b.go	pass	
-fixedbugs/issue29389.go	fail	gd: unsupported type assertion to interface io.StringWriter
+fixedbugs/issue29389.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
 fixedbugs/issue29402.go	pass	
 fixedbugs/issue29504.go	skip	gc:stack-introspection runtime.Callers
 fixedbugs/issue29562.go	pass	
@@ -1322,7 +1322,7 @@ fixedbugs/issue31060.go	skip	todo:errorcheck
 fixedbugs/issue31252.go	skip	todo:compiledir
 fixedbugs/issue31412a.go	pass	
 fixedbugs/issue31412b.go	skip	todo:errorcheck
-fixedbugs/issue31419.go	fail	gd: unsupported type assertion to interface test.I
+fixedbugs/issue31419.go	pass	
 fixedbugs/issue31546.go	fail	gd: unsupported builtin function
 fixedbugs/issue31573.go	skip	gc:diagnostics -m
 fixedbugs/issue31636.go	skip	todo:rundir
@@ -1358,7 +1358,7 @@ fixedbugs/issue33219.go	skip	todo:compiledir
 fixedbugs/issue33275.go	skip	upstream:skip
 fixedbugs/issue33275_run.go	skip	gc:toolchain
 fixedbugs/issue33308.go	skip	todo:errorcheck
-fixedbugs/issue33355.go	fail	gd: unsupported type assertion to interface io.StringWriter
+fixedbugs/issue33355.go	fail	c11: error: invalid operands to binary == (have 'go_if' and 'go_if')
 fixedbugs/issue33386.go	skip	todo:errorcheck
 fixedbugs/issue33438.go	pass	
 fixedbugs/issue33460.go	skip	todo:errorcheck
@@ -1400,7 +1400,7 @@ fixedbugs/issue37716.go	fail	gd: unsupported builtin function
 fixedbugs/issue37753.go	pass	
 fixedbugs/issue3783.go	skip	todo:errorcheck
 fixedbugs/issue37837.go	skip	gc:diagnostics -m
-fixedbugs/issue37975.go	fail	gd: unsupported type assertion to interface io.StringWriter
+fixedbugs/issue37975.go	fail	gd: unsupported type *types.Named
 fixedbugs/issue38093.go	skip	upstream:build js
 fixedbugs/issue38117.go	skip	todo:errorcheck
 fixedbugs/issue38125.go	fail	gd: unsupported node type: DefinedType
@@ -1428,7 +1428,7 @@ fixedbugs/issue40629.go	fail	gd: unsupported builtin function
 fixedbugs/issue4066.go	pass	
 fixedbugs/issue40746.go	pass	
 fixedbugs/issue4085a.go	skip	todo:errorcheck
-fixedbugs/issue4085b.go	fail	gd: unsupported type assertion to interface io.StringWriter
+fixedbugs/issue4085b.go	fail	gd: unsupported type *types.Named
 fixedbugs/issue40917.go	skip	gc:flags -gcflags=-d=checkptr
 fixedbugs/issue40954.go	skip	gc:build cgo
 fixedbugs/issue4097.go	skip	todo:errorcheck
@@ -1456,21 +1456,21 @@ fixedbugs/issue4232.go	skip	todo:errorcheck
 fixedbugs/issue42401.go	skip	todo:rundir
 fixedbugs/issue4251.go	skip	todo:errorcheck
 fixedbugs/issue4252.go	skip	todo:rundir
-fixedbugs/issue42568.go	fail	gd: unsupported type assertion to interface interface
+fixedbugs/issue42568.go	fail	gd: panic: unsupported basic type untyped nil
 fixedbugs/issue42587.go	pass	
 fixedbugs/issue4264.go	skip	todo:errorcheck
 fixedbugs/issue42686.go	skip	gc:goexperiment fieldtrack
 fixedbugs/issue42703.go	pass	
-fixedbugs/issue42727.go	fail	gd: unsupported type assertion to interface test.it
+fixedbugs/issue42727.go	pass	
 fixedbugs/issue42753.go	skip	gc:flags -d=ssa/check/on
-fixedbugs/issue42784.go	fail	gd: unsupported type assertion to interface test.it
+fixedbugs/issue42784.go	pass	
 fixedbugs/issue42790.go	fail	c11: error: expected identifier or '(' before 'void'
 fixedbugs/issue4283.go	skip	todo:errorcheck
 fixedbugs/issue42876.go	pass	
 fixedbugs/issue42944.go	skip	gc:diagnostics -live
 fixedbugs/issue43099.go	pass	
 fixedbugs/issue43111.go	pass	
-fixedbugs/issue43112.go	fail	gd: unsupported type assertion to interface test.Symbol
+fixedbugs/issue43112.go	pass	
 fixedbugs/issue4313.go	pass	
 fixedbugs/issue4316.go	pass	
 fixedbugs/issue43164.go	skip	todo:compiledir
@@ -1797,7 +1797,7 @@ fixedbugs/issue6004.go	skip	todo:errorcheck
 fixedbugs/issue6036.go	pass	
 fixedbugs/issue6055.go	fail	exit: signal: trace/breakpoint trap filc safety error: cannot read pointer with null object.
 fixedbugs/issue60582.go	fail	gd: unsupported builtin function
-fixedbugs/issue60601.go	fail	gd: unsupported type assertion to interface io.StringWriter
+fixedbugs/issue60601.go	fail	gd: unsupported type *types.Named
 fixedbugs/issue60945.go	skip	todo:compiledir
 fixedbugs/issue60982.go	pass	
 fixedbugs/issue60990.go	fail	c11: error: invalid operands to binary == (have 'go_vv' and 'go_vv')
@@ -1842,14 +1842,14 @@ fixedbugs/issue64826.go	pass
 fixedbugs/issue6500.go	skip	todo:errorcheck
 fixedbugs/issue6513.go	skip	todo:compiledir
 fixedbugs/issue65362.go	pass	
-fixedbugs/issue65417.go	fail	gd: unsupported type assertion to interface io.StringWriter
+fixedbugs/issue65417.go	fail	gd: unsupported type *types.Named
 fixedbugs/issue65593.go	pass	
 fixedbugs/issue6572.go	skip	todo:errorcheck
 fixedbugs/issue65778.go	skip	gc:godebug gotypesalias=1
 fixedbugs/issue65808.go	pass	
 fixedbugs/issue65893.go	pass	
 fixedbugs/issue65957.go	skip	todo:rundir
-fixedbugs/issue65962.go	fail	gd: unsupported type assertion to interface test.I
+fixedbugs/issue65962.go	pass	
 fixedbugs/issue66066.go	fail	gd: unsupported builtin function
 fixedbugs/issue66066b.go	pass	
 fixedbugs/issue66096.go	pass	
@@ -2005,7 +2005,7 @@ fixedbugs/issue7746.go	skip	todo:errorcheck
 fixedbugs/issue77534.go	pass	
 fixedbugs/issue7760.go	skip	todo:errorcheck
 fixedbugs/issue77604.go	pass	
-fixedbugs/issue77613.go	fail	gd: unsupported type assertion to interface io.StringWriter
+fixedbugs/issue77613.go	fail	gd: unsupported type *types.Named
 fixedbugs/issue77635.go	fail	gd: unsupported builtin function
 fixedbugs/issue77635b.go	pass	
 fixedbugs/issue77779.go	fail	gd: unsupported builtin function
@@ -2038,7 +2038,7 @@ fixedbugs/issue79186.go	fail	c11: error: 'go_type_Pointer' undeclared here (not 
 fixedbugs/issue79197.go	pass	
 fixedbugs/issue7921.go	skip	gc:diagnostics -m
 fixedbugs/issue79236.go	pass	
-fixedbugs/issue79236b.go	fail	gd: unsupported type assertion to interface io.StringWriter
+fixedbugs/issue79236b.go	fail	gd: unsupported type *types.Named
 fixedbugs/issue79258.go	skip	todo:errorcheck
 fixedbugs/issue79274.go	fail	gd: unsupported builtin function
 fixedbugs/issue79274a.go	skip	todo:compiledir
@@ -2081,7 +2081,7 @@ fixedbugs/issue8074.go	fail	gd: unsupported go of builtin copy
 fixedbugs/issue8076.go	pass	
 fixedbugs/issue8079.go	pass	
 fixedbugs/issue80976.go	fail	c11: error: implicit declaration of function 'TypeMap_Set_go_main_package' [-Wimplicit-function-declaration]
-fixedbugs/issue81165.go	fail	c11: error: implicit declaration of function 'someType_SuccessLink_go_main_package' [-Wimplicit-function-declaration]
+fixedbugs/issue81165.go	fail	c11: error: 'I_someType_FailedLink_go_main_package' undeclared here (not in a function); did you mean 'someTypeAlias_go_main_…
 fixedbugs/issue8132.go	pass	
 fixedbugs/issue8139.go	fail	gd: unsupported builtin function
 fixedbugs/issue8154.go	pass	
@@ -2136,7 +2136,7 @@ fixedbugs/notinheap2.go	skip	gc:build cgo
 fixedbugs/notinheap3.go	skip	gc:build cgo
 fixedbugs/shrd_zero_count.go	pass	
 fixedbugs/splitload_pointer_compare.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
-fixedbugs/walk_bounded_overshift_empty_bound.go	fail	gd: unsupported type assertion to interface io.StringWriter
+fixedbugs/walk_bounded_overshift_empty_bound.go	fail	gd: unsupported type *types.Named
 float_lit.go	pass	
 float_lit2.go	fail	gd: unsupported builtin function
 float_lit3.go	skip	todo:errorcheck
@@ -2199,7 +2199,7 @@ int_lit.go	fail	gd: unsupported builtin function
 intcvt.go	pass	
 interface/assertinline.go	skip	gc:diagnostics -d=typeassert
 interface/bigdata.go	pass	
-interface/convert.go	fail	gd: unsupported type assertion to interface test.StringLengther
+interface/convert.go	pass	
 interface/convert1.go	pass	
 interface/convert2.go	pass	
 interface/embed.go	fail	gd: unsupported builtin function
@@ -2207,16 +2207,16 @@ interface/embed1.go	skip	todo:rundir
 interface/embed2.go	skip	todo:errorcheck
 interface/embed3.go	skip	todo:rundir
 interface/explicit.go	skip	todo:errorcheck
-interface/fail.go	fail	gd: unsupported type assertion to interface test.I
+interface/fail.go	pass	
 interface/fake.go	fail	gd: unsupported builtin function
 interface/noeq.go	fail	c11: error: invalid operands to binary == (have 'go_vv' and 'go_vv')
 interface/pointer.go	skip	todo:errorcheck
 interface/private.go	skip	todo:errorcheck
-interface/receiver.go	fail	gd: unsupported type assertion to interface test.P
+interface/receiver.go	fail	c11: error: 'I_S_V_go_main_package' undeclared here (not in a function); did you mean 'I_T_V_go_main_package'?
 interface/receiver1.go	skip	todo:errorcheck
 interface/recursive.go	pass	
 interface/recursive1.go	skip	todo:compiledir
-interface/returntype.go	fail	gd: panic: unsupported type assertion to interface test.I2
+interface/returntype.go	pass	
 interface/struct.go	fail	gd: unsupported builtin function
 internal/runtime/sys/inlinegcpc.go	skip	gc:diagnostics -m
 intrinsic.go	skip	gc:diagnostics -d=ssa/intrinsics/debug
@@ -2233,17 +2233,17 @@ ken/cplx2.go	fail	gd: unsupported builtin function
 ken/cplx3.go	fail	gd: unsupported builtin function
 ken/cplx4.go	fail	gd: unsupported builtin function
 ken/cplx5.go	fail	gd: unsupported builtin function
-ken/divconst.go	fail	gd: unsupported type assertion to interface math/rand.Source64
+ken/divconst.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
 ken/divmod.go	pass	
 ken/embed.go	fail	c11: error: 'I_S_test2_go_main_package' undeclared here (not in a function); did you mean 'I_S_test1_go_main_package'?
 ken/for.go	pass	
 ken/interbasic.go	fail	c11: error: invalid operands to binary != (have 'go_vv' and 'go_vv')
-ken/interfun.go	fail	gd: unsupported type assertion to interface test.I2
+ken/interfun.go	pass	
 ken/intervar.go	pass	
 ken/label.go	pass	
 ken/litfun.go	pass	
 ken/mfunc.go	pass	
-ken/modconst.go	fail	gd: unsupported type assertion to interface math/rand.Source64
+ken/modconst.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
 ken/ptrfun.go	pass	
 ken/ptrvar.go	pass	
 ken/range.go	fail	gd: range over unsupported type *types.Map
@@ -2285,7 +2285,7 @@ mainsig.go	skip	todo:errorcheck
 makechan.go	skip	todo:errorcheck
 makemap.go	skip	todo:errorcheck
 makenew.go	skip	todo:errorcheck
-makeslice.go	fail	gd: unsupported type assertion to interface io.StringWriter
+makeslice.go	fail	gd: unsupported type *types.Named
 mallocfin.go	skip	gc:finalizers runtime.SetFinalizer
 map.go	fail	gd: unsupported builtin function
 map1.go	skip	todo:errorcheck
@@ -2336,8 +2336,8 @@ range4.go	fail	gd: panic: interface conversion: ast.Expr is *ast.StarExpr, not *
 rangegen.go	skip	todo:runoutput
 recover.go	fail	gd: unsupported builtin function
 recover1.go	fail	c11: error: invalid operands to binary != (have 'go_vv' and 'go_vv')
-recover2.go	fail	gd: unsupported type assertion to interface io.StringWriter
-recover3.go	fail	gd: unsupported type assertion to interface io.StringWriter
+recover2.go	fail	gd: unsupported type *types.Named
+recover3.go	fail	gd: unsupported type *types.Named
 recover4.go	skip	gc:import runtime/debug
 recover5.go	skip	todo:errorcheck
 reflectmethod1.go	fail	gd: unsupported builtin function
@@ -2435,8 +2435,8 @@ typeparam/chansimp.go	skip	todo:rundir
 typeparam/combine.go	fail	gd: unsupported builtin function
 typeparam/cons.go	fail	gd: unsupported builtin function
 typeparam/dedup.go	skip	todo:rundir
-typeparam/devirtualize1.go	fail	gd: panic: unsupported type assertion to interface interface
-typeparam/devirtualize2.go	fail	gd: panic: unsupported type assertion to interface interface
+typeparam/devirtualize1.go	pass	
+typeparam/devirtualize2.go	pass	
 typeparam/dictionaryCapture-noinline.go	skip	gc:flags -gcflags="-l"
 typeparam/dictionaryCapture.go	fail	gd: unsupported builtin function
 typeparam/dottype.go	fail	gd: illegal type for print: (int, bool)
@@ -2495,7 +2495,7 @@ typeparam/issue47892b.go	skip	todo:compiledir
 typeparam/issue47896.go	fail	gd: unsupported builtin function
 typeparam/issue47901.go	fail	gd: unsupported call for function of type xyz.Case
 typeparam/issue47924.go	pass	
-typeparam/issue47925.go	fail	c11: error: incompatible types when returning type 'go_if' but 'go_vv' was expected
+typeparam/issue47925.go	pass	
 typeparam/issue47925b.go	fail	gd: unsupported call for function of type xyz.Case
 typeparam/issue47925c.go	fail	gd: unsupported call for function of type xyz.Case
 typeparam/issue47925d.go	fail	gd: unsupported call for function of type xyz.Case
@@ -2548,7 +2548,7 @@ typeparam/issue49027.go	skip	todo:rundir
 typeparam/issue49049.go	fail	c11: error: unknown type name 'A__go_ss_go_main_package'; did you mean 'Z_go_main_package'?
 typeparam/issue49241.go	skip	todo:rundir
 typeparam/issue49246.go	skip	todo:compiledir
-typeparam/issue49295.go	fail	gd: unsupported type assertion to interface io.StringWriter
+typeparam/issue49295.go	fail	gd: panic: unsupported len of *
 typeparam/issue49309.go	pass	
 typeparam/issue49421.go	pass	
 typeparam/issue49432.go	fail	c11: error: 'Foo__go_ii_go_main_package' {aka 'go_az'} has no member named 'Bar_go_main_package'
@@ -2607,17 +2607,17 @@ typeparam/issue51423.go	skip	todo:compiledir
 typeparam/issue51521.go	fail	gd: unsupported builtin function
 typeparam/issue51522a.go	fail	c11: error: invalid operands to binary != (have 'go_vv' and 'go_ii' {aka 'long int'})
 typeparam/issue51522b.go	fail	c11: error: invalid operands to binary == (have 'go_vv' and 'go_ii' {aka 'long int'})
-typeparam/issue51700.go	fail	gd: unsupported type assertion to interface interface
+typeparam/issue51700.go	fail	c11: error: incompatible types when assigning to type 'struct <anonymous>' from type 'go_if'
 typeparam/issue51765.go	pass	
 typeparam/issue51832.go	pass	
 typeparam/issue51836.go	skip	todo:compiledir
 typeparam/issue51840.go	pass	
 typeparam/issue51909.go	pass	
 typeparam/issue51925.go	fail	gd: unsupported builtin function
-typeparam/issue52026.go	fail	gd: unsupported conversion to any
+typeparam/issue52026.go	fail	c11: error: unknown type name 'Option__go_ii_go_main_package'; did you mean 'Some__go_ii_go_main_package'?
 typeparam/issue52117.go	skip	todo:compiledir
 typeparam/issue52124.go	pass	
-typeparam/issue52228.go	fail	gd: unsupported type assertion to interface test.SomeInterface
+typeparam/issue52228.go	pass	
 typeparam/issue52241.go	fail	c11: error: 'Collector__go_ii_go_main_package' {aka 'go_az'} has no member named 'Collect_go_main_package'
 typeparam/issue53087.go	fail	gd: unsupported builtin function
 typeparam/issue53254.go	pass	
@@ -2626,7 +2626,7 @@ typeparam/issue53406.go	fail	c11: error: implicit declaration of function 'Outer
 typeparam/issue53419.go	pass	
 typeparam/issue53477.go	fail	gd: unsupported call for function of type xyz.Case
 typeparam/issue53762.go	fail	gd: unsupported call for function of type xyz.Case
-typeparam/issue54135.go	fail	gd: unsupported type assertion to interface interface
+typeparam/issue54135.go	fail	c11: error: invalid operands to binary != (have 'go_vv' and 'go_if')
 typeparam/issue54225.go	pass	
 typeparam/issue54302.go	skip	todo:rundir
 typeparam/issue54456.go	fail	gd: unsupported builtin function
@@ -2697,13 +2697,13 @@ typeparam/subdict.go	fail	gd: unsupported builtin function
 typeparam/sum.go	fail	gd: unsupported builtin function
 typeparam/tparam1.go	skip	todo:errorcheck
 typeparam/typelist.go	pass	
-typeparam/typeswitch1.go	fail	gd: unsupported type switch case interface
+typeparam/typeswitch1.go	pass	
 typeparam/typeswitch2.go	fail	gd: unsupported builtin function
-typeparam/typeswitch3.go	fail	gd: unsupported type switch case test.I (an interface with methods)
-typeparam/typeswitch4.go	fail	gd: unsupported type switch case test.I (an interface with methods)
-typeparam/typeswitch5.go	fail	gd: unsupported type switch case interface
-typeparam/typeswitch6.go	fail	gd: unsupported type switch case interface
-typeparam/typeswitch7.go	fail	gd: unsupported type switch case interface
+typeparam/typeswitch3.go	fail	output: mismatch
+typeparam/typeswitch4.go	fail	output: mismatch
+typeparam/typeswitch5.go	fail	gd: panic: type parameter T was not substituted
+typeparam/typeswitch6.go	pass	
+typeparam/typeswitch7.go	fail	c11: error: conflicting types for 'f_go_main_package__go_ii'; have 'void(struct <anonymous>)'
 typeparam/valimp.go	skip	todo:rundir
 typeparam/value.go	fail	gd: unsupported builtin function
 typeswitch.go	fail	gd: unsupported builtin function

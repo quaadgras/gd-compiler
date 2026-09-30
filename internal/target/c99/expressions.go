@@ -118,7 +118,13 @@ func (c99 Target) ExpressionBinary(expr source.ExpressionBinary) error {
 func (c99 Target) ExpressionAs(expr source.Expression, target types.Type) error {
 	if target != nil { // implicit conversions of concrete values to interfaces.
 		if _, toInterface := target.Underlying().(*types.Interface); toInterface && expr.TypeAndValue().Type != nil {
-			if _, fromInterface := expr.TypeAndValue().Type.Underlying().(*types.Interface); !fromInterface {
+			from := expr.TypeAndValue().Type
+			if _, fromInterface := from.Underlying().(*types.Interface); fromInterface && !types.Identical(from.Underlying(), target.Underlying()) {
+				// a different table of methods, looked up by the dynamic type.
+				fmt.Fprint(c99, c99.toInterface(asEmptyInterface(c99.toString(expr), from), target, false, "NULL"))
+				return nil
+			}
+			if _, fromInterface := from.Underlying().(*types.Interface); !fromInterface {
 				value, err := c99.InterfaceOf(expr, target)
 				if err != nil {
 					return err

@@ -306,7 +306,7 @@ func (c99 Target) ReflectTypeOf(t types.Type) string {
 	var data string
 	switch typ := t.(type) {
 	case *types.Pointer:
-		data = fmt.Sprintf(".kind=go_kind_pointer, .data={.pointer={.elem=%s}}", c99.ReflectTypeOf(typ.Elem()))
+		data = fmt.Sprintf(".kind=go_kind_pointer, .data={.pointer={.elem=%s}}%s", c99.ReflectTypeOf(typ.Elem()), c99.methodTable(typ))
 	case *types.Slice:
 		data = fmt.Sprintf(".kind=go_kind_slice, .data={.slice={.elem=%s}}", c99.ReflectTypeOf(typ.Elem()))
 	case *types.Array:

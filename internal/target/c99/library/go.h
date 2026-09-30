@@ -116,11 +116,20 @@ typedef union {
     go_type_struct fields;
 } go_type_data;
 
+// A method of a type (its method set): name, signature (like func(int) string) and the
+// function that calls it with the data of an interface value (the I_ and IP_ wrappers).
+typedef struct go_method { const char* name; const char* type; void (*fn)(void); } go_method;
+
 typedef struct go_type {
     char *name;
     go_kind kind;
     go_type_data data;
+    const go_method* methods; // sorted by name, like the methods of interfaces.
+    go_ii nmethods;
 } go_type;
+
+// The methods an interface requires, in the order of its table of methods.
+typedef struct { const char* name; const char* type; } go_imethod;
 
 typedef struct go_if { go_pt ptr; const go_type* go_type; void* vtable; } go_if;
 typedef struct { go_pt ptr; const go_type* go_type; } go_vv;
@@ -183,6 +192,11 @@ _Noreturn void go_panic_any(go_vv v);
 go_tf go_type_eq(const go_type* a, const go_type* b);
 static inline go_vv go_if_to_vv(go_if v) { return (go_vv){ .ptr = v.ptr, .go_type = v.go_type }; }
 _Noreturn void go_panic_assertion(const go_type* want, go_vv have);
+// go_implements reports whether t has the methods, filling table (if not NULL) with them.
+go_tf go_implements(const go_type* t, const go_imethod* methods, go_ii n, void (**table)(void));
+// go_to_iface converts v to an interface with the methods (a type assertion when assert,
+// which panics, otherwise *ok reports whether it could). nil converts to nil.
+go_if go_to_iface(go_vv v, const char* iface, const go_imethod* methods, go_ii n, go_tf assert, go_tf* ok);
 
 typedef go_u8 (*go_hash)(const void *item, go_u8 seed0, go_u8 seed1);
 typedef go_tf (*go_same)(const void *a, const void *b);

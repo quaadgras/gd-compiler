@@ -240,7 +240,7 @@ func (c99 Target) instanceDescriptor(named *types.Named) string {
 	symbol := "go_rtype_" + identifier.ReplaceAllString(c99.typeCName(named), "_")
 	c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
 		name := types.TypeString(named, func(pkg *types.Package) string { return pkg.Name() })
-		fmt.Fprintf(w, "static const go_type %s = {.name=%s, .kind=go_kind_%s};\n", symbol, cString(name), kindOf(named.Underlying()))
+		fmt.Fprintf(w, "static const go_type %s = {.name=%s, .kind=go_kind_%s%s};\n", symbol, cString(name), kindOf(named.Underlying()), c99.methodTable(named))
 		return nil
 	})
 	return "&" + symbol

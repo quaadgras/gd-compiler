@@ -293,6 +293,10 @@ func (c99 Target) conversion(expr source.FunctionCall, t types.Type) (bool, erro
 		return true, nil
 	}
 	from := arg.TypeAndValue().Type
+	if isInterfaceType(t) && isInterfaceType(from) && !types.Identical(t.Underlying(), from.Underlying()) {
+		fmt.Fprint(c99, c99.toInterface(asEmptyInterface(c99.toString(arg), from), t, false, "NULL"))
+		return true, nil
+	}
 	if _, ok := t.Underlying().(*types.Interface); ok && !isInterfaceType(from) {
 		value, err := c99.InterfaceOf(arg, t)
 		if err != nil {

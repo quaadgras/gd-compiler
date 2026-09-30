@@ -555,3 +555,44 @@ go_ll go_runes_from_string(go_ss s) {
     for (go_ii i = 0, k = 0; i < len; k++) i += go_string_decode(s, i, &runes[k]);
     return out;
 }
+
+// method sets, see go.h.
+
+static const go_method* go_find_method(const go_type* t, const char* name) {
+    if (!t) return NULL;
+    for (go_ii i = 0; i < t->nmethods; i++) { // TODO: binary search (they're sorted).
+        if (strcmp(t->methods[i].name, name) == 0) return &t->methods[i];
+    }
+    return NULL;
+}
+
+go_tf go_implements(const go_type* t, const go_imethod* methods, go_ii n, void (**table)(void)) {
+    for (go_ii i = 0; i < n; i++) {
+        const go_method* m = go_find_method(t, methods[i].name);
+        if (!m || strcmp(m->type, methods[i].type) != 0) return false;
+        if (table) table[i] = m->fn;
+    }
+    return true;
+}
+
+go_if go_to_iface(go_vv v, const char* iface, const go_imethod* methods, go_ii n, go_tf assert, go_tf* ok) {
+    if (ok) *ok = false;
+    if (!v.go_type) {
+        if (assert) go_panic_error("interface conversion: interface is nil, not %s", iface);
+        return (go_if){0};
+    }
+    void (**table)(void) = go_new(n > 0 ? n * (go_ii)sizeof(void (*)(void)) : 1, NULL).ptr;
+    if (!go_implements(v.go_type, methods, n, table)) {
+        if (assert) {
+            const char* missing = "";
+            for (go_ii i = 0; i < n; i++) {
+                const go_method* m = go_find_method(v.go_type, methods[i].name);
+                if (!m || strcmp(m->type, methods[i].type) != 0) { missing = methods[i].name; break; }
+            }
+            go_panic_error("interface conversion: %s is not %s: missing method %s", v.go_type->name, iface, missing);
+        }
+        return (go_if){0};
+    }
+    if (ok) *ok = true;
+    return (go_if){ .ptr = v.ptr, .go_type = v.go_type, .vtable = table };
+}
