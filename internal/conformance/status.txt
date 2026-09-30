@@ -72,13 +72,13 @@ cannotassign.go	skip	todo:errorcheck
 chan/doubleselect.go	fail	gd: unsupported deferred of builtin close
 chan/fifo.go	pass	
 chan/goroutines.go	fail	exit: timeout
-chan/nonblock.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
+chan/nonblock.go	pass	
 chan/perm.go	skip	todo:errorcheck
 chan/powser1.go	pass	
 chan/powser2.go	fail	c11: error: incompatible type for argument 2 of 'go_send_if02'
 chan/select.go	pass	
 chan/select2.go	skip	gc:memstats runtime.MemProfileRate
-chan/select3.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
+chan/select3.go	pass	
 chan/select4.go	pass	
 chan/select5.go	skip	todo:runoutput
 chan/select6.go	pass	
@@ -89,7 +89,7 @@ chan/sieve1.go	pass
 chan/sieve2.go	fail	c11: error: conflicting types for 'primes'; have 'go_ch' {aka 'void *'}
 chan/zerosize.go	pass	
 chancap.go	fail	exit: signal: trace/breakpoint trap filc safety error: attempt to allocate object that is too bi…
-chanlinear.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
+chanlinear.go	pass	
 char_lit.go	pass	
 char_lit1.go	skip	gc:diagnostics -d=panic
 checkbce.go	skip	gc:diagnostics -d=ssa/check_bce/debug=3
@@ -410,7 +410,7 @@ fixedbugs/bug143.go	pass
 fixedbugs/bug144.go	pass	
 fixedbugs/bug145.go	pass	
 fixedbugs/bug146.go	skip	todo:errorcheck
-fixedbugs/bug147.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
+fixedbugs/bug147.go	pass	
 fixedbugs/bug148.go	fail	exit: exit status 2 panic: function should panic
 fixedbugs/bug149.go	pass	
 fixedbugs/bug150.go	pass	
@@ -641,7 +641,7 @@ fixedbugs/bug384.go	skip	todo:errorcheck
 fixedbugs/bug385_32.go	skip	upstream:build 386 || amd64p32 || arm
 fixedbugs/bug385_64.go	skip	todo:errorcheck
 fixedbugs/bug386.go	skip	todo:errorcheck
-fixedbugs/bug387.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
+fixedbugs/bug387.go	fail	c11: error: expected specifier-qualifier-list before 'FileMode_go_io_fs_package'
 fixedbugs/bug388.go	skip	todo:errorcheck
 fixedbugs/bug388a.go	skip	todo:errorcheck
 fixedbugs/bug389.go	skip	todo:errorcheck
@@ -809,7 +809,7 @@ fixedbugs/issue10958.go	skip	upstream:build !nacl && !js && disabled_see_issue_1
 fixedbugs/issue10975.go	skip	todo:errorcheck
 fixedbugs/issue10977.go	pass	
 fixedbugs/issue11053.go	skip	todo:rundir
-fixedbugs/issue11256.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
+fixedbugs/issue11256.go	pass	
 fixedbugs/issue11286.go	pass	
 fixedbugs/issue11326.go	skip	todo:errorcheck
 fixedbugs/issue11326b.go	pass	
@@ -898,7 +898,7 @@ fixedbugs/issue14725.go	pass
 fixedbugs/issue14729.go	skip	todo:errorcheck
 fixedbugs/issue14988.go	skip	todo:errorcheck
 fixedbugs/issue14999.go	skip	todo:errorcheck
-fixedbugs/issue15002.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
+fixedbugs/issue15002.go	fail	exit: exit status 2 panic: 38
 fixedbugs/issue15013.go	pass	
 fixedbugs/issue15039.go	pass	
 fixedbugs/issue15042.go	pass	
@@ -942,7 +942,7 @@ fixedbugs/issue15975.go	fail	exit: signal: trace/breakpoint trap filc safety err
 fixedbugs/issue15988.go	pass	
 fixedbugs/issue15992.go	fail	gd: copy expects exactly two arguments, got 1
 fixedbugs/issue16008.go	skip	todo:errorcheck
-fixedbugs/issue16016.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
+fixedbugs/issue16016.go	fail	exit: timeout
 fixedbugs/issue16037_run.go	skip	gc:toolchain
 fixedbugs/issue16095.go	pass	
 fixedbugs/issue16130.go	fail	c11: error: 'Error_go_runtime_package' has no member named 'Error'; did you mean 'error'?
@@ -963,7 +963,7 @@ fixedbugs/issue16733.go	pass
 fixedbugs/issue16741.go	pass	
 fixedbugs/issue16760.go	fail	exit: signal: trace/breakpoint trap filc safety error: cannot read pointer with null object.
 fixedbugs/issue16804.go	pass	
-fixedbugs/issue16870.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
+fixedbugs/issue16870.go	fail	c11: error: invalid initializer
 fixedbugs/issue16948.go	pass	
 fixedbugs/issue16949.go	skip	todo:errorcheck
 fixedbugs/issue16985.go	pass	
@@ -986,7 +986,7 @@ fixedbugs/issue17645.go	skip	todo:errorcheck
 fixedbugs/issue17710.go	pass	
 fixedbugs/issue17752.go	pass	
 fixedbugs/issue17758.go	skip	todo:errorcheck
-fixedbugs/issue17918.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
+fixedbugs/issue17918.go	pass	
 fixedbugs/issue18089.go	fail	c11: error: macro "go_ignore" passed 2 arguments, but takes just 1
 fixedbugs/issue18092.go	skip	todo:errorcheck
 fixedbugs/issue18149.go	skip	gc:stack-introspection runtime.Caller
@@ -1020,7 +1020,7 @@ fixedbugs/issue19084.go	pass
 fixedbugs/issue19113.go	fail	exit: exit status 2 panic: reflect: In is not supported by gd
 fixedbugs/issue19137.go	pass	
 fixedbugs/issue19168.go	skip	gc:diagnostics -d=wb
-fixedbugs/issue19182.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
+fixedbugs/issue19182.go	pass	
 fixedbugs/issue19201.go	fail	exit: signal: trace/breakpoint trap filc safety error: cannot read pointer with null object.
 fixedbugs/issue19217.go	pass	
 fixedbugs/issue19246.go	pass	
@@ -1289,7 +1289,7 @@ fixedbugs/issue29610.go	skip	todo:rundir
 fixedbugs/issue29612.go	skip	todo:runindir
 fixedbugs/issue29735.go	skip	gc:stack-introspection runtime.Callers
 fixedbugs/issue29855.go	skip	todo:errorcheck
-fixedbugs/issue29870.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
+fixedbugs/issue29870.go	fail	c11: error: invalid initializer
 fixedbugs/issue29870b.go	skip	todo:errorcheck
 fixedbugs/issue29919.go	skip	todo:rundir
 fixedbugs/issue29943.go	pass	
@@ -1335,7 +1335,7 @@ fixedbugs/issue31959.go	skip	todo:rundir
 fixedbugs/issue31987.go	pass	
 fixedbugs/issue32133.go	skip	todo:errorcheck
 fixedbugs/issue32175.go	pass	
-fixedbugs/issue32187.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
+fixedbugs/issue32187.go	fail	c11: error: invalid initializer
 fixedbugs/issue32288.go	pass	
 fixedbugs/issue32347.go	pass	
 fixedbugs/issue32454.go	pass	
@@ -1497,7 +1497,7 @@ fixedbugs/issue43701.go	pass
 fixedbugs/issue43762.go	skip	todo:errorcheck
 fixedbugs/issue43835.go	fail	exit: exit status 2 panic: FAIL
 fixedbugs/issue43908.go	pass	
-fixedbugs/issue43942.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
+fixedbugs/issue43942.go	fail	c11: error: invalid initializer
 fixedbugs/issue43962.go	skip	todo:errorcheck
 fixedbugs/issue4396a.go	pass	
 fixedbugs/issue4396b.go	pass	
@@ -1747,9 +1747,9 @@ fixedbugs/issue56777.go	pass
 fixedbugs/issue56778.go	skip	todo:compiledir
 fixedbugs/issue56923.go	fail	gd: panic: unsupported index of test.EqFunc
 fixedbugs/issue5698.go	skip	todo:errorcheck
-fixedbugs/issue56990.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
+fixedbugs/issue56990.go	fail	c11: error: expected specifier-qualifier-list before 'FileMode_go_io_fs_package'
 fixedbugs/issue5704.go	pass	
-fixedbugs/issue57184.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
+fixedbugs/issue57184.go	fail	c11: error: invalid initializer
 fixedbugs/issue57309.go	pass	
 fixedbugs/issue5753.go	pass	
 fixedbugs/issue5755.go	skip	todo:compiledir
@@ -1791,7 +1791,7 @@ fixedbugs/issue5957.go	skip	todo:errorcheck
 fixedbugs/issue59572.go	pass	
 fixedbugs/issue5963.go	pass	
 fixedbugs/issue59638.go	skip	gc:flags -gcflags=-l=4
-fixedbugs/issue59680.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
+fixedbugs/issue59680.go	pass	
 fixedbugs/issue59709.go	skip	todo:rundir
 fixedbugs/issue6004.go	skip	todo:errorcheck
 fixedbugs/issue6036.go	pass	
@@ -1856,7 +1856,7 @@ fixedbugs/issue66096.go	pass
 fixedbugs/issue66261.go	pass	
 fixedbugs/issue66575.go	pass	
 fixedbugs/issue66585.go	pass	
-fixedbugs/issue66663.go	fail	c11: error: unknown type name 'Range__AddrImpl_go_test_package_go_test_package'; did you mean 'rangeImpl__AddrImpl_go_test_pa…
+fixedbugs/issue66663.go	pass	
 fixedbugs/issue6671.go	skip	todo:errorcheck
 fixedbugs/issue66873.go	pass	
 fixedbugs/issue6703a.go	skip	todo:errorcheck
@@ -2024,7 +2024,7 @@ fixedbugs/issue78303_2.go	pass
 fixedbugs/issue78313.go	pass	
 fixedbugs/issue78314.go	skip	todo:errorcheck
 fixedbugs/issue78355.go	skip	todo:errorcheck
-fixedbugs/issue78404.go	fail	c11: error: unknown type name 'Iface__go_ii_go_main_package'; did you mean 'Impl1__go_ii_go_main_package'?
+fixedbugs/issue78404.go	pass	
 fixedbugs/issue78408.go	fail	gd: range over unsupported type *types.Signature
 fixedbugs/issue78410.go	pass	
 fixedbugs/issue78599.go	fail	gd: range over unsupported type *types.Named
@@ -2045,7 +2045,7 @@ fixedbugs/issue79274a.go	skip	todo:compiledir
 fixedbugs/issue7944.go	pass	
 fixedbugs/issue79762.go	skip	gc:import runtime/debug
 fixedbugs/issue79812.go	fail	gd: unsupported conversion to float64
-fixedbugs/issue79874.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
+fixedbugs/issue79874.go	fail	exit: exit status 2 panic: 38
 fixedbugs/issue79886.go	pass	
 fixedbugs/issue79887.go	pass	
 fixedbugs/issue79909.go	fail	exit: exit status 2 panic: unexpected result: 19
@@ -2086,7 +2086,7 @@ fixedbugs/issue8132.go	pass
 fixedbugs/issue8139.go	fail	exit: exit status 2 panic: interface conversion: interface {} is nil, not main.T
 fixedbugs/issue8154.go	pass	
 fixedbugs/issue8155.go	pass	
-fixedbugs/issue8158.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
+fixedbugs/issue8158.go	pass	
 fixedbugs/issue8183.go	skip	todo:errorcheck
 fixedbugs/issue8280.go	skip	todo:compiledir
 fixedbugs/issue8311.go	skip	todo:errorcheck
@@ -2100,7 +2100,7 @@ fixedbugs/issue8475.go	pass
 fixedbugs/issue8501.go	skip	todo:errorcheck
 fixedbugs/issue8507.go	skip	todo:errorcheck
 fixedbugs/issue8606.go	pass	
-fixedbugs/issue8606b.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
+fixedbugs/issue8606b.go	fail	exit: exit status 2 panic: 38
 fixedbugs/issue8612.go	pass	
 fixedbugs/issue8613.go	pass	
 fixedbugs/issue8620.go	pass	
@@ -2162,7 +2162,7 @@ gcstring.go	skip	gc:finalizers runtime.SetFinalizer
 genmeth.go	fail	gd: panic: type parameter P was not substituted
 genmeth1.go	fail	gd: unsupported index of func
 genmeth2.go	fail	gd: unsupported index of func
-goprint.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
+goprint.go	fail	c11: error: invalid initializer
 goto.go	skip	todo:errorcheck
 heapsampling.go	skip	gc:memstats runtime.MemProfileRate
 helloworld.go	pass	
@@ -2290,7 +2290,7 @@ mallocfin.go	skip	gc:finalizers runtime.SetFinalizer
 map.go	fail	c11: error: 'nana' undeclared (first use in this function); did you mean 'nanl'?
 map1.go	skip	todo:errorcheck
 mapclear.go	pass	
-maplinear.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
+maplinear.go	fail	exit: timeout
 maymorestack.go	skip	gc:flags -gcflags=-d=maymorestack=main.mayMoreStack
 mergemul.go	skip	todo:runoutput
 method.go	fail	gd: panic: unsupported node type: DefinedType
@@ -2305,7 +2305,7 @@ named.go	pass
 named1.go	skip	todo:errorcheck
 newexpr.go	fail	exit: exit status 2 panic: wrong value
 newinline.go	skip	gc:build goexperiment.newinliner
-nil.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
+nil.go	pass	
 nilcheck.go	skip	gc:diagnostics -d=nil
 nilptr.go	fail	exit: exit status 2 panic: dummy too far out
 nilptr2.go	fail	exit: signal: segmentation fault
@@ -2365,7 +2365,7 @@ shift1.go	skip	todo:errorcheck
 shift2.go	pass	
 shift3.go	fail	gd: panic: unsupported constant value (1 + 0i)
 sieve.go	pass	
-sigchld.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
+sigchld.go	pass	
 simassign.go	fail	c11: error: incompatible type for argument 1 of 'swap_go_main_package'
 simd.go	skip	gc:build goexperiment.simd && amd64
 simd/bug1.go	skip	gc:build amd64 && goexperiment.simd
@@ -2433,7 +2433,7 @@ typeparam/builtins.go	pass
 typeparam/chans.go	skip	gc:finalizers runtime.SetFinalizer
 typeparam/chansimp.go	skip	todo:rundir
 typeparam/combine.go	pass	
-typeparam/cons.go	fail	c11: error: 'Function__Cons__go_ii_go_main_package__go_vv_go_main_package' undeclared (first use in this function)
+typeparam/cons.go	pass	
 typeparam/dedup.go	skip	todo:rundir
 typeparam/devirtualize1.go	pass	
 typeparam/devirtualize2.go	pass	
@@ -2446,7 +2446,7 @@ typeparam/equal.go	pass
 typeparam/fact.go	pass	
 typeparam/factimp.go	skip	todo:rundir
 typeparam/gencrawler.go	skip	todo:rundir
-typeparam/genembed.go	fail	c11: error: unknown type name 'getter__go_ii_go_main_package'; did you mean 'A__go_ii_go_main_package'?
+typeparam/genembed.go	pass	
 typeparam/genembed2.go	pass	
 typeparam/geninline.go	skip	todo:rundir
 typeparam/graph.go	pass	
@@ -2459,9 +2459,9 @@ typeparam/issue23536.go	pass
 typeparam/issue376214.go	pass	
 typeparam/issue39755.go	pass	
 typeparam/issue42758.go	pass	
-typeparam/issue44688.go	fail	c11: error: unknown type name 'A2__go_ss_go_main_package'; did you mean 'A__go_ss_go_main_package'?
+typeparam/issue44688.go	pass	
 typeparam/issue45547.go	pass	
-typeparam/issue45722.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
+typeparam/issue45722.go	fail	c11: error: invalid initializer
 typeparam/issue45738.go	pass	
 typeparam/issue45817.go	pass	
 typeparam/issue46461.go	pass	
@@ -2492,7 +2492,7 @@ typeparam/issue47877.go	pass
 typeparam/issue47878.go	pass	
 typeparam/issue47892.go	skip	todo:rundir
 typeparam/issue47892b.go	skip	todo:compiledir
-typeparam/issue47896.go	fail	gd: panic: unsupported conversion from
+typeparam/issue47896.go	fail	gd: panic: runtime error: invalid memory address or nil pointer dereference
 typeparam/issue47901.go	fail	gd: unsupported call for function of type xyz.Case
 typeparam/issue47924.go	pass	
 typeparam/issue47925.go	pass	
@@ -2505,9 +2505,9 @@ typeparam/issue47966.go	pass
 typeparam/issue48013.go	pass	
 typeparam/issue48016.go	pass	
 typeparam/issue48030.go	pass	
-typeparam/issue48042.go	fail	c11: error: unknown type name 'G__go_ii_go_main_package'; did you mean 'Foo__go_ii_go_main_package'?
-typeparam/issue48047.go	fail	c11: error: unknown type name 'B__go_ss_go_main_package'; did you mean 'A__go_ss_go_main_package'?
-typeparam/issue48049.go	fail	c11: error: unknown type name 'Fooer__go_u1_go_main_package'; did you mean 'fooer1__go_u1_go_main_package'?
+typeparam/issue48042.go	pass	
+typeparam/issue48047.go	pass	
+typeparam/issue48049.go	pass	
 typeparam/issue48056.go	pass	
 typeparam/issue48094.go	skip	todo:rundir
 typeparam/issue48094b.go	skip	todo:compiledir
@@ -2526,7 +2526,7 @@ typeparam/issue48317.go	fail	gd: panic: unsupported node type: DefinedType
 typeparam/issue48318.go	fail	gd: panic: runtime error: invalid memory address or nil pointer dereference
 typeparam/issue48337a.go	skip	todo:rundir
 typeparam/issue48337b.go	skip	todo:rundir
-typeparam/issue48344.go	fail	c11: error: unknown type name 'G__go_ii_go_main_package'; did you mean 'Foo__go_ii_go_main_package'?
+typeparam/issue48344.go	pass	
 typeparam/issue48424.go	pass	
 typeparam/issue48453.go	pass	
 typeparam/issue48454.go	skip	todo:rundir
@@ -2537,7 +2537,7 @@ typeparam/issue48598.go	fail	gd: panic: unsupported index of test.IteratorFunc
 typeparam/issue48602.go	fail	gd: panic: unsupported index of test.IteratorFunc
 typeparam/issue48604.go	fail	gd: panic: unsupported index of test.Bar
 typeparam/issue48609.go	pass	
-typeparam/issue48617.go	fail	c11: error: unknown type name 'Foo__go_ii_go_main_package'; did you mean 'Bar__go_ii_go_main_package'?
+typeparam/issue48617.go	pass	
 typeparam/issue48645a.go	pass	
 typeparam/issue48645b.go	fail	gd: panic: unsupported index of test.IteratorFunc
 typeparam/issue48711.go	skip	todo:errorcheck
@@ -2545,7 +2545,7 @@ typeparam/issue48716.go	skip	todo:rundir
 typeparam/issue48838.go	pass	
 typeparam/issue48962.go	skip	todo:errorcheck
 typeparam/issue49027.go	skip	todo:rundir
-typeparam/issue49049.go	fail	c11: error: unknown type name 'A__go_ss_go_main_package'; did you mean 'Z_go_main_package'?
+typeparam/issue49049.go	pass	
 typeparam/issue49241.go	skip	todo:rundir
 typeparam/issue49246.go	skip	todo:compiledir
 typeparam/issue49295.go	fail	gd: panic: unsupported len of *
@@ -2565,7 +2565,7 @@ typeparam/issue49667.go	skip	todo:rundir
 typeparam/issue49875.go	pass	
 typeparam/issue49893.go	skip	todo:compiledir
 typeparam/issue50002.go	fail	gd: unsupported call for function of type xyz.Case
-typeparam/issue50109.go	fail	c11: error: unknown type name 'AnyCacher__go_vv_go_main_package'; did you mean 'AnyCache__go_vv_go_main_package'?
+typeparam/issue50109.go	pass	
 typeparam/issue50109b.go	pass	
 typeparam/issue50121.go	skip	todo:rundir
 typeparam/issue50121b.go	skip	todo:rundir
@@ -2614,7 +2614,7 @@ typeparam/issue51836.go	skip	todo:compiledir
 typeparam/issue51840.go	pass	
 typeparam/issue51909.go	pass	
 typeparam/issue51925.go	pass	
-typeparam/issue52026.go	fail	c11: error: unknown type name 'Option__go_ii_go_main_package'; did you mean 'Some__go_ii_go_main_package'?
+typeparam/issue52026.go	pass	
 typeparam/issue52117.go	skip	todo:compiledir
 typeparam/issue52124.go	pass	
 typeparam/issue52228.go	pass	
@@ -2626,7 +2626,7 @@ typeparam/issue53406.go	pass
 typeparam/issue53419.go	pass	
 typeparam/issue53477.go	fail	gd: unsupported call for function of type xyz.Case
 typeparam/issue53762.go	fail	gd: unsupported call for function of type xyz.Case
-typeparam/issue54135.go	fail	c11: error: unknown type name 'Bar__go_ii_go_main_package'; did you mean 'Baz_go_main_package'?
+typeparam/issue54135.go	pass	
 typeparam/issue54225.go	pass	
 typeparam/issue54302.go	skip	todo:rundir
 typeparam/issue54456.go	fail	exit: exit status 2 panic: bad type identity
@@ -2657,7 +2657,7 @@ typeparam/mdempsky/18.go	pass
 typeparam/mdempsky/19.go	pass	
 typeparam/mdempsky/2.go	pass	
 typeparam/mdempsky/20.go	pass	
-typeparam/mdempsky/21.go	fail	c11: error: unknown type name 'I__go_ii_go_main_package'; did you mean 'X_go_main_package'?
+typeparam/mdempsky/21.go	pass	
 typeparam/mdempsky/3.go	skip	todo:compiledir
 typeparam/mdempsky/4.go	skip	todo:compiledir
 typeparam/mdempsky/5.go	pass	
@@ -2665,12 +2665,12 @@ typeparam/mdempsky/6.go	pass
 typeparam/mdempsky/7.go	skip	todo:compiledir
 typeparam/mdempsky/8.go	skip	todo:errorcheck
 typeparam/mdempsky/9.go	pass	
-typeparam/metrics.go	fail	exit: exit status 2 panic: _Metric2.Metrics first slice = [2 2 3], want [1 2 3]
+typeparam/metrics.go	pass	
 typeparam/min.go	pass	
 typeparam/mincheck.go	skip	todo:errorcheck
 typeparam/minimp.go	skip	todo:rundir
 typeparam/mutualimp.go	skip	todo:compiledir
-typeparam/nested.go	fail	c11: error: redefinition of 'go_type_Int_4419193_go_main_package'
+typeparam/nested.go	fail	c11: error: redefinition of 'go_type_Int_4180000_go_main_package'
 typeparam/ordered.go	fail	gd: panic: unsupported call for function of type xyz.Case
 typeparam/orderedmap.go	skip	gc:finalizers runtime.SetFinalizer
 typeparam/orderedmapsimp.go	skip	todo:rundir
@@ -2728,7 +2728,7 @@ wasmexport.go	skip	upstream:build wasm
 wasmexport2.go	skip	upstream:build wasm
 wasmmemsize.go	skip	upstream:build wasm
 weak.go	skip	todo:errorcheck
-winbatch.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
+winbatch.go	fail	c11: error: expected specifier-qualifier-list before 'FileMode_go_io_fs_package'
 writebarrier.go	skip	gc:diagnostics -d=wb
 zerodivide.go	fail	c11: error: 'Error_go_runtime_package' has no member named 'Error'; did you mean 'error'?
 zerosize.go	fail	exit: exit status 2 panic: FAIL

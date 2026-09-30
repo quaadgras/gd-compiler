@@ -187,7 +187,13 @@ func (c99 Target) InterfaceTypeOf(t types.Type) string {
 	if typ.Obj().Pkg() == nil {
 		return "go_" + typ.Obj().Name()
 	}
-	return c99.typeCName(typ) + "_go_" + source.PackageIdent(typ.Obj().Pkg()) + "_package"
+	name := c99.typeCName(typ) + "_go_" + source.PackageIdent(typ.Obj().Pkg()) + "_package"
+	if typ.TypeArgs().Len() > 0 { // an instance of a generic interface, defined where it's used.
+		c99.defineType(name, nil, func(w io.Writer) {
+			fmt.Fprintf(w, "\n#ifndef %[1]s_defined\n#define %[1]s_defined\ntypedef %[2]s %[1]s;\n#endif\n", name, c99.InterfaceTypeOf(typ.Underlying()))
+		})
+	}
+	return name
 }
 
 func (c99 Target) TupleTypeOf(t *types.Tuple) string {

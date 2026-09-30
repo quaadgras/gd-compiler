@@ -112,6 +112,7 @@ static inline void StopTrace_go_runtime_package(void) {}
 static inline go_aaiitfzz ThreadCreateProfile_go_runtime_package(go_ll p) { return (go_aaiitfzz){0}; }
 static inline void UnlockOSThread_go_runtime_package(void) {}
 static inline go_ss Version_go_runtime_package(void) { return go_string_new("go1.25.1"); }
+static inline go_ss GOROOT_go_runtime_package(void) { return go_string_new(""); }
 
 static inline Cleanup_go_runtime_package AddCleanup_go_runtime_package(const go_type T, const go_type S, go_pt ptr, go_fn cleanup, void* arg) {
     return (Cleanup_go_runtime_package){0};
