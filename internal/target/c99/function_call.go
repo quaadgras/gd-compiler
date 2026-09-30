@@ -30,6 +30,12 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 	if tv := expr.TypeAndValue(); tv.Value != nil {
 		return c99.Constant(tv) // unsafe.Sizeof, len of arrays, conversions...
 	}
+	if c99.Deferred == nil {
+		var err error
+		if expr, err = c99.spread(expr); err != nil {
+			return err
+		}
+	}
 	function := expr.Function
 	if xyz.ValueOf(function) == source.Expressions.Parenthesized {
 		function = source.Expressions.Parenthesized.Get(function).X
@@ -237,23 +243,6 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 		fmt.Fprint(c99, value)
 	}
 	var variadic bool
-	if len(expr.Arguments) == 1 && len(deferred.Args) == 0 { // f(g()), where g has several results.
-		if tuple, ok := expr.Arguments[0].TypeAndValue().Type.(*types.Tuple); ok && tuple.Len() > 1 {
-			value := c99.toString(expr.Arguments[0]) // (a temporary, see [Order])
-			if !temporary.MatchString(value) {
-				return expr.Errorf("unsupported call with the results of another call, outside of a statement")
-			}
-			var args []source.Expression
-			for i := range tuple.Len() {
-				args = append(args, source.Expressions.DefinedVariable.New(source.DefinedVariable{
-					Typed:    source.Typed{TV: types.TypeAndValue{Type: tuple.At(i).Type()}},
-					Location: expr.Location,
-					String:   fmt.Sprintf("%s.r%d", value, i),
-				}))
-			}
-			expr.Arguments = args
-		}
-	}
 	for i, arg := range expr.Arguments {
 		if i > 0 || hasReceiver || isInterface || invoked {
 			fmt.Fprintf(c99, ", ")
@@ -556,3 +545,32 @@ func isInterfaceType(t types.Type) bool {
 
 // temporary matches the C names of temporaries (and of variables).
 var temporary = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_]*$`)
+
+// spread returns the call f(g()), where g has several results, as a call with those results
+// as arguments (g() is a temporary, see [Order]).
+func (c99 Target) spread(expr source.FunctionCall) (source.FunctionCall, error) {
+	if len(expr.Arguments) != 1 {
+		return expr, nil
+	}
+	tuple, ok := expr.Arguments[0].TypeAndValue().Type.(*types.Tuple)
+	if !ok || tuple.Len() < 2 {
+		return expr, nil
+	}
+	if c99.Order != nil { // the function is evaluated first: f()(g())
+		_ = c99.toString(expr.Function)
+	}
+	value := c99.toString(expr.Arguments[0])
+	if !temporary.MatchString(value) {
+		return expr, expr.Errorf("unsupported call with the results of another call, outside of a statement")
+	}
+	var args []source.Expression
+	for i := range tuple.Len() {
+		args = append(args, source.Expressions.DefinedVariable.New(source.DefinedVariable{
+			Typed:    source.Typed{TV: types.TypeAndValue{Type: tuple.At(i).Type()}},
+			Location: expr.Location,
+			String:   fmt.Sprintf("%s.r%d", value, i),
+		}))
+	}
+	expr.Arguments = args
+	return expr, nil
+}

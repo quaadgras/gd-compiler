@@ -181,6 +181,9 @@ func reevaluate(arg source.Expression) bool {
 // has result variables (they are named, or it has deferred calls), they are set, and the
 // deferred calls run, before returning them.
 func (c99 Target) StatementReturn(stmt source.StatementReturn) error {
+	if c99.Yield != nil {
+		return c99.yieldReturn(stmt)
+	}
 	results := stmt.Results
 	var tuple string // return f(), where f has multiple results.
 	if len(results) == 1 && len(c99.Results) > 1 {

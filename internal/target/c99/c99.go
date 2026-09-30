@@ -67,6 +67,12 @@ type Target struct {
 	// that they have already been evaluated into.
 	Substitutes map[ast.Node]string
 
+	// Yield is set while compiling the body of a range over a function (compiled as the
+	// yield function, see [Target.rangeFunc]), where YieldLoop is set until a nested loop.
+	Yield     *Yield
+	YieldLoop bool
+	Labels    map[string]bool // of the statements in the body (where Yield is set).
+
 	// Initializers of package-level variables, which are written to the package's init
 	// function after all of its files are compiled, in the order given by the type
 	// checker.

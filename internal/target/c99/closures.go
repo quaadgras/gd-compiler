@@ -16,10 +16,13 @@ import (
 // pointers to the boxes it needs.
 type Closures struct {
 	captures map[*ast.FuncLit][]*types.Var // in order of first use.
-	captured map[types.Object]bool
-	count    int // closures, deferred calls and temporaries so far, for unique names.
-	info     *types.Info
-	generics *Generics
+	// ranges over functions, whose bodies are compiled as closures, see [Target.rangeFunc].
+	rangeCaptures map[*ast.RangeStmt][]*types.Var
+	jumps         map[string]int // codes of labeled break and continue, see [Yield].
+	captured      map[types.Object]bool
+	count         int // closures, deferred calls and temporaries so far, for unique names.
+	info          *types.Info
+	generics      *Generics
 
 	// frames are the functions (*ast.FuncDecl or *ast.FuncLit) with deferred calls, which
 	// need a frame for panics to unwind to. Their named results are boxed, as they are
@@ -39,11 +42,13 @@ type tupleVar struct {
 // NewClosures analyzes the closures in files.
 func NewClosures(info *types.Info, files []*ast.File) *Closures {
 	closures := &Closures{
-		captures: make(map[*ast.FuncLit][]*types.Var),
-		captured: make(map[types.Object]bool),
-		frames:   make(map[ast.Node]bool),
-		tuples:   make(map[ast.Node]tupleVar),
-		info:     info,
+		captures:      make(map[*ast.FuncLit][]*types.Var),
+		rangeCaptures: make(map[*ast.RangeStmt][]*types.Var),
+		jumps:         make(map[string]int),
+		captured:      make(map[types.Object]bool),
+		frames:        make(map[ast.Node]bool),
+		tuples:        make(map[ast.Node]tupleVar),
+		info:          info,
 	}
 	// Local variables whose address is taken are boxed too, as the address may outlive the
 	// function (C would point to its stack frame).
@@ -98,6 +103,22 @@ func NewClosures(info *types.Info, files []*ast.File) *Closures {
 						closures.captured[info.Defs[name]] = true
 					}
 				}
+			}
+			return true
+		})
+		ast.Inspect(file, func(node ast.Node) bool {
+			var ftype *ast.FuncType
+			var body *ast.BlockStmt
+			switch fn := node.(type) {
+			case *ast.FuncDecl:
+				ftype, body = fn.Type, fn.Body
+			case *ast.FuncLit:
+				ftype, body = fn.Type, fn.Body
+			default:
+				return true
+			}
+			if body != nil {
+				closures.rangeFuncs(info, ftype, body)
 			}
 			return true
 		})
@@ -264,4 +285,82 @@ func (c99 Target) InvokerOf(sig *types.Signature) (string, error) {
 
 func (c99 Target) resultTypeOf(sig *types.Signature) (string, error) {
 	return c99.TupleOfResults(sig), nil
+}
+
+// rangeFuncs finds the ranges over functions of the body of a function (of type ftype), and
+// the variables that their bodies use (which they capture, as closures do): those of the
+// range statement too, when it assigns them, and the named results of the function, when
+// the body returns.
+func (closures *Closures) rangeFuncs(info *types.Info, ftype *ast.FuncType, body *ast.BlockStmt) {
+	ast.Inspect(body, func(node ast.Node) bool {
+		if _, ok := node.(*ast.FuncLit); ok {
+			return false // (see NewClosures)
+		}
+		stmt, ok := node.(*ast.RangeStmt)
+		if !ok {
+			return true
+		}
+		if tv, ok := info.Types[stmt.X]; !ok || !isFuncType(tv.Type) {
+			return true
+		}
+		seen := make(map[*types.Var]bool)
+		capture := func(v *types.Var) {
+			if !seen[v] {
+				seen[v] = true
+				closures.rangeCaptures[stmt] = append(closures.rangeCaptures[stmt], v)
+				closures.captured[v] = true
+			}
+		}
+		uses := func(node ast.Node) {
+			ast.Inspect(node, func(node ast.Node) bool {
+				id, ok := node.(*ast.Ident)
+				if !ok {
+					return true
+				}
+				v, ok := info.Uses[id].(*types.Var)
+				if !ok || v.IsField() || v.Parent() == nil || v.Pkg() == nil || v.Parent() == v.Pkg().Scope() {
+					return true
+				}
+				if v.Pos() >= stmt.Pos() && v.Pos() < stmt.End() {
+					return true // declared by the range statement, or in its body.
+				}
+				capture(v)
+				return true
+			})
+		}
+		uses(stmt.Body)
+		if stmt.Tok == token.ASSIGN {
+			if stmt.Key != nil {
+				uses(stmt.Key)
+			}
+			if stmt.Value != nil {
+				uses(stmt.Value)
+			}
+		}
+		returns := false
+		ast.Inspect(stmt.Body, func(node ast.Node) bool {
+			switch node.(type) {
+			case *ast.FuncLit:
+				return false
+			case *ast.ReturnStmt:
+				returns = true
+			}
+			return true
+		})
+		if returns && ftype.Results != nil {
+			for _, field := range ftype.Results.List {
+				for _, name := range field.Names {
+					if v, ok := info.Defs[name].(*types.Var); ok {
+						capture(v)
+					}
+				}
+			}
+		}
+		return true
+	})
+}
+
+func isFuncType(t types.Type) bool {
+	_, ok := t.Underlying().(*types.Signature)
+	return ok
 }

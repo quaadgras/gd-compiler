@@ -157,6 +157,8 @@ func (c99 Target) StatementRange(stmt source.StatementRange) error {
 		defer fmt.Fprintf(c99, " go_break_%s:;", stmt.Label)
 	}
 	switch typ := stmt.X.TypeAndValue().Type.Underlying().(type) {
+	case *types.Signature:
+		return c99.rangeFunc(stmt, typ)
 	case *types.Array:
 		return c99.rangeArray(stmt, typ, false)
 	case *types.Chan:
@@ -257,6 +259,14 @@ func (c99 Target) bind(name source.DefinedVariable, t types.Type, value string) 
 
 func (c99 Target) StatementContinue(stmt source.StatementContinue) error {
 	label, hasLabel := stmt.Label.Get()
+	if y := c99.Yield; y != nil && ((!hasLabel && c99.YieldLoop) || (hasLabel && label.String == y.label)) {
+		fmt.Fprintf(c99, "return true") // to the next iteration.
+		return nil
+	}
+	if y := c99.Yield; y != nil && hasLabel && !c99.Labels[label.String] { // of a statement outside of the body.
+		fmt.Fprintf(c99, "{ %s = %d; return false; }", y.state, c99.jumpCode(label.String, true))
+		return nil
+	}
 	if hasLabel {
 		fmt.Fprintf(c99, "goto go_continue_%s", label.String)
 	} else {
@@ -301,6 +311,7 @@ func (c99 Target) declare(name source.DefinedVariable, t types.Type, value strin
 // contains it).
 func (c99 Target) loopBody(label string, body []source.Statement) error {
 	c99.BreakLabel = ""
+	c99.YieldLoop = false // (break and continue are this loop's)
 	for _, stmt := range body {
 		c99.Tabs++
 		if err := c99.Statement(stmt); err != nil {

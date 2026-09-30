@@ -304,6 +304,7 @@ func (c99 Target) ExpressionFunction(e source.ExpressionFunction) error {
 		c99.Writer = w
 		c99.Tabs = 0
 		c99.Environment = captures
+		c99.Yield, c99.YieldLoop = nil, false // (a function of its own)
 		if len(captures) > 0 {
 			fmt.Fprintf(w, "typedef struct { ")
 			for _, v := range captures {

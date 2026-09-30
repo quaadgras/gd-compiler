@@ -106,6 +106,14 @@ func (c99 Target) StatementEmpty(stmt source.StatementEmpty) error { return nil 
 func (c99 Target) StatementBreak(stmt source.StatementBreak) error {
 
 	label, hasLabel := stmt.Label.Get()
+	if y := c99.Yield; y != nil && ((!hasLabel && c99.YieldLoop && c99.BreakLabel == "") || (hasLabel && label.String == y.label)) {
+		fmt.Fprintf(c99, "return false") // no more iterations.
+		return nil
+	}
+	if y := c99.Yield; y != nil && hasLabel && !c99.Labels[label.String] { // of a statement outside of the body.
+		fmt.Fprintf(c99, "{ %s = %d; return false; }", y.state, c99.jumpCode(label.String, false))
+		return nil
+	}
 	if hasLabel {
 		fmt.Fprintf(c99, "goto go_break_%s", label.String)
 	} else if c99.BreakLabel != "" { // in a switch.

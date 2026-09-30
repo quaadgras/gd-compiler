@@ -16,7 +16,7 @@ abi/double_nested_addressed_struct.go	pass
 abi/double_nested_struct.go	pass	
 abi/f_ret_z_not.go	pass	
 abi/fibish.go	pass	
-abi/fibish_closure.go	fail	exit: timeout
+abi/fibish_closure.go	pass	
 abi/fuzz_trailing_zero_field.go	pass	
 abi/idata.go	fail	c11: error: implicit declaration of function 'CallersFrames_go_runtime_package'; did you mean 'Callers_go_runtime_package'? […
 abi/leaf.go	pass	
@@ -71,7 +71,7 @@ bounds.go	skip	gc:diagnostics -m
 cannotassign.go	skip	todo:errorcheck
 chan/doubleselect.go	fail	gd: unsupported deferred of builtin close
 chan/fifo.go	pass	
-chan/goroutines.go	fail	exit: timeout
+chan/goroutines.go	pass	
 chan/nonblock.go	pass	
 chan/perm.go	skip	todo:errorcheck
 chan/powser1.go	pass	
@@ -239,7 +239,7 @@ devirtualization_with_type_assertions_interleaved.go	skip	gc:diagnostics -m
 directive.go	skip	todo:errorcheck
 directive2.go	skip	todo:errorcheck
 divide.go	pass	
-divmod.go	fail	exit: timeout
+divmod.go	pass	
 dwarf/dwarf.go	skip	todo:rundir
 dwarf/linedirectives.go	pass	
 embedfunc.go	skip	todo:errorcheck
@@ -468,7 +468,7 @@ fixedbugs/bug202.go	pass
 fixedbugs/bug203.go	pass	
 fixedbugs/bug204.go	pass	
 fixedbugs/bug205.go	skip	todo:errorcheck
-fixedbugs/bug206.go	fail	gd: range over unsupported type *types.Named
+fixedbugs/bug206.go	fail	c11: error: expected specifier-qualifier-list before 'FileMode_go_io_fs_package'
 fixedbugs/bug207.go	pass	
 fixedbugs/bug208.go	skip	todo:errorcheck
 fixedbugs/bug209.go	skip	todo:errorcheck
@@ -940,9 +940,9 @@ fixedbugs/issue15926.go	pass
 fixedbugs/issue15961.go	pass	
 fixedbugs/issue15975.go	fail	exit: signal: trace/breakpoint trap filc safety error: cannot read pointer with null object.
 fixedbugs/issue15988.go	pass	
-fixedbugs/issue15992.go	fail	gd: copy expects exactly two arguments, got 1
+fixedbugs/issue15992.go	fail	gd: panic: unsupported node type: BuiltinFunction
 fixedbugs/issue16008.go	skip	todo:errorcheck
-fixedbugs/issue16016.go	fail	exit: timeout
+fixedbugs/issue16016.go	pass	
 fixedbugs/issue16037_run.go	skip	gc:toolchain
 fixedbugs/issue16095.go	pass	
 fixedbugs/issue16130.go	fail	c11: error: 'Error_go_runtime_package' has no member named 'Error'; did you mean 'error'?
@@ -1113,7 +1113,7 @@ fixedbugs/issue22200.go	skip	todo:errorcheck
 fixedbugs/issue22200b.go	skip	todo:errorcheck
 fixedbugs/issue22305.go	pass	
 fixedbugs/issue22326.go	pass	
-fixedbugs/issue22327.go	fail	gd: panic: interface conversion: types.Type is *types.Tuple, not *types.Slice
+fixedbugs/issue22327.go	fail	gd: panic: unsupported node type: BuiltinFunction
 fixedbugs/issue22344.go	pass	
 fixedbugs/issue22351.go	skip	todo:errorcheck
 fixedbugs/issue22389.go	skip	gc:diagnostics -d=panic
@@ -1383,7 +1383,7 @@ fixedbugs/issue35157.go	pass
 fixedbugs/issue35291.go	skip	todo:errorcheck
 fixedbugs/issue35518.go	skip	gc:diagnostics -m=2
 fixedbugs/issue3552.go	skip	todo:compiledir
-fixedbugs/issue35576.go	fail	gd: illegal type for print: (int16, float64, string)
+fixedbugs/issue35576.go	fail	gd: panic: unsupported node type: BuiltinFunction
 fixedbugs/issue35586.go	skip	todo:compiledir
 fixedbugs/issue35652.go	pass	
 fixedbugs/issue35739.go	skip	todo:compiledir
@@ -1756,7 +1756,7 @@ fixedbugs/issue5755.go	skip	todo:compiledir
 fixedbugs/issue57778.go	pass	
 fixedbugs/issue57823.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue57846.go	pass	
-fixedbugs/issue5793.go	fail	gd: panic: runtime error: index out of range
+fixedbugs/issue5793.go	fail	gd: panic: unsupported node type: BuiltinFunction
 fixedbugs/issue57955.go	pass	
 fixedbugs/issue5809.go	pass	
 fixedbugs/issue58161.go	skip	gc:flags -d=ssa/check/seed=1
@@ -1910,14 +1910,14 @@ fixedbugs/issue68816.go	pass
 fixedbugs/issue6889.go	skip	todo:errorcheck
 fixedbugs/issue6899.go	pass	
 fixedbugs/issue6902.go	pass	
-fixedbugs/issue69434.go	fail	gd: range over unsupported type *types.Named
-fixedbugs/issue69507.go	fail	gd: range over unsupported type *types.Named
+fixedbugs/issue69434.go	pass	
+fixedbugs/issue69507.go	pass	
 fixedbugs/issue6964.go	skip	todo:errorcheck
 fixedbugs/issue6977.go	skip	todo:errorcheck
 fixedbugs/issue69825.go	skip	gc:flags -d=libfuzzer
 fixedbugs/issue70156.go	pass	
 fixedbugs/issue70175.go	fail	c11: error: duplicate label 'go_label__'
-fixedbugs/issue70189.go	fail	exit: exit status 2 panic: 3
+fixedbugs/issue70189.go	fail	exit: exit status 2 panic: 7
 fixedbugs/issue7023.go	skip	todo:compiledir
 fixedbugs/issue7044.go	pass	
 fixedbugs/issue70481.go	pass	
@@ -1929,14 +1929,14 @@ fixedbugs/issue71226.go	skip	gc:build cgo
 fixedbugs/issue7129.go	skip	todo:errorcheck
 fixedbugs/issue7150.go	skip	todo:errorcheck
 fixedbugs/issue7153.go	skip	todo:errorcheck
-fixedbugs/issue71675.go	fail	gd: range over unsupported type *types.Signature
+fixedbugs/issue71675.go	fail	gd: unsupported defer in the body of a range over a function
 fixedbugs/issue71680.go	pass	
 fixedbugs/issue71759.go	pass	
 fixedbugs/issue71852.go	pass	
 fixedbugs/issue71857.go	pass	
 fixedbugs/issue71932.go	pass	
 fixedbugs/issue72063.go	pass	
-fixedbugs/issue72090.go	fail	gd: range over unsupported type *types.Named
+fixedbugs/issue72090.go	pass	
 fixedbugs/issue7214.go	skip	todo:errorcheck
 fixedbugs/issue7223.go	skip	todo:errorcheck
 fixedbugs/issue7272.go	fail	gd: unsupported go of builtin close
@@ -2015,7 +2015,7 @@ fixedbugs/issue77919.go	pass
 fixedbugs/issue7794.go	pass	
 fixedbugs/issue78016.go	pass	
 fixedbugs/issue78028.go	pass	
-fixedbugs/issue78081.go	fail	exit: timeout
+fixedbugs/issue78081.go	pass	
 fixedbugs/issue78262.go	fail	c11: error: 'A_go_main_package' {aka 'go_struct_e55c72d3b264b8e5'} has no member named 'b'
 fixedbugs/issue78295.go	pass	
 fixedbugs/issue78297.go	pass	
@@ -2025,9 +2025,9 @@ fixedbugs/issue78313.go	pass
 fixedbugs/issue78314.go	skip	todo:errorcheck
 fixedbugs/issue78355.go	skip	todo:errorcheck
 fixedbugs/issue78404.go	pass	
-fixedbugs/issue78408.go	fail	gd: range over unsupported type *types.Signature
+fixedbugs/issue78408.go	fail	c11: error: label 'go_label_A' used but not defined
 fixedbugs/issue78410.go	pass	
-fixedbugs/issue78599.go	fail	gd: range over unsupported type *types.Named
+fixedbugs/issue78599.go	pass	
 fixedbugs/issue7863.go	pass	
 fixedbugs/issue78641.go	pass	
 fixedbugs/issue7867.go	skip	todo:runoutput
@@ -2332,7 +2332,7 @@ prove_popcount.go	skip	upstream:build amd64.v3 || arm64
 range.go	pass	
 range2.go	skip	todo:errorcheck
 range3.go	pass	
-range4.go	fail	gd: range over unsupported type *types.Signature
+range4.go	fail	gd: unsupported defer in the body of a range over a function
 rangegen.go	skip	todo:runoutput
 recover.go	fail	exit: exit status 2 panic: interface conversion: interface {} is interface{}, no…
 recover1.go	fail	exit: exit status 2 panic: nil
@@ -2439,7 +2439,7 @@ typeparam/devirtualize1.go	pass
 typeparam/devirtualize2.go	pass	
 typeparam/dictionaryCapture-noinline.go	skip	gc:flags -gcflags="-l"
 typeparam/dictionaryCapture.go	fail	c11: error: 'go_if' has no member named 'a'
-typeparam/dottype.go	fail	gd: illegal type for print: (int, bool)
+typeparam/dottype.go	fail	gd: panic: unsupported node type: BuiltinFunction
 typeparam/double.go	pass	
 typeparam/eface.go	pass	
 typeparam/equal.go	pass	
