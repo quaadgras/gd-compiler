@@ -2,6 +2,7 @@ package c99
 
 import (
 	"fmt"
+	"go/constant"
 	"go/token"
 	"go/types"
 	"io"
@@ -20,12 +21,32 @@ func (c99 Target) ImportedPackage(id source.ImportedPackage) error {
 	return nil
 }
 
+// Nil writes the zero value of the type that nil has in its context (a compound literal
+// works for all of the C representations of Go's nilable types).
 func (c99 Target) Nil(expr source.Nil) error {
-	fmt.Fprintf(c99, "go.nil")
+	typ := expr.TypeAndValue().Type
+	if typ == nil || typ == types.Typ[types.UntypedNil] {
+		fmt.Fprintf(c99, "NULL")
+		return nil
+	}
+	fmt.Fprintf(c99, "((%s){0})", c99.TypeOf(typ))
 	return nil
 }
 
 func (c99 Target) ExpressionBinary(expr source.ExpressionBinary) error {
+	if tv := expr.TypeAndValue(); tv.Value != nil && tv.Value.Kind() != constant.Complex {
+		return c99.ConstantValue(tv.Value, false)
+	}
+	switch expr.Operation.Value {
+	case token.EQL, token.NEQ:
+		x, y := expr.X, expr.Y
+		if isNil(x) {
+			x, y = y, x
+		}
+		if isNil(y) {
+			return c99.compareNil(expr.Operation.Value, x)
+		}
+	}
 	switch expr.Operation.Value {
 	case token.NEQ:
 		switch etype := expr.X.TypeAndValue().Type.(type) {
@@ -59,6 +80,48 @@ func (c99 Target) ExpressionBinary(expr source.ExpressionBinary) error {
 	case *types.Pointer:
 		fmt.Fprintf(c99, ".ptr")
 	}
+	return nil
+}
+
+// ExpressionAs writes expr, where the context expects a value of type target. This matters
+// for nil, which the type checker records as untyped.
+func (c99 Target) ExpressionAs(expr source.Expression, target types.Type) error {
+	if isNil(expr) && target != nil {
+		if _, ok := target.Underlying().(*types.Basic); !ok {
+			fmt.Fprintf(c99, "((%s){0})", c99.TypeOf(target))
+			return nil
+		}
+	}
+	return c99.Expression(expr)
+}
+
+func isNil(expr source.Expression) bool {
+	for xyz.ValueOf(expr) == source.Expressions.Parenthesized {
+		expr = source.Expressions.Parenthesized.Get(expr).X
+	}
+	return xyz.ValueOf(expr) == source.Expressions.Nil
+}
+
+// compareNil compares x with nil, by checking the field of its C representation that is
+// nil when x is nil (C can't compare structs with ==).
+func (c99 Target) compareNil(op token.Token, x source.Expression) error {
+	var field string
+	switch typ := x.TypeAndValue().Type.Underlying().(type) {
+	case *types.Pointer, *types.Signature:
+		field = ".ptr"
+	case *types.Slice:
+		field = ".ptr.ptr"
+	case *types.Interface:
+		field = ".go_type"
+	case *types.Map, *types.Chan:
+	default:
+		return fmt.Errorf("unsupported comparison of %s with nil", typ)
+	}
+	fmt.Fprintf(c99, "((")
+	if err := c99.Expression(x); err != nil {
+		return err
+	}
+	fmt.Fprintf(c99, ")%s %s NULL)", field, op)
 	return nil
 }
 

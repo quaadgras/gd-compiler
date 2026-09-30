@@ -28,6 +28,9 @@ type Target struct {
 
 	Symbols map[string]struct{}
 
+	// Results are the result types of the function being compiled.
+	Results []types.Type
+
 	// Initializers of package-level variables, which are written to the package's init
 	// function after all of its files are compiled, in the order given by the type
 	// checker.

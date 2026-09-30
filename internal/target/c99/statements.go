@@ -104,9 +104,13 @@ func (c99 Target) StatementIncrement(stmt source.StatementIncrement) error {
 
 func (c99 Target) StatementReturn(stmt source.StatementReturn) error {
 	fmt.Fprintf(c99, "return")
-	for _, result := range stmt.Results {
+	for i, result := range stmt.Results {
 		fmt.Fprintf(c99, " ")
-		if err := c99.Expression(result); err != nil {
+		var target types.Type
+		if i < len(c99.Results) {
+			target = c99.Results[i]
+		}
+		if err := c99.ExpressionAs(result, target); err != nil {
 			return err
 		}
 	}

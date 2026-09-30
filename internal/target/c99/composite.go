@@ -29,7 +29,7 @@ func (c99 Target) DataComposite(data source.DataComposite) error {
 				fmt.Fprintf(c99, "[%s]=", c99.toString(pair.Key))
 				elem = pair.Value
 			}
-			if err := c99.Compile(elem); err != nil {
+			if err := c99.ExpressionAs(elem, typ.Elem()); err != nil {
 				return err
 			}
 		}
@@ -45,7 +45,7 @@ func (c99 Target) DataComposite(data source.DataComposite) error {
 			if i > 0 {
 				fmt.Fprintf(c99, ", ")
 			}
-			if err := c99.Compile(elem); err != nil {
+			if err := c99.ExpressionAs(elem, typ.Elem()); err != nil {
 				return err
 			}
 		}
@@ -67,11 +67,11 @@ func (c99 Target) DataComposite(data source.DataComposite) error {
 			}
 			pair := source.Expressions.KeyValue.Get(elem)
 			fmt.Fprintf(c99, "(%s){", symbol)
-			if err := c99.Compile(pair.Key); err != nil {
+			if err := c99.ExpressionAs(pair.Key, typ.Key()); err != nil {
 				return err
 			}
 			fmt.Fprintf(c99, ", ")
-			if err := c99.Compile(pair.Value); err != nil {
+			if err := c99.ExpressionAs(pair.Value, typ.Elem()); err != nil {
 				return err
 			}
 			fmt.Fprintf(c99, "}")
@@ -89,13 +89,22 @@ func (c99 Target) DataComposite(data source.DataComposite) error {
 			}
 			switch xyz.ValueOf(elem) {
 			case source.Expressions.KeyValue:
-				if err := c99.Compile(elem); err != nil {
+				pair := source.Expressions.KeyValue.Get(elem)
+				name := c99.toString(pair.Key)
+				var ftype types.Type
+				for f := range typ.Fields() {
+					if f.Name() == name {
+						ftype = f.Type()
+					}
+				}
+				fmt.Fprintf(c99, ".%s=", name)
+				if err := c99.ExpressionAs(pair.Value, ftype); err != nil {
 					return err
 				}
 			default:
 				field := typ.Field(i)
 				fmt.Fprintf(c99, ".%s = ", field.Name())
-				if err := c99.Compile(elem); err != nil {
+				if err := c99.ExpressionAs(elem, field.Type()); err != nil {
 					return err
 				}
 			}

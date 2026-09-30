@@ -58,7 +58,7 @@ func (c99 Target) StatementAssignment(stmt source.StatementAssignment) error {
 				return err
 			}
 			fmt.Fprintf(c99, ", %s, ", c99.TypeOf(star.Value.TypeAndValue().Type.(*types.Pointer).Elem()))
-			if err := c99.Expression(stmt.Values[i]); err != nil {
+			if err := c99.ExpressionAs(stmt.Values[i], stmt.Variables[i].TypeAndValue().Type); err != nil {
 				return err
 			}
 			fmt.Fprintf(c99, ")")
@@ -80,7 +80,7 @@ func (c99 Target) StatementAssignment(stmt source.StatementAssignment) error {
 					return err
 				}
 				fmt.Fprintf(c99, ", ")
-				if err := c99.Expression(stmt.Values[i]); err != nil {
+				if err := c99.ExpressionAs(stmt.Values[i], stmt.Variables[i].TypeAndValue().Type); err != nil {
 					return err
 				}
 				fmt.Fprintf(c99, ")")
@@ -92,7 +92,7 @@ func (c99 Target) StatementAssignment(stmt source.StatementAssignment) error {
 				ident := source.Expressions.DefinedVariable.Get(variable)
 				if ident.String == "_" {
 					fmt.Fprintf(c99, "go_ignore(")
-					if err := c99.Expression(stmt.Values[i]); err != nil {
+					if err := c99.ExpressionAs(stmt.Values[i], stmt.Variables[i].TypeAndValue().Type); err != nil {
 						return err
 					}
 					fmt.Fprintf(c99, ")")
@@ -116,7 +116,7 @@ func (c99 Target) StatementAssignment(stmt source.StatementAssignment) error {
 					c99.toString(stmt.Values[i]),
 					c99.ReflectTypeOf(stmt.Values[i].TypeAndValue().Type))
 			default:
-				if err := c99.Expression(stmt.Values[i]); err != nil {
+				if err := c99.ExpressionAs(stmt.Values[i], stmt.Variables[i].TypeAndValue().Type); err != nil {
 					return err
 				}
 			}

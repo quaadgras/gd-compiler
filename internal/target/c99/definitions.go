@@ -168,7 +168,7 @@ func (c99 Target) VariableDefinition(spec source.VariableDefinition) error {
 		}
 	} else {
 		value = func() error {
-			return c99.Expression(assignValue)
+			return c99.ExpressionAs(assignValue, rtype)
 		}
 		_, isInterface := rtype.Underlying().(*types.Interface)
 		if isInterface {

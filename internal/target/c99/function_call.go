@@ -138,6 +138,9 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 		}
 	case source.Expressions.Type:
 		ctype := source.Expressions.Type.Get(function)
+		if len(expr.Arguments) == 1 && isNil(expr.Arguments[0]) { // T(nil)
+			return c99.ExpressionAs(expr.Arguments[0], ctype.TypeAndValue().Type)
+		}
 		switch typ := ctype.TypeAndValue().Type.Underlying().(type) {
 		case *types.Interface:
 			symbol := fmt.Sprintf("go_interface_pack__%s", c99.TypeOf(expr.Arguments[0].TypeAndValue().Type))
@@ -207,7 +210,15 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 			fmt.Fprintf(c99, "go_variadic(%d, %s, ", len(expr.Arguments)+1-ftype.Params().Len(), c99.TypeOf(ftype.Params().At(ftype.Params().Len()-1).Type().(*types.Slice).Elem()))
 			variadic = true
 		}
-		if err := c99.Expression(arg); err != nil {
+		var target types.Type
+		if params := ftype.Params(); ftype.Variadic() && i >= params.Len()-1 {
+			if slice, ok := params.At(params.Len() - 1).Type().(*types.Slice); ok {
+				target = slice.Elem()
+			}
+		} else if i < params.Len() {
+			target = params.At(i).Type()
+		}
+		if err := c99.ExpressionAs(arg, target); err != nil {
 			return err
 		}
 	}

@@ -310,12 +310,12 @@ fixedbugs/bug026.go	fail	gd: panic: interface conversion: types.Type is *types.P
 fixedbugs/bug027.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/bug028.go	fail	c11: error: stray '@' in program
 fixedbugs/bug030.go	skip	todo:errorcheck
-fixedbugs/bug031.go	fail	c11: error: invalid operands to binary + (have 'go_ss' and 'go_ss')
+fixedbugs/bug031.go	pass	
 fixedbugs/bug035.go	skip	todo:errorcheck
 fixedbugs/bug037.go	skip	todo:errorcheck
 fixedbugs/bug039.go	skip	todo:errorcheck
 fixedbugs/bug040.go	skip	todo:errorcheck
-fixedbugs/bug045.go	fail	c11: error: 'go' undeclared (first use in this function); did you mean 'GO'?
+fixedbugs/bug045.go	fail	exit: signal: trace/breakpoint trap panic: index out of range
 fixedbugs/bug046.go	skip	todo:errorcheck
 fixedbugs/bug047.go	fail	c11: error: 'go_hash_ii' undeclared (first use in this function); did you mean 'go_hash_ss'?
 fixedbugs/bug048.go	fail	c11: error: 'go_hash_ii' undeclared (first use in this function); did you mean 'go_hash_ss'?
@@ -328,7 +328,7 @@ fixedbugs/bug054.go	fail	gd: panic: unsupported type *types.Slice
 fixedbugs/bug055.go	fail	c11: error: 'return' with no value, in function returning non-void [-Wreturn-mismatch]
 fixedbugs/bug056.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug057.go	fail	c11: error: expected expression before 'void'
-fixedbugs/bug058.go	fail	c11: error: 'go' undeclared (first use in this function); did you mean 'GO'?
+fixedbugs/bug058.go	pass	
 fixedbugs/bug059.go	fail	gd: internal error: package "os" without types was imported from "test"
 fixedbugs/bug060.go	fail	gd: internal error: package "os" without types was imported from "test"
 fixedbugs/bug061.go	fail	c11: error: expected expression before ';' token
@@ -549,7 +549,7 @@ fixedbugs/bug288.go	fail	gd: unsupported call for function of type xyz.Case
 fixedbugs/bug289.go	skip	todo:errorcheck
 fixedbugs/bug290.go	fail	gd: panic: unsupported type *types.Slice
 fixedbugs/bug291.go	fail	gd: panic: runtime error: index out of range
-fixedbugs/bug292.go	fail	gd: unsupported node type: BuiltinFunction
+fixedbugs/bug292.go	pass	
 fixedbugs/bug293.go	fail	gd: panic: runtime error: index out of range
 fixedbugs/bug294.go	fail	gd: unsupported call for function of type xyz.Case
 fixedbugs/bug295.go	fail	gd: internal error: package "testing" without types was imported from "test"
@@ -674,7 +674,7 @@ fixedbugs/bug418.go	skip	todo:errorcheck
 fixedbugs/bug419.go	pass	
 fixedbugs/bug420.go	fail	c11: error: '_' undeclared (first use in this function)
 fixedbugs/bug421.go	skip	todo:errorcheck
-fixedbugs/bug422.go	fail	c11: error: invalid operands to binary > (have 'go_ss' and 'go_ss')
+fixedbugs/bug422.go	pass	
 fixedbugs/bug423.go	fail	c11: error: stray '@' in program
 fixedbugs/bug424.go	skip	todo:rundir
 fixedbugs/bug425.go	fail	gd: internal error: package "fmt" without types was imported from "test"
@@ -682,7 +682,7 @@ fixedbugs/bug426.go	fail	gd: panic: interface conversion: types.Type is *types.N
 fixedbugs/bug427.go	fail	c11: error: invalid operands to binary == (have 'S_go_main_package' and 'S_go_main_package')
 fixedbugs/bug428.go	fail	gd: append expects exactly two arguments, got 3
 fixedbugs/bug430.go	fail	gd: panic: unsupported type *types.Array
-fixedbugs/bug431.go	fail	gd: unsupported call for function of type xyz.Case
+fixedbugs/bug431.go	pass	
 fixedbugs/bug432.go	fail	c11: error: conflicting types for 'v'; have 'struct <anonymous>'
 fixedbugs/bug433.go	fail	c11: error: stray '@' in program
 fixedbugs/bug434.go	fail	gd: internal error: package "math" without types was imported from "test"
@@ -702,7 +702,7 @@ fixedbugs/bug446.go	fail	gd: unsupported call for function of type xyz.Case
 fixedbugs/bug447.go	skip	todo:runoutput
 fixedbugs/bug448.go	skip	todo:compiledir
 fixedbugs/bug449.go	skip	todo:runoutput
-fixedbugs/bug450.go	fail	c11: error: 'go' undeclared (first use in this function); did you mean 'GO'?
+fixedbugs/bug450.go	fail	cc: filcc: error: unable to execute command: Segmentation fault
 fixedbugs/bug451.go	skip	todo:errorcheck
 fixedbugs/bug452.go	fail	gd: unsupported call for function of type xyz.Case
 fixedbugs/bug453.go	fail	c11: error: stray '@' in program
@@ -726,7 +726,7 @@ fixedbugs/bug471.go	fail	gd: unsupported node type: StatementSelect
 fixedbugs/bug472.go	skip	todo:rundir
 fixedbugs/bug473.go	fail	gd: panic: runtime error: invalid memory address or nil pointer dereference
 fixedbugs/bug474.go	fail	gd: internal error: package "sync" without types was imported from "test"
-fixedbugs/bug475.go	fail	c11: error: 'go' undeclared (first use in this function); did you mean 'GO'?
+fixedbugs/bug475.go	fail	c11: error: 'go_type_s1_go_p_package' undeclared here (not in a function)
 fixedbugs/bug476.go	fail	c11: error: incompatible types when returning type 'int' but 'go_if' was expected
 fixedbugs/bug477.go	fail	gd: panic: unsupported type *types.Struct
 fixedbugs/bug478.go	skip	todo:compiledir
@@ -785,7 +785,7 @@ fixedbugs/gcc61265.go	pass
 fixedbugs/gcc61273.go	fail	c11: error: void value not ignored as it ought to be
 fixedbugs/gcc65755.go	fail	gd: internal error: package "reflect" without types was imported from "test"
 fixedbugs/gcc67968.go	skip	todo:compiledir
-fixedbugs/gcc78763.go	fail	gd: unsupported node type: BuiltinFunction
+fixedbugs/gcc78763.go	pass	
 fixedbugs/gcc80226.go	fail	c11: error: expected identifier or '(' before '.' token
 fixedbugs/gcc89321.go	fail	gd: composite literal missing type
 fixedbugs/issue10047.go	fail	gd: panic: runtime error: invalid memory address or nil pointer dereference
@@ -937,7 +937,7 @@ fixedbugs/issue15898.go	skip	todo:errorcheck
 fixedbugs/issue15902.go	fail	gd: panic: unsupported type *types.Array
 fixedbugs/issue15920.go	skip	todo:compiledir
 fixedbugs/issue15926.go	fail	gd: unsupported node type: DefinedType
-fixedbugs/issue15961.go	fail	c11: error: 'go' undeclared (first use in this function); did you mean 'GO'?
+fixedbugs/issue15961.go	fail	c11: error: expected ')' before '{' token
 fixedbugs/issue15975.go	fail	gd: unsupported builtin function
 fixedbugs/issue15988.go	pass	
 fixedbugs/issue15992.go	fail	gd: internal error: package "fmt" without types was imported from "test"
@@ -1058,7 +1058,7 @@ fixedbugs/issue20014.go	skip	todo:runindir
 fixedbugs/issue20027.go	skip	todo:errorcheck
 fixedbugs/issue20029.go	fail	gd: internal error: package "runtime" without types was imported from "test"
 fixedbugs/issue20097.go	fail	gd: unsupported call for function of type xyz.Case
-fixedbugs/issue20145.go	fail	c11: error: stray '@' in program
+fixedbugs/issue20145.go	pass	
 fixedbugs/issue20162.go	skip	gc:flags -c=4
 fixedbugs/issue20174.go	skip	gc:flags -c=2
 fixedbugs/issue20185.go	skip	todo:errorcheck
@@ -1158,8 +1158,8 @@ fixedbugs/issue23664.go	skip	todo:errorcheck
 fixedbugs/issue23719.go	fail	c11: error: invalid operands to binary == (have 'go_arr2_go_i4' and 'go_arr2_go_i4')
 fixedbugs/issue23732.go	skip	todo:errorcheck
 fixedbugs/issue23734.go	fail	gd: panic: runtime error: invalid memory address or nil pointer dereference
-fixedbugs/issue23780.go	fail	c11: error: invalid operands to binary << (have 'double' and 'int')
-fixedbugs/issue23781.go	fail	c11: error: invalid operands to binary << (have 'double' and 'int')
+fixedbugs/issue23780.go	fail	c11: error: invalid suffix "LL" on floating constant
+fixedbugs/issue23781.go	fail	c11: error: invalid suffix "LL" on floating constant
 fixedbugs/issue23812.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue23814.go	fail	gd: unsupported call for function of type xyz.Case
 fixedbugs/issue23823.go	skip	todo:errorcheck
@@ -1260,7 +1260,7 @@ fixedbugs/issue28085.go	skip	todo:errorcheck
 fixedbugs/issue28268.go	skip	todo:errorcheck
 fixedbugs/issue28390.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue28430.go	fail	gd: function missing body
-fixedbugs/issue28445.go	fail	c11: error: stray '@' in program
+fixedbugs/issue28445.go	fail	c11: error: switch quantity not an integer
 fixedbugs/issue28450.go	skip	todo:errorcheck
 fixedbugs/issue28601.go	pass	
 fixedbugs/issue28616.go	fail	gd: unsupported node type: StatementGoto
@@ -1501,7 +1501,7 @@ fixedbugs/issue43942.go	fail	gd: internal error: package "log" without types was
 fixedbugs/issue43962.go	skip	todo:errorcheck
 fixedbugs/issue4396a.go	fail	c11: error: incompatible types when assigning to type 'struct <anonymous>' from type 'struct <anonymous>'
 fixedbugs/issue4396b.go	fail	gd: panic: unsupported type *types.Array
-fixedbugs/issue4399.go	fail	c11: error: stray '@' in program
+fixedbugs/issue4399.go	fail	c11: error: 'go_pt' has no member named 'a'
 fixedbugs/issue4405.go	skip	todo:errorcheck
 fixedbugs/issue44266.go	skip	todo:errorcheck
 fixedbugs/issue4429.go	skip	todo:errorcheck
@@ -1811,7 +1811,7 @@ fixedbugs/issue61895.go	fail	c11: error: 'go_true' undeclared (first use in this
 fixedbugs/issue61908.go	fail	gd: unsupported call for function of type xyz.Case
 fixedbugs/issue61992.go	fail	gd: panic: unsupported type *types.Slice
 fixedbugs/issue62203.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue62313.go	fail	gd: panic: unsupported basic type untyped nil
+fixedbugs/issue62313.go	fail	c11: error: 'err' undeclared (first use in this function)
 fixedbugs/issue62360.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue62469.go	fail	c11: error: unknown type name 'point'; did you mean 'int'?
 fixedbugs/issue6247.go	fail	c11: error: expected identifier before '(' token
@@ -1948,7 +1948,7 @@ fixedbugs/issue73180.go	fail	c11: error: 'go_pt' has no member named 'f'
 fixedbugs/issue73200.go	fail	gd: unsupported call for function of type xyz.Case
 fixedbugs/issue73309.go	fail	gd: panic: unsupported type *types.Alias
 fixedbugs/issue73309b.go	fail	gd: range over unsupported type *types.Named
-fixedbugs/issue7346.go	fail	c11: error: stray '@' in program
+fixedbugs/issue7346.go	pass	
 fixedbugs/issue73476.go	fail	gd: range over unsupported type *types.Array
 fixedbugs/issue73483.go	skip	gc:build race && cgo
 fixedbugs/issue73491.go	fail	gd: panic: unsupported type *types.Array
@@ -1986,7 +1986,7 @@ fixedbugs/issue75327.go	fail	gd: internal error: package "fmt" without types was
 fixedbugs/issue75365.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue7538a.go	skip	todo:errorcheck
 fixedbugs/issue7538b.go	fail	gd: unsupported node type: StatementLabel
-fixedbugs/issue7547.go	fail	c11: error: 'go' undeclared (first use in this function); did you mean 'GO'?
+fixedbugs/issue7547.go	pass	
 fixedbugs/issue7550.go	fail	gd: unsupported builtin function
 fixedbugs/issue75569.go	fail	gd: unsupported node type: StatementLabel
 fixedbugs/issue75764.go	skip	gc:stack-introspection runtime.Callers
@@ -2251,7 +2251,7 @@ ken/rob1.go	fail	gd: panic: interface conversion: types.Type is *types.Pointer, 
 ken/rob2.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 ken/robfor.go	fail	c11: error: invalid operands to binary + (have 'go_ss' and 'go_ss')
 ken/robfunc.go	fail	gd: unsupported call for function of type xyz.Case
-ken/shift.go	fail	gd: unsupported call for function of type xyz.Case
+ken/shift.go	fail	output: mismatch
 ken/simparray.go	fail	gd: unsupported call for function of type xyz.Case
 ken/simpbool.go	fail	c11: error: stray '@' in program
 ken/simpconv.go	fail	gd: unsupported call for function of type xyz.Case
@@ -2323,7 +2323,7 @@ opt_branchlikely.go	skip	gc:diagnostics -d=ssa/likelyadjust/debug=1,ssa/insert_r
 parentype.go	fail	gd: function missing body
 peano.go	fail	gd: internal error: package "runtime" without types was imported from "test"
 phiopt.go	skip	gc:diagnostics -d=ssa/phiopt/debug=3
-print.go	fail	gd: panic: unsupported basic type untyped nil
+print.go	fail	gd: unsupported node type: BuiltinFunction
 printbig.go	pass	
 prove.go	skip	gc:diagnostics -d=ssa/prove/debug=1
 prove_constant_folding.go	skip	gc:diagnostics -d=ssa/prove/debug=2
@@ -2458,7 +2458,7 @@ typeparam/interfacearg.go	fail	gd: panic: unsupported type *types.TypeParam
 typeparam/issue23536.go	fail	gd: unsupported call for function of type xyz.Case
 typeparam/issue376214.go	fail	gd: panic: unsupported call for function of type xyz.Case
 typeparam/issue39755.go	fail	gd: panic: unsupported type *types.TypeParam
-typeparam/issue42758.go	fail	gd: panic: unsupported basic type untyped nil
+typeparam/issue42758.go	fail	gd: unsupported call for function of type xyz.Case
 typeparam/issue44688.go	fail	gd: panic: unsupported type *types.TypeParam
 typeparam/issue45547.go	fail	gd: panic: runtime error: index out of range
 typeparam/issue45722.go	fail	gd: internal error: package "fmt" without types was imported from "test"

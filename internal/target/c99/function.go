@@ -32,6 +32,15 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 	if isMethod {
 		fnName = fmt.Sprintf(`%s_%s`, receiver.Fields[0].Type.TypeAndValue().Type.(*types.Named).Obj().Name(), fnName)
 	}
+	c99.Results = nil
+	if results, ok := decl.Type.Results.Get(); ok {
+		for _, field := range results.Fields {
+			names, _ := field.Names.Get()
+			for range max(len(names), 1) {
+				c99.Results = append(c99.Results, field.Type.TypeAndValue().Type)
+			}
+		}
+	}
 	old := c99.CurrentFunction
 	old_count := c99.CurrentClosures
 	c99.CurrentFunction = fnName
