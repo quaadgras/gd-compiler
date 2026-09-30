@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"embed"
 	"fmt"
+	"go/ast"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -68,9 +69,13 @@ func Build(dir string, test bool) error {
 		fmt.Fprintln(init, "#include <go.h>")
 		fmt.Fprintln(init, "#include <go/"+pkg.Name+".h>")
 		fmt.Fprintln(init, "#include <go/"+pkg.Name+"/private.h>")
-		fmt.Fprintf(init, "\nvoid init_go_%s_package() {", pkg.Name)
 
-		inits := new(Initializers)
+		inits := &Initializers{Symbols: make(map[string]struct{})}
+		var syntax []*ast.File
+		for _, file := range pkg.Files {
+			syntax = append(syntax, file.Location.Node.(*ast.File))
+		}
+		closures := NewClosures(&pkg.Info, syntax)
 		for _, file := range pkg.Files {
 			out, err := os.Create("./.c/go/" + pkg.Name + "/" + filepath.Base(file.FileSet.File(file.Open).Name()) + ".c")
 			if err != nil {
@@ -83,9 +88,9 @@ func Build(dir string, test bool) error {
 			cc.Private = private
 			cc.Exports = public
 			cc.Generic = cc.Prelude
-			cc.Init = init
 			cc.Symbols = make(map[string]struct{})
 			cc.Initializers = inits
+			cc.Closures = closures
 			if err := cc.File(file); err != nil {
 				return err
 			}
@@ -98,6 +103,10 @@ func Build(dir string, test bool) error {
 			}
 		}
 
+		if _, err := init.Write(inits.Prelude.Bytes()); err != nil {
+			return err
+		}
+		fmt.Fprintf(init, "\nvoid init_go_%s_package() {", pkg.Name)
 		if err := inits.WriteTo(init, pkg.InitOrder); err != nil {
 			return err
 		}

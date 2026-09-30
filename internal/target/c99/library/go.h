@@ -40,7 +40,9 @@ typedef double go_f8;
 typedef struct{go_f4 f1; go_f4 f2;} go_aaf4f4zz;
 typedef struct{go_f8 f1; go_f8 f2;} go_aaf8f8zz;
 typedef void* go_ch;
-typedef struct { void (*ptr)(void); char context[]; } go_fn;
+// A func value: code, and the environment of a closure (NULL for other functions). Code
+// called through a func value takes the environment as its first argument.
+typedef struct { void (*ptr)(void); void* env; } go_fn;
 struct go_if;
 typedef void* go_kv;
 typedef struct { void* ptr; /*size_t off;*/ } go_pt;
@@ -195,7 +197,8 @@ go_ch go_chan(go_ii elem_size, go_ii cap);
 void go_send(go_ch c, go_ii size, const void* v);
 go_tf go_recv(go_ch c, go_ii size, void* v);
 
-#define go_make_func(fn) ((go_fn){ .ptr = (void(*)(void))(fn) })
+#define go_make_func(fn) ((go_fn){ .ptr = (void(*)(void))(fn), .env = NULL })
+#define go_make_closure(fn, environment) ((go_fn){ .ptr = (void(*)(void))(fn), .env = (environment) })
 #define go_func_get(f, T) (T)(f.ptr)
 
 static inline go_if go_interface_new(size_t size, const void* value, const go_type* go_type, void* vtable) {
@@ -237,6 +240,7 @@ static const go_type go_type_complex128 = {.name="complex128", .kind=go_kind_com
 static const go_type go_type_byte = go_type_uint8;
 static const go_type go_type_rune = go_type_int32;
 static const go_type go_type_string = {.name="string", .kind=go_kind_string};
+static const go_type go_type_any_func = {.name="func", .kind=go_kind_func};
 
 typedef struct { go_ss(*Error)(void*);} go_error;
 

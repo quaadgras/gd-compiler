@@ -16,30 +16,39 @@ func (c99 Target) DefinedVariable(name source.DefinedVariable) error {
 }
 
 func (c99 Target) definedVariable(decl bool, name source.DefinedVariable) error {
-	var prefix string
-	if !decl && !c99.StackAllocated(name) {
-		prefix = "*"
-	}
 	if name.String == "_" {
 		_, err := c99.Write([]byte("_"))
 		return err
 	}
-	if !decl && prefix != "" {
-		fmt.Fprintf(c99, "%s", prefix)
+	if !decl && !c99.StackAllocated(name) {
+		fmt.Fprintf(c99, "(*%s)", name.String) // boxed.
+		return nil
 	}
 	_, err := c99.Write([]byte(name.String))
-	if err != nil {
-		return err
-	}
 	return err
 }
 
-// DefinedFunction writes the name of a package-level function (or method name), which is
-// always qualified by its package, as functions have external linkage, so that they can be
-// called from any file of the package.
+// DefinedFunction writes a package-level function used as a value (calls use the
+// function's name directly, see [Target.FunctionName]).
 func (c99 Target) DefinedFunction(name source.DefinedFunction) error {
-	fmt.Fprintf(c99, "%s_go_%s_package", name.String, name.Package)
+	sig, ok := name.TypeAndValue().Type.(*types.Signature)
+	if name.Method || !ok {
+		fmt.Fprint(c99, c99.FunctionName(name))
+		return nil
+	}
+	value, err := c99.FunctionValue(c99.FunctionName(name), sig)
+	if err != nil {
+		return name.Errorf("%w", err)
+	}
+	fmt.Fprint(c99, value)
 	return nil
+}
+
+// FunctionName returns the C name of a package-level function (or the method name part of
+// a method), which is always qualified by its package, as functions have external linkage,
+// so that they can be called from any file of the package.
+func (c99 Target) FunctionName(name source.DefinedFunction) string {
+	return fmt.Sprintf("%s_go_%s_package", name.String, name.Package)
 }
 
 func (c99 Target) DefinedConstant(name source.DefinedConstant) error {
@@ -193,7 +202,11 @@ func (c99 Target) VariableDefinition(spec source.VariableDefinition) error {
 		if !hasValue {
 			return nil // C zero initializes globals.
 		}
+		// Initializers are part of the package's init function, in another file.
 		c99.Writer = c99.Initializers.For(name.Unique)
+		c99.Prelude = &c99.Initializers.Prelude
+		c99.Generic = c99.Prelude
+		c99.Symbols = c99.Initializers.Symbols
 		c99.Tabs = 1
 	}
 	if c99.Tabs > 0 {
@@ -210,22 +223,28 @@ func (c99 Target) VariableDefinition(spec source.VariableDefinition) error {
 			if err := c99.definedVariable(true, name); err != nil {
 				return err
 			}
+		} else if !c99.StackAllocated(name) { // captured by a closure, so boxed.
+			fmt.Fprintf(c99, "%s* %s = ", c99.TypeOf(rtype), name.String)
+			if !hasValue {
+				fmt.Fprintf(c99, "go_new(sizeof(%s), NULL).ptr", c99.TypeOf(rtype))
+			} else {
+				fmt.Fprintf(c99, "%s(", c99.BoxOf(rtype))
+				if err := value(); err != nil {
+					return err
+				}
+				fmt.Fprintf(c99, ")")
+			}
+			if c99.Tabs > 0 {
+				fmt.Fprintf(c99, ";")
+			}
+			return nil
 		} else {
 			fmt.Fprintf(c99, "%s ", c99.TypeOf(rtype))
 			if err := c99.definedVariable(true, name); err != nil {
 				return err
 			}
 		}
-		stackAllocated := c99.StackAllocated(name)
-		stackAllocated = true
 		fmt.Fprint(c99, " = ")
-		if !stackAllocated {
-			fmt.Fprintf(c99, "new(%s); *", c99.TypeOf(assignValue.TypeAndValue().Type))
-			if err := c99.definedVariable(true, name); err != nil {
-				return err
-			}
-			fmt.Fprint(c99, " = ")
-		}
 		if err := value(); err != nil {
 			return err
 		}

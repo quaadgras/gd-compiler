@@ -295,6 +295,8 @@ func (c99 Target) ReflectTypeOf(t types.Type) string {
 		return "&go_type_" + typ.Obj().Name() + "_go_" + typ.Obj().Pkg().Name() + "_package"
 	case *types.Pointer:
 		return "go_type_pointer_to(" + c99.ReflectTypeOf(typ.Elem()) + ")"
+	case *types.Signature:
+		return "&go_type_any_func" // TODO: parameter and result types.
 	default:
 		panic("unsupported type " + reflect.TypeOf(typ).String())
 	}

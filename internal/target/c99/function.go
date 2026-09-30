@@ -42,12 +42,9 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 		}
 	}
 	old := c99.CurrentFunction
-	old_count := c99.CurrentClosures
 	c99.CurrentFunction = fnName
-	c99.CurrentClosures = 0
 	defer func() {
 		c99.CurrentFunction = old
-		c99.CurrentClosures = old_count
 	}()
 
 	return_type := func(w io.Writer) {
@@ -93,12 +90,15 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 			}
 			return_type(w)
 			fmt.Fprintf(w, "%s%s(", fnName, suffix)
+			if closure {
+				fmt.Fprintf(w, "void* go_env")
+			}
 			if isMethod {
 				field := receiver.Fields[0]
 				var name = "_"
 				names, hasName := field.Names.Get()
 				if hasName {
-					name = names[0].String
+					name = c99.parameterName(names[0])
 				}
 				fmt.Fprintf(w, "%s %s", c99.Type(field.Type), name)
 			}
@@ -107,10 +107,10 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 				for _, param := range decl.Type.Arguments.Fields {
 					names, _ := param.Names.Get()
 					for _, name := range names {
-						if i > 0 || isMethod {
+						if i > 0 || isMethod || closure {
 							fmt.Fprintf(w, ", ")
 						}
-						fmt.Fprintf(w, "%s %s", c99.Type(param.Type), c99.toString(name))
+						fmt.Fprintf(w, "%s %s", c99.Type(param.Type), c99.parameterName(name))
 						i++
 					}
 				}
@@ -134,6 +134,27 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 	c99.Tabs++
 	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 	fmt.Fprintf(c99, "go_split();")
+	// Captured variables: a closure accesses the boxes in its environment, and captured
+	// parameters are boxed on entry.
+	indent := "\n" + strings.Repeat("\t", c99.Tabs)
+	if closure {
+		for _, v := range c99.Environment {
+			fmt.Fprintf(c99, "%s%s* %s = ((go_env_%s*)go_env)->%[3]s;", indent, c99.TypeOf(v.Type()), v.Name(), fnName)
+		}
+	}
+	var params []source.Field
+	if isMethod {
+		params = append(params, receiver.Fields[0])
+	}
+	params = append(params, decl.Type.Arguments.Fields...)
+	for _, param := range params {
+		names, _ := param.Names.Get()
+		for _, name := range names {
+			if !c99.StackAllocated(name) {
+				fmt.Fprintf(c99, "%s%s* %s = %s(%s);", indent, c99.Type(param.Type), name.String, c99.BoxOf(param.Type.TypeAndValue().Type), c99.parameterName(name))
+			}
+		}
+	}
 	for _, stmt := range body.Statements {
 		if err := c99.Statement(stmt); err != nil {
 			return err
@@ -172,4 +193,13 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 	}
 	return nil
+}
+
+// parameterName returns the C name of a parameter, captured parameters are received under
+// another name, as the parameter itself is boxed (see [Closures]).
+func (c99 Target) parameterName(name source.DefinedVariable) string {
+	if !c99.StackAllocated(name) {
+		return "go_param_" + name.String
+	}
+	return c99.toString(name)
 }

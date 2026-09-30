@@ -2,10 +2,8 @@ package c99
 
 import "github.com/quaadgras/gd-compiler/internal/source"
 
+// StackAllocated reports whether ident is an ordinary C variable, rather than a pointer to
+// a heap allocated box (for variables captured by closures, see [Closures]).
 func (c99 Target) StackAllocated(ident source.DefinedVariable) bool {
-	return true
-	if ident.Escapes.Block == nil {
-		return true
-	}
-	return ident.IsGlobal || (!ident.Escapes.Function().Possible && !ident.Escapes.Block().Possible && !ident.Escapes.Goroutine().Possible && !ident.Escapes.Containment().Possible)
+	return !c99.Closures.Captured(ident.Unique)
 }

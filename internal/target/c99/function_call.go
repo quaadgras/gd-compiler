@@ -24,6 +24,7 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 	var receiver xyz.Maybe[source.Expression]
 	var isVariable bool
 	var isInterface bool
+	var invoked bool // called through a func value, see [Target.invoke].
 	switch xyz.ValueOf(function) {
 	case source.Expressions.BuiltinFunction:
 		call := source.Expressions.BuiltinFunction.Get(function)
@@ -54,11 +55,9 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 	case source.Expressions.DefinedFunction:
 		call := source.Expressions.DefinedFunction.Get(function)
 		if expr.Go {
-			fmt.Fprintf(c99, "go_make_func(%s), ", c99.toString(call))
+			fmt.Fprintf(c99, "go_make_func(%s), ", c99.FunctionName(call))
 		} else {
-			if err := c99.DefinedFunction(call); err != nil {
-				return err
-			}
+			fmt.Fprint(c99, c99.FunctionName(call))
 		}
 		if !call.IsGlobal {
 			isVariable = true
@@ -67,29 +66,10 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 		call := source.Expressions.DefinedVariable.Get(function)
 		if expr.Go {
 			fmt.Fprint(c99, call.String+", ")
+		} else if err := c99.invoke(function); err != nil {
+			return err
 		} else {
-			fmt.Fprintf(c99, "(go_func_get(")
-			if err := c99.DefinedVariable(call); err != nil {
-				return err
-			}
-			fmt.Fprintf(c99, ", ")
-			ftype := expr.Function.TypeAndValue().Type.(*types.Signature)
-			switch ftype.Results().Len() {
-			case 0:
-				fmt.Fprintf(c99, "void")
-			case 1:
-				fmt.Fprint(c99, c99.TypeOf(ftype.Results().At(0).Type()))
-			default:
-				panic("multiple return values not supported for function variables")
-			}
-			fmt.Fprintf(c99, "(*)(")
-			for i := 0; i < ftype.Params().Len(); i++ {
-				if i > 0 {
-					fmt.Fprintf(c99, ", ")
-				}
-				fmt.Fprint(c99, c99.TypeOf(ftype.Params().At(i).Type()))
-			}
-			fmt.Fprintf(c99, ")))")
+			invoked = true
 		}
 		if !call.IsGlobal {
 			isVariable = true
@@ -124,17 +104,16 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 					if !ok {
 						return left.Errorf("unsupported receiver type %s", rtype)
 					}
-					fmt.Fprintf(c99, `%s_%s`, named.Obj().Name(), c99.toString(defined))
+					fmt.Fprintf(c99, `%s_%s`, named.Obj().Name(), c99.FunctionName(defined))
 				}
 			} else {
-				if err := c99.Compile(left); err != nil {
-					return err
-				}
+				fmt.Fprint(c99, c99.FunctionName(defined))
 			}
-		} else {
-			if err := c99.Compile(left); err != nil {
+		} else { // a func value, such as a struct field.
+			if err := c99.invoke(function); err != nil {
 				return err
 			}
+			invoked = true
 		}
 	case source.Expressions.Type:
 		ctype := source.Expressions.Type.Get(function)
@@ -169,12 +148,15 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 			fmt.Fprintf(c99, "@as(%s)", c99.Type(ctype))
 			return nil
 		}
-	case source.Expressions.Function:
-		if err := c99.Expression(function); err != nil {
+	default:
+		if _, ok := function.TypeAndValue().Type.Underlying().(*types.Signature); !ok || expr.Go {
+			return expr.Opening.Errorf("unsupported call for function of type %T", xyz.ValueOf(function))
+		}
+		// a func value: function literal, call result, index expression...
+		if err := c99.invoke(function); err != nil {
 			return err
 		}
-	default:
-		return expr.Opening.Errorf("unsupported call for function of type %T", xyz.ValueOf(function))
+		invoked = true
 	}
 	_ = isVariable
 	ftype, ok := expr.Function.TypeAndValue().Type.(*types.Signature)
@@ -191,7 +173,7 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 				return nil
 			})
 			fmt.Fprintf(c99, "%s, %s, ", params, results)
-		} else {
+		} else if !invoked {
 			fmt.Fprintf(c99, "(")
 		}
 	}
@@ -203,7 +185,7 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 	}
 	var variadic bool
 	for i, arg := range expr.Arguments {
-		if i > 0 || hasReceiver || isInterface {
+		if i > 0 || hasReceiver || isInterface || invoked {
 			fmt.Fprintf(c99, ", ")
 		}
 		if !variadic && (ftype.Variadic() && i >= ftype.Params().Len()-1) {
@@ -226,7 +208,7 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 		if variadic {
 			fmt.Fprintf(c99, ")")
 		} else {
-			if len(expr.Arguments) > 0 || hasReceiver {
+			if len(expr.Arguments) > 0 || hasReceiver || isInterface || invoked {
 				fmt.Fprintf(c99, ", ")
 			}
 			fmt.Fprintf(c99, "(go_ll){0}")
@@ -234,4 +216,18 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 	}
 	fmt.Fprintf(c99, ")")
 	return nil
+}
+
+// invoke starts a call through the func value fn, the arguments follow.
+func (c99 Target) invoke(fn source.Expression) error {
+	sig, ok := fn.TypeAndValue().Type.Underlying().(*types.Signature)
+	if !ok {
+		return fmt.Errorf("unsupported call of %s", fn.TypeAndValue().Type)
+	}
+	invoker, err := c99.InvokerOf(sig)
+	if err != nil {
+		return err
+	}
+	fmt.Fprintf(c99, "%s(", invoker)
+	return c99.Expression(fn)
 }

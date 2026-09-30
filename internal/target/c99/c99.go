@@ -14,7 +14,6 @@ import (
 type Target struct {
 	io.Writer
 
-	Init    io.Writer
 	Prelude io.Writer
 	Exports io.Writer
 	Private io.Writer
@@ -24,12 +23,16 @@ type Target struct {
 
 	CurrentPackage  string
 	CurrentFunction string
-	CurrentClosures int
 
 	Symbols map[string]struct{}
 
 	// Results are the result types of the function being compiled.
 	Results []types.Type
+
+	// Closures of the package, and the environment (captured variables) of the closure
+	// being compiled.
+	Closures    *Closures
+	Environment []*types.Var
 
 	// Initializers of package-level variables, which are written to the package's init
 	// function after all of its files are compiled, in the order given by the type
@@ -42,6 +45,11 @@ type Initializers struct {
 	order []types.Object
 	code  map[types.Object]*bytes.Buffer
 	funcs []string // init functions, in declaration order.
+
+	// Prelude of the init function's file, for the helpers (and closures) that the
+	// initializers require, see [Target.Requires].
+	Prelude bytes.Buffer
+	Symbols map[string]struct{}
 }
 
 // For returns the buffer for the initializer of the package-level variable v.

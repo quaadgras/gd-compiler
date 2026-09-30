@@ -2,10 +2,12 @@ package c99
 
 import (
 	"fmt"
+	"go/ast"
 	"go/constant"
 	"go/token"
 	"go/types"
 	"io"
+	"strings"
 
 	"github.com/quaadgras/gd-compiler/internal/source"
 	"runtime.link/xyz"
@@ -138,11 +140,22 @@ func (c99 Target) ExpressionFunction(e source.ExpressionFunction) error {
 	if c99.Tabs < 0 {
 		c99.Tabs = -c99.Tabs
 	}
-	symbol := fmt.Sprintf("go_func_%s_%d", c99.CurrentFunction, c99.CurrentClosures)
+	symbol := fmt.Sprintf("go_func_%s_%d", c99.CurrentFunction, c99.Closures.count)
+	c99.Closures.count++
+	lit, _ := e.Location.Node.(*ast.FuncLit)
+	captures := c99.Closures.captures[lit]
 	if err := c99.Requires(symbol, c99.Prelude, func(w io.Writer) error {
 		var c99 = c99
 		c99.Writer = w
 		c99.Tabs = 0
+		c99.Environment = captures
+		if len(captures) > 0 {
+			fmt.Fprintf(w, "typedef struct { ")
+			for _, v := range captures {
+				fmt.Fprintf(w, "%s* %s; ", c99.TypeOf(v.Type()), v.Name())
+			}
+			fmt.Fprintf(w, "} go_env_%s;\n", symbol)
+		}
 		return c99.FunctionDefinition(source.FunctionDefinition{
 			Location: e.Location,
 			Name: source.DefinedFunction{
@@ -155,7 +168,17 @@ func (c99 Target) ExpressionFunction(e source.ExpressionFunction) error {
 	}); err != nil {
 		return err
 	}
-	fmt.Fprintf(c99, "go_make_func(%s)", symbol)
+	if len(captures) == 0 {
+		fmt.Fprintf(c99, "go_make_func(%s)", symbol)
+		return nil
+	}
+	// The environment holds the boxes of the captured variables, which are pointers named
+	// after the variables, in the function (or closure) creating this closure.
+	var boxes []string
+	for _, v := range captures {
+		boxes = append(boxes, v.Name())
+	}
+	fmt.Fprintf(c99, "go_make_closure(%s, go_new(sizeof(go_env_%[1]s), &(go_env_%[1]s){ %s }).ptr)", symbol, strings.Join(boxes, ", "))
 	return nil
 }
 
@@ -291,7 +314,7 @@ func (c99 Target) ExpressionUnary(e source.ExpressionUnary) error {
 	case token.AND:
 		ident := source.Expressions.DefinedVariable.Get(e.X)
 		if !c99.StackAllocated(ident) {
-			fmt.Fprintf(c99, "(%s){.ptr=%s}", c99.TypeOf(e.TypeAndValue().Type), c99.toString(e.X))
+			fmt.Fprintf(c99, "(%s){.ptr=%s}", c99.TypeOf(e.TypeAndValue().Type), ident.String)
 		} else {
 			fmt.Fprintf(c99, "(%s){.ptr=&%s}", c99.TypeOf(e.TypeAndValue().Type), c99.toString(e.X))
 		}
