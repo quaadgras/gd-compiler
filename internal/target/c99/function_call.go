@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"go/constant"
 	"go/types"
+	"hash/fnv"
 	"io"
+	"strings"
 
 	"github.com/quaadgras/gd-compiler/internal/source"
 	"runtime.link/xyz"
@@ -154,59 +156,13 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 		if ok, err := c99.conversion(expr, ctype.TypeAndValue().Type); ok || err != nil {
 			return err
 		}
-		switch typ := ctype.TypeAndValue().Type.Underlying().(type) {
+		switch ctype.TypeAndValue().Type.Underlying().(type) {
 		case *types.Interface:
-			if typ.Empty() {
-				value, err := c99.AnyOf(expr.Arguments[0])
-				if err != nil {
-					return expr.Errorf("%w", err)
-				}
-				fmt.Fprint(c99, value)
-				return nil
-			}
-			dynamic := expr.Arguments[0].TypeAndValue().Type
-			if _, ok := dynamic.Underlying().(*types.Interface); ok {
-				return expr.Errorf("unsupported conversion between interfaces")
-			}
-			rtype, err := c99.reflectTypeOf(dynamic)
+			value, err := c99.InterfaceOf(expr.Arguments[0], ctype.TypeAndValue().Type)
 			if err != nil {
 				return expr.Errorf("%w", err)
 			}
-			ctype2 := c99.TypeOf(dynamic)
-			symbol := "go_interface_pack_" + identifier.ReplaceAllString(ctype2, "_")
-			c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
-				fmt.Fprintf(w, "static inline go_if %s(%s v, const go_type* t, void* vtable) { return go_interface_new(sizeof(v), &v, t, vtable); }\n",
-					symbol, ctype2)
-				return nil
-			})
-			fmt.Fprintf(c99, "%s(", symbol)
-			if err := c99.Expression(expr.Arguments[0]); err != nil {
-				return err
-			}
-			fmt.Fprintf(c99, ", %s, &(%s){", rtype, c99.InterfaceTypeOf(ctype.TypeAndValue().Type))
-			named, ok := types.Unalias(derefType(dynamic)).(*types.Named)
-			if !ok {
-				return expr.Errorf("unsupported conversion of %s to an interface", dynamic)
-			}
-			_, isPointer := dynamic.Underlying().(*types.Pointer)
-			for i := range typ.NumMethods() {
-				if i > 0 {
-					fmt.Fprintf(c99, ", ")
-				}
-				method := typ.Method(i)
-				prefix := "I_"
-				if obj, _, _ := types.LookupFieldOrMethod(dynamic, true, method.Pkg(), method.Name()); isPointer && obj != nil {
-					if _, ptrRecv := obj.Type().(*types.Signature).Recv().Type().Underlying().(*types.Pointer); !ptrRecv {
-						prefix = "IP_" // the receiver is the value pointed to.
-					}
-				}
-				if err := c99.MethodInstance(named, method.Name()); err != nil {
-					return err
-				}
-				fmt.Fprintf(c99, `.%s = %s%s_%s_go_%s_package`,
-					method.Name(), prefix, c99.typeCName(named), method.Name(), named.Obj().Pkg().Name())
-			}
-			fmt.Fprintf(c99, "})")
+			fmt.Fprint(c99, value)
 			return nil
 		default:
 			return expr.Errorf("unsupported conversion from %s to %s", expr.Arguments[0].TypeAndValue().Type, ctype.TypeAndValue().Type)
@@ -323,6 +279,14 @@ func (c99 Target) conversion(expr source.FunctionCall, t types.Type) (bool, erro
 		return true, nil
 	}
 	from := arg.TypeAndValue().Type
+	if iface, ok := t.Underlying().(*types.Interface); ok && iface.Empty() {
+		value, err := c99.AnyOf(arg)
+		if err != nil {
+			return true, err
+		}
+		fmt.Fprint(c99, value)
+		return true, nil
+	}
 	if c99.TypeOf(t) == c99.TypeOf(from) { // the same C type.
 		return true, c99.Expression(arg)
 	}
@@ -414,4 +378,60 @@ func (c99 Target) receiverOf(method, x source.Expression) (string, error) {
 		return fmt.Sprintf("go_pointer_get(%s, %s)", value, c99.TypeOf(derefType(x.TypeAndValue().Type))), nil
 	}
 	return value, nil
+}
+
+// InterfaceOf returns a C expression that converts expr (of a concrete type, or nil) to the
+// interface type iface: its value, dynamic type, and table of methods.
+func (c99 Target) InterfaceOf(expr source.Expression, iface types.Type) (string, error) {
+	typ := iface.Underlying().(*types.Interface)
+	if typ.Empty() {
+		return c99.AnyOf(expr)
+	}
+	if isNil(expr) {
+		return fmt.Sprintf("((%s){0})", c99.TypeOf(iface)), nil
+	}
+	dynamic := expr.TypeAndValue().Type
+	if _, ok := dynamic.Underlying().(*types.Interface); ok {
+		return "", fmt.Errorf("unsupported conversion between interfaces")
+	}
+	rtype, err := c99.reflectTypeOf(dynamic)
+	if err != nil {
+		return "", err
+	}
+	ctype := c99.TypeOf(dynamic)
+	symbol := "go_interface_pack_" + identifier.ReplaceAllString(ctype, "_")
+	c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
+		fmt.Fprintf(w, "static inline go_if %s(%s v, const go_type* t, void* vtable) { return go_interface_new(sizeof(v), &v, t, vtable); }\n",
+			symbol, ctype)
+		return nil
+	})
+	named, ok := types.Unalias(derefType(dynamic)).(*types.Named)
+	if !ok {
+		return "", fmt.Errorf("unsupported conversion of %s to an interface", dynamic)
+	}
+	_, isPointer := dynamic.Underlying().(*types.Pointer)
+	var methods []string
+	for i := range typ.NumMethods() {
+		method := typ.Method(i)
+		prefix := "I_"
+		if obj, _, _ := types.LookupFieldOrMethod(dynamic, true, method.Pkg(), method.Name()); isPointer && obj != nil {
+			if _, ptrRecv := obj.Type().(*types.Signature).Recv().Type().Underlying().(*types.Pointer); !ptrRecv {
+				prefix = "IP_" // the receiver is the value pointed to.
+			}
+		}
+		if err := c99.MethodInstance(named, method.Name()); err != nil {
+			return "", err
+		}
+		methods = append(methods, fmt.Sprintf(".%s = %s%s_%s_go_%s_package",
+			method.Name(), prefix, c99.typeCName(named), method.Name(), named.Obj().Pkg().Name()))
+	}
+	// The table of methods is static, as interface values may outlive any function.
+	hash := fnv.New64a()
+	hash.Write([]byte(typeName(dynamic) + "|" + typeName(iface))) // by Go type: C types are shared.
+	vtable := fmt.Sprintf("go_vtable_%x", hash.Sum64())
+	c99.Requires(vtable, c99.Generic, func(w io.Writer) error {
+		fmt.Fprintf(w, "static %s %s = {%s};\n", c99.InterfaceTypeOf(iface), vtable, strings.Join(methods, ", "))
+		return nil
+	})
+	return fmt.Sprintf("%s(%s, %s, &%s)", symbol, c99.toString(expr), rtype, vtable), nil
 }

@@ -117,6 +117,18 @@ func (c99 Target) ExpressionBinary(expr source.ExpressionBinary) error {
 // ExpressionAs writes expr, where the context expects a value of type target. This matters
 // for nil, which the type checker records as untyped.
 func (c99 Target) ExpressionAs(expr source.Expression, target types.Type) error {
+	if target != nil { // implicit conversions of concrete values to interfaces.
+		if _, toInterface := target.Underlying().(*types.Interface); toInterface && expr.TypeAndValue().Type != nil {
+			if _, fromInterface := expr.TypeAndValue().Type.Underlying().(*types.Interface); !fromInterface {
+				value, err := c99.InterfaceOf(expr, target)
+				if err != nil {
+					return err
+				}
+				fmt.Fprint(c99, value)
+				return nil
+			}
+		}
+	}
 	if isNil(expr) && target != nil {
 		if _, ok := target.Underlying().(*types.Basic); !ok {
 			fmt.Fprintf(c99, "((%s){0})", c99.TypeOf(target))
