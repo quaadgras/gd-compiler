@@ -15,6 +15,11 @@ func (c99 Target) StatementFor(stmt source.StatementFor) error {
 		defer fmt.Fprintf(c99, " go_break_%s:;", stmt.Label)
 	}
 	init, hasInit := stmt.Init.Get()
+	if post, ok := stmt.Statement.Get(); ok && xyz.ValueOf(post) == source.Statements.Assignment {
+		if assign := source.Statements.Assignment.Get(post); len(assign.Variables) > 1 && len(assign.Values) == 1 {
+			return c99.forLoop(stmt) // the post statement is not a C expression.
+		}
+	}
 	if hasInit && xyz.ValueOf(init) == source.Statements.Assignment && !c99.inlineDefinition(source.Statements.Assignment.Get(init)) {
 		// defined before the loop (in a block, for their scope).
 		fmt.Fprintf(c99, "{ ")
@@ -83,6 +88,61 @@ func (c99 Target) StatementFor(stmt source.StatementFor) error {
 	}
 	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 	fmt.Fprintf(c99, "}")
+	return nil
+}
+
+// forLoop writes a for statement whose post statement is not a C expression, as a C for
+// statement without one, that runs it (and checks the condition) before every iteration
+// but the first, which continue statements go to.
+func (c99 Target) forLoop(stmt source.StatementFor) error {
+	indent := strings.Repeat("\t", c99.Tabs)
+	first := fmt.Sprintf("go_loop_%d", c99.Closures.count)
+	c99.Closures.count++
+	fmt.Fprintf(c99, "{ ")
+	if init, ok := stmt.Init.Get(); ok {
+		if err := c99.Statement(init); err != nil {
+			return err
+		}
+		fmt.Fprintf(c99, "\n%s", indent)
+	}
+	fmt.Fprintf(c99, "go_tf %s = true; for (;;) {\n%s\tif (!%[1]s) {", first, indent)
+	if init, ok := stmt.Init.Get(); ok && xyz.ValueOf(init) == source.Statements.Assignment {
+		for _, v := range source.Statements.Assignment.Get(init).Variables {
+			if xyz.ValueOf(v) != source.Expressions.DefinedVariable {
+				continue
+			}
+			if name := source.Expressions.DefinedVariable.Get(v); !c99.StackAllocated(name) {
+				fmt.Fprintf(c99, " %s = %s(*%[1]s);", name.String, c99.BoxOf(subst(name.Unique.Type())))
+			}
+		}
+	}
+	post, _ := stmt.Statement.Get()
+	c99.Tabs += 2
+	fmt.Fprintf(c99, "\n%s\t\t", indent)
+	if err := c99.Statement(post); err != nil {
+		return err
+	}
+	c99.Tabs -= 2
+	fmt.Fprintf(c99, "\n%s\t} %s = false;", indent, first)
+	if condition, ok := stmt.Condition.Get(); ok {
+		fmt.Fprintf(c99, "\n%s\t", indent)
+		c99.Tabs++
+		if err := c99.ordered([]source.Expression{condition}, nil, false, func(c99 Target) error {
+			fmt.Fprintf(c99, "if (!(")
+			if err := c99.Expression(condition); err != nil {
+				return err
+			}
+			fmt.Fprintf(c99, ")) break;")
+			return nil
+		}); err != nil {
+			return err
+		}
+		c99.Tabs--
+	}
+	if err := c99.loopBody(stmt.Label, stmt.Body.Statements); err != nil {
+		return err
+	}
+	fmt.Fprintf(c99, "\n%s} }", indent)
 	return nil
 }
 

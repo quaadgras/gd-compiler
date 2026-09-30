@@ -82,8 +82,11 @@ func (c99 Target) StatementAssignment(stmt source.StatementAssignment) error {
 // inlineDefinition reports whether stmt, the init statement of a for statement, can be a
 // single C declaration: when it defines variables of the same type (on the stack).
 func (c99 Target) inlineDefinition(stmt source.StatementAssignment) bool {
-	if stmt.Token.Value != token.DEFINE || len(stmt.Variables) < 2 || len(stmt.Values) != len(stmt.Variables) {
+	if stmt.Token.Value != token.DEFINE || len(stmt.Variables) < 2 {
 		return true
+	}
+	if len(stmt.Values) != len(stmt.Variables) {
+		return false // multiple results of a call.
 	}
 	var ctype string
 	for i, variable := range stmt.Variables {
