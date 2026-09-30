@@ -10,7 +10,9 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -30,6 +32,15 @@ var (
 	cflags  = strings.Fields(env("GD_CFLAGS", "-std=c11 -w"))
 	ldflags = strings.Fields(env("GD_LDFLAGS", "-lm -pthread"))
 )
+
+// parallelism returns how many cases run at once: GD_JOBS, or half of the CPUs, as each
+// runs a C compiler (Fil-C's uses a lot of memory), and programs whose timeouts are real.
+func parallelism() int {
+	if n, err := strconv.Atoi(os.Getenv("GD_JOBS")); err == nil && n > 0 {
+		return n
+	}
+	return max(1, runtime.NumCPU()/2)
+}
 
 // The C emitted by gd must be portable C11, so it is also checked with a strict compiler,
 // as clang (and so Fil-C) accepts many extensions. GD_STRICT=off disables the check.
@@ -114,7 +125,10 @@ func TestGoRepo(t *testing.T) {
 		mutex   sync.Mutex
 		results = make(map[string]Status)
 	)
+	evictCache(t)
+	jobs := make(chan struct{}, parallelism()) // (each case runs compilers, and a program)
 	t.Cleanup(func() {
+		evictCache(t)
 		report(t, expected, results)
 		if !*update {
 			return
@@ -134,7 +148,9 @@ func TestGoRepo(t *testing.T) {
 	for _, name := range cases {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
+			jobs <- struct{}{}
 			status := runCase(t, root, name)
+			<-jobs
 			mutex.Lock()
 			results[name] = status
 			mutex.Unlock()

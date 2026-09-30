@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"slices"
+	"strconv"
 	"strings"
 	"syscall"
 	"testing"
@@ -111,6 +112,7 @@ func buildFolder(t *testing.T, root, folder string, compiler []string, compile b
 		return paths, err
 	}
 	if _, err := os.Stat(entry); err == nil {
+		touch(entry)
 		paths, err := objects()
 		return paths, nil, err
 	}
@@ -120,6 +122,7 @@ func buildFolder(t *testing.T, root, folder string, compiler []string, compile b
 	unlock := lockFile(t, entry+".lock")
 	defer unlock()
 	if _, err := os.Stat(entry); err == nil { // built while this waited for the lock.
+		touch(entry)
 		paths, err := objects()
 		return paths, nil, err
 	}
@@ -149,6 +152,78 @@ func buildFolder(t *testing.T, root, folder string, compiler []string, compile b
 	}
 	paths, err := objects()
 	return paths, nil, err
+}
+
+// touch marks the entry as used (by its modification time), see [evictCache].
+func touch(entry string) {
+	now := time.Now()
+	os.Chtimes(entry, now, now)
+}
+
+// evictCache removes the least recently used entries of the cache (with their locks, and
+// abandoned temporary folders), until it holds at most GD_CACHE_MAX_MB (4096 by default),
+// as each version of gd writes a new set of entries (the cache is in memory, in a tmpfs).
+// Entries used in the last hour are kept, as other tests may be using them.
+func evictCache(t *testing.T) {
+	limit := int64(4096)
+	if n, err := strconv.ParseInt(os.Getenv("GD_CACHE_MAX_MB"), 10, 64); err == nil && n >= 0 {
+		limit = n
+	}
+	limit <<= 20
+	type entry struct {
+		path string
+		used time.Time
+		size int64
+	}
+	names, err := os.ReadDir(folderCache)
+	if err != nil {
+		return // no cache yet.
+	}
+	recent := time.Now().Add(-time.Hour)
+	var entries []entry
+	var total int64
+	for _, name := range names {
+		path := filepath.Join(folderCache, name.Name())
+		info, err := name.Info()
+		if err != nil {
+			continue
+		}
+		switch {
+		case strings.HasSuffix(name.Name(), ".tmp"):
+			if info.ModTime().Before(recent) {
+				os.RemoveAll(path) // abandoned by a process that died.
+			}
+			continue
+		case strings.HasSuffix(name.Name(), ".lock"):
+			if _, err := os.Stat(strings.TrimSuffix(path, ".lock")); err != nil && info.ModTime().Before(recent) {
+				os.Remove(path)
+			}
+			continue
+		case !name.IsDir():
+			continue
+		}
+		var size int64
+		filepath.WalkDir(path, func(_ string, d fs.DirEntry, err error) error {
+			if err == nil && !d.IsDir() {
+				if i, err := d.Info(); err == nil {
+					size += i.Size()
+				}
+			}
+			return nil
+		})
+		entries = append(entries, entry{path, info.ModTime(), size})
+		total += size
+	}
+	slices.SortFunc(entries, func(a, b entry) int { return a.used.Compare(b.used) })
+	for _, e := range entries {
+		if total <= limit || !e.used.Before(recent) {
+			break
+		}
+		if err := os.RemoveAll(e.path); err == nil {
+			os.Remove(e.path + ".lock")
+			total -= e.size
+		}
+	}
 }
 
 // lockFile takes an exclusive lock on the file at path (creating it), returning the function
