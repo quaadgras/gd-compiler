@@ -61,6 +61,9 @@ func Build(dir string, test bool) error {
 		fmt.Fprintf(private, "#ifndef GO_%s_PRIVATE_H\n", pkg.Name)
 		fmt.Fprintf(private, "#define GO_%s_PRIVATE_H\n", pkg.Name)
 		fmt.Fprintln(private, "#include <go.h>")
+		// The private header has all of the types of the package, then the declarations
+		// of its variables and functions, which may use any of the types.
+		var typeDefs, declarations bytes.Buffer
 
 		init, err := os.Create("./.c/go/" + pkg.Name + "/init.c")
 		if err != nil {
@@ -85,8 +88,8 @@ func Build(dir string, test bool) error {
 			cc.CurrentPackage = pkg.Name
 			cc.Prelude = out
 			cc.Writer = new(bytes.Buffer)
-			cc.Private = private
-			cc.Exports = public
+			cc.Private = &typeDefs
+			cc.Declarations = &declarations
 			cc.Generic = cc.Prelude
 			cc.Symbols = make(map[string]struct{})
 			cc.Initializers = inits
@@ -116,6 +119,13 @@ func Build(dir string, test bool) error {
 		}
 		fmt.Fprintf(public, "\n#endif // GO_%s_H\n", pkg.Name)
 		if err := public.Close(); err != nil {
+			return err
+		}
+		if _, err := private.Write(typeDefs.Bytes()); err != nil {
+			return err
+		}
+		fmt.Fprintln(private)
+		if _, err := private.Write(declarations.Bytes()); err != nil {
 			return err
 		}
 		fmt.Fprintf(private, "\n#endif // GO_%s_PRIVATE_H\n", pkg.Name)

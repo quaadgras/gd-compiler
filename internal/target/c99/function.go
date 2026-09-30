@@ -2,7 +2,6 @@ package c99
 
 import (
 	"fmt"
-	"go/ast"
 	"go/types"
 	"io"
 	"strings"
@@ -54,9 +53,7 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 	if !decl.IsClosure {
 		suffix = "_go_" + c99.PackageOf(c99.CurrentPackage) + "_package"
 	}
-	// Prototypes that refer to exported types have to be in the public header, after the
-	// type definitions (methods are prefixed with their receiver's type name).
-	exported, closure := ast.IsExported(fnName), decl.IsClosure
+	closure := decl.IsClosure
 	if decl.Name.String == "main" {
 		fmt.Fprintf(c99, "go_main() { init_go_%s_package();", c99.CurrentPackage)
 	} else {
@@ -98,16 +95,10 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 			}
 			fmt.Fprintf(w, ")")
 		}
-		if closure {
-			// defined before use, in the same file.
-		} else if exported {
-			fmt.Fprintln(c99.Exports)
-			decl(c99.Exports)
-			fmt.Fprintf(c99.Exports, ";")
-		} else {
-			fmt.Fprintln(c99.Private)
-			decl(c99.Private)
-			fmt.Fprintf(c99.Private, ";")
+		if !closure { // closures are defined before use, in the same file.
+			fmt.Fprintln(c99.Declarations)
+			decl(c99.Declarations)
+			fmt.Fprintf(c99.Declarations, ";")
 		}
 		decl(c99)
 		fmt.Fprintf(c99, " {")
@@ -205,10 +196,7 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 		if len(c99.Results) > 0 {
 			ret = "return "
 		}
-		header := c99.Private
-		if exported {
-			header = c99.Exports
-		}
+		header := c99.Declarations
 		wrapper := func(prefix, recv string) {
 			sig := fmt.Sprintf("%s %s%s%s(%s)", c99.TupleOf(c99.Results), prefix, fnName, suffix,
 				strings.Join(append([]string{"void* go_recv"}, params...), ", "))

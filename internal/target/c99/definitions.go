@@ -52,11 +52,8 @@ func (c99 Target) FunctionName(name source.DefinedFunction) string {
 	return fmt.Sprintf("%s_go_%s_package", name.String, name.Package)
 }
 
+// DefinedConstant writes the name of a constant (shadowing follows C's block scopes).
 func (c99 Target) DefinedConstant(name source.DefinedConstant) error {
-	if name.Shadow > 0 {
-		fmt.Fprintf(c99, `@"%s.%d"`, name.String, name.Shadow)
-		return nil
-	}
 	_, err := c99.Write([]byte(name.String))
 	return err
 }
@@ -72,9 +69,6 @@ func (c99 Target) TypeDefinition(spec source.TypeDefinition) error {
 
 	header := c99.Private
 	suffix := ""
-	if spec.Exported && spec.Global {
-		header = c99.Exports
-	}
 	if spec.Exported {
 		suffix = "_go_" + c99.CurrentPackage + "_package"
 	}
@@ -230,7 +224,7 @@ func (c99 Target) VariableDefinition(spec source.VariableDefinition) error {
 				fmt.Fprintf(c99, " = %s", static)
 			}
 			fmt.Fprintf(c99, ";")
-			fmt.Fprintf(c99.Private, "extern %s %s;\n", c99.TypeOf(rtype), name.String)
+			fmt.Fprintf(c99.Declarations, "extern %s %s;\n", c99.TypeOf(rtype), name.String)
 		}
 		if !hasValue || isStatic {
 			return nil // C zero initializes globals.

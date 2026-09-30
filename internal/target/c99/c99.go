@@ -16,8 +16,8 @@ type Target struct {
 	io.Writer
 
 	Prelude io.Writer
-	Exports io.Writer
-	Private io.Writer
+	Private      io.Writer // types of the package (in its private header).
+	Declarations io.Writer // of variables and functions (in its private header).
 	Generic io.Writer
 
 	Tabs int
@@ -194,7 +194,7 @@ func (c99 Target) Star(star source.Star) error {
 	if err := c99.Compile(star.Value); err != nil {
 		return err
 	}
-	fmt.Fprintf(c99, ", %s)", c99.TypeOf(star.Value.TypeAndValue().Type.(*types.Pointer).Elem()))
+	fmt.Fprintf(c99, ", %s)", c99.TypeOf(star.Value.TypeAndValue().Type.Underlying().(*types.Pointer).Elem()))
 	return nil
 }
 

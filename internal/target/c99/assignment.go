@@ -173,14 +173,14 @@ func (c99 Target) assignment(stmt source.StatementAssignment) error {
 			if err := c99.Expression(star.Value); err != nil {
 				return err
 			}
-			fmt.Fprintf(c99, ", %s, ", c99.TypeOf(star.Value.TypeAndValue().Type.(*types.Pointer).Elem()))
+			fmt.Fprintf(c99, ", %s, ", c99.TypeOf(star.Value.TypeAndValue().Type.Underlying().(*types.Pointer).Elem()))
 			if err := c99.ExpressionAs(stmt.Values[i], stmt.Variables[i].TypeAndValue().Type); err != nil {
 				return err
 			}
 			fmt.Fprintf(c99, ")")
 		case source.Expressions.Index:
 			expr := source.Expressions.Index.Get(variable)
-			if mtype, ok := expr.X.TypeAndValue().Type.(*types.Map); ok {
+			if mtype, ok := expr.X.TypeAndValue().Type.Underlying().(*types.Map); ok {
 				symbol := "go_map_set_" + identifier.ReplaceAllString(c99.TypeOf(mtype.Key())+"_"+c99.TypeOf(mtype.Elem()), "_")
 				c99.Requires(symbol, c99.Prelude, func(w io.Writer) error {
 					fmt.Fprintf(w, "static inline void %s(go_kv m, %s key, %s val) { go_map_set(m, &key, &val); }\n",

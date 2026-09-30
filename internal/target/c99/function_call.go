@@ -233,12 +233,12 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 			fmt.Fprintf(c99, ", ")
 		}
 		if !variadic && (ftype.Variadic() && i >= ftype.Params().Len()-1) {
-			fmt.Fprintf(c99, "go_variadic(%d, %s, ", len(expr.Arguments)+1-ftype.Params().Len(), c99.TypeOf(ftype.Params().At(ftype.Params().Len()-1).Type().(*types.Slice).Elem()))
+			fmt.Fprintf(c99, "go_variadic(%d, %s, ", len(expr.Arguments)+1-ftype.Params().Len(), c99.TypeOf(ftype.Params().At(ftype.Params().Len()-1).Type().Underlying().(*types.Slice).Elem()))
 			variadic = true
 		}
 		var target types.Type
 		if params := ftype.Params(); ftype.Variadic() && i >= params.Len()-1 {
-			if slice, ok := params.At(params.Len() - 1).Type().(*types.Slice); ok {
+			if slice, ok := params.At(params.Len() - 1).Type().Underlying().(*types.Slice); ok {
 				target = slice.Elem()
 			}
 		} else if i < params.Len() {

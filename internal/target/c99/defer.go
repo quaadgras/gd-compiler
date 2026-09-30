@@ -105,7 +105,7 @@ func (c99 Target) StatementDefer(stmt source.StatementDefer) error {
 			}
 			target := arg.TypeAndValue().Type
 			if sig.Variadic() && i >= params.Len()-1 {
-				target = params.At(params.Len() - 1).Type().(*types.Slice).Elem()
+				target = params.At(params.Len() - 1).Type().Underlying().(*types.Slice).Elem()
 			} else if i < params.Len() {
 				target = params.At(i).Type()
 			}
