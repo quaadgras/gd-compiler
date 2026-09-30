@@ -85,8 +85,11 @@ func (c99 Target) StatementRange(stmt source.StatementRange) error {
 		fmt.Fprintf(c99, "%s: ", stmt.Label)
 		defer fmt.Fprintf(c99, " %s_end:;\n", stmt.Label)
 	}
-	switch typ := stmt.X.TypeAndValue().Type.(type) {
+	switch typ := stmt.X.TypeAndValue().Type.Underlying().(type) {
 	case *types.Basic:
+		if typ.Info()&types.IsString != 0 {
+			return c99.rangeString(stmt)
+		}
 		rtype := c99.TypeOf(stmt.X.TypeAndValue().Type)
 		iter_name := "go_iter"
 		key, hasKey := stmt.Key.Get()
@@ -158,4 +161,39 @@ func (c99 Target) StatementContinue(stmt source.StatementContinue) error {
 		fmt.Fprintf(c99, "continue")
 	}
 	return nil
+}
+
+// rangeString ranges over the runes of a string, decoding UTF-8 like Go (invalid encodings
+// are U+FFFD, one byte wide).
+func (c99 Target) rangeString(stmt source.StatementRange) error {
+	n := c99.Closures.count
+	c99.Closures.count++
+	str, index, width, r := fmt.Sprintf("go_rs_%d", n), fmt.Sprintf("go_ri_%d", n), fmt.Sprintf("go_rw_%d", n), fmt.Sprintf("go_rr_%d", n)
+	indent := "\n" + strings.Repeat("\t", c99.Tabs+1)
+	fmt.Fprintf(c99, "{ go_ss %s = %s; for (go_ii %s = 0, %s = 0; %[3]s < go_string_len(%[1]s); %[3]s += %[4]s) {", str, c99.toString(stmt.X), index, width)
+	fmt.Fprintf(c99, "%sgo_i4 %s; %s = go_string_decode(%s, %s, &%[2]s);", indent, r, width, str, index)
+	if key, ok := stmt.Key.Get(); ok && key.String != "_" {
+		fmt.Fprintf(c99, "%s%s", indent, c99.declare(key, types.Typ[types.Int], index))
+	}
+	if value, ok := stmt.Value.Get(); ok && value.String != "_" {
+		fmt.Fprintf(c99, "%s%s", indent, c99.declare(value, types.Typ[types.Int32], r))
+	}
+	for _, stmt := range stmt.Body.Statements {
+		c99.Tabs++
+		if err := c99.Statement(stmt); err != nil {
+			return err
+		}
+		c99.Tabs--
+	}
+	fmt.Fprintf(c99, "\n%s}}", strings.Repeat("\t", c99.Tabs))
+	return nil
+}
+
+// declare returns a C declaration of the variable name, of type t, with the value (a C
+// expression), boxed when captured by a closure.
+func (c99 Target) declare(name source.DefinedVariable, t types.Type, value string) string {
+	if !c99.StackAllocated(name) {
+		return fmt.Sprintf("%s* %s = %s(%s);", c99.TypeOf(t), name.String, c99.BoxOf(t), value)
+	}
+	return fmt.Sprintf("%s %s = %s;", c99.TypeOf(t), name.String, value)
 }

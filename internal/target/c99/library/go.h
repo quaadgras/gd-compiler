@@ -213,6 +213,16 @@ go_tf go_map_get(go_kv m, const void* key, void* val);
 #define go_string_const(str) { .ptr = str, .len = -1 } // for static initializers.
 go_ii go_string_len(go_ss s);
 go_tf go_string_eq(go_ss a, go_ss b);
+go_ii go_string_cmp(go_ss a, go_ss b);
+go_ss go_string_concat(go_ss a, go_ss b);
+go_u1 go_string_index(go_ss s, go_ii i);
+go_ss go_string_slice(go_ss s, go_i8 low, go_i8 high);
+go_ii go_string_decode(go_ss s, go_ii i, go_i4* r); // UTF-8, returns the width.
+go_ss go_string_from_rune(go_i8 r);
+go_ss go_string_from_bytes(go_ll b);
+go_ll go_bytes_from_string(go_ss s);
+go_ss go_string_from_runes(go_ll r);
+go_ll go_runes_from_string(go_ss s);
 
 #define go_chan_make(T, length) ((go_ch)nil)
 go_ch go_chan(go_ii elem_size, go_ii cap);

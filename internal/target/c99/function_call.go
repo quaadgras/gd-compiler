@@ -296,6 +296,20 @@ func (c99 Target) conversion(expr source.FunctionCall, t types.Type) (bool, erro
 	if tv := expr.TypeAndValue(); tv.Value != nil && tv.Value.Kind() != constant.Complex {
 		return true, c99.ConstantValue(tv.Value, false)
 	}
+	if isString(t) && isString(arg.TypeAndValue().Type) {
+		return true, c99.Expression(arg)
+	}
+	if helper := stringConversion(t, arg.TypeAndValue().Type); helper != "" {
+		fmt.Fprintf(c99, "%s(", helper)
+		if isInteger(arg.TypeAndValue().Type) {
+			fmt.Fprintf(c99, "(go_i8)")
+		}
+		if err := c99.Expression(arg); err != nil {
+			return true, err
+		}
+		fmt.Fprintf(c99, ")")
+		return true, nil
+	}
 	if isNumeric(t) && isNumeric(arg.TypeAndValue().Type) {
 		fmt.Fprintf(c99, "((%s)(", c99.TypeOf(t))
 		if err := c99.Expression(arg); err != nil {
@@ -305,6 +319,34 @@ func (c99 Target) conversion(expr source.FunctionCall, t types.Type) (bool, erro
 		return true, nil
 	}
 	return false, nil
+}
+
+// stringConversion returns the runtime function for a conversion from a value of type
+// from to type to, involving strings, or "" if it is not one.
+func stringConversion(to, from types.Type) string {
+	elem := func(t types.Type) types.BasicKind {
+		if slice, ok := t.Underlying().(*types.Slice); ok {
+			if basic, ok := slice.Elem().Underlying().(*types.Basic); ok {
+				return basic.Kind()
+			}
+		}
+		return types.Invalid
+	}
+	switch {
+	case isString(to) && isString(from):
+		return "" // the same C type.
+	case isString(to) && isInteger(from):
+		return "go_string_from_rune"
+	case isString(to) && elem(from) == types.Byte:
+		return "go_string_from_bytes"
+	case isString(to) && elem(from) == types.Rune:
+		return "go_string_from_runes"
+	case isString(from) && elem(to) == types.Byte:
+		return "go_bytes_from_string"
+	case isString(from) && elem(to) == types.Rune:
+		return "go_runes_from_string"
+	}
+	return ""
 }
 
 // isNumeric reports whether t is an integer or floating-point type (conversions between

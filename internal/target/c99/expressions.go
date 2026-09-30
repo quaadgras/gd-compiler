@@ -66,6 +66,16 @@ func (c99 Target) ExpressionBinary(expr source.ExpressionBinary) error {
 		}
 	}
 	switch expr.Operation.Value {
+	case token.ADD:
+		if isString(expr.X.TypeAndValue().Type) {
+			fmt.Fprintf(c99, "go_string_concat(%s, %s)", c99.toString(expr.X), c99.toString(expr.Y))
+			return nil
+		}
+	case token.LSS, token.LEQ, token.GTR, token.GEQ:
+		if isString(expr.X.TypeAndValue().Type) {
+			fmt.Fprintf(c99, "(go_string_cmp(%s, %s) %s 0)", c99.toString(expr.X), c99.toString(expr.Y), expr.Operation.Value)
+			return nil
+		}
 	case token.EQL, token.NEQ:
 		if basic, ok := expr.X.TypeAndValue().Type.Underlying().(*types.Basic); ok && basic.Info()&types.IsString != 0 {
 			not := ""
@@ -152,6 +162,11 @@ func (c99 Target) DivisionOf(op token.Token, t types.Type) string {
 		return nil
 	})
 	return symbol
+}
+
+func isString(t types.Type) bool {
+	basic, ok := t.Underlying().(*types.Basic)
+	return ok && basic.Info()&types.IsString != 0
 }
 
 func isInteger(t types.Type) bool {
@@ -245,7 +260,21 @@ func (c99 Target) ExpressionFunction(e source.ExpressionFunction) error {
 }
 
 func (c99 Target) ExpressionIndex(expr source.ExpressionIndex) error {
+	if tv := expr.TypeAndValue(); tv.Value != nil {
+		return c99.ConstantValue(tv.Value, false)
+	}
 	switch xtype := expr.X.TypeAndValue().Type.Underlying().(type) {
+	case *types.Basic: // strings
+		fmt.Fprintf(c99, "go_string_index(")
+		if err := c99.Expression(expr.X); err != nil {
+			return err
+		}
+		fmt.Fprintf(c99, ", (go_ii)(")
+		if err := c99.Expression(expr.Index); err != nil {
+			return err
+		}
+		fmt.Fprintf(c99, "))")
+		return nil
 	case *types.Slice:
 		elemType := c99.TypeOf(expr.X.TypeAndValue().Type.(*types.Slice).Elem())
 		fmt.Fprintf(c99, "go_slice_index(")
@@ -360,6 +389,8 @@ func (c99 Target) ExpressionSlice(e source.ExpressionSlice) error {
 	case *types.Slice:
 		fmt.Fprintf(c99, "go_slice(%s, sizeof(%s), %s, %s, %s)",
 			c99.toString(e.X), c99.TypeOf(typ.Elem()), low, high, max)
+	case *types.Basic: // strings
+		fmt.Fprintf(c99, "go_string_slice(%s, %s, %s)", c99.toString(e.X), low, high)
 	default:
 		return e.Location.Errorf("unsupported slice of %s", typ)
 	}

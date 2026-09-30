@@ -403,3 +403,123 @@ void go_panic_error(const char* format, ...) {
 void go_panic_assertion(const go_type* want, go_vv have) {
     go_panic_error("interface conversion: interface {} is %s, not %s", have.go_type ? have.go_type->name : "nil", want->name);
 }
+
+// strings, see also runtime/string.go and unicode/utf8.
+
+static go_ss go_string_alloc(go_ii n, char** data) {
+    *data = go_new(n + 1, NULL).ptr; // NUL terminated, for C.
+    return (go_ss){ .ptr = *data, .len = n };
+}
+
+go_ii go_string_cmp(go_ss a, go_ss b) {
+    go_ii la = go_string_len(a), lb = go_string_len(b);
+    go_ii n = la < lb ? la : lb;
+    int c = n > 0 ? memcmp(a.ptr, b.ptr, (size_t)n) : 0;
+    if (c != 0) return c < 0 ? -1 : 1;
+    return la < lb ? -1 : (la > lb ? 1 : 0);
+}
+
+go_ss go_string_concat(go_ss a, go_ss b) {
+    go_ii la = go_string_len(a), lb = go_string_len(b);
+    if (lb == 0) return a;
+    if (la == 0) return b;
+    char* data;
+    go_ss s = go_string_alloc(la + lb, &data);
+    memcpy(data, a.ptr, (size_t)la);
+    memcpy(data + la, b.ptr, (size_t)lb);
+    return s;
+}
+
+go_u1 go_string_index(go_ss s, go_ii i) {
+    return (go_u1)s.ptr[go_index_check(i, go_string_len(s))];
+}
+
+go_ss go_string_slice(go_ss s, go_i8 low, go_i8 high) {
+    go_ii n = go_string_len(s);
+    if (low == go_slice_default) low = 0;
+    if (high == go_slice_default) high = n;
+    if (high < 0 || high > n) {
+        go_panic_error("runtime error: slice bounds out of range [:%lld] with length %lld", (long long)high, (long long)n);
+    }
+    if (low < 0 || low > high) {
+        go_panic_error("runtime error: slice bounds out of range [%lld:%lld]", (long long)low, (long long)high);
+    }
+    return (go_ss){ .ptr = s.ptr ? s.ptr + low : NULL, .len = (go_ii)(high - low) };
+}
+
+go_ii go_string_decode(go_ss s, go_ii i, go_i4* r) {
+    const unsigned char* p = (const unsigned char*)s.ptr + i;
+    go_ii n = go_string_len(s) - i;
+    *r = 0xFFFD;
+    if (n <= 0) return 0;
+    unsigned char c = p[0];
+    if (c < 0x80) { *r = c; return 1; }
+    go_ii width; go_i4 min, v;
+    if (c >= 0xC2 && c <= 0xDF) { width = 2; min = 0x80; v = c & 0x1F; }
+    else if (c >= 0xE0 && c <= 0xEF) { width = 3; min = 0x800; v = c & 0x0F; }
+    else if (c >= 0xF0 && c <= 0xF4) { width = 4; min = 0x10000; v = c & 0x07; }
+    else return 1;
+    if (n < width) return 1;
+    for (go_ii k = 1; k < width; k++) {
+        if ((p[k] & 0xC0) != 0x80) return 1;
+        v = (v << 6) | (p[k] & 0x3F);
+    }
+    if (v < min || v > 0x10FFFF || (v >= 0xD800 && v <= 0xDFFF)) return 1;
+    *r = v;
+    return width;
+}
+
+static go_ii go_rune_encode(char* buf, go_i8 r) {
+    if (r < 0 || r > 0x10FFFF || (r >= 0xD800 && r <= 0xDFFF)) r = 0xFFFD;
+    if (r < 0x80) { buf[0] = (char)r; return 1; }
+    if (r < 0x800) { buf[0] = (char)(0xC0 | (r >> 6)); buf[1] = (char)(0x80 | (r & 0x3F)); return 2; }
+    if (r < 0x10000) {
+        buf[0] = (char)(0xE0 | (r >> 12)); buf[1] = (char)(0x80 | ((r >> 6) & 0x3F)); buf[2] = (char)(0x80 | (r & 0x3F));
+        return 3;
+    }
+    buf[0] = (char)(0xF0 | (r >> 18)); buf[1] = (char)(0x80 | ((r >> 12) & 0x3F));
+    buf[2] = (char)(0x80 | ((r >> 6) & 0x3F)); buf[3] = (char)(0x80 | (r & 0x3F));
+    return 4;
+}
+
+go_ss go_string_from_rune(go_i8 r) {
+    char buf[4], *data;
+    go_ii n = go_rune_encode(buf, r);
+    go_ss s = go_string_alloc(n, &data);
+    memcpy(data, buf, (size_t)n);
+    return s;
+}
+
+go_ss go_string_from_bytes(go_ll b) {
+    char* data;
+    go_ss s = go_string_alloc(b.len, &data);
+    if (b.len > 0) memcpy(data, b.ptr.ptr, (size_t)b.len);
+    return s;
+}
+
+go_ll go_bytes_from_string(go_ss s) {
+    go_ii n = go_string_len(s);
+    go_ll b = { .ptr = go_new(n, NULL), .len = n, .cap = n };
+    if (n > 0) memcpy(b.ptr.ptr, s.ptr, (size_t)n);
+    return b;
+}
+
+go_ss go_string_from_runes(go_ll r) {
+    const go_i4* runes = r.ptr.ptr;
+    go_ii n = 0;
+    char buf[4], *data;
+    for (go_ii i = 0; i < r.len; i++) n += go_rune_encode(buf, runes[i]);
+    go_ss s = go_string_alloc(n, &data);
+    for (go_ii i = 0, at = 0; i < r.len; i++) at += go_rune_encode(data + at, runes[i]);
+    return s;
+}
+
+go_ll go_runes_from_string(go_ss s) {
+    go_ii len = go_string_len(s), n = 0;
+    go_i4 r;
+    for (go_ii i = 0; i < len; i += go_string_decode(s, i, &r)) n++;
+    go_ll out = { .ptr = go_new(n * (go_ii)sizeof(go_i4), NULL), .len = n, .cap = n };
+    go_i4* runes = out.ptr.ptr;
+    for (go_ii i = 0, k = 0; i < len; k++) i += go_string_decode(s, i, &runes[k]);
+    return out;
+}
