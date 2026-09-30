@@ -3,7 +3,6 @@ package conformance
 import (
 	"bytes"
 	"context"
-	"crypto/sha256"
 	"errors"
 	"flag"
 	"fmt"
@@ -275,31 +274,28 @@ func runCase(t *testing.T, root, name string) Status {
 		return failure("gd", out, err, dir)
 	}
 
-	sources, err := cSources(filepath.Join(dir, ".c"))
+	// Strict C11 (the runtime library may still use newer features behind preprocessor
+	// checks), then C -> objects -> executable, by folder (each package's files), as tests
+	// share the packages they import, see [folderCache].
+	cRoot := filepath.Join(dir, ".c")
+	folders, err := cFolders(cRoot)
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	// Strict C11, the runtime library may still use newer features behind preprocessor
-	// checks.
-	include := []string{"-I", filepath.Join(dir, ".c")}
 	if len(strict) > 0 && strict[0] != "off" {
-		for _, source := range sources {
-			if _, out, err := cached(t, dir, strict, include, source, ""); err != nil {
+		for _, folder := range folders {
+			if _, out, err := buildFolder(t, cRoot, folder, strict, false); err != nil {
 				return failure("c11", out, err, dir)
 			}
 		}
 	}
-
-	// C -> objects -> executable. Each file is compiled separately, and its object is cached
-	// (by its preprocessed source), as tests share the files of the packages they import.
 	var objects []string
-	for _, source := range sources {
-		object, out, err := cached(t, dir, append([]string{cc}, cflags...), include, source, ".o")
+	for _, folder := range folders {
+		objs, out, err := buildFolder(t, cRoot, folder, append([]string{cc}, cflags...), true)
 		if err != nil {
 			return failure("cc", out, err, dir)
 		}
-		objects = append(objects, object)
+		objects = append(objects, objs...)
 	}
 	if recipe.Action == "run" || (recipe.Action == "build" && isMain(src)) {
 		exe := filepath.Join(dir, "test.exe")
@@ -333,69 +329,8 @@ func runCase(t *testing.T, root, name string) Status {
 	return Status{Result: Pass}
 }
 
-// cache of compiled objects (and of strict checks), by the hash of the preprocessed source
-// and the command.
-var cache = filepath.Join(os.TempDir(), "gd-conformance-cache")
-
-// cached runs the compiler command (with include flags) on source, unless it succeeded on the
-// same preprocessed source before. With an ext, it compiles an object, whose path it returns.
-func cached(t *testing.T, dir string, compiler, include []string, source, ext string) (string, []byte, error) {
-	pre := append(append(append([]string{}, compiler[1:]...), include...), "-E", "-P", source)
-	preprocessed, err := command(t, dir, time.Minute, compiler[0], pre...)
-	if err != nil {
-		return "", preprocessed, err
-	}
-	hash := sha256.New()
-	fmt.Fprintf(hash, "%q\n", compiler)
-	hash.Write(preprocessed)
-	key := filepath.Join(cache, fmt.Sprintf("%x", hash.Sum(nil))+ext)
-	if ext == "" {
-		key += ".ok"
-	}
-	if _, err := os.Stat(key); err == nil {
-		return key, nil, nil
-	}
-	if err := os.MkdirAll(cache, 0755); err != nil {
-		t.Fatal(err)
-	}
-	args := append(append(append([]string{}, compiler[1:]...), include...), source)
-	f, err := os.CreateTemp(cache, "*.tmp") // (tests run in parallel)
-	if err != nil {
-		t.Fatal(err)
-	}
-	f.Close()
-	tmp := f.Name()
-	defer os.Remove(tmp)
-	if ext != "" {
-		args = append(args, "-c", "-o", tmp)
-	}
-	if out, err := command(t, dir, time.Minute, compiler[0], args...); err != nil {
-		return "", out, err
-	}
-	if ext == "" {
-		if err := os.WriteFile(tmp, nil, 0644); err != nil {
-			t.Fatal(err)
-		}
-	}
-	if err := os.Rename(tmp, key); err != nil {
-		t.Fatal(err)
-	}
-	return key, nil, nil
-}
-
 func isMain(src []byte) bool {
 	return regexp.MustCompile(`(?m)^package main\b`).Match(src)
-}
-
-func cSources(dir string) ([]string, error) {
-	var sources []string
-	err := filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
-		if err == nil && !d.IsDir() && strings.HasSuffix(path, ".c") {
-			sources = append(sources, path)
-		}
-		return err
-	})
-	return sources, err
 }
 
 // command runs name with args in dir, returning its combined output.
