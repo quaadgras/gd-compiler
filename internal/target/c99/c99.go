@@ -15,10 +15,10 @@ import (
 type Target struct {
 	io.Writer
 
-	Prelude io.Writer
+	Prelude      io.Writer
 	Private      io.Writer // types of the package (in its private header).
 	Declarations io.Writer // of variables and functions (in its private header).
-	Generic io.Writer
+	Generic      io.Writer
 
 	Tabs int
 
