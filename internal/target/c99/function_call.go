@@ -10,8 +10,15 @@ import (
 	"runtime.link/xyz"
 )
 
+// StatementGo starts a goroutine, that calls the function with the function value,
+// receiver and arguments evaluated by the go statement, like a deferred call.
 func (c99 Target) StatementGo(stmt source.StatementGo) error {
-	return c99.FunctionCall(stmt.Call)
+	closure, err := c99.callClosure(stmt.Call, "go")
+	if err != nil {
+		return stmt.Location.Errorf("%w", err)
+	}
+	fmt.Fprintf(c99, "go_start(%s)", closure)
+	return nil
 }
 
 func (c99 Target) FunctionCall(expr source.FunctionCall) error {
@@ -31,9 +38,6 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 		if x := source.Expressions.Indices.Get(function).X; xyz.ValueOf(x) == source.Expressions.DefinedFunction {
 			function = x
 		}
-	}
-	if expr.Go {
-		fmt.Fprintf(c99, "go_call(")
 	}
 	var receiver xyz.Maybe[source.Expression]
 	var isVariable bool
@@ -65,6 +69,9 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 			return c99.copy(expr)
 		case "clear":
 			return c99.clear(expr)
+		case "close":
+			fmt.Fprintf(c99, "go_close(%s)", c99.toString(expr.Arguments[0]))
+			return nil
 		case "delete":
 			return c99.delete(expr)
 		case "min", "max":
@@ -87,27 +94,20 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 		}
 	case source.Expressions.DefinedFunction:
 		call := source.Expressions.DefinedFunction.Get(function)
-		if expr.Go {
-			fmt.Fprintf(c99, "go_make_func(%s), ", c99.FunctionName(call))
-		} else {
-			name, err := c99.FunctionInstance(call)
-			if err != nil {
-				return err
-			}
-			fmt.Fprint(c99, name)
+		name, err := c99.FunctionInstance(call)
+		if err != nil {
+			return err
 		}
+		fmt.Fprint(c99, name)
 		if !call.IsGlobal {
 			isVariable = true
 		}
 	case source.Expressions.DefinedVariable:
 		call := source.Expressions.DefinedVariable.Get(function)
-		if expr.Go {
-			fmt.Fprint(c99, call.String+", ")
-		} else if err := c99.invoke(function, deferred.Callee); err != nil {
+		if err := c99.invoke(function, deferred.Callee); err != nil {
 			return err
-		} else {
-			invoked = true
 		}
+		invoked = true
 		if !call.IsGlobal {
 			isVariable = true
 		}
@@ -212,7 +212,7 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 			return expr.Errorf("unsupported conversion from %s to %s", expr.Arguments[0].TypeAndValue().Type, ctype.TypeAndValue().Type)
 		}
 	default:
-		if _, ok := function.TypeAndValue().Type.Underlying().(*types.Signature); !ok || expr.Go {
+		if _, ok := function.TypeAndValue().Type.Underlying().(*types.Signature); !ok {
 			return expr.Opening.Errorf("unsupported call for function of type %T", xyz.ValueOf(function))
 		}
 		// a func value: function literal, call result, index expression...
@@ -226,19 +226,8 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 	if !ok {
 		return expr.Errorf("unsupported function type %T", expr.Function.TypeAndValue().Type)
 	}
-	if !isInterface {
-		if expr.Go {
-			results := c99.TupleTypeOf(ftype.Results())
-			params := c99.TupleTypeOf(ftype.Params())
-			symbol := "go_call_" + params + results
-			c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
-				fmt.Fprintf(w, "static int %s(void* ptr) {}\n", symbol)
-				return nil
-			})
-			fmt.Fprintf(c99, "%s, %s, ", params, results)
-		} else if !invoked {
-			fmt.Fprintf(c99, "(")
-		}
+	if !isInterface && !invoked {
+		fmt.Fprintf(c99, "(")
 	}
 	recv, hasReceiver := receiver.Get()
 	if hasReceiver && deferred.Receiver != "" {

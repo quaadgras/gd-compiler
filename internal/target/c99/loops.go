@@ -84,6 +84,8 @@ func (c99 Target) StatementRange(stmt source.StatementRange) error {
 	switch typ := stmt.X.TypeAndValue().Type.Underlying().(type) {
 	case *types.Array:
 		return c99.rangeArray(stmt, typ, false)
+	case *types.Chan:
+		return c99.rangeChan(stmt, typ)
 	case *types.Pointer:
 		if array, ok := typ.Elem().Underlying().(*types.Array); ok {
 			return c99.rangeArray(stmt, array, true)
@@ -247,6 +249,24 @@ func (c99 Target) rangeArray(stmt source.StatementRange, array *types.Array, poi
 	}
 	if value, ok := stmt.Value.Get(); ok && value.String != "_" {
 		fmt.Fprintf(c99, "%s%s", indent, c99.declare(value, array.Elem(), elem))
+	}
+	if err := c99.loopBody(stmt.Label, stmt.Body.Statements); err != nil {
+		return err
+	}
+	fmt.Fprintf(c99, "\n%s}}", strings.Repeat("\t", c99.Tabs))
+	return nil
+}
+
+// rangeChan receives from a channel, until it is closed.
+func (c99 Target) rangeChan(stmt source.StatementRange, typ *types.Chan) error {
+	n := c99.Closures.count
+	c99.Closures.count++
+	ch, v := fmt.Sprintf("go_rc_%d", n), fmt.Sprintf("go_rv_%d", n)
+	indent := "\n" + strings.Repeat("\t", c99.Tabs+1)
+	elem := c99.TypeOf(typ.Elem())
+	fmt.Fprintf(c99, "{ go_ch %s = %s; for (;;) { %s %s; if (!go_recv(%[1]s, sizeof(%[4]s), &%[4]s)) break;", ch, c99.toString(stmt.X), elem, v)
+	if key, ok := stmt.Key.Get(); ok && key.String != "_" { // the key is the element.
+		fmt.Fprintf(c99, "%s%s", indent, c99.declare(key, typ.Elem(), v))
 	}
 	if err := c99.loopBody(stmt.Label, stmt.Body.Statements); err != nil {
 		return err

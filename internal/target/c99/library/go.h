@@ -135,10 +135,13 @@ typedef struct { char _; } go_tuple;
 // stop a panic, see go_recover.
 #define go_split() go_tf go_can_recover = go_take_recover(); (void)go_can_recover;
 
-void go_routine(int(trampoline)(void*), go_fn fn, size_t arg_size, void* arg);
-#define go_call(fn, IN, OUT, ...) go_routine(go_call_##IN##OUT, fn, sizeof(go_##IN), &(go_##IN){__VA_ARGS__})
 
-#define go_main() int main(int argc, char* argv[])
+// go_main defines C's main, that runs the Go main function as the main goroutine (with a
+// larger stack than C's main thread may have, as Go's stacks grow), then exits.
+int go_run_main(int (*main)(void));
+#define go_main() static int go_main_goroutine(void); \
+    int main(int argc, char* argv[]) { (void)argc; (void)argv; return go_run_main(go_main_goroutine); } \
+    static int go_main_goroutine(void)
 static inline void go_print(const char* format, ...) {
     va_list args;
     va_start(args, format);
@@ -229,10 +232,16 @@ go_ll go_bytes_from_string(go_ss s);
 go_ss go_string_from_runes(go_ll r);
 go_ll go_runes_from_string(go_ss s);
 
-#define go_chan_make(T, length) ((go_ch)nil)
+// Goroutines and channels, see chan.c.
 go_ch go_chan(go_ii elem_size, go_ii cap);
 void go_send(go_ch c, go_ii size, const void* v);
-go_tf go_recv(go_ch c, go_ii size, void* v);
+go_tf go_recv(go_ch c, go_ii size, void* v); // false when the channel is closed.
+void go_close(go_ch c);
+go_ii go_chan_len(go_ch c);
+go_ii go_chan_cap(go_ch c);
+typedef struct { go_ch c; go_tf send; void* elem; go_tf ok; } go_select_case;
+int go_select(go_select_case* cases, int n, go_tf block); // the case, or -1 (default).
+void go_start(go_fn fn); // a goroutine.
 
 #define go_make_func(fn) ((go_fn){ .ptr = (void(*)(void))(fn), .env = NULL })
 #define go_make_closure(fn, environment) ((go_fn){ .ptr = (void(*)(void))(fn), .env = (environment) })

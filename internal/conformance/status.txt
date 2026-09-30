@@ -59,8 +59,8 @@ armimm.go	fail	gd: internal error: package "fmt" without types was imported from
 asmhdr.go	skip	todo:buildrundir
 assign.go	skip	todo:errorcheck
 assign1.go	skip	todo:errorcheck
-atomicload.go	fail	gd: unsupported call for function of type xyz.Case
-bigalg.go	fail	c11: error: called object is not a function or function pointer
+atomicload.go	fail	c11: error: 'N' undeclared (first use in this function)
+bigalg.go	pass	
 bigmap.go	fail	c11: error: unknown type name 'T_go_main_package'
 blank.go	fail	gd: internal error: package "os" without types was imported from "test"
 blank1.go	skip	todo:errorcheck
@@ -76,16 +76,16 @@ chan/nonblock.go	fail	gd: internal error: package "runtime" without types was im
 chan/perm.go	skip	todo:errorcheck
 chan/powser1.go	fail	gd: internal error: package "os" without types was imported from "test"
 chan/powser2.go	fail	gd: internal error: package "os" without types was imported from "test"
-chan/select.go	fail	gd: unsupported node type: StatementSelect
+chan/select.go	fail	exit: exit status 2 panic: fail
 chan/select2.go	skip	gc:memstats runtime.MemProfileRate
 chan/select3.go	fail	gd: internal error: package "time" without types was imported from "test"
-chan/select4.go	fail	gd: unsupported node type: StatementSelect
+chan/select4.go	pass	
 chan/select5.go	skip	todo:runoutput
-chan/select6.go	fail	gd: unsupported call for function of type xyz.Case
+chan/select6.go	pass	
 chan/select7.go	fail	gd: internal error: package "runtime" without types was imported from "test"
-chan/select8.go	fail	gd: unsupported call for function of type xyz.Case
-chan/sendstmt.go	fail	gd: unsupported node type: StatementSelect
-chan/sieve1.go	fail	gd: range over unsupported type *types.Chan
+chan/select8.go	pass	
+chan/sendstmt.go	pass	
+chan/sieve1.go	pass	
 chan/sieve2.go	fail	gd: internal error: package "container/heap" without types was imported from "test"
 chan/zerosize.go	pass	
 chancap.go	fail	gd: internal error: package "strings" without types was imported from "test"
@@ -103,7 +103,7 @@ closure3.go	skip	gc:diagnostics -m
 closure4.go	pass	
 closure5.go	skip	todo:compiledir
 closure6.go	pass	
-closure7.go	fail	gd: unsupported node type: StatementSelect
+closure7.go	pass	
 cmp.go	fail	gd: internal error: package "os" without types was imported from "test"
 cmp6.go	skip	todo:errorcheck
 cmplx.go	skip	todo:errorcheck
@@ -248,7 +248,7 @@ empty.go	pass
 env.go	fail	gd: internal error: package "os" without types was imported from "test"
 eof.go	pass	
 eof1.go	pass	
-escape.go	fail	gd: unsupported node type: StatementSelect
+escape.go	fail	exit: exit status 2 panic: BUG: no escape
 escape2.go	skip	gc:diagnostics -m
 escape2n.go	skip	gc:diagnostics -m
 escape3.go	pass	
@@ -337,7 +337,7 @@ fixedbugs/bug063.go	pass
 fixedbugs/bug064.go	fail	c11: error: incompatible type for argument 1 of 'swap_go_main_package'
 fixedbugs/bug065.go	pass	
 fixedbugs/bug066.go	pass	
-fixedbugs/bug067.go	fail	gd: unsupported call for function of type xyz.Case
+fixedbugs/bug067.go	pass	
 fixedbugs/bug068.go	skip	todo:errorcheck
 fixedbugs/bug069.go	pass	
 fixedbugs/bug070.go	fail	gd: internal error: package "fmt" without types was imported from "test"
@@ -348,12 +348,12 @@ fixedbugs/bug074.go	skip	todo:errorcheck
 fixedbugs/bug075.go	pass	
 fixedbugs/bug076.go	pass	
 fixedbugs/bug077.go	pass	
-fixedbugs/bug078.go	fail	gd: unsupported node type: StatementSelect
+fixedbugs/bug078.go	pass	
 fixedbugs/bug080.go	fail	c11: error: incompatible type for argument 1 of 'f2_go_main_package'
 fixedbugs/bug081.go	skip	todo:errorcheck
 fixedbugs/bug082.go	pass	
 fixedbugs/bug083.go	skip	todo:errorcheck
-fixedbugs/bug084.go	fail	c11: error: 'go_call_aza' undeclared (first use in this function); did you mean 'go_call'?
+fixedbugs/bug084.go	pass	
 fixedbugs/bug085.go	skip	todo:errorcheck
 fixedbugs/bug086.go	skip	todo:errorcheck
 fixedbugs/bug087.go	pass	
@@ -384,7 +384,7 @@ fixedbugs/bug114.go	pass
 fixedbugs/bug115.go	pass	
 fixedbugs/bug116.go	pass	
 fixedbugs/bug117.go	skip	todo:errorcheck
-fixedbugs/bug118.go	fail	gd: unsupported node type: StatementSelect
+fixedbugs/bug118.go	pass	
 fixedbugs/bug119.go	pass	
 fixedbugs/bug120.go	fail	gd: internal error: package "os" without types was imported from "test"
 fixedbugs/bug121.go	skip	todo:errorcheck
@@ -478,13 +478,13 @@ fixedbugs/bug214.go	pass
 fixedbugs/bug215.go	skip	todo:errorcheck
 fixedbugs/bug216.go	pass	
 fixedbugs/bug217.go	skip	todo:errorcheck
-fixedbugs/bug218.go	fail	gd: unsupported node type: StatementSelect
+fixedbugs/bug218.go	pass	
 fixedbugs/bug219.go	pass	
 fixedbugs/bug221.go	pass	
 fixedbugs/bug222.go	skip	todo:compiledir
 fixedbugs/bug223.go	skip	todo:errorcheck
 fixedbugs/bug224.go	skip	todo:errorcheck
-fixedbugs/bug225.go	fail	gd: unsupported node type: StatementSelect
+fixedbugs/bug225.go	pass	
 fixedbugs/bug227.go	pass	
 fixedbugs/bug228.go	skip	todo:errorcheck
 fixedbugs/bug228a.go	skip	todo:errorcheck
@@ -493,7 +493,7 @@ fixedbugs/bug230.go	fail	c11: error: incompatible types when returning type 'str
 fixedbugs/bug231.go	skip	todo:errorcheck
 fixedbugs/bug232.go	pass	
 fixedbugs/bug233.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/bug234.go	fail	gd: unsupported builtin function
+fixedbugs/bug234.go	pass	
 fixedbugs/bug235.go	pass	
 fixedbugs/bug236.go	pass	
 fixedbugs/bug237.go	fail	gd: internal error: package "fmt" without types was imported from "test"
@@ -501,7 +501,7 @@ fixedbugs/bug238.go	skip	todo:errorcheck
 fixedbugs/bug239.go	pass	
 fixedbugs/bug240.go	skip	todo:errorcheck
 fixedbugs/bug241.go	skip	todo:errorcheck
-fixedbugs/bug242.go	fail	gd: unsupported builtin function
+fixedbugs/bug242.go	fail	gd: unsupported type assertion to interface test.I
 fixedbugs/bug243.go	fail	gd: internal error: package "errors" without types was imported from "test"
 fixedbugs/bug244.go	pass	
 fixedbugs/bug245.go	fail	gd: function missing body
@@ -567,7 +567,7 @@ fixedbugs/bug307.go	fail	gd: unsupported builtin function
 fixedbugs/bug308.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/bug309.go	fail	gd: panic: runtime error: invalid memory address or nil pointer dereference
 fixedbugs/bug311.go	fail	gd: range over unsupported type *types.Map
-fixedbugs/bug312.go	fail	gd: unsupported node type: StatementSelect
+fixedbugs/bug312.go	fail	c11: error: invalid operands to binary != (have 'go_vv' and 'int')
 fixedbugs/bug313.go	skip	todo:errorcheck
 fixedbugs/bug314.go	fail	c11: error: invalid initializer
 fixedbugs/bug315.go	fail	gd: unsupported builtin function
@@ -575,7 +575,7 @@ fixedbugs/bug316.go	fail	gd: unsupported builtin function
 fixedbugs/bug317.go	pass	
 fixedbugs/bug318.go	skip	todo:errorcheck
 fixedbugs/bug319.go	fail	gd: panic: unsupported basic type unsafe.Pointer
-fixedbugs/bug320.go	fail	gd: unsupported node type: StatementSelect
+fixedbugs/bug320.go	pass	
 fixedbugs/bug321.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/bug322.go	skip	todo:rundir
 fixedbugs/bug323.go	skip	todo:errorcheck
@@ -722,7 +722,7 @@ fixedbugs/bug466.go	skip	todo:rundir
 fixedbugs/bug467.go	skip	todo:compiledir
 fixedbugs/bug468.go	skip	todo:rundir
 fixedbugs/bug470.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/bug471.go	fail	gd: unsupported node type: StatementSelect
+fixedbugs/bug471.go	pass	
 fixedbugs/bug472.go	skip	todo:rundir
 fixedbugs/bug473.go	fail	c11: error: incompatible types when returning type 'go_ii' {aka 'long int'} but 'go_vv' was expected
 fixedbugs/bug474.go	fail	gd: internal error: package "sync" without types was imported from "test"
@@ -776,7 +776,7 @@ fixedbugs/gcc61204.go	pass
 fixedbugs/gcc61244.go	fail	gd: panic: runtime error: invalid memory address or nil pointer dereference
 fixedbugs/gcc61246.go	pass	
 fixedbugs/gcc61248.go	pass	
-fixedbugs/gcc61253.go	fail	gd: unsupported node type: StatementSelect
+fixedbugs/gcc61253.go	pass	
 fixedbugs/gcc61254.go	pass	
 fixedbugs/gcc61255.go	pass	
 fixedbugs/gcc61258.go	pass	
@@ -796,7 +796,7 @@ fixedbugs/issue10253.go	pass
 fixedbugs/issue10284.go	fail	gd: panic: unsupported basic type unsafe.Pointer
 fixedbugs/issue10320.go	pass	
 fixedbugs/issue10332.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue10353.go	fail	gd: unsupported call for function of type xyz.Case
+fixedbugs/issue10353.go	fail	c11: error: request for member 'foo_go_main_package' in something not a structure or union
 fixedbugs/issue10407.go	skip	todo:runoutput
 fixedbugs/issue10441.go	pass	
 fixedbugs/issue10486.go	skip	gc:stack-introspection runtime.Callers
@@ -851,7 +851,7 @@ fixedbugs/issue12944.go	skip	todo:errorcheck
 fixedbugs/issue1304.go	pass	
 fixedbugs/issue13160.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue13162.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-fixedbugs/issue13169.go	fail	gd: unsupported call for function of type xyz.Case
+fixedbugs/issue13169.go	fail	c11: error: 'n' undeclared (first use in this function)
 fixedbugs/issue13171.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue13248.go	skip	todo:errorcheck
 fixedbugs/issue13261.go	pass	
@@ -1045,7 +1045,7 @@ fixedbugs/issue19696.go	pass
 fixedbugs/issue19699.go	skip	todo:compiledir
 fixedbugs/issue19699b.go	skip	todo:errorcheck
 fixedbugs/issue19705.go	pass	
-fixedbugs/issue19710.go	fail	gd: unsupported defer of builtin delete
+fixedbugs/issue19710.go	fail	gd: unsupported deferred of builtin delete
 fixedbugs/issue19743.go	skip	gc:diagnostics -m
 fixedbugs/issue19764.go	skip	todo:rundir
 fixedbugs/issue19783.go	pass	
@@ -1083,7 +1083,7 @@ fixedbugs/issue20789.go	skip	todo:errorcheck
 fixedbugs/issue20811.go	pass	
 fixedbugs/issue20812.go	skip	todo:errorcheck
 fixedbugs/issue20813.go	skip	todo:errorcheck
-fixedbugs/issue20923.go	fail	gd: unsupported node type: StatementSelect
+fixedbugs/issue20923.go	pass	
 fixedbugs/issue21048.go	fail	c11: error: duplicate member '_'
 fixedbugs/issue21120.go	skip	todo:rundir
 fixedbugs/issue21221.go	fail	gd: unsupported call of unsafe.Pointer
@@ -1469,9 +1469,9 @@ fixedbugs/issue4283.go	skip	todo:errorcheck
 fixedbugs/issue42876.go	pass	
 fixedbugs/issue42944.go	skip	gc:diagnostics -live
 fixedbugs/issue43099.go	pass	
-fixedbugs/issue43111.go	fail	gd: unsupported builtin function
+fixedbugs/issue43111.go	pass	
 fixedbugs/issue43112.go	fail	gd: unsupported type assertion to interface test.Symbol
-fixedbugs/issue4313.go	fail	gd: unsupported node type: StatementSelect
+fixedbugs/issue4313.go	pass	
 fixedbugs/issue4316.go	pass	
 fixedbugs/issue43164.go	skip	todo:compiledir
 fixedbugs/issue43167.go	skip	todo:errorcheck
@@ -1536,7 +1536,7 @@ fixedbugs/issue4517d.go	skip	todo:errorcheck
 fixedbugs/issue4518.go	fail	c11: error: incompatible type for argument 1 of 'F_go_main_package'
 fixedbugs/issue45242.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 fixedbugs/issue45258.go	fail	c11: error: incompatible types when returning type 'go_pt' but 'go_if' was expected
-fixedbugs/issue4529.go	fail	c11: error: conflicting types for 'Init_go_main_package'; have 'void(go_ss, go_pt, struct <anonymous>)'
+fixedbugs/issue4529.go	fail	c11: error: too few arguments to function 'A_c_go_main_package'
 fixedbugs/issue45323.go	fail	gd: function missing body
 fixedbugs/issue45344.go	fail	gd: function missing body
 fixedbugs/issue45359.go	pass	
@@ -1627,7 +1627,7 @@ fixedbugs/issue49110.go	fail	gd: internal error: package "reflect" without types
 fixedbugs/issue49122.go	pass	
 fixedbugs/issue49143.go	skip	todo:compiledir
 fixedbugs/issue49145.go	pass	
-fixedbugs/issue49240.go	fail	c11: error: unterminated argument list invoking macro "go_call"
+fixedbugs/issue49240.go	fail	gd: unsupported go of builtin copy
 fixedbugs/issue49249.go	skip	gc:flags -l
 fixedbugs/issue49282.go	pass	
 fixedbugs/issue4932.go	skip	todo:compiledir
@@ -1695,7 +1695,7 @@ fixedbugs/issue52871.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on 
 fixedbugs/issue52907.go	pass	
 fixedbugs/issue5291.go	skip	todo:rundir
 fixedbugs/issue52953.go	pass	
-fixedbugs/issue53018.go	fail	gd: range over unsupported type *types.Chan
+fixedbugs/issue53018.go	pass	
 fixedbugs/issue53137.go	fail	gd: unsupported node type: BuiltinFunction
 fixedbugs/issue53309.go	fail	gd: unsupported call for function of type xyz.Case
 fixedbugs/issue53439.go	fail	gd: unsupported node type: BuiltinFunction
@@ -1843,7 +1843,7 @@ fixedbugs/issue6500.go	skip	todo:errorcheck
 fixedbugs/issue6513.go	skip	todo:compiledir
 fixedbugs/issue65362.go	pass	
 fixedbugs/issue65417.go	fail	gd: internal error: package "strings" without types was imported from "test"
-fixedbugs/issue65593.go	fail	gd: range over unsupported type *types.Chan
+fixedbugs/issue65593.go	pass	
 fixedbugs/issue6572.go	skip	todo:errorcheck
 fixedbugs/issue65778.go	skip	gc:godebug gotypesalias=1
 fixedbugs/issue65808.go	fail	c11: error: incompatible type for argument 1 of 'toString_go_main_package'
@@ -1899,7 +1899,7 @@ fixedbugs/issue68264.go	pass
 fixedbugs/issue68292.go	skip	todo:errorcheck
 fixedbugs/issue68322.go	fail	gd: internal error: package "math" without types was imported from "test"
 fixedbugs/issue68415.go	skip	gc:flags -gcflags=all=-d=checkptr
-fixedbugs/issue6847.go	fail	gd: unsupported node type: StatementSelect
+fixedbugs/issue6847.go	pass	
 fixedbugs/issue68525.go	skip	gc:flags -gcflags='all=-N -l'
 fixedbugs/issue68526.go	skip	todo:runindir
 fixedbugs/issue68580.go	pass	
@@ -1939,7 +1939,7 @@ fixedbugs/issue72063.go	fail	gd: internal error: package "fmt" without types was
 fixedbugs/issue72090.go	fail	gd: internal error: package "iter" without types was imported from "test"
 fixedbugs/issue7214.go	skip	todo:errorcheck
 fixedbugs/issue7223.go	skip	todo:errorcheck
-fixedbugs/issue7272.go	fail	gd: unsupported builtin function
+fixedbugs/issue7272.go	fail	gd: unsupported go of builtin close
 fixedbugs/issue72844.go	fail	gd: unsupported len of
 fixedbugs/issue72860.go	pass	
 fixedbugs/issue7310.go	skip	todo:errorcheck
@@ -2053,21 +2053,21 @@ fixedbugs/issue7995.go	fail	gd: internal error: package "fmt" without types was 
 fixedbugs/issue7995b.go	skip	todo:rundir
 fixedbugs/issue7996.go	fail	gd: unsupported map key type interface
 fixedbugs/issue79960.go	pass	
-fixedbugs/issue7997.go	fail	gd: unsupported node type: StatementSelect
-fixedbugs/issue7998.go	fail	gd: unsupported node type: StatementSelect
+fixedbugs/issue7997.go	pass	
+fixedbugs/issue7998.go	pass	
 fixedbugs/issue80004.go	fail	gd: internal error: package "runtime" without types was imported from "test"
 fixedbugs/issue8004.go	fail	gd: internal error: package "reflect" without types was imported from "test"
 fixedbugs/issue80096.go	pass	
 fixedbugs/issue80097.go	fail	c11: error: invalid operands to binary != (have 'go_arr65536_go_pt' and 'go_arr65536_go_pt')
-fixedbugs/issue8011.go	fail	output: mismatch
+fixedbugs/issue8011.go	pass	
 fixedbugs/issue80127.go	pass	
-fixedbugs/issue8017.go	fail	gd: unsupported node type: StatementSelect
+fixedbugs/issue8017.go	fail	gd: panic: unsupported len of
 fixedbugs/issue80188.go	fail	gd: internal error: package "runtime" without types was imported from "test"
 fixedbugs/issue80196.go	fail	c11: error: invalid operands to binary != (have 'S_go_main_package' {aka 'go_arr5_go_pt'} and 'S_go_main_package' {aka 'go_ar…
 fixedbugs/issue8028.go	fail	c11: error: unknown type name 'T_go_p_package'
 fixedbugs/issue8036.go	fail	gd: internal error: package "runtime" without types was imported from "test"
-fixedbugs/issue8039.go	fail	gd: unsupported defer of builtin copy
-fixedbugs/issue8042.go	fail	gd: unsupported node type: StatementSelect
+fixedbugs/issue8039.go	fail	gd: unsupported deferred of builtin copy
+fixedbugs/issue8042.go	pass	
 fixedbugs/issue8047.go	pass	
 fixedbugs/issue8047b.go	pass	
 fixedbugs/issue8048.go	fail	gd: internal error: package "runtime" without types was imported from "test"
@@ -2077,7 +2077,7 @@ fixedbugs/issue80517_3.go	fail	exit: signal: trace/breakpoint trap filc safety e
 fixedbugs/issue80577.go	fail	gd: internal error: package "math/bits" without types was imported from "test"
 fixedbugs/issue8060.go	skip	todo:compiledir
 fixedbugs/issue8073.go	pass	
-fixedbugs/issue8074.go	fail	c11: error: unterminated argument list invoking macro "go_call"
+fixedbugs/issue8074.go	fail	gd: unsupported go of builtin copy
 fixedbugs/issue8076.go	pass	
 fixedbugs/issue8079.go	pass	
 fixedbugs/issue80976.go	fail	c11: error: implicit declaration of function 'TypeMap_Set_go_main_package' [-Wimplicit-function-declaration]
@@ -2091,8 +2091,8 @@ fixedbugs/issue8183.go	skip	todo:errorcheck
 fixedbugs/issue8280.go	skip	todo:compiledir
 fixedbugs/issue8311.go	skip	todo:errorcheck
 fixedbugs/issue8325.go	pass	
-fixedbugs/issue8336.go	fail	gd: unsupported node type: StatementSelect
-fixedbugs/issue8347.go	fail	gd: unsupported node type: StatementSelect
+fixedbugs/issue8336.go	pass	
+fixedbugs/issue8347.go	pass	
 fixedbugs/issue8385.go	skip	todo:errorcheck
 fixedbugs/issue8438.go	skip	todo:errorcheck
 fixedbugs/issue8440.go	skip	todo:errorcheck
@@ -2147,7 +2147,7 @@ func1.go	skip	todo:errorcheck
 func2.go	fail	gd: function missing body
 func3.go	skip	todo:errorcheck
 func4.go	skip	todo:errorcheck
-func5.go	fail	gd: unsupported call for function of type xyz.Case
+func5.go	pass	
 func6.go	pass	
 func7.go	pass	
 func8.go	pass	
@@ -2177,7 +2177,7 @@ index.go	skip	upstream:skip
 index0.go	skip	todo:runoutput
 index1.go	skip	todo:errorcheck
 index2.go	skip	todo:errorcheck
-indirect.go	fail	c11: error: called object is not a function or function pointer
+indirect.go	pass	
 indirect1.go	skip	todo:errorcheck
 init.go	skip	todo:errorcheck
 init1.go	skip	gc:memstats runtime.ReadMemStats
@@ -2222,7 +2222,7 @@ internal/runtime/sys/inlinegcpc.go	skip	gc:diagnostics -m
 intrinsic.go	skip	gc:diagnostics -d=ssa/intrinsics/debug
 intrinsic_atomic.go	skip	gc:diagnostics -d=ssa/intrinsics/debug
 iota.go	pass	
-ken/array.go	fail	c11: error: called object is not a function or function pointer
+ken/array.go	pass	
 ken/chan.go	fail	gd: internal error: package "os" without types was imported from "test"
 ken/chan1.go	fail	gd: internal error: package "runtime" without types was imported from "test"
 ken/complit.go	pass	
@@ -2258,8 +2258,8 @@ ken/simpconv.go	fail	c11: error: two or more data types in declaration specifier
 ken/simpfun.go	pass	
 ken/simpswitch.go	pass	
 ken/simpvar.go	pass	
-ken/slicearray.go	fail	c11: error: called object is not a function or function pointer
-ken/sliceslice.go	fail	c11: error: called object is not a function or function pointer
+ken/slicearray.go	pass	
+ken/sliceslice.go	pass	
 ken/string.go	pass	
 ken/strvar.go	pass	
 known_bits.go	skip	gc:diagnostics -d=ssa/known_bits/debug=1
@@ -2351,7 +2351,7 @@ reflectmethod8.go	fail	gd: panic: unsupported node type: DefinedType
 rename.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 rename1.go	skip	todo:errorcheck
 reorder.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-reorder2.go	fail	gd: unsupported node type: StatementSelect
+reorder2.go	fail	c11: error: 'log' redeclared as different kind of symbol
 retjmp.go	skip	todo:buildrundir
 return.go	skip	todo:errorcheck
 rotate.go	skip	upstream:skip
@@ -2378,7 +2378,7 @@ slice3err.go	skip	todo:errorcheck
 slicecap.go	fail	gd: panic: unsupported basic type unsafe.Pointer
 sliceopt.go	skip	gc:diagnostics -d=append,slice
 solitaire.go	pass	
-stack.go	fail	exit: exit status 2 panic: fail
+stack.go	fail	exit: signal: trace/breakpoint trap filc safety error: stack overflow.
 stackobj.go	skip	gc:finalizers runtime.SetFinalizer
 stackobj2.go	fail	gd: internal error: package "fmt" without types was imported from "test"
 stackobj3.go	skip	gc:finalizers runtime.SetFinalizer
@@ -2416,7 +2416,7 @@ syntax/vareq1.go	skip	todo:errorcheck
 tailcall.go	skip	gc:diagnostics -d=tailcall=1
 tighten.go	skip	upstream:build arm64
 tinyfin.go	skip	gc:finalizers runtime.SetFinalizer
-torture.go	fail	gd: unsupported node type: StatementSelect
+torture.go	pass	
 turing.go	pass	
 typecheck.go	skip	todo:errorcheck
 typecheckloop.go	skip	todo:errorcheck
@@ -2601,7 +2601,7 @@ typeparam/issue51236.go	pass
 typeparam/issue51245.go	pass	
 typeparam/issue51250a.go	skip	todo:rundir
 typeparam/issue51303.go	fail	gd: internal error: package "fmt" without types was imported from "test"
-typeparam/issue51355.go	fail	gd: unsupported call for function of type xyz.Case
+typeparam/issue51355.go	fail	c11: error: conflicting types for 'value'; have 'go_ss *'
 typeparam/issue51367.go	skip	todo:rundir
 typeparam/issue51423.go	skip	todo:compiledir
 typeparam/issue51521.go	fail	gd: internal error: package "fmt" without types was imported from "test"

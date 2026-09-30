@@ -138,13 +138,6 @@ go_tf go_same_ss(const void *a, const void *b) {
     return go_string_eq(*(const go_ss*)a, *(const go_ss*)b);
 }
 
-void go_routine(int(trampoline)(void*), go_fn fn, size_t arg_size, void* arg) {
-    thrd_t thread;
-    void *data = malloc(sizeof(go_fn) + arg_size);
-    memcpy(data, &fn, sizeof(go_fn));
-    memcpy((char*)data + sizeof(go_fn), arg, arg_size);
-    thrd_create(&thread, trampoline, data);
-}
 
 void* go_index(go_ll s, go_ii elem_size, go_ii i) {
     go_index_check(i, s.len);

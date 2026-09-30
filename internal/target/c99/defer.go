@@ -28,8 +28,20 @@ func (c99 Target) StatementDefer(stmt source.StatementDefer) error {
 	if !c99.Frame {
 		return stmt.Location.Errorf("defer in a function without a frame")
 	}
-	call := stmt.Call
-	symbol := fmt.Sprintf("go_deferred_%s_%d", c99.CurrentFunction, c99.Closures.count)
+	closure, err := c99.callClosure(stmt.Call, "deferred")
+	if err != nil {
+		return stmt.Location.Errorf("%w", err)
+	}
+	fmt.Fprintf(c99, "go_defer_push(go_fr, %s)", closure)
+	return nil
+}
+
+// callClosure returns a closure (a C expression for a go_fn) that makes the call, with its
+// function value, receiver and arguments evaluated now, into its environment (for defer
+// and go statements).
+func (c99 Target) callClosure(call source.FunctionCall, kind string) (string, error) {
+	call.Go = false
+	symbol := fmt.Sprintf("go_%s_%s_%d", kind, c99.CurrentFunction, c99.Closures.count)
 	c99.Closures.count++
 
 	var ctypes, values []string
@@ -50,7 +62,7 @@ func (c99 Target) StatementDefer(stmt source.StatementDefer) error {
 		switch name {
 		case "print", "println", "panic", "recover":
 		default:
-			return stmt.Location.Errorf("unsupported defer of builtin %s", name)
+			return "", fmt.Errorf("unsupported %s of builtin %s", kind, name)
 		}
 		for i, arg := range call.Arguments {
 			if reevaluate(arg) {
@@ -59,7 +71,7 @@ func (c99 Target) StatementDefer(stmt source.StatementDefer) error {
 			if name == "panic" {
 				value, err := c99.AnyOf(arg)
 				if err != nil {
-					return stmt.Location.Errorf("%w", err)
+					return "", err
 				}
 				deferred.Args[i] = store("go_vv", value)
 				continue
@@ -69,7 +81,7 @@ func (c99 Target) StatementDefer(stmt source.StatementDefer) error {
 	default:
 		var ok bool
 		if sig, ok = function.TypeAndValue().Type.Underlying().(*types.Signature); !ok {
-			return stmt.Location.Errorf("unsupported defer of %s", function.TypeAndValue().Type)
+			return "", fmt.Errorf("unsupported %s of %s", kind, function.TypeAndValue().Type)
 		}
 		switch xyz.ValueOf(function) {
 		case source.Expressions.DefinedFunction:
@@ -87,7 +99,7 @@ func (c99 Target) StatementDefer(stmt source.StatementDefer) error {
 					if _, iface := rtype.Underlying().(*types.Interface); !iface {
 						var err error
 						if value, err = c99.receiverOf(function, left.X); err != nil {
-							return err
+							return "", err
 						}
 					}
 					deferred.Receiver = store(c99.TypeOf(rtype), value)
@@ -113,7 +125,7 @@ func (c99 Target) StatementDefer(stmt source.StatementDefer) error {
 			cc := c99
 			cc.Writer = &buf
 			if err := cc.ExpressionAs(arg, target); err != nil {
-				return err
+				return "", err
 			}
 			deferred.Args[i] = store(c99.TypeOf(target), buf.String())
 		}
@@ -146,14 +158,13 @@ func (c99 Target) StatementDefer(stmt source.StatementDefer) error {
 		fmt.Fprintf(w, "%s; }\n", body.String())
 		return nil
 	}); err != nil {
-		return err
+		return "", err
 	}
 	env := "NULL"
 	if len(ctypes) > 0 {
 		env = fmt.Sprintf("go_new(sizeof(go_env_%s), &(go_env_%[1]s){ %s }).ptr", symbol, strings.Join(values, ", "))
 	}
-	fmt.Fprintf(c99, "go_defer_push(go_fr, go_make_closure(%s, %s))", symbol, env)
-	return nil
+	return fmt.Sprintf("go_make_closure(%s, %s)", symbol, env), nil
 }
 
 // reevaluate reports whether arg can be compiled again when a deferred call runs, instead

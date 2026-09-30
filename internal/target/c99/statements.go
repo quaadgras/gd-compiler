@@ -41,6 +41,9 @@ func (c99 Target) Statement(stmt source.Statement) error {
 	case source.Statements.Defer:
 		call := source.Statements.Defer.Get(stmt).Call
 		exprs = append([]source.Expression{call.Function}, call.Arguments...)
+	case source.Statements.Go:
+		call := source.Statements.Go.Get(stmt).Call
+		exprs = append([]source.Expression{call.Function}, call.Arguments...)
 	case source.Statements.Definitions:
 		for _, def := range source.Statements.Definitions.Get(stmt) {
 			if xyz.ValueOf(def) == source.Definitions.Variable {

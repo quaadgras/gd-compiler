@@ -187,6 +187,9 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 	if c99.Frame && len(c99.Results) == 0 {
 		fmt.Fprintf(c99, "%sgo_frame_return(go_fr);", indent)
 	}
+	if decl.Name.String == "main" && !isMethod && !closure {
+		fmt.Fprintf(c99, "%sreturn 0;", indent) // the main goroutine's result, see go_main.
+	}
 	c99.Tabs--
 	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 	fmt.Fprintf(c99, "}")

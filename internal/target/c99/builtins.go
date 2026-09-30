@@ -136,7 +136,7 @@ func (c99 Target) make(expr source.FunctionCall) error {
 		default:
 			return expr.Errorf("make expects one or two arguments, got %d", len(expr.Arguments))
 		}
-		fmt.Fprintf(c99, "go_chan_make(%s, ", c99.TypeOf(typ.Elem()))
+		fmt.Fprintf(c99, "go_chan(sizeof(%s), ", c99.TypeOf(typ.Elem()))
 		if len(expr.Arguments) == 2 {
 			if err := c99.Expression(expr.Arguments[1]); err != nil {
 				return err
@@ -225,6 +225,8 @@ func (c99 Target) len(expr source.FunctionCall) error {
 		fmt.Fprintf(c99, "go_slice_len(")
 	case *types.Map:
 		fmt.Fprintf(c99, "go_map_len(")
+	case *types.Chan:
+		fmt.Fprintf(c99, "go_chan_len(")
 	default:
 		return expr.Errorf("unsupported len of %s", typ)
 	}
@@ -239,10 +241,17 @@ func (c99 Target) cap(expr source.FunctionCall) error {
 	if len(expr.Arguments) != 1 {
 		return fmt.Errorf("cap expects exactly one argument, got %d", len(expr.Arguments))
 	}
-	if err := c99.Expression(expr.Arguments[0]); err != nil {
-		return err
+	if tv := expr.TypeAndValue(); tv.Value != nil { // arrays.
+		return c99.ConstantValue(tv.Value, false)
 	}
-	fmt.Fprintf(c99, ".cap()")
+	switch expr.Arguments[0].TypeAndValue().Type.Underlying().(type) {
+	case *types.Slice:
+		fmt.Fprintf(c99, "(%s).cap", c99.toString(expr.Arguments[0]))
+	case *types.Chan:
+		fmt.Fprintf(c99, "go_chan_cap(%s)", c99.toString(expr.Arguments[0]))
+	default:
+		return expr.Errorf("unsupported cap of %s", expr.Arguments[0].TypeAndValue().Type)
+	}
 	return nil
 }
 
