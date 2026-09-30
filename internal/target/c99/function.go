@@ -58,12 +58,17 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 			fmt.Fprintf(w, "void ")
 		}
 	}
+	// Package-level functions have external linkage and a package qualified name, closures
+	// are only referenced from the file they are defined in.
 	var suffix string
-	if ast.IsExported(fnName) {
+	if !decl.IsClosure {
 		suffix = "_go_" + c99.PackageOf(c99.CurrentPackage) + "_package"
 	}
+	// Prototypes that refer to exported types have to be in the public header, after the
+	// type definitions (methods are prefixed with their receiver's type name).
+	exported, closure := ast.IsExported(fnName), decl.IsClosure
 	if decl.Name.String == "main" {
-		fmt.Fprintf(c99, "go_main() { ")
+		fmt.Fprintf(c99, "go_main() { init_go_%s_package();", c99.CurrentPackage)
 	} else {
 		for _, param := range decl.Type.Arguments.Fields {
 			if _, ok := param.Names.Get(); !ok {
@@ -71,7 +76,7 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 			}
 		}
 		decl := func(w io.Writer) {
-			if !ast.IsExported(fnName) {
+			if closure {
 				fmt.Fprintf(w, "static ")
 			}
 			return_type(w)
@@ -100,7 +105,9 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 			}
 			fmt.Fprintf(w, ")")
 		}
-		if ast.IsExported(fnName) {
+		if closure {
+			// defined before use, in the same file.
+		} else if exported {
 			fmt.Fprintln(c99.Exports)
 			decl(c99.Exports)
 			fmt.Fprintf(c99.Exports, ";")
@@ -131,9 +138,6 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 		names, hasName := field.Names.Get()
 		if hasName {
 			name = names[0].String
-		}
-		if !ast.IsExported(fnName) {
-			fmt.Fprintf(c99, "static ")
 		}
 		return_type(c99)
 		fmt.Fprintf(c99, `I_%s%s(void* %s`, fnName, suffix, name)

@@ -2,7 +2,6 @@ package c99
 
 import (
 	"fmt"
-	"go/ast"
 	"go/constant"
 	"go/types"
 	"math"
@@ -35,12 +34,11 @@ func (c99 Target) definedVariable(decl bool, name source.DefinedVariable) error 
 	return err
 }
 
+// DefinedFunction writes the name of a package-level function (or method name), which is
+// always qualified by its package, as functions have external linkage, so that they can be
+// called from any file of the package.
 func (c99 Target) DefinedFunction(name source.DefinedFunction) error {
-	if ast.IsExported(name.String) {
-		fmt.Fprintf(c99, "%s_go_%s_package", name.String, name.Package)
-	} else {
-		fmt.Fprintf(c99, "%s", name.String)
-	}
+	fmt.Fprintf(c99, "%s_go_%s_package", name.String, name.Package)
 	return nil
 }
 

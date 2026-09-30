@@ -52,7 +52,7 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 	case source.Expressions.DefinedFunction:
 		call := source.Expressions.DefinedFunction.Get(function)
 		if expr.Go {
-			fmt.Fprintf(c99, "go_make_func(%s), ", call.String)
+			fmt.Fprintf(c99, "go_make_func(%s), ", c99.toString(call))
 		} else {
 			if err := c99.DefinedFunction(call); err != nil {
 				return err
@@ -198,7 +198,7 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 	}
 	var variadic bool
 	for i, arg := range expr.Arguments {
-		if i > 0 || hasReceiver {
+		if i > 0 || hasReceiver || isInterface {
 			fmt.Fprintf(c99, ", ")
 		}
 		if !variadic && (ftype.Variadic() && i >= ftype.Params().Len()-1) {

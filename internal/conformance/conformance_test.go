@@ -97,6 +97,7 @@ func TestGoRepo(t *testing.T) {
 	if testing.Short() {
 		t.Skip("conformance suite is slow")
 	}
+	trackCompiler(t)
 	root, err := filepath.Abs(testdata)
 	if err != nil {
 		t.Fatal(err)
@@ -154,6 +155,28 @@ func TestGoRepo(t *testing.T) {
 				t.Skipf("expected failure: %s", status.Reason)
 			}
 		})
+	}
+}
+
+// trackCompiler reads the source of gd, as go test only caches results against the files
+// that the test itself reads, and gd is compiled and run in subprocesses.
+func trackCompiler(t *testing.T) {
+	module := filepath.Join("..", "..")
+	err := filepath.WalkDir(module, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() && (d.Name() == "testdata" || d.Name() == ".git" || d.Name() == ".c") {
+			return filepath.SkipDir
+		}
+		if !d.IsDir() && (strings.HasSuffix(path, ".go") || strings.HasSuffix(path, ".c") ||
+			strings.HasSuffix(path, ".h") || d.Name() == "go.mod" || d.Name() == "go.sum") {
+			_, err = os.ReadFile(path)
+		}
+		return err
+	})
+	if err != nil {
+		t.Fatal(err)
 	}
 }
 
