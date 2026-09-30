@@ -106,6 +106,17 @@ void go_map_set(go_kv m, const void *key, const void *val) {
     memcpy((char*)staging + meta->val_offset, val, meta->val_size);
     hashmap_set(m, staging);
 }
+go_ii go_map_len(go_kv m) {
+    return m ? (go_ii)hashmap_count(m) : 0;
+}
+
+void go_map_delete(go_kv m, const void *key) {
+    if (!m) return;
+    map_metadata *meta = hashmap_udata(m);
+    memcpy(meta->staging, key, meta->key_size); // hashmap compares whole items.
+    hashmap_delete(m, meta->staging);
+}
+
 go_tf go_map_get(go_kv m, const void *key, void *val) {
     if (!m) return false; // val is zero initialized by the caller.
     map_metadata *meta = hashmap_udata(m);

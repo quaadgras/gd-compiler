@@ -218,6 +218,14 @@ func (c99 Target) assignment(stmt source.StatementAssignment) error {
 			if err := c99.Expression(variable); err != nil {
 				return err
 			}
+			if stmt.Token.Value == token.AND_NOT_ASSIGN {
+				fmt.Fprintf(c99, " &= ~(")
+				if err := c99.ExpressionAs(stmt.Values[i], variable.TypeAndValue().Type); err != nil {
+					return err
+				}
+				fmt.Fprintf(c99, ")")
+				continue
+			}
 			if stmt.Token.Value == token.ADD_ASSIGN && isString(variable.TypeAndValue().Type) {
 				fmt.Fprintf(c99, " = go_string_concat(%s, ", c99.toString(variable))
 				if err := c99.ExpressionAs(stmt.Values[i], variable.TypeAndValue().Type); err != nil {

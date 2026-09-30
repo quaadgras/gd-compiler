@@ -82,6 +82,12 @@ func (c99 Target) StatementRange(stmt source.StatementRange) error {
 		defer fmt.Fprintf(c99, " go_break_%s:;", stmt.Label)
 	}
 	switch typ := stmt.X.TypeAndValue().Type.Underlying().(type) {
+	case *types.Array:
+		return c99.rangeArray(stmt, typ, false)
+	case *types.Pointer:
+		if array, ok := typ.Elem().Underlying().(*types.Array); ok {
+			return c99.rangeArray(stmt, array, true)
+		}
 	case *types.Basic:
 		if typ.Info()&types.IsString != 0 {
 			return c99.rangeString(stmt)
@@ -177,7 +183,7 @@ func (c99 Target) rangeString(stmt source.StatementRange) error {
 // expression), boxed when captured by a closure.
 func (c99 Target) declare(name source.DefinedVariable, t types.Type, value string) string {
 	if !c99.StackAllocated(name) {
-		return fmt.Sprintf("%s* %s = %s(%s);", c99.TypeOf(t), name.String, c99.BoxOf(t), value)
+		return fmt.Sprintf("%s* %s = go_new(sizeof(%[1]s), NULL).ptr; *%[2]s = %s;", c99.TypeOf(t), name.String, value)
 	}
 	return fmt.Sprintf("%s %s = %s;", c99.TypeOf(t), name.String, value)
 }
@@ -218,5 +224,33 @@ func (c99 Target) StatementGoto(stmt source.StatementGoto) error {
 		return stmt.Location.Errorf("goto without a label")
 	}
 	fmt.Fprintf(c99, "goto go_label_%s", label.String)
+	return nil
+}
+
+// rangeArray ranges over an array, which is evaluated once (a copy), or over the array that
+// a pointer points to.
+func (c99 Target) rangeArray(stmt source.StatementRange, array *types.Array, pointer bool) error {
+	n := c99.Closures.count
+	c99.Closures.count++
+	x, index := fmt.Sprintf("go_ra_%d", n), fmt.Sprintf("go_ri_%d", n)
+	indent := "\n" + strings.Repeat("\t", c99.Tabs+1)
+	elem := x + ".a[" + index + "]"
+	if pointer {
+		fmt.Fprintf(c99, "{ go_pt %s = %s;", x, c99.toString(stmt.X))
+		elem = fmt.Sprintf("go_pointer_get(%s, %s).a[%s]", x, c99.ArrayTypeOf(array), index)
+	} else {
+		fmt.Fprintf(c99, "{ %s %s = %s;", c99.ArrayTypeOf(array), x, c99.toString(stmt.X))
+	}
+	fmt.Fprintf(c99, " for (go_ii %[1]s = 0; %[1]s < %[2]d; %[1]s++) {", index, array.Len())
+	if key, ok := stmt.Key.Get(); ok && key.String != "_" {
+		fmt.Fprintf(c99, "%s%s", indent, c99.declare(key, types.Typ[types.Int], index))
+	}
+	if value, ok := stmt.Value.Get(); ok && value.String != "_" {
+		fmt.Fprintf(c99, "%s%s", indent, c99.declare(value, array.Elem(), elem))
+	}
+	if err := c99.loopBody(stmt.Label, stmt.Body.Statements); err != nil {
+		return err
+	}
+	fmt.Fprintf(c99, "\n%s}}", strings.Repeat("\t", c99.Tabs))
 	return nil
 }

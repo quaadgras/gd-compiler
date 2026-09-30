@@ -223,6 +223,8 @@ func (c99 Target) len(expr source.FunctionCall) error {
 		fmt.Fprintf(c99, "go_string_len(")
 	case *types.Slice:
 		fmt.Fprintf(c99, "go_slice_len(")
+	case *types.Map:
+		fmt.Fprintf(c99, "go_map_len(")
 	default:
 		return expr.Errorf("unsupported len of %s", typ)
 	}
@@ -259,4 +261,75 @@ func (c99 Target) panic(expr source.FunctionCall) error {
 	}
 	fmt.Fprintf(c99, "go_panic_any(%s)", value)
 	return nil
+}
+
+func (c99 Target) delete(expr source.FunctionCall) error {
+	mtype, ok := expr.Arguments[0].TypeAndValue().Type.Underlying().(*types.Map)
+	if !ok || len(expr.Arguments) != 2 {
+		return expr.Errorf("unsupported delete")
+	}
+	var key strings.Builder
+	cc := c99
+	cc.Writer = &key
+	if err := cc.ExpressionAs(expr.Arguments[1], mtype.Key()); err != nil {
+		return err
+	}
+	symbol := "go_map_delete_" + identifier.ReplaceAllString(c99.TypeOf(mtype.Key()), "_")
+	c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
+		fmt.Fprintf(w, "static inline void %s(go_kv m, %s key) { go_map_delete(m, &key); }\n", symbol, c99.TypeOf(mtype.Key()))
+		return nil
+	})
+	fmt.Fprintf(c99, "%s(%s, %s)", symbol, c99.toString(expr.Arguments[0]), key.String())
+	return nil
+}
+
+// minmax implements min and max: for floats, NaN wins, and -0 is less than +0.
+func (c99 Target) minmax(expr source.FunctionCall, name string) error {
+	if tv := expr.TypeAndValue(); tv.Value != nil {
+		return c99.ConstantValue(tv.Value, false)
+	}
+	t := expr.TypeAndValue().Type
+	ctype := c99.TypeOf(t)
+	symbol := "go_" + name + "_" + identifier.ReplaceAllString(ctype, "_")
+	c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
+		op := "<"
+		if name == "max" {
+			op = ">"
+		}
+		switch {
+		case isString(t):
+			fmt.Fprintf(w, "static inline go_ss %s(go_ss a, go_ss b) { return go_string_cmp(b, a) %s 0 ? b : a; }\n", symbol, op)
+		case isFloat(t):
+			zero := "signbit(b) ? b : a" // min(-0, +0) is -0
+			if name == "max" {
+				zero = "signbit(b) ? a : b"
+			}
+			fmt.Fprintf(w, "static inline %[1]s %[2]s(%[1]s a, %[1]s b) { if (a != a) return a; if (b != b) return b; if (a == b) return %[3]s; return b %[4]s a ? b : a; }\n",
+				ctype, symbol, zero, op)
+		default:
+			fmt.Fprintf(w, "static inline %[1]s %[2]s(%[1]s a, %[1]s b) { return b %[3]s a ? b : a; }\n", ctype, symbol, op)
+		}
+		return nil
+	})
+	value := ""
+	for i, arg := range expr.Arguments {
+		var buf strings.Builder
+		cc := c99
+		cc.Writer = &buf
+		if err := cc.ExpressionAs(arg, t); err != nil {
+			return err
+		}
+		if i == 0 {
+			value = buf.String()
+		} else {
+			value = fmt.Sprintf("%s(%s, %s)", symbol, value, buf.String())
+		}
+	}
+	fmt.Fprint(c99, value)
+	return nil
+}
+
+func isFloat(t types.Type) bool {
+	basic, ok := t.Underlying().(*types.Basic)
+	return ok && basic.Info()&types.IsFloat != 0
 }

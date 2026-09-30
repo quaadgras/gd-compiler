@@ -66,6 +66,9 @@ func (c99 Target) ExpressionBinary(expr source.ExpressionBinary) error {
 		}
 	}
 	switch expr.Operation.Value {
+	case token.AND_NOT:
+		fmt.Fprintf(c99, "(%s & ~%s)", c99.toString(expr.X), c99.toString(expr.Y))
+		return nil
 	case token.ADD:
 		if isString(expr.X.TypeAndValue().Type) {
 			fmt.Fprintf(c99, "go_string_concat(%s, %s)", c99.toString(expr.X), c99.toString(expr.Y))
@@ -423,6 +426,8 @@ func (c99 Target) ExpressionUnary(e source.ExpressionUnary) error {
 			fmt.Fprintf(c99, "(%s){.ptr=&%s}", c99.TypeOf(e.TypeAndValue().Type), c99.toString(e.X))
 		}
 		return nil
+	case token.XOR: // bitwise complement.
+		fmt.Fprintf(c99, "(%s)~", c99.TypeOf(e.TypeAndValue().Type))
 	default:
 		fmt.Fprintf(c99, "%s", e.Operation.Value)
 	}

@@ -3,6 +3,7 @@ package c99
 import (
 	"fmt"
 	"go/ast"
+	"go/token"
 	"go/types"
 	"io"
 	"strings"
@@ -42,6 +43,38 @@ func NewClosures(info *types.Info, files []*ast.File) *Closures {
 		frames:   make(map[ast.Node]bool),
 		tuples:   make(map[ast.Node]tupleVar),
 		info:     info,
+	}
+	// Local variables whose address is taken are boxed too, as the address may outlive the
+	// function (C would point to its stack frame).
+	for _, file := range files {
+		ast.Inspect(file, func(node ast.Node) bool {
+			var root ast.Expr
+			switch expr := node.(type) {
+			case *ast.UnaryExpr:
+				if expr.Op == token.AND {
+					root = expr.X
+				}
+			case *ast.SliceExpr:
+				if tv, ok := info.Types[expr.X]; ok {
+					if _, isArray := tv.Type.Underlying().(*types.Array); isArray {
+						root = expr.X
+					}
+				}
+			case *ast.SelectorExpr: // x.M(), where M has a pointer receiver, is (&x).M()
+				if sel, ok := info.Selections[expr]; ok && sel.Kind() == types.MethodVal {
+					recv := sel.Obj().Type().(*types.Signature).Recv()
+					_, wantPointer := recv.Type().Underlying().(*types.Pointer)
+					_, isPointer := sel.Recv().Underlying().(*types.Pointer)
+					if wantPointer && !isPointer {
+						root = expr.X
+					}
+				}
+			}
+			if v := addressedVariable(info, root); v != nil {
+				closures.captured[v] = true
+			}
+			return true
+		})
 	}
 	for _, file := range files {
 		ast.Inspect(file, func(node ast.Node) bool {
@@ -97,6 +130,43 @@ func NewClosures(info *types.Info, files []*ast.File) *Closures {
 		})
 	}
 	return closures
+}
+
+// addressedVariable returns the local variable whose storage expr (an operand of &)
+// refers to, if any: x, x.f (for a struct x), x[i] (for an array x).
+func addressedVariable(info *types.Info, expr ast.Expr) *types.Var {
+	for expr != nil {
+		switch e := expr.(type) {
+		case *ast.ParenExpr:
+			expr = e.X
+		case *ast.SelectorExpr:
+			if tv, ok := info.Types[e.X]; !ok || isPointerType(tv.Type) {
+				return nil // through a pointer.
+			}
+			expr = e.X
+		case *ast.IndexExpr:
+			if tv, ok := info.Types[e.X]; !ok {
+				return nil
+			} else if _, isArray := tv.Type.Underlying().(*types.Array); !isArray {
+				return nil // slices and maps.
+			}
+			expr = e.X
+		case *ast.Ident:
+			v, ok := info.Uses[e].(*types.Var)
+			if !ok || v.IsField() || v.Parent() == nil || v.Pkg() == nil || v.Parent() == v.Pkg().Scope() {
+				return nil // not a local variable.
+			}
+			return v
+		default:
+			return nil
+		}
+	}
+	return nil
+}
+
+func isPointerType(t types.Type) bool {
+	_, ok := t.Underlying().(*types.Pointer)
+	return ok
 }
 
 // hasDefer reports whether body has a defer statement, outside of any function literals.

@@ -55,6 +55,10 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 			return c99.copy(expr)
 		case "clear":
 			return c99.clear(expr)
+		case "delete":
+			return c99.delete(expr)
+		case "min", "max":
+			return c99.minmax(expr, call.String)
 		case "len":
 			return c99.len(expr)
 		case "cap":
@@ -185,8 +189,7 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 			fmt.Fprintf(c99, "})")
 			return nil
 		default:
-			fmt.Fprintf(c99, "@as(%s)", c99.Type(ctype))
-			return nil
+			return expr.Errorf("unsupported conversion from %s to %s", expr.Arguments[0].TypeAndValue().Type, ctype.TypeAndValue().Type)
 		}
 	default:
 		if _, ok := function.TypeAndValue().Type.Underlying().(*types.Signature); !ok || expr.Go {
@@ -304,6 +307,23 @@ func (c99 Target) conversion(expr source.FunctionCall, t types.Type) (bool, erro
 		if isInteger(arg.TypeAndValue().Type) {
 			fmt.Fprintf(c99, "(go_i8)")
 		}
+		if err := c99.Expression(arg); err != nil {
+			return true, err
+		}
+		fmt.Fprintf(c99, ")")
+		return true, nil
+	}
+	from := arg.TypeAndValue().Type
+	if c99.TypeOf(t) == c99.TypeOf(from) { // the same C type.
+		return true, c99.Expression(arg)
+	}
+	if types.IdenticalIgnoreTags(t.Underlying(), from.Underlying()) { // distinct C types.
+		symbol := "go_convert_" + identifier.ReplaceAllString(c99.TypeOf(from)+"_to_"+c99.TypeOf(t), "_")
+		c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
+			fmt.Fprintf(w, "static inline %s %s(%s v) { %[1]s r; memcpy(&r, &v, sizeof(r)); return r; }\n", c99.TypeOf(t), symbol, c99.TypeOf(from))
+			return nil
+		})
+		fmt.Fprintf(c99, "%s(", symbol)
 		if err := c99.Expression(arg); err != nil {
 			return true, err
 		}

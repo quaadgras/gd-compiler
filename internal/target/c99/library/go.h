@@ -9,6 +9,8 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <setjmp.h>
+#include <string.h>
+#include <math.h>
 
 #define true 1
 #define false 0
@@ -208,6 +210,8 @@ void go_slice_clear(go_ll s);
 go_kv go_make(go_ii key_size, go_ii elem_size, go_hash hash_func, go_same same_func, go_ii hint, go_ii argc, const void* init, size_t stride, size_t val_offset);
 go_u8 go_hash_bytes(const void* p, size_t n, go_u8 seed0, go_u8 seed1);
 void go_map_set(go_kv m, const void* key, const void* val);
+go_ii go_map_len(go_kv m);
+void go_map_delete(go_kv m, const void* key);
 go_tf go_map_get(go_kv m, const void* key, void* val);
 
 #define go_string_new(str) (go_ss){ .ptr = str, .len = -1 }
