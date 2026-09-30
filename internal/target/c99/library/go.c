@@ -59,6 +59,7 @@ go_tf go_string_eq(go_ss a, go_ss b) {
 typedef struct {
     size_t key_size;
     size_t val_size;
+    size_t val_offset; // aligned, so that pointers in values can be stored (Fil-C).
     go_hash key_hash;
     go_same key_same;
     char staging[];
@@ -77,25 +78,32 @@ uint64_t map_hash(const void *item, uint64_t seed0, uint64_t seed1, void *udata)
     return meta->key_hash(item, seed0, seed1);
 }
 
-go_kv go_make(go_ii key_size, go_ii elem_size, go_hash hash_func, go_same same_func, go_ii hint, go_ii argc, void* init) {
-    map_metadata *meta = malloc(sizeof(map_metadata) + key_size + elem_size);
+go_kv go_make(go_ii key_size, go_ii elem_size, go_hash hash_func, go_same same_func, go_ii hint, go_ii argc, const void* init, size_t stride, size_t val_offset) {
+    size_t aligned = ((size_t)key_size + 7) & ~(size_t)7;
+    map_metadata *meta = malloc(sizeof(map_metadata) + aligned + elem_size);
     meta->key_size = key_size;
     meta->val_size = elem_size;
+    meta->val_offset = aligned;
     meta->key_hash = hash_func;
     meta->key_same = same_func;
-    go_kv map = (go_kv)hashmap_new(key_size+elem_size, 0, 0, 0,
+    go_kv map = (go_kv)hashmap_new(aligned + elem_size, hint > 0 ? (size_t)hint : 0, 0, 0,
         map_hash, map_compare, NULL, meta);
     for (go_ii i = 0; i < argc; i++) {
-        hashmap_set(map, (char*)init + i * (key_size + elem_size));
+        const char* entry = (const char*)init + i * stride;
+        go_map_set(map, entry, entry + val_offset);
     }
     return map;
+}
+
+go_u8 go_hash_bytes(const void* p, size_t n, go_u8 seed0, go_u8 seed1) {
+    return hashmap_xxhash3(p, n, seed0, seed1);
 }
 void go_map_set(go_kv m, const void *key, const void *val) {
     if (!m) go_panic_error("assignment to entry in nil map");
     map_metadata *meta = hashmap_udata(m);
     void* staging = meta->staging;
     memcpy(staging, key, meta->key_size);
-    memcpy((char*)staging + meta->key_size, val, meta->val_size);
+    memcpy((char*)staging + meta->val_offset, val, meta->val_size);
     hashmap_set(m, staging);
 }
 go_tf go_map_get(go_kv m, const void *key, void *val) {
@@ -103,7 +111,7 @@ go_tf go_map_get(go_kv m, const void *key, void *val) {
     map_metadata *meta = hashmap_udata(m);
     const void* ptr = hashmap_get(m, key);
     if (ptr) {
-        memcpy(val, (char*)ptr + meta->key_size, meta->val_size);
+        memcpy(val, (char*)ptr + meta->val_offset, meta->val_size);
         return true;
     }
     memset(val, 0, meta->val_size);

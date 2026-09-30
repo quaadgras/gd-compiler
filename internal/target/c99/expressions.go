@@ -289,7 +289,7 @@ func (c99 Target) ExpressionIndex(expr source.ExpressionIndex) error {
 		return nil
 	case *types.Map:
 		mtype := expr.X.TypeAndValue().Type.(*types.Map)
-		symbol := fmt.Sprintf("go_map_%s_%s_get", c99.Mangle(mtype.Key()), c99.Mangle(mtype.Elem()))
+		symbol := "go_map_get_" + identifier.ReplaceAllString(c99.TypeOf(mtype.Key())+"_"+c99.TypeOf(mtype.Elem()), "_")
 		c99.Requires(symbol, c99.Prelude, func(w io.Writer) error {
 			fmt.Fprintf(w, "static inline %s %s(go_kv m, %s key) { %s val = {0}; go_map_get(m, &key, &val); return val; }\n",
 				c99.TypeOf(mtype.Elem()), symbol, c99.TypeOf(mtype.Key()), c99.TypeOf(mtype.Elem()))

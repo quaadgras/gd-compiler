@@ -203,9 +203,10 @@ void* go_index(go_ll s, go_ii elem_size, go_ii i);
 static inline go_ii go_slice_len(go_ll s) { return s.len; }
 void go_slice_clear(go_ll s);
 
-go_kv go_make(go_ii key_size, go_ii elem_size, go_hash hash_func, go_same same_func, go_ii hint, go_ii argc, void* init);
-#define go_map_make(K, V, hint) go_make(sizeof(go_##K), sizeof(go_##V), go_hash_##K, go_same_##K, hint, 0, nil)
-#define go_map_literal(K, V, count, ...) go_make(sizeof(go_##K), sizeof(go_##V), go_hash_##K, go_same_##K, count, count, &(go_map_entry__##K##__##V[]){__VA_ARGS__})
+// go_make makes a map, with argc entries from init, each stride bytes, with the value at
+// val_offset (for map literals).
+go_kv go_make(go_ii key_size, go_ii elem_size, go_hash hash_func, go_same same_func, go_ii hint, go_ii argc, const void* init, size_t stride, size_t val_offset);
+go_u8 go_hash_bytes(const void* p, size_t n, go_u8 seed0, go_u8 seed1);
 void go_map_set(go_kv m, const void* key, const void* val);
 go_tf go_map_get(go_kv m, const void* key, void* val);
 

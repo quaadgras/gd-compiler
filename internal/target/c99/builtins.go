@@ -147,10 +147,13 @@ func (c99 Target) make(expr source.FunctionCall) error {
 		fmt.Fprintf(c99, ")")
 		return nil
 	case *types.Map:
-		if len(expr.Arguments) != 1 {
-			return expr.Errorf("make expects exactly one argument, got %d", len(expr.Arguments))
+		hint := "0"
+		if len(expr.Arguments) == 2 {
+			hint = "(go_ii)(" + c99.toString(expr.Arguments[1]) + ")"
 		}
-		fmt.Fprintf(c99, "go_map_make(%s, %s, 0)", c99.Mangle(typ.Key()), c99.Mangle(typ.Elem()))
+		if err := c99.MakeMap(typ, hint, "", "", 0); err != nil {
+			return expr.Errorf("%w", err)
+		}
 		return nil
 	default:
 		return fmt.Errorf("unsupported type %T", expr.Arguments[0].TypeAndValue().Type)

@@ -181,7 +181,7 @@ func (c99 Target) assignment(stmt source.StatementAssignment) error {
 		case source.Expressions.Index:
 			expr := source.Expressions.Index.Get(variable)
 			if mtype, ok := expr.X.TypeAndValue().Type.(*types.Map); ok {
-				symbol := fmt.Sprintf("go_map_%s_%s_set", c99.Mangle(mtype.Key()), c99.Mangle(mtype.Elem()))
+				symbol := "go_map_set_" + identifier.ReplaceAllString(c99.TypeOf(mtype.Key())+"_"+c99.TypeOf(mtype.Elem()), "_")
 				c99.Requires(symbol, c99.Prelude, func(w io.Writer) error {
 					fmt.Fprintf(w, "static inline void %s(go_kv m, %s key, %s val) { go_map_set(m, &key, &val); }\n",
 						symbol, c99.TypeOf(mtype.Key()), c99.TypeOf(mtype.Elem()))
