@@ -369,7 +369,7 @@ func (c99 Target) ExpressionIndex(expr source.ExpressionIndex) error {
 			return err
 		}
 		fmt.Fprintf(c99, ", ")
-		if err := c99.Expression(expr.Index); err != nil {
+		if err := c99.ExpressionAs(expr.Index, mtype.Key()); err != nil {
 			return err
 		}
 		fmt.Fprintf(c99, ")")

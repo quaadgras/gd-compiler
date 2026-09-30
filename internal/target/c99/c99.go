@@ -158,8 +158,9 @@ func (c99 Target) Compile(node source.Node) error {
 	}
 	rtype := reflect.TypeOf(node)
 	method := reflect.ValueOf(&c99).MethodByName(rtype.Name())
-	if !method.IsValid() {
-		return fmt.Errorf("unsupported node type: %s", rtype.Name())
+	if !method.IsValid() || method.Type().NumIn() != 1 || method.Type().In(0) != rtype ||
+		method.Type().NumOut() != 1 || method.Type().Out(0) != reflect.TypeFor[error]() {
+		return source.LocationOf(node).Errorf("unsupported node type: %s", rtype.Name())
 	}
 	err := method.Call([]reflect.Value{reflect.ValueOf(node)})
 	if len(err) > 0 && !err[0].IsNil() {

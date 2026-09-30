@@ -71,12 +71,17 @@ func (c99 Target) keyParts(t types.Type, k, x, y string, hashes, equals *[]strin
 		mix(k, "go_ch")
 		*equals = append(*equals, fmt.Sprintf("%s == %s", x, y))
 	case *types.Array:
-		for i := range typ.Len() {
-			sub := fmt.Sprintf(".a[%d]", i)
-			if err := c99.keyParts(typ.Elem(), k+sub, x+sub, y+sub, hashes, equals); err != nil {
-				return err
-			}
+		if typ.Len() == 0 {
+			break
 		}
+		i := fmt.Sprintf("go_i%d", strings.Count(k, "go_i")) // for nested arrays.
+		sub := ".a[" + i + "]"
+		var elems, unused []string
+		if err := c99.keyParts(typ.Elem(), k+sub, x+sub, y+sub, &elems, &unused); err != nil {
+			return err
+		}
+		*hashes = append(*hashes, fmt.Sprintf("for (go_ii %[1]s = 0; %[1]s < %[2]d; %[1]s++) { %[3]s }", i, typ.Len(), strings.Join(elems, " ")))
+		*equals = append(*equals, fmt.Sprintf("%s(&%s, &%s)", c99.equalPtrFunc(t), x, y))
 	case *types.Struct:
 		for field := range typ.Fields() {
 			if field.Name() == "_" {
@@ -87,6 +92,9 @@ func (c99 Target) keyParts(t types.Type, k, x, y string, hashes, equals *[]strin
 				return err
 			}
 		}
+	case *types.Interface: // by the dynamic type of the value.
+		*hashes = append(*hashes, fmt.Sprintf("h = go_vv_hash(%s, h, seed1);", asEmptyInterface(k, t)))
+		*equals = append(*equals, fmt.Sprintf("go_vv_eq(%s, %s)", asEmptyInterface(x, t), asEmptyInterface(y, t)))
 	default:
 		return fmt.Errorf("unsupported map key type %s", t)
 	}

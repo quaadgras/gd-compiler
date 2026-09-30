@@ -187,6 +187,20 @@ func (c99 Target) assignment(stmt source.StatementAssignment) error {
 		return nil
 	}
 	for i, variable := range stmt.Variables {
+		if op := stmt.Token.Value; op >= token.ADD_ASSIGN && op <= token.AND_NOT_ASSIGN && !isAssignable(variable) {
+			// *p op= v and m[k] op= v are *p = *p op v and m[k] = m[k] op v.
+			return c99.assignment(source.StatementAssignment{Location: stmt.Location,
+				Token:     source.WithLocation[token.Token]{Value: token.ASSIGN, SourceLocation: stmt.Token.SourceLocation},
+				Variables: stmt.Variables,
+				Values: []source.Expression{source.Expressions.Binary.New(source.ExpressionBinary{
+					Location:  stmt.Location,
+					Typed:     source.Typed{TV: types.TypeAndValue{Type: variable.TypeAndValue().Type}},
+					X:         variable,
+					Operation: source.WithLocation[token.Token]{Value: op - (token.ADD_ASSIGN - token.ADD), SourceLocation: stmt.Token.SourceLocation},
+					Y:         stmt.Values[i],
+				})},
+			})
+		}
 		switch xyz.ValueOf(variable) {
 		case source.Expressions.Star:
 			star := source.Expressions.Star.Get(variable)
@@ -213,7 +227,7 @@ func (c99 Target) assignment(stmt source.StatementAssignment) error {
 					return err
 				}
 				fmt.Fprintf(c99, ", ")
-				if err := c99.Expression(expr.Index); err != nil {
+				if err := c99.ExpressionAs(expr.Index, mtype.Key()); err != nil {
 					return err
 				}
 				fmt.Fprintf(c99, ", ")
@@ -297,4 +311,17 @@ func (c99 Target) assignment(stmt source.StatementAssignment) error {
 		}
 	}
 	return nil
+}
+
+// isAssignable reports whether variable is a C lvalue (not a pointer indirection, which is
+// written by go_pointer_set, or a map index expression).
+func isAssignable(variable source.Expression) bool {
+	switch xyz.ValueOf(variable) {
+	case source.Expressions.Star:
+		return false
+	case source.Expressions.Index:
+		_, isMap := source.Expressions.Index.Get(variable).X.TypeAndValue().Type.Underlying().(*types.Map)
+		return !isMap
+	}
+	return true
 }

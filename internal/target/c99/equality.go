@@ -101,5 +101,9 @@ func (c99 Target) equalField(t types.Type) string {
 	if !types.Comparable(t) {
 		return ""
 	}
-	return ", .equal=" + c99.equalPtrFunc(t)
+	fields := ", .equal=" + c99.equalPtrFunc(t)
+	if hash, _, err := c99.MapFuncsOf(t); err == nil {
+		fields += ", .hash=" + hash
+	}
+	return fields
 }

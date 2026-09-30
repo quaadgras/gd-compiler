@@ -31,7 +31,7 @@ func loadExpression(pkg *source.Package, node ast.Expr) source.Expression {
 	case *ast.SliceExpr:
 		return source.Expressions.Slice.New(loadExpressionSlice(pkg, expr))
 	case *ast.StarExpr:
-		if _, ok := pkg.TypeOf(expr).(*types.Pointer); ok {
+		if tv, ok := pkg.Types[expr]; ok && tv.IsType() {
 			return source.Expressions.Type.New(source.Types.Pointer.New(loadTypePointer(pkg, expr)))
 		}
 		return source.Expressions.Star.New(loadStar(pkg, expr))

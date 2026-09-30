@@ -476,6 +476,33 @@ go_tf go_vv_eq(go_vv a, go_vv b) {
     go_panic_error("runtime error: comparing uncomparable type %s", a.go_type->name);
 }
 
+go_u8 go_vv_hash(go_vv v, go_u8 seed0, go_u8 seed1) {
+    if (!v.go_type) return go_hash_bytes("", 0, seed0, seed1);
+    const void* x = v.ptr.ptr;
+    size_t size;
+    switch (v.go_type->kind) {
+    case go_kind_bool: case go_kind_int8: case go_kind_uint8: size = 1; break;
+    case go_kind_int16: case go_kind_uint16: size = 2; break;
+    case go_kind_int32: case go_kind_uint32: size = 4; break;
+    case go_kind_int64: case go_kind_uint64: size = 8; break;
+    case go_kind_int: case go_kind_uint: size = sizeof(go_ii); break;
+    case go_kind_uintptr: size = sizeof(go_up); break;
+    case go_kind_float32: { go_f4 f = *(const go_f4*)x; if (f == 0) f = 0; return go_hash_bytes(&f, sizeof f, seed0, seed1); }
+    case go_kind_float64: { go_f8 f = *(const go_f8*)x; if (f == 0) f = 0; return go_hash_bytes(&f, sizeof f, seed0, seed1); }
+    case go_kind_complex64: { go_aaf4f4zz c = *(const go_aaf4f4zz*)x; if (c.f1 == 0) c.f1 = 0; if (c.f2 == 0) c.f2 = 0; return go_hash_bytes(&c, sizeof c, seed0, seed1); }
+    case go_kind_complex128: { go_aaf8f8zz c = *(const go_aaf8f8zz*)x; if (c.f1 == 0) c.f1 = 0; if (c.f2 == 0) c.f2 = 0; return go_hash_bytes(&c, sizeof c, seed0, seed1); }
+    case go_kind_string: return go_hash_ss(x, seed0, seed1);
+    case go_kind_pointer: case go_kind_unsafe_pointer: { void* p = ((const go_pt*)x)->ptr; return go_hash_bytes(&p, sizeof p, seed0, seed1); }
+    case go_kind_chan: { go_ch c = *(const go_ch*)x; return go_hash_bytes(&c, sizeof c, seed0, seed1); }
+    case go_kind_struct: case go_kind_array:
+        if (v.go_type->hash) return v.go_type->hash(x, seed0, seed1);
+        /* fallthrough */
+    default:
+        go_panic_error("runtime error: hash of unhashable type %s", v.go_type->name);
+    }
+    return go_hash_bytes(x, size, seed0, seed1);
+}
+
 // Runtime errors are strings, with the methods of runtime.Error (sorted by name).
 static go_ss go_runtime_error_Error(void* e) { return *(go_ss*)e; }
 static void go_runtime_error_RuntimeError(void* e) { (void)e; }
