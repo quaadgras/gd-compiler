@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/quaadgras/gd-compiler/internal/source"
-	"runtime.link/xyz"
 )
 
 func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
@@ -16,13 +15,6 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 	body, ok := decl.Body.Get()
 	if !ok {
 		return decl.Errorf("function missing body")
-	}
-	for i, stmt := range body.Statements {
-		if xyz.ValueOf(stmt) == source.Statements.Defer {
-			stmt := source.Statements.Defer.Get(stmt)
-			stmt.OutermostScope = true
-			body.Statements[i] = source.Statements.Defer.As(stmt)
-		}
 	}
 	receiver, isMethod := decl.Receiver.Get()
 	var fnName = decl.Name.String
@@ -155,10 +147,56 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 			}
 		}
 	}
+	// Result variables: named results are variables, and a function with a frame needs its
+	// results in (boxed) variables too, as it returns them after a recovered panic.
+	c99.Frame = c99.Closures.Frame(decl.Location.Node)
+	c99.ResultVars = nil
+	if results, ok := decl.Type.Results.Get(); ok {
+		i := 0
+		for _, field := range results.Fields {
+			ctype := c99.Type(field.Type)
+			names, named := field.Names.Get()
+			if !named {
+				if c99.Frame {
+					fmt.Fprintf(c99, "%s%s* go_result_%d = go_new(sizeof(%[2]s), NULL).ptr;", indent, ctype, i)
+					c99.ResultVars = append(c99.ResultVars, fmt.Sprintf("(*go_result_%d)", i))
+				}
+				i++
+				continue
+			}
+			for _, name := range names {
+				if name.String == "_" {
+					name.String = fmt.Sprintf("go_result_%d", i)
+					fmt.Fprintf(c99, "%s%s %s = {0};", indent, ctype, name.String)
+					c99.ResultVars = append(c99.ResultVars, name.String)
+				} else if !c99.StackAllocated(name) {
+					fmt.Fprintf(c99, "%s%s* %s = go_new(sizeof(%[2]s), NULL).ptr;", indent, ctype, name.String)
+					c99.ResultVars = append(c99.ResultVars, "(*"+name.String+")")
+				} else {
+					fmt.Fprintf(c99, "%s%s %s = {0};", indent, ctype, name.String)
+					c99.ResultVars = append(c99.ResultVars, name.String)
+				}
+				i++
+			}
+		}
+		if len(c99.ResultVars) > 1 {
+			return decl.Errorf("multiple results are not supported for functions with named results or defer")
+		}
+	}
+	if decl.Name.String == "main" && !isMethod && !closure {
+		c99.ResultVars = []string{"0"} // C's main returns int.
+	}
+	if c99.Frame {
+		fmt.Fprintf(c99, "%sgo_frame* go_fr = go_frame_push();", indent)
+		fmt.Fprintf(c99, "%sif (setjmp(go_fr->jb)) { go_frame_unwind(go_fr); return%s; }", indent, c99.returnValues())
+	}
 	for _, stmt := range body.Statements {
 		if err := c99.Statement(stmt); err != nil {
 			return err
 		}
+	}
+	if c99.Frame && len(c99.Results) == 0 {
+		fmt.Fprintf(c99, "%sgo_frame_return(go_fr);", indent)
 	}
 	c99.Tabs--
 	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
@@ -202,4 +240,13 @@ func (c99 Target) parameterName(name source.DefinedVariable) string {
 		return "go_param_" + name.String
 	}
 	return c99.toString(name)
+}
+
+// returnValues returns the result variables of the function being compiled, for a return
+// statement (with a leading space when there are any).
+func (c99 Target) returnValues() string {
+	if len(c99.ResultVars) == 0 {
+		return ""
+	}
+	return " " + strings.Join(c99.ResultVars, ", ")
 }

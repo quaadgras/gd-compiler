@@ -40,6 +40,9 @@ func (c99 Target) StatementIf(stmt source.StatementIf) error {
 		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 		fmt.Fprintf(c99, "}")
 	}
+	if hasInit {
+		fmt.Fprintf(c99, "}") // scope of the init statement.
+	}
 	return nil
 }
 

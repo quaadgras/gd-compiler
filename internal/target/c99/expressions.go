@@ -40,6 +40,19 @@ func (c99 Target) ExpressionBinary(expr source.ExpressionBinary) error {
 		return c99.ConstantValue(tv.Value, false)
 	}
 	switch expr.Operation.Value {
+	case token.QUO, token.REM:
+		if isInteger(expr.TypeAndValue().Type) {
+			fmt.Fprintf(c99, "%s(", c99.DivisionOf(expr.Operation.Value, expr.TypeAndValue().Type))
+			if err := c99.Expression(expr.X); err != nil {
+				return err
+			}
+			fmt.Fprintf(c99, ", ")
+			if err := c99.Expression(expr.Y); err != nil {
+				return err
+			}
+			fmt.Fprintf(c99, ")")
+			return nil
+		}
 	case token.EQL, token.NEQ:
 		x, y := expr.X, expr.Y
 		if isNil(x) {
@@ -95,6 +108,52 @@ func (c99 Target) ExpressionAs(expr source.Expression, target types.Type) error 
 		}
 	}
 	return c99.Expression(expr)
+}
+
+// arrayIndex writes the index of an array, which panics when out of range (constant
+// indexes are checked by the type checker).
+func (c99 Target) arrayIndex(index source.Expression, array *types.Array) error {
+	if index.TypeAndValue().Value != nil {
+		return c99.Expression(index)
+	}
+	fmt.Fprintf(c99, "go_index_check((go_ii)(")
+	if err := c99.Expression(index); err != nil {
+		return err
+	}
+	fmt.Fprintf(c99, "), %d)", array.Len())
+	return nil
+}
+
+// DivisionOf returns the name of a function that divides (op is token.QUO) or takes the
+// remainder (token.REM) of integers of type t, panicking on division by zero, and wrapping
+// on overflow (the most negative value divided by -1) as Go does, rather than C.
+func (c99 Target) DivisionOf(op token.Token, t types.Type) string {
+	ctype := c99.TypeOf(t)
+	name := "div"
+	if op == token.REM {
+		name = "rem"
+	}
+	symbol := "go_" + name + "_" + identifier.ReplaceAllString(ctype, "_")
+	signed := t.Underlying().(*types.Basic).Info()&types.IsUnsigned == 0
+	c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
+		fmt.Fprintf(w, "static inline %s %s(%[1]s a, %[1]s b) { ", ctype, symbol)
+		fmt.Fprintf(w, `if (b == 0) go_panic_error("runtime error: integer divide by zero"); `)
+		if signed {
+			if op == token.QUO {
+				fmt.Fprintf(w, "if (b == -1) return (%s)(0 - (go_u8)a); ", ctype)
+			} else {
+				fmt.Fprintf(w, "if (b == -1) return 0; ")
+			}
+		}
+		fmt.Fprintf(w, "return a %s b; }\n", op)
+		return nil
+	})
+	return symbol
+}
+
+func isInteger(t types.Type) bool {
+	basic, ok := t.Underlying().(*types.Basic)
+	return ok && basic.Info()&types.IsInteger != 0
 }
 
 func isNil(expr source.Expression) bool {
@@ -200,7 +259,7 @@ func (c99 Target) ExpressionIndex(expr source.ExpressionIndex) error {
 		mtype := expr.X.TypeAndValue().Type.(*types.Map)
 		symbol := fmt.Sprintf("go_map_%s_%s_get", c99.Mangle(mtype.Key()), c99.Mangle(mtype.Elem()))
 		c99.Requires(symbol, c99.Prelude, func(w io.Writer) error {
-			fmt.Fprintf(w, "static inline %s %s(go_kv m, %s key) { %s val; go_map_get(m, &key, &val); return val; }\n",
+			fmt.Fprintf(w, "static inline %s %s(go_kv m, %s key) { %s val = {0}; go_map_get(m, &key, &val); return val; }\n",
 				c99.TypeOf(mtype.Elem()), symbol, c99.TypeOf(mtype.Key()), c99.TypeOf(mtype.Elem()))
 			return nil
 		})
@@ -219,7 +278,7 @@ func (c99 Target) ExpressionIndex(expr source.ExpressionIndex) error {
 			return err
 		}
 		fmt.Fprintf(c99, ".a[")
-		if err := c99.Expression(expr.Index); err != nil {
+		if err := c99.arrayIndex(expr.Index, xtype); err != nil {
 			return err
 		}
 		fmt.Fprintf(c99, "]")
@@ -234,7 +293,7 @@ func (c99 Target) ExpressionIndex(expr source.ExpressionIndex) error {
 			return err
 		}
 		fmt.Fprintf(c99, ", %s).a[", c99.ArrayTypeOf(array))
-		if err := c99.Expression(expr.Index); err != nil {
+		if err := c99.arrayIndex(expr.Index, array); err != nil {
 			return err
 		}
 		fmt.Fprintf(c99, "]")
@@ -271,41 +330,33 @@ func (c99 Target) AwaitChannel(e source.AwaitChannel) error {
 	return nil
 }
 
+// ExpressionSlice slices a slice, an array, or a pointer to an array, sharing its
+// elements, see go_slice.
 func (c99 Target) ExpressionSlice(e source.ExpressionSlice) error {
-	var from, high, cap string = "0", "0", "0"
-	if expr, ok := e.From.Get(); ok {
-		from = c99.toString(expr)
+	bound := func(expr xyz.Maybe[source.Expression]) string {
+		if value, ok := expr.Get(); ok {
+			return "(go_i8)(" + c99.toString(value) + ")"
+		}
+		return "go_slice_default"
 	}
-	if expr, ok := e.High.Get(); ok {
-		high = c99.toString(expr)
-	}
-	if expr, ok := e.Capacity.Get(); ok {
-		cap = c99.toString(expr)
-	} else {
-		cap = high
-	}
-	switch e.X.TypeAndValue().Type.(type) {
+	low, high, max := bound(e.From), bound(e.High), bound(e.Capacity)
+	switch typ := e.X.TypeAndValue().Type.Underlying().(type) {
 	case *types.Pointer:
-		array := e.X.TypeAndValue().Type.(*types.Pointer).Elem().(*types.Array)
+		array, ok := typ.Elem().Underlying().(*types.Array)
+		if !ok {
+			return e.Location.Errorf("unsupported slice of %s", typ)
+		}
 		fmt.Fprintf(c99, "go_pointer_slice(%s, %d, %s, %s, %s, %s)",
-			c99.toString(e.X),
-			array.Len(),
-			c99.TypeOf(array.Elem()),
-			from, high, cap)
+			c99.toString(e.X), array.Len(), c99.TypeOf(array.Elem()), low, high, max)
+	case *types.Array:
+		fmt.Fprintf(c99, "go_slice((go_ll){ (go_pt){ (%s).a }, %d, %[2]d }, sizeof(%s), %s, %s, %s)",
+			c99.toString(e.X), typ.Len(), c99.TypeOf(typ.Elem()), low, high, max)
 	case *types.Slice:
-		fmt.Fprintf(c99, "go_slice_slice(%s, %s, %s, %s)",
-			c99.toString(e.X),
-			c99.TypeOf(e.X.TypeAndValue().Type.(*types.Pointer).Elem()),
-			from, high)
+		fmt.Fprintf(c99, "go_slice(%s, sizeof(%s), %s, %s, %s)",
+			c99.toString(e.X), c99.TypeOf(typ.Elem()), low, high, max)
+	default:
+		return e.Location.Errorf("unsupported slice of %s", typ)
 	}
-	return nil
-}
-
-func (c99 Target) ExpressionTypeAssertion(e source.ExpressionTypeAssertion) error {
-	if err := c99.Expression(e.X); err != nil {
-		return err
-	}
-	fmt.Fprintf(c99, " .(%s)", e.Type)
 	return nil
 }
 

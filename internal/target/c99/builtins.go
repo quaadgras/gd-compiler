@@ -21,7 +21,7 @@ func (c99 Target) print(expr source.FunctionCall, newline bool) error {
 		if i > 0 && newline {
 			calls = append(calls, `go_print_cstring(" ")`)
 		}
-		call, err := c99.printArgument(expr, arg)
+		call, err := c99.printArgument(expr, i, arg)
 		if err != nil {
 			return err
 		}
@@ -38,7 +38,7 @@ func (c99 Target) print(expr source.FunctionCall, newline bool) error {
 	return nil
 }
 
-func (c99 Target) printArgument(call source.FunctionCall, arg source.Expression) (string, error) {
+func (c99 Target) printArgument(call source.FunctionCall, index int, arg source.Expression) (string, error) {
 	tv := arg.TypeAndValue()
 	var value string
 	if tv.Value != nil && tv.Value.Kind() != constant.Complex {
@@ -58,6 +58,8 @@ func (c99 Target) printArgument(call source.FunctionCall, arg source.Expression)
 		}
 		value = fmt.Sprintf("%s(%s, %s)", ctor,
 			strconv.FormatFloat(re, 'g', -1, 64), strconv.FormatFloat(im, 'g', -1, 64))
+	} else if c99.Deferred != nil && index < len(c99.Deferred.Args) && c99.Deferred.Args[index] != "" {
+		value = c99.Deferred.Args[index]
 	} else {
 		value = c99.toString(arg)
 	}
@@ -243,10 +245,15 @@ func (c99 Target) panic(expr source.FunctionCall) error {
 	if len(expr.Arguments) != 1 {
 		return fmt.Errorf("panic expects exactly one argument, got %d", len(expr.Arguments))
 	}
-	fmt.Fprintf(c99, "@panic(")
-	if err := c99.Expression(expr.Arguments[0]); err != nil {
-		return err
+	value := ""
+	if c99.Deferred != nil && c99.Deferred.Args[0] != "" {
+		value = c99.Deferred.Args[0]
+	} else {
+		var err error
+		if value, err = c99.AnyOf(expr.Arguments[0]); err != nil {
+			return expr.Errorf("%w", err)
+		}
 	}
-	fmt.Fprintf(c99, ")")
+	fmt.Fprintf(c99, "go_panic_any(%s)", value)
 	return nil
 }

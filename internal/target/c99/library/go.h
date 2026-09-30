@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <setjmp.h>
 
 #define true 1
 #define false 0
@@ -128,11 +129,9 @@ static inline go_aaf8f8zz go_complex128(go_f8 real, go_f8 imag) { return (go_aaf
 typedef struct { char _; } go_tuple;
 
 #define go_ignore(x) (void)(x)
-#define go_split() go_ll go_defers = {0};
-#define go_defer(fn, T, ...) do { \
-    go_defers = go_append(go_defers, sizeof(fn), &fn); \
-    go_defers = go_append(go_defers, sizeof(T), &(T){__VA_ARGS__}); \
-} while(0)
+// Every function starts with go_split, which takes the token that allows recover to
+// stop a panic, see go_recover.
+#define go_split() go_tf go_can_recover = go_take_recover(); (void)go_can_recover;
 
 void go_routine(int(trampoline)(void*), go_fn fn, size_t arg_size, void* arg);
 #define go_call(fn, IN, OUT, ...) go_routine(go_call_##IN##OUT, fn, sizeof(go_##IN), &(go_##IN){__VA_ARGS__})
@@ -159,18 +158,41 @@ void go_print_pointer(go_up p);
 void go_print_slice(go_ll s);
 void go_print_iface(go_up type, go_up data);
 
+// defer, panic and recover. A function with deferred calls pushes a frame, and sets its
+// jmp_buf with setjmp, panics longjmp to the innermost frame, which runs its deferred calls,
+// either returning normally if one of them recovered, or continuing the panic.
+#if defined(_MSC_VER) && !defined(__clang__)
+#define go_thread_local __declspec(thread)
+#else
+#define go_thread_local _Thread_local
+#endif
+typedef struct go_deferred { go_fn fn; struct go_deferred* next; } go_deferred;
+typedef struct go_frame { jmp_buf jb; struct go_frame* prev; go_deferred* defers; } go_frame;
+go_frame* go_frame_push(void);
+void go_defer_push(go_frame* f, go_fn fn);
+void go_frame_return(go_frame* f);
+void go_frame_unwind(go_frame* f);
+go_tf go_take_recover(void);
+go_vv go_recover(go_tf can_recover);
+_Noreturn void go_panic_any(go_vv v);
+go_tf go_type_eq(const go_type* a, const go_type* b);
+static inline go_vv go_if_to_vv(go_if v) { return (go_vv){ .ptr = v.ptr, .go_type = v.go_type }; }
+_Noreturn void go_panic_assertion(const go_type* want, go_vv have);
+
 typedef go_u8 (*go_hash)(const void *item, go_u8 seed0, go_u8 seed1);
 typedef go_tf (*go_same)(const void *a, const void *b);
 
 go_pt go_new(go_ii size,  const void* init);
 #define go_pointer_new(t) go_new(sizeof(t), nil)
-#define go_pointer_set(p, t, v) *(t*)((p).ptr) = (v)
-#define go_pointer_get(p, t) (*(t*)((p).ptr))
-#define go_pointer_slice(p, S, T, lo, hi, cap) go_slice((go_ll){p,S,S}, sizeof(T), lo, hi, cap)
+#define go_pointer_set(p, t, v) *(t*)go_nil_check((p).ptr) = (v)
+#define go_pointer_get(p, t) (*(t*)go_nil_check((p).ptr))
+// go_slice slices s[low:high:max], omitted bounds are go_slice_default.
+#define go_slice_default INT64_MIN
+#define go_pointer_slice(p, S, T, lo, hi, max) go_slice((go_ll){ (go_pt){ go_nil_check((p).ptr) }, S, S }, sizeof(T), lo, hi, max)
 
 go_ii go_copy(go_ii elem_size, go_ll dst, go_ll src);
 go_ll go_append(go_ll s, go_ii elem_size, const void* elem);
-go_ll go_slice(go_ll s, go_ii elem_size, go_ii low, go_ii high, go_ii cap);
+go_ll go_slice(go_ll s, go_ii elem_size, go_i8 low, go_i8 high, go_i8 max);
 void* go_index(go_ll s, go_ii elem_size, go_ii i);
 
 #define go_slice_make(T, length, capacity) (go_ll){ .ptr = go_new(sizeof(T)*capacity, nil), .len = length, .cap = capacity }
@@ -216,9 +238,18 @@ static inline go_type* go_type_pointer_to(const go_type* to) {
     return go_new(sizeof(go_type), &(go_type){.name="*", .kind=go_kind_pointer, .data={.pointer={.elem=to}}}).ptr;
 }
 
-static inline void go_panic(const char* msg) {
-    fprintf(stderr, "panic: %s\n", msg);
-    abort();
+// Runtime errors panic with a value of type runtime.Error, holding the message (a string).
+extern const go_type go_type_runtime_error;
+_Noreturn void go_panic_error(const char* format, ...);
+static inline void go_panic(const char* msg) { go_panic_error("%s", msg); }
+static inline void* go_nil_check(void* p) {
+    if (!p) go_panic_error("runtime error: invalid memory address or nil pointer dereference");
+    return p;
+}
+static inline go_ii go_index_check(go_ii i, go_ii length) {
+    if (i < 0) go_panic_error("runtime error: index out of range [%lld]", (long long)i);
+    if (i >= length) go_panic_error("runtime error: index out of range [%lld] with length %lld", (long long)i, (long long)length);
+    return i;
 }
 
 static const go_type go_type_bool = {.name="bool", .kind=go_kind_bool};

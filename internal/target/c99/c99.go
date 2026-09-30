@@ -34,6 +34,16 @@ type Target struct {
 	Closures    *Closures
 	Environment []*types.Var
 
+	// Frame is true when the function being compiled has deferred calls (so go_fr is its
+	// go_frame), and ResultVars are the C expressions for its result variables, when they
+	// are named, or it has a frame.
+	Frame      bool
+	ResultVars []string
+
+	// Deferred is set when compiling the call of a deferred function, with the C
+	// expressions for the parts of the call that were evaluated by the defer statement.
+	Deferred *DeferredCall
+
 	// Initializers of package-level variables, which are written to the package's init
 	// function after all of its files are compiled, in the order given by the type
 	// checker.

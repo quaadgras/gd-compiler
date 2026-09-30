@@ -58,29 +58,6 @@ func (c99 Target) StatementDecrement(stmt source.StatementDecrement) error {
 	return nil
 }
 
-func (c99 Target) StatementDefer(stmt source.StatementDefer) error {
-	// TODO arguments need to be evaluated at the time of the defer statement.
-	if stmt.OutermostScope {
-		fmt.Fprintf(c99, "go_defer(")
-		if err := c99.Expression(stmt.Call.Function); err != nil {
-			return err
-		}
-		fmt.Fprintf(c99, ", go_tuple")
-		for _, arg := range stmt.Call.Arguments {
-			fmt.Fprintf(c99, "__%s", c99.TypeOf(arg.TypeAndValue().Type))
-		}
-		for _, arg := range stmt.Call.Arguments {
-			fmt.Fprintf(c99, ", ")
-			if err := c99.Expression(arg); err != nil {
-				return err
-			}
-		}
-		fmt.Fprintf(c99, ")")
-		return nil
-	}
-	return stmt.Location.Errorf("only defer at the outermost scope of a function is currently supported")
-}
-
 func (c99 Target) StatementEmpty(stmt source.StatementEmpty) error { return nil }
 
 func (c99 Target) StatementBreak(stmt source.StatementBreak) error {
@@ -99,21 +76,6 @@ func (c99 Target) StatementIncrement(stmt source.StatementIncrement) error {
 		return err
 	}
 	fmt.Fprintf(c99, "+=1")
-	return nil
-}
-
-func (c99 Target) StatementReturn(stmt source.StatementReturn) error {
-	fmt.Fprintf(c99, "return")
-	for i, result := range stmt.Results {
-		fmt.Fprintf(c99, " ")
-		var target types.Type
-		if i < len(c99.Results) {
-			target = c99.Results[i]
-		}
-		if err := c99.ExpressionAs(result, target); err != nil {
-			return err
-		}
-	}
 	return nil
 }
 

@@ -4,6 +4,7 @@
 #include <string.h>
 #include <math.h>
 #include <inttypes.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include <threads.h>
 #include "map.h"
@@ -90,6 +91,7 @@ go_kv go_make(go_ii key_size, go_ii elem_size, go_hash hash_func, go_same same_f
     return map;
 }
 void go_map_set(go_kv m, const void *key, const void *val) {
+    if (!m) go_panic_error("assignment to entry in nil map");
     map_metadata *meta = hashmap_udata(m);
     void* staging = meta->staging;
     memcpy(staging, key, meta->key_size);
@@ -97,6 +99,7 @@ void go_map_set(go_kv m, const void *key, const void *val) {
     hashmap_set(m, staging);
 }
 go_tf go_map_get(go_kv m, const void *key, void *val) {
+    if (!m) return false; // val is zero initialized by the caller.
     map_metadata *meta = hashmap_udata(m);
     const void* ptr = hashmap_get(m, key);
     if (ptr) {
@@ -125,22 +128,27 @@ void go_routine(int(trampoline)(void*), go_fn fn, size_t arg_size, void* arg) {
 }
 
 void* go_index(go_ll s, go_ii elem_size, go_ii i) {
-    if (i < 0 || i >= s.len) {
-        go_panic("index out of range");
-    }
+    go_index_check(i, s.len);
     return (char*)s.ptr.ptr + i * elem_size;
 }
 
-go_ll go_slice(go_ll s, go_ii elem_size, go_ii low, go_ii high, go_ii cap) {
-    if (low < 0 || high < low || high > s.len) {
-        go_panic("slice bounds out of range");
+go_ll go_slice(go_ll s, go_ii elem_size, go_i8 low, go_i8 high, go_i8 max) {
+    if (low == go_slice_default) low = 0;
+    if (high == go_slice_default) high = s.len;
+    if (max == go_slice_default) {
+        max = s.cap;
+    } else if (max < 0 || max > s.cap) {
+        go_panic_error("runtime error: slice bounds out of range [::%lld] with capacity %lld", (long long)max, (long long)s.cap);
     }
-    if (cap < high - low) {
-        cap = high - low;
+    if (high < 0 || high > max) {
+        go_panic_error("runtime error: slice bounds out of range [:%lld] with capacity %lld", (long long)high, (long long)max);
     }
-    go_pt new_ptr = go_new(cap * elem_size, nil);
-    memcpy(new_ptr.ptr, (char*)s.ptr.ptr + low * elem_size, (high - low) * elem_size);
-    return (go_ll){ .ptr = new_ptr, .len = high - low, .cap = cap };
+    if (low < 0 || low > high) {
+        go_panic_error("runtime error: slice bounds out of range [%lld:%lld]", (long long)low, (long long)high);
+    }
+    // the result shares the backing array.
+    go_pt ptr = { .ptr = s.ptr.ptr ? (char*)s.ptr.ptr + low * elem_size : NULL };
+    return (go_ll){ .ptr = ptr, .len = (go_ii)(high - low), .cap = (go_ii)(max - low) };
 }
 
 go_vv go_any_new(size_t size, void* value, const go_type* go_type) {
@@ -258,4 +266,140 @@ void go_print_iface(go_up type, go_up data) {
     go_print_cstring(",");
     go_print_pointer(data);
     go_print_cstring(")");
+}
+
+// defer, panic and recover, see go.h.
+
+static go_thread_local struct {
+    go_frame* top;      // innermost frame with deferred calls.
+    go_vv value;        // of the current panic.
+    go_tf panicking;
+    go_tf recovered;
+    go_tf token;        // set while a deferred call is starting, see go_take_recover.
+} go_g;
+
+go_frame* go_frame_push(void) {
+    go_frame* f = go_new(sizeof(go_frame), NULL).ptr;
+    f->prev = go_g.top;
+    go_g.top = f;
+    return f;
+}
+
+void go_defer_push(go_frame* f, go_fn fn) {
+    go_deferred* d = go_new(sizeof(go_deferred), NULL).ptr;
+    d->fn = fn;
+    d->next = f->defers;
+    f->defers = d;
+}
+
+// go_run_defers runs the deferred calls of f, in last-in-first-out order. Each is removed
+// before it is called, so that if it panics, the frame continues with the rest.
+static void go_run_defers(go_frame* f) {
+    while (f->defers) {
+        go_deferred* d = f->defers;
+        f->defers = d->next;
+        go_g.token = true;
+        ((void(*)(void*))d->fn.ptr)(d->fn.env);
+        go_g.token = false;
+    }
+}
+
+void go_frame_return(go_frame* f) {
+    go_run_defers(f);
+    go_g.top = f->prev;
+}
+
+// go_take_recover is called on entry to every function: only a function called directly
+// as a deferred call receives the token that allows it to recover.
+go_tf go_take_recover(void) {
+    go_tf token = go_g.token;
+    go_g.token = false;
+    return token;
+}
+
+go_vv go_recover(go_tf can_recover) {
+    if (!can_recover || !go_g.panicking || go_g.recovered) return (go_vv){0};
+    go_g.recovered = true;
+    return go_g.value;
+}
+
+static void go_print_panic_value(go_vv v) {
+    const go_type* t = v.go_type;
+    void* p = v.ptr.ptr;
+    if (!t) { go_print_cstring("nil"); return; }
+    switch (t->kind) {
+    case go_kind_string: go_print_string(*(go_ss*)p); return;
+    case go_kind_bool: go_print_bool(*(go_tf*)p); return;
+    case go_kind_int: go_print_int(*(go_ii*)p); return;
+    case go_kind_int8: go_print_int(*(go_i1*)p); return;
+    case go_kind_int16: go_print_int(*(go_i2*)p); return;
+    case go_kind_int32: go_print_int(*(go_i4*)p); return;
+    case go_kind_int64: go_print_int(*(go_i8*)p); return;
+    case go_kind_uint: go_print_uint((go_u8)*(go_uu*)p); return;
+    case go_kind_uint8: go_print_uint(*(go_u1*)p); return;
+    case go_kind_uint16: go_print_uint(*(go_u2*)p); return;
+    case go_kind_uint32: go_print_uint(*(go_u4*)p); return;
+    case go_kind_uint64: go_print_uint(*(go_u8*)p); return;
+    case go_kind_uintptr: go_print_uint(*(go_up*)p); return;
+    case go_kind_float32: go_print_float32(*(go_f4*)p); return;
+    case go_kind_float64: go_print_float64(*(go_f8*)p); return;
+    default:
+        go_print_cstring("(");
+        go_print_cstring(t->name);
+        go_print_cstring(") ");
+        go_print_pointer((go_up)p);
+    }
+}
+
+// go_panic_continue unwinds to the innermost frame, or if there are none, exits the
+// program like gc does, after printing the panic value.
+static _Noreturn void go_panic_continue(void) {
+    if (go_g.top) longjmp(go_g.top->jb, 1);
+    go_print_cstring("panic: ");
+    go_print_panic_value(go_g.value);
+    go_print_cstring("\n\ngoroutine 1 [running]:\n");
+    exit(2);
+}
+
+void go_frame_unwind(go_frame* f) {
+    go_run_defers(f);
+    go_g.top = f->prev;
+    if (!go_g.recovered) go_panic_continue();
+    go_g.panicking = false;
+    go_g.recovered = false;
+    go_g.value = (go_vv){0};
+}
+
+void go_panic_any(go_vv v) {
+    go_g.panicking = true;
+    go_g.recovered = false;
+    go_g.value = v;
+    go_panic_continue();
+}
+
+// go_type_eq reports whether a and b describe the same type. Descriptors of predeclared
+// types are defined in each file that uses them, so they are compared by kind and name.
+go_tf go_type_eq(const go_type* a, const go_type* b) {
+    if (a == b) return true;
+    if (!a || !b) return false;
+    return a->kind == b->kind && strcmp(a->name, b->name) == 0;
+}
+
+const go_type go_type_runtime_error = {.name="runtime.Error", .kind=go_kind_string};
+
+void go_panic_error(const char* format, ...) {
+    va_list args;
+    va_start(args, format);
+    int n = vsnprintf(NULL, 0, format, args);
+    va_end(args);
+    char* msg = go_new(n + 1, NULL).ptr;
+    va_start(args, format);
+    vsnprintf(msg, (size_t)n + 1, format, args);
+    va_end(args);
+    go_ss s = { .ptr = msg, .len = n };
+    go_panic_any(go_any_new(sizeof(go_ss), &s, &go_type_runtime_error));
+}
+
+void go_panic_assertion(const go_type* want, go_vv have) {
+    go_panic_error("interface conversion: interface {} is %s, not %s", have.go_type ? have.go_type->name : "nil", want->name);
 }

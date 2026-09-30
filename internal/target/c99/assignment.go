@@ -102,6 +102,18 @@ func (c99 Target) StatementAssignment(stmt source.StatementAssignment) error {
 			if err := c99.Expression(variable); err != nil {
 				return err
 			}
+			if op := stmt.Token.Value; (op == token.QUO_ASSIGN || op == token.REM_ASSIGN) && isInteger(variable.TypeAndValue().Type) {
+				div := token.QUO
+				if op == token.REM_ASSIGN {
+					div = token.REM
+				}
+				fmt.Fprintf(c99, " = %s(%s, ", c99.DivisionOf(div, variable.TypeAndValue().Type), c99.toString(variable))
+				if err := c99.ExpressionAs(stmt.Values[i], variable.TypeAndValue().Type); err != nil {
+					return err
+				}
+				fmt.Fprintf(c99, ")")
+				continue
+			}
 			fmt.Fprintf(c99, " %s ", stmt.Token.Value)
 			switch variable.TypeAndValue().Type.(type) {
 			case *types.Interface:

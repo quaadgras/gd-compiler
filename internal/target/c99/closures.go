@@ -16,7 +16,12 @@ import (
 type Closures struct {
 	captures map[*ast.FuncLit][]*types.Var // in order of first use.
 	captured map[types.Object]bool
-	count    int // closures compiled so far, for unique names.
+	count    int // closures (and deferred calls) compiled so far, for unique names.
+
+	// frames are the functions (*ast.FuncDecl or *ast.FuncLit) with deferred calls, which
+	// need a frame for panics to unwind to. Their named results are boxed, as they are
+	// read after a panic recovers (and may be set by deferred calls).
+	frames map[ast.Node]bool
 }
 
 // NewClosures analyzes the closures in files.
@@ -24,8 +29,33 @@ func NewClosures(info *types.Info, files []*ast.File) *Closures {
 	closures := &Closures{
 		captures: make(map[*ast.FuncLit][]*types.Var),
 		captured: make(map[types.Object]bool),
+		frames:   make(map[ast.Node]bool),
 	}
 	for _, file := range files {
+		ast.Inspect(file, func(node ast.Node) bool {
+			var ftype *ast.FuncType
+			var body *ast.BlockStmt
+			switch fn := node.(type) {
+			case *ast.FuncDecl:
+				ftype, body = fn.Type, fn.Body
+			case *ast.FuncLit:
+				ftype, body = fn.Type, fn.Body
+			default:
+				return true
+			}
+			if body == nil || !hasDefer(body) {
+				return true
+			}
+			closures.frames[node] = true
+			if ftype.Results != nil {
+				for _, field := range ftype.Results.List {
+					for _, name := range field.Names {
+						closures.captured[info.Defs[name]] = true
+					}
+				}
+			}
+			return true
+		})
 		ast.Inspect(file, func(node ast.Node) bool {
 			lit, ok := node.(*ast.FuncLit)
 			if !ok {
@@ -55,6 +85,26 @@ func NewClosures(info *types.Info, files []*ast.File) *Closures {
 		})
 	}
 	return closures
+}
+
+// hasDefer reports whether body has a defer statement, outside of any function literals.
+func hasDefer(body *ast.BlockStmt) bool {
+	found := false
+	ast.Inspect(body, func(node ast.Node) bool {
+		switch node.(type) {
+		case *ast.DeferStmt:
+			found = true
+		case *ast.FuncLit:
+			return false
+		}
+		return !found
+	})
+	return found
+}
+
+// Frame reports whether fn (an *ast.FuncDecl or *ast.FuncLit) needs a frame, see [Closures].
+func (closures *Closures) Frame(fn ast.Node) bool {
+	return closures != nil && closures.frames[fn]
 }
 
 // Captured reports whether v is captured by a closure, and so is boxed.
@@ -122,7 +172,7 @@ func (c99 Target) InvokerOf(sig *types.Signature) (string, error) {
 		if result == "void" {
 			ret = ""
 		}
-		fmt.Fprintf(w, "static inline %s %s(%s) { %s((%s(*)(%s))go_f.ptr)(%s); }\n", result, symbol,
+		fmt.Fprintf(w, "static inline %s %s(%s) { go_nil_check((void*)(go_up)go_f.ptr); %s((%s(*)(%s))go_f.ptr)(%s); }\n", result, symbol,
 			strings.Join(params, ", "), ret, result, strings.Join(append([]string{"void*"}, ptypes...), ", "),
 			strings.Join(args, ", "))
 		return nil

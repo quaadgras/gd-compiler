@@ -2,6 +2,7 @@ package c99
 
 import (
 	"fmt"
+	"go/constant"
 	"go/types"
 	"io"
 
@@ -25,6 +26,14 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 	var isVariable bool
 	var isInterface bool
 	var invoked bool // called through a func value, see [Target.invoke].
+	// A deferred call (see [DeferredCall]) uses the values evaluated by the defer statement.
+	deferred := c99.Deferred
+	if xyz.ValueOf(function) != source.Expressions.BuiltinFunction {
+		c99.Deferred = nil
+	}
+	if deferred == nil {
+		deferred = &DeferredCall{}
+	}
 	switch xyz.ValueOf(function) {
 	case source.Expressions.BuiltinFunction:
 		call := source.Expressions.BuiltinFunction.Get(function)
@@ -49,6 +58,13 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 			return c99.cap(expr)
 		case "panic":
 			return c99.panic(expr)
+		case "recover":
+			if c99.Deferred != nil { // defer recover(): not called by a deferred function.
+				fmt.Fprintf(c99, "go_recover(false)")
+			} else {
+				fmt.Fprintf(c99, "go_recover(go_can_recover)")
+			}
+			return nil
 		default:
 			return expr.Errorf("unsupported builtin function %s", call)
 		}
@@ -66,7 +82,7 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 		call := source.Expressions.DefinedVariable.Get(function)
 		if expr.Go {
 			fmt.Fprint(c99, call.String+", ")
-		} else if err := c99.invoke(function); err != nil {
+		} else if err := c99.invoke(function, deferred.Callee); err != nil {
 			return err
 		} else {
 			invoked = true
@@ -81,15 +97,12 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 			if defined.Method {
 				_, isInterface = left.X.TypeAndValue().Type.Underlying().(*types.Interface)
 				if isInterface {
-					fmt.Fprintf(c99, `go_interface_methods(%s, `, c99.InterfaceTypeOf(left.X.TypeAndValue().Type))
-					if err := c99.Expression(left.X); err != nil {
-						return err
+					x := deferred.Receiver
+					if x == "" {
+						x = c99.toString(left.X)
 					}
-					fmt.Fprintf(c99, `)->%s(`, defined.String)
-					if err := c99.Expression(left.X); err != nil {
-						return err
-					}
-					fmt.Fprintf(c99, ".ptr.ptr")
+					fmt.Fprintf(c99, `go_interface_methods(%s, %s)->%s(%[2]s.ptr.ptr`,
+						c99.InterfaceTypeOf(left.X.TypeAndValue().Type), x, defined.String)
 				} else {
 					receiver = xyz.New(left.X)
 					rtype := left.X.TypeAndValue().Type
@@ -110,18 +123,31 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 				fmt.Fprint(c99, c99.FunctionName(defined))
 			}
 		} else { // a func value, such as a struct field.
-			if err := c99.invoke(function); err != nil {
+			if err := c99.invoke(function, deferred.Callee); err != nil {
 				return err
 			}
 			invoked = true
 		}
+	case source.Expressions.DefinedType:
+		if ok, err := c99.conversion(expr, function.TypeAndValue().Type); ok || err != nil {
+			return err
+		}
+		return expr.Opening.Errorf("unsupported conversion to %s", function.TypeAndValue().Type)
 	case source.Expressions.Type:
 		ctype := source.Expressions.Type.Get(function)
-		if len(expr.Arguments) == 1 && isNil(expr.Arguments[0]) { // T(nil)
-			return c99.ExpressionAs(expr.Arguments[0], ctype.TypeAndValue().Type)
+		if ok, err := c99.conversion(expr, ctype.TypeAndValue().Type); ok || err != nil {
+			return err
 		}
 		switch typ := ctype.TypeAndValue().Type.Underlying().(type) {
 		case *types.Interface:
+			if typ.Empty() {
+				value, err := c99.AnyOf(expr.Arguments[0])
+				if err != nil {
+					return expr.Errorf("%w", err)
+				}
+				fmt.Fprint(c99, value)
+				return nil
+			}
 			symbol := fmt.Sprintf("go_interface_pack__%s", c99.TypeOf(expr.Arguments[0].TypeAndValue().Type))
 			c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
 				fmt.Fprintf(w, "static inline go_if %s(%[2]s v, void* vtable) { return go_interface_new(sizeof(%[2]s), &v, &go_type_%[2]s, vtable); }\n",
@@ -153,7 +179,7 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 			return expr.Opening.Errorf("unsupported call for function of type %T", xyz.ValueOf(function))
 		}
 		// a func value: function literal, call result, index expression...
-		if err := c99.invoke(function); err != nil {
+		if err := c99.invoke(function, deferred.Callee); err != nil {
 			return err
 		}
 		invoked = true
@@ -178,7 +204,9 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 		}
 	}
 	recv, hasReceiver := receiver.Get()
-	if hasReceiver {
+	if hasReceiver && deferred.Receiver != "" {
+		fmt.Fprint(c99, deferred.Receiver)
+	} else if hasReceiver {
 		if err := c99.Expression(recv); err != nil {
 			return err
 		}
@@ -200,7 +228,9 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 		} else if i < params.Len() {
 			target = params.At(i).Type()
 		}
-		if err := c99.ExpressionAs(arg, target); err != nil {
+		if i < len(deferred.Args) && deferred.Args[i] != "" {
+			fmt.Fprint(c99, deferred.Args[i])
+		} else if err := c99.ExpressionAs(arg, target); err != nil {
 			return err
 		}
 	}
@@ -218,8 +248,9 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 	return nil
 }
 
-// invoke starts a call through the func value fn, the arguments follow.
-func (c99 Target) invoke(fn source.Expression) error {
+// invoke starts a call through the func value fn (or the C expression value, when set), the
+// arguments follow.
+func (c99 Target) invoke(fn source.Expression, value string) error {
 	sig, ok := fn.TypeAndValue().Type.Underlying().(*types.Signature)
 	if !ok {
 		return fmt.Errorf("unsupported call of %s", fn.TypeAndValue().Type)
@@ -229,5 +260,40 @@ func (c99 Target) invoke(fn source.Expression) error {
 		return err
 	}
 	fmt.Fprintf(c99, "%s(", invoker)
+	if value != "" {
+		fmt.Fprint(c99, value)
+		return nil
+	}
 	return c99.Expression(fn)
+}
+
+// conversion writes the conversion of expr's argument to type t, reporting whether it
+// is one of the conversions it supports: of nil, of constants and between numeric types.
+func (c99 Target) conversion(expr source.FunctionCall, t types.Type) (bool, error) {
+	if len(expr.Arguments) != 1 {
+		return false, nil
+	}
+	arg := expr.Arguments[0]
+	if isNil(arg) { // T(nil)
+		return true, c99.ExpressionAs(arg, t)
+	}
+	if tv := expr.TypeAndValue(); tv.Value != nil && tv.Value.Kind() != constant.Complex {
+		return true, c99.ConstantValue(tv.Value, false)
+	}
+	if isNumeric(t) && isNumeric(arg.TypeAndValue().Type) {
+		fmt.Fprintf(c99, "((%s)(", c99.TypeOf(t))
+		if err := c99.Expression(arg); err != nil {
+			return true, err
+		}
+		fmt.Fprintf(c99, "))")
+		return true, nil
+	}
+	return false, nil
+}
+
+// isNumeric reports whether t is an integer or floating-point type (conversions between
+// them are C casts).
+func isNumeric(t types.Type) bool {
+	basic, ok := t.Underlying().(*types.Basic)
+	return ok && basic.Info()&(types.IsInteger|types.IsFloat) != 0
 }

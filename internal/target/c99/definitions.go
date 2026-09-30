@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/quaadgras/gd-compiler/internal/source"
+	"runtime.link/xyz"
 )
 
 func (c99 Target) DefinedVariable(name source.DefinedVariable) error {
@@ -180,7 +181,8 @@ func (c99 Target) VariableDefinition(spec source.VariableDefinition) error {
 			return c99.ExpressionAs(assignValue, rtype)
 		}
 		_, isInterface := rtype.Underlying().(*types.Interface)
-		if isInterface {
+		_, fromInterface := assignValue.TypeAndValue().Type.Underlying().(*types.Interface)
+		if isInterface && !fromInterface && !isNil(assignValue) {
 			value = func() error {
 				return c99.FunctionCall(source.FunctionCall{
 					Location:  spec.Location,
@@ -191,15 +193,24 @@ func (c99 Target) VariableDefinition(spec source.VariableDefinition) error {
 		}
 	}
 	if spec.Global {
+		// Constant values (and composites of them) are static initializers, others are
+		// assigned by the package's init function.
+		static, isStatic := "", false
+		if hasValue {
+			static, isStatic = c99.StaticInitializer(assignValue, rtype)
+		}
 		if name.String != "_" {
 			fmt.Fprintf(c99, "%s ", c99.TypeOf(rtype))
 			if err := c99.definedVariable(true, name); err != nil {
 				return err
 			}
+			if isStatic {
+				fmt.Fprintf(c99, " = %s", static)
+			}
 			fmt.Fprintf(c99, ";")
 			fmt.Fprintf(c99.Private, "extern %s %s;\n", c99.TypeOf(rtype), name.String)
 		}
-		if !hasValue {
+		if !hasValue || isStatic {
 			return nil // C zero initializes globals.
 		}
 		// Initializers are part of the package's init function, in another file.
@@ -253,6 +264,80 @@ func (c99 Target) VariableDefinition(spec source.VariableDefinition) error {
 		fmt.Fprintf(c99, ";")
 	}
 	return nil
+}
+
+// StaticInitializer returns a C static initializer for expr (of type t) when it is a
+// constant, or a composite literal of constants.
+func (c99 Target) StaticInitializer(expr source.Expression, t types.Type) (string, bool) {
+	if tv := expr.TypeAndValue(); tv.Value != nil {
+		if tv.Value.Kind() == constant.Complex || !isBasic(t) {
+			return "", false
+		}
+		var buf strings.Builder
+		cc := c99
+		cc.Writer = &buf
+		if err := cc.ConstantValue(tv.Value, true); err != nil {
+			return "", false
+		}
+		return buf.String(), true
+	}
+	if xyz.ValueOf(expr) != source.Expressions.Composite {
+		return "", false
+	}
+	data := source.Expressions.Composite.Get(expr)
+	var elems []string
+	switch typ := data.TypeAndValue().Type.Underlying().(type) {
+	case *types.Array:
+		for _, elem := range data.Elements {
+			prefix := ""
+			if xyz.ValueOf(elem) == source.Expressions.KeyValue {
+				pair := source.Expressions.KeyValue.Get(elem)
+				if pair.Key.TypeAndValue().Value == nil {
+					return "", false
+				}
+				prefix = fmt.Sprintf("[%s]=", pair.Key.TypeAndValue().Value.ExactString())
+				elem = pair.Value
+			}
+			value, ok := c99.StaticInitializer(elem, typ.Elem())
+			if !ok {
+				return "", false
+			}
+			elems = append(elems, prefix+value)
+		}
+		if len(elems) == 0 {
+			elems = append(elems, "0")
+		}
+		return "{{" + strings.Join(elems, ", ") + "}}", true
+	case *types.Struct:
+		for i, elem := range data.Elements {
+			field := typ.Field(i)
+			if xyz.ValueOf(elem) == source.Expressions.KeyValue {
+				pair := source.Expressions.KeyValue.Get(elem)
+				name := c99.toString(pair.Key)
+				for f := range typ.Fields() {
+					if f.Name() == name {
+						field = f
+					}
+				}
+				elem = pair.Value
+			}
+			value, ok := c99.StaticInitializer(elem, field.Type())
+			if !ok {
+				return "", false
+			}
+			elems = append(elems, "."+field.Name()+" = "+value)
+		}
+		if len(elems) == 0 {
+			elems = append(elems, "0")
+		}
+		return "{" + strings.Join(elems, ", ") + "}", true
+	}
+	return "", false
+}
+
+func isBasic(t types.Type) bool {
+	_, ok := t.Underlying().(*types.Basic)
+	return ok
 }
 
 // ConstantValue writes a constant value computed by the type checker, as a C constant
