@@ -73,7 +73,7 @@ static void go_complete(go_sudog* s, go_tf ok) {
 }
 
 go_ch go_chan(go_ii elem_size, go_ii cap) {
-    if (cap < 0) go_panic_error("makechan: size out of range");
+    if (cap < 0 || (elem_size > 0 && cap > ((go_ii)1 << 47) / elem_size)) go_panic_error("makechan: size out of range");
     go_channel* ch = go_new(sizeof(go_channel), NULL).ptr;
     ch->elemsize = (size_t)elem_size;
     ch->cap = (size_t)cap;

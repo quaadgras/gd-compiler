@@ -341,6 +341,32 @@ func (c99 Target) conversion(expr source.FunctionCall, t types.Type) (bool, erro
 	if c99.TypeOf(t) == c99.TypeOf(from) { // the same C type.
 		return true, c99.Expression(arg)
 	}
+	if slice, ok := from.Underlying().(*types.Slice); ok { // to an array, or a pointer to one.
+		var array *types.Array
+		pointer := false
+		switch typ := t.Underlying().(type) {
+		case *types.Array:
+			array = typ
+		case *types.Pointer:
+			array, _ = typ.Elem().Underlying().(*types.Array)
+			pointer = true
+		}
+		if array != nil && types.Identical(slice.Elem(), array.Elem()) {
+			ptr := fmt.Sprintf("go_slice_to_array(%s, %d)", c99.toString(arg), array.Len())
+			switch {
+			case pointer:
+				fmt.Fprintf(c99, "((go_pt){ %s })", ptr)
+			case array.Len() == 0: // (the slice may be nil)
+				fmt.Fprintf(c99, "((void)(%s), (%s){0})", ptr, c99.TypeOf(t))
+			default:
+				fmt.Fprintf(c99, "(*(%s*)%s)", c99.TypeOf(t), ptr)
+			}
+			return true, nil
+		}
+	}
+	if c99.TypeOf(t.Underlying()) == c99.TypeOf(from.Underlying()) { // (typedefs of the same C type)
+		return true, c99.Expression(arg)
+	}
 	if basic, ok := t.Underlying().(*types.Basic); ok && basic.Info()&types.IsComplex != 0 { // complex64 <-> complex128
 		fmt.Fprintf(c99, "%s_convert(%s)", c99.TypeOf(t), c99.toString(arg))
 		return true, nil
@@ -556,7 +582,7 @@ func (c99 Target) spread(expr source.FunctionCall) (source.FunctionCall, error) 
 	if !ok || tuple.Len() < 2 {
 		return expr, nil
 	}
-	if c99.Order != nil { // the function is evaluated first: f()(g())
+	if c99.Order != nil && xyz.ValueOf(expr.Function) != source.Expressions.BuiltinFunction { // the function is evaluated first: f()(g())
 		_ = c99.toString(expr.Function)
 	}
 	value := c99.toString(expr.Arguments[0])

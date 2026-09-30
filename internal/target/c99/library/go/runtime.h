@@ -119,10 +119,9 @@ static inline Cleanup_go_runtime_package AddCleanup_go_runtime_package(const go_
 }
 static inline void Cleanup_Stop_go_runtime_package(Cleanup_go_runtime_package c) {}
 
-typedef struct {
-    go_error error;
-
-    void(*RuntimeError)(void*);
+typedef struct { // the table of methods of runtime.Error (by name, as go/types orders them)
+    go_ss (*Error)(void*);
+    void (*RuntimeError)(void*);
 } Error_go_runtime_package;
 
 typedef struct {
@@ -136,14 +135,15 @@ typedef struct {
 
 typedef struct { char _; } Frames_go_runtime_package;
 
-typedef struct {
-    Frame_go_runtime_package f1;
-    go_tf f2;
-} go_aa__runtime_Frame__tfzz;
+#ifndef go_tuple_Frame_go_runtime_package_go_tf_defined
+#define go_tuple_Frame_go_runtime_package_go_tf_defined
+typedef struct { Frame_go_runtime_package r0; go_tf r1; } go_tuple_Frame_go_runtime_package_go_tf;
+#endif
 
-static inline go_pt CallersFrames(go_ll callers) { return (go_pt){0}; }
-static inline go_aa__runtime_Frame__tfzz Next_go_runtime_package(void) {
-    return (go_aa__runtime_Frame__tfzz){0};
+// There is no information about the callers (gd doesn't record it).
+static inline go_pt CallersFrames_go_runtime_package(go_ll callers) { return go_new(sizeof(Frames_go_runtime_package), NULL); }
+static inline go_tuple_Frame_go_runtime_package_go_tf Frames_Next_go_runtime_package(go_pt f) {
+    return (go_tuple_Frame_go_runtime_package_go_tf){0};
 }
 
 typedef struct { char _; } Func_go_runtime_package;

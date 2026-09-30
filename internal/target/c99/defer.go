@@ -2,6 +2,7 @@ package c99
 
 import (
 	"fmt"
+	"go/ast"
 	"go/constant"
 	"go/types"
 	"io"
@@ -61,11 +62,31 @@ func (c99 Target) callClosure(call source.FunctionCall, kind string) (string, er
 		name := source.Expressions.BuiltinFunction.Get(function).String
 		switch name {
 		case "print", "println", "panic", "recover":
+		case "close", "copy", "delete", "clear": // the arguments, evaluated now, are variables then.
+			args := make([]source.Expression, len(call.Arguments))
+			for i, arg := range call.Arguments {
+				t := types.Default(arg.TypeAndValue().Type)
+				if m, ok := call.Arguments[0].TypeAndValue().Type.Underlying().(*types.Map); ok && name == "delete" && i == 1 {
+					t = m.Key()
+				}
+				var buf strings.Builder
+				cc := c99
+				cc.Writer = &buf
+				if err := cc.ExpressionAs(arg, t); err != nil {
+					return "", err
+				}
+				args[i] = source.Expressions.DefinedVariable.New(source.DefinedVariable{
+					Typed:    source.Typed{TV: types.TypeAndValue{Type: t}},
+					Location: source.Location{Node: &ast.Ident{Name: "go_e"}},
+					String:   store(c99.TypeOf(t), buf.String()),
+				})
+			}
+			call.Arguments = args
 		default:
 			return "", fmt.Errorf("unsupported %s of builtin %s", kind, name)
 		}
 		for i, arg := range call.Arguments {
-			if reevaluate(arg) {
+			if reevaluate(arg) || name == "close" || name == "copy" || name == "delete" || name == "clear" {
 				continue
 			}
 			if name == "panic" {

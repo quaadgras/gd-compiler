@@ -247,7 +247,7 @@ go_ll go_append_string(go_ll s, go_ss t);
 go_ll go_slice(go_ll s, go_ii elem_size, go_i8 low, go_i8 high, go_i8 max);
 void* go_index(go_ll s, go_ii elem_size, go_ii i);
 
-#define go_slice_make(T, length, capacity) (go_ll){ .ptr = go_new(sizeof(T)*go_make_cap(length, capacity), nil), .len = length, .cap = capacity }
+#define go_slice_make(T, length, capacity) (go_ll){ .ptr = go_new(sizeof(T)*go_make_cap(length, capacity, sizeof(T)), nil), .len = length, .cap = capacity }
 #define go_slice_index(s, T, i) (*(T*)go_index(s, sizeof(T), i))
 #define go_slice_copy(T, dst, src) go_copy(sizeof(T), dst, src)
 #define go_slice_literal(length, T, ...) (go_ll){ .ptr = go_new(sizeof(T)*length, &(T[]){__VA_ARGS__}), .len = length, .cap = length }
@@ -319,9 +319,15 @@ go_tf go_same_ss(const void* a, const void* b);
 // Runtime errors panic with a value of type runtime.Error, holding the message (a string).
 extern const go_type go_type_runtime_error;
 _Noreturn void go_panic_error(const char* format, ...);
-static inline go_ii go_make_cap(go_ii len, go_ii cap) { // (of make([]T, len, cap))
-    if (len < 0) go_panic_error("runtime error: makeslice: len out of range");
-    if (cap < len) go_panic_error("runtime error: makeslice: cap out of range");
+// go_slice_to_array returns the array of s (of at least n elements), for conversions.
+static inline void* go_slice_to_array(go_ll s, go_ii n) {
+    if (s.len < n) go_panic_error("runtime error: cannot convert slice with length %lld to array or pointer to array with length %lld", (long long)s.len, (long long)n);
+    return s.ptr.ptr;
+}
+static inline go_ii go_make_cap(go_ii len, go_ii cap, size_t size) { // (of make([]T, len, cap))
+    const go_ii max = (go_ii)1 << 47; // (of memory, as Go's runtime.maxAlloc)
+    if (len < 0 || (size > 0 && len > max / (go_ii)size)) go_panic_error("runtime error: makeslice: len out of range");
+    if (cap < len || (size > 0 && cap > max / (go_ii)size)) go_panic_error("runtime error: makeslice: cap out of range");
     return cap;
 }
 static inline go_u8 go_shift_count(go_i8 n) { if (n < 0) go_panic_error("runtime error: negative shift amount"); return (go_u8)n; }

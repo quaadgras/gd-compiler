@@ -18,7 +18,7 @@ abi/f_ret_z_not.go	pass
 abi/fibish.go	pass	
 abi/fibish_closure.go	pass	
 abi/fuzz_trailing_zero_field.go	pass	
-abi/idata.go	fail	c11: error: implicit declaration of function 'CallersFrames_go_runtime_package'; did you mean 'Callers_go_runtime_package'? […
+abi/idata.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
 abi/leaf.go	pass	
 abi/leaf2.go	pass	
 abi/many_int_input.go	pass	
@@ -69,7 +69,7 @@ bom.go	skip	todo:runoutput
 bombad.go	skip	todo:errorcheck
 bounds.go	skip	gc:diagnostics -m
 cannotassign.go	skip	todo:errorcheck
-chan/doubleselect.go	fail	gd: unsupported deferred of builtin close
+chan/doubleselect.go	fail	c11: error: invalid initializer
 chan/fifo.go	pass	
 chan/goroutines.go	pass	
 chan/nonblock.go	pass	
@@ -88,7 +88,7 @@ chan/sendstmt.go	pass
 chan/sieve1.go	pass	
 chan/sieve2.go	fail	c11: error: conflicting types for 'primes'; have 'go_ch' {aka 'void *'}
 chan/zerosize.go	pass	
-chancap.go	fail	exit: signal: trace/breakpoint trap filc safety error: attempt to allocate object that is too bi…
+chancap.go	pass	
 chanlinear.go	pass	
 char_lit.go	pass	
 char_lit1.go	skip	gc:diagnostics -d=panic
@@ -214,7 +214,7 @@ convert.go	pass
 convert1.go	skip	todo:errorcheck
 convert2.go	skip	todo:errorcheck
 convert3.go	skip	todo:errorcheck
-convert4.go	fail	gd: unsupported conversion from
+convert4.go	pass	
 convert5.go	skip	gc:flags -gcflags=-d=converthash=qy
 convinline.go	skip	todo:runoutput
 convlit.go	skip	todo:errorcheck
@@ -516,7 +516,7 @@ fixedbugs/bug253.go	pass
 fixedbugs/bug254.go	pass	
 fixedbugs/bug255.go	skip	todo:errorcheck
 fixedbugs/bug256.go	skip	todo:errorcheck
-fixedbugs/bug257.go	fail	gd: panic: unsupported conversion from
+fixedbugs/bug257.go	fail	gd: panic: runtime error: invalid memory address or nil pointer dereference
 fixedbugs/bug258.go	pass	
 fixedbugs/bug259.go	pass	
 fixedbugs/bug260.go	pass	
@@ -530,11 +530,11 @@ fixedbugs/bug267.go	pass
 fixedbugs/bug269.go	pass	
 fixedbugs/bug271.go	pass	
 fixedbugs/bug272.go	pass	
-fixedbugs/bug273.go	fail	exit: signal: trace/breakpoint trap BUG
+fixedbugs/bug273.go	pass	
 fixedbugs/bug274.go	skip	todo:errorcheck
 fixedbugs/bug275.go	pass	
 fixedbugs/bug276.go	pass	
-fixedbugs/bug277.go	fail	gd: unsupported conversion from test.C to chan<- int
+fixedbugs/bug277.go	pass	
 fixedbugs/bug278.go	skip	todo:errorcheck
 fixedbugs/bug279.go	pass	
 fixedbugs/bug280.go	skip	todo:errorcheck
@@ -767,10 +767,10 @@ fixedbugs/bug512.go	pass
 fixedbugs/bug513.go	skip	gc:build ((linux && amd64) || (linux && ppc64le) || (darwin && amd64) || (freebsd && amd64) || (netbsd && amd64) || (windows && amd64)) && cgo
 fixedbugs/bug514.go	skip	gc:build cgo
 fixedbugs/bug515.go	skip	gc:build gccgo
-fixedbugs/bug516.go	fail	gd: unsupported conversion from
+fixedbugs/bug516.go	pass	
 fixedbugs/bug517.go	pass	
 fixedbugs/bug518.go	skip	todo:errorcheck
-fixedbugs/dse_move_auxint.go	fail	gd: unsupported conversion from
+fixedbugs/dse_move_auxint.go	pass	
 fixedbugs/gcc101994.go	pass	
 fixedbugs/gcc61204.go	pass	
 fixedbugs/gcc61244.go	pass	
@@ -940,12 +940,12 @@ fixedbugs/issue15926.go	pass
 fixedbugs/issue15961.go	pass	
 fixedbugs/issue15975.go	fail	exit: signal: trace/breakpoint trap filc safety error: cannot read pointer with null object.
 fixedbugs/issue15988.go	pass	
-fixedbugs/issue15992.go	fail	gd: panic: unsupported node type: BuiltinFunction
+fixedbugs/issue15992.go	pass	
 fixedbugs/issue16008.go	skip	todo:errorcheck
 fixedbugs/issue16016.go	pass	
 fixedbugs/issue16037_run.go	skip	gc:toolchain
 fixedbugs/issue16095.go	pass	
-fixedbugs/issue16130.go	fail	c11: error: 'Error_go_runtime_package' has no member named 'Error'; did you mean 'error'?
+fixedbugs/issue16130.go	pass	
 fixedbugs/issue16133.go	skip	todo:errorcheck
 fixedbugs/issue16193.go	pass	
 fixedbugs/issue16241.go	skip	gc:diagnostics -m
@@ -1045,7 +1045,7 @@ fixedbugs/issue19696.go	pass
 fixedbugs/issue19699.go	skip	todo:compiledir
 fixedbugs/issue19699b.go	skip	todo:errorcheck
 fixedbugs/issue19705.go	pass	
-fixedbugs/issue19710.go	fail	gd: unsupported deferred of builtin delete
+fixedbugs/issue19710.go	pass	
 fixedbugs/issue19743.go	skip	gc:diagnostics -m
 fixedbugs/issue19764.go	skip	todo:rundir
 fixedbugs/issue19783.go	pass	
@@ -1113,7 +1113,7 @@ fixedbugs/issue22200.go	skip	todo:errorcheck
 fixedbugs/issue22200b.go	skip	todo:errorcheck
 fixedbugs/issue22305.go	pass	
 fixedbugs/issue22326.go	pass	
-fixedbugs/issue22327.go	fail	gd: panic: unsupported node type: BuiltinFunction
+fixedbugs/issue22327.go	pass	
 fixedbugs/issue22344.go	pass	
 fixedbugs/issue22351.go	skip	todo:errorcheck
 fixedbugs/issue22389.go	skip	gc:diagnostics -d=panic
@@ -1270,7 +1270,7 @@ fixedbugs/issue28797.go	pass
 fixedbugs/issue28926.go	skip	todo:errorcheck
 fixedbugs/issue29013a.go	pass	
 fixedbugs/issue29013b.go	pass	
-fixedbugs/issue29190.go	fail	exit: signal: trace/breakpoint trap filc safety error: attempt to allocate object that is too bi…
+fixedbugs/issue29190.go	fail	exit: exit status 2 panic: runtime error: makeslice: len out of range
 fixedbugs/issue29215.go	pass	
 fixedbugs/issue29218.go	pass	
 fixedbugs/issue29220.go	pass	
@@ -1297,8 +1297,8 @@ fixedbugs/issue30041.go	fail	exit: exit status 2 panic: reflect.MakeFunc is not 
 fixedbugs/issue30061.go	skip	gc:linkname
 fixedbugs/issue30085.go	skip	todo:errorcheck
 fixedbugs/issue30087.go	skip	todo:errorcheck
-fixedbugs/issue30116.go	fail	c11: error: 'Error_go_runtime_package' has no member named 'Error'; did you mean 'error'?
-fixedbugs/issue30116u.go	fail	c11: error: 'Error_go_runtime_package' has no member named 'Error'; did you mean 'error'?
+fixedbugs/issue30116.go	fail	output: mismatch
+fixedbugs/issue30116u.go	fail	output: mismatch
 fixedbugs/issue30243.go	pass	
 fixedbugs/issue30430.go	pass	
 fixedbugs/issue30476.go	skip	gc:finalizers runtime.SetFinalizer
@@ -1383,7 +1383,7 @@ fixedbugs/issue35157.go	pass
 fixedbugs/issue35291.go	skip	todo:errorcheck
 fixedbugs/issue35518.go	skip	gc:diagnostics -m=2
 fixedbugs/issue3552.go	skip	todo:compiledir
-fixedbugs/issue35576.go	fail	gd: panic: unsupported node type: BuiltinFunction
+fixedbugs/issue35576.go	pass	
 fixedbugs/issue35586.go	skip	todo:compiledir
 fixedbugs/issue35652.go	pass	
 fixedbugs/issue35739.go	skip	todo:compiledir
@@ -1428,7 +1428,7 @@ fixedbugs/issue40629.go	pass
 fixedbugs/issue4066.go	pass	
 fixedbugs/issue40746.go	pass	
 fixedbugs/issue4085a.go	skip	todo:errorcheck
-fixedbugs/issue4085b.go	fail	exit: signal: trace/breakpoint trap filc safety error: attempt to allocate object that is too bi…
+fixedbugs/issue4085b.go	pass	
 fixedbugs/issue40917.go	skip	gc:flags -gcflags=-d=checkptr
 fixedbugs/issue40954.go	skip	gc:build cgo
 fixedbugs/issue4097.go	skip	todo:errorcheck
@@ -1544,7 +1544,7 @@ fixedbugs/issue4545.go	skip	todo:errorcheck
 fixedbugs/issue45503.go	skip	todo:compiledir
 fixedbugs/issue45606.go	pass	
 fixedbugs/issue4562.go	skip	gc:stack-introspection runtime.Caller
-fixedbugs/issue45665.go	fail	gd: unsupported conversion from
+fixedbugs/issue45665.go	pass	
 fixedbugs/issue45693.go	pass	
 fixedbugs/issue45706.go	pass	
 fixedbugs/issue45743.go	pass	
@@ -1568,11 +1568,11 @@ fixedbugs/issue46556.go	pass
 fixedbugs/issue4663.go	skip	todo:errorcheck
 fixedbugs/issue46653.go	skip	todo:runindir
 fixedbugs/issue4667.go	fail	c11: error: implicit declaration of function 'AllocsPerRun_go_testing_package' [-Wimplicit-function-declaration]
-fixedbugs/issue46720.go	fail	gd: unsupported conversion from
+fixedbugs/issue46720.go	pass	
 fixedbugs/issue46725.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue46749.go	skip	todo:errorcheck
 fixedbugs/issue46903.go	skip	gc:build cgo
-fixedbugs/issue46907.go	fail	gd: panic: unsupported conversion from
+fixedbugs/issue46907.go	pass	
 fixedbugs/issue46938.go	skip	gc:flags -gcflags="-d=checkptr"
 fixedbugs/issue46957.go	skip	todo:errorcheck
 fixedbugs/issue47068.go	skip	todo:rundir
@@ -1627,7 +1627,7 @@ fixedbugs/issue49110.go	fail	exit: exit status 2 panic: reflect.StructOf is not 
 fixedbugs/issue49122.go	pass	
 fixedbugs/issue49143.go	skip	todo:compiledir
 fixedbugs/issue49145.go	pass	
-fixedbugs/issue49240.go	fail	gd: unsupported go of builtin copy
+fixedbugs/issue49240.go	pass	
 fixedbugs/issue49249.go	skip	gc:flags -l
 fixedbugs/issue49282.go	pass	
 fixedbugs/issue4932.go	skip	todo:compiledir
@@ -1714,7 +1714,7 @@ fixedbugs/issue54280.go	skip	todo:errorcheck
 fixedbugs/issue54307.go	pass	
 fixedbugs/issue54343.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue54348.go	pass	
-fixedbugs/issue54467.go	fail	gd: unsupported conversion from
+fixedbugs/issue54467.go	pass	
 fixedbugs/issue54542.go	skip	gc:toolchain
 fixedbugs/issue54632.go	pass	
 fixedbugs/issue54638.go	pass	
@@ -1756,7 +1756,7 @@ fixedbugs/issue5755.go	skip	todo:compiledir
 fixedbugs/issue57778.go	pass	
 fixedbugs/issue57823.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue57846.go	pass	
-fixedbugs/issue5793.go	fail	gd: panic: unsupported node type: BuiltinFunction
+fixedbugs/issue5793.go	pass	
 fixedbugs/issue57955.go	pass	
 fixedbugs/issue5809.go	pass	
 fixedbugs/issue58161.go	skip	gc:flags -d=ssa/check/seed=1
@@ -1776,7 +1776,7 @@ fixedbugs/issue58572.go	pass
 fixedbugs/issue58671.go	pass	
 fixedbugs/issue58826.go	skip	gc:flags -dynlink
 fixedbugs/issue5910.go	skip	todo:compiledir
-fixedbugs/issue59169.go	fail	gd: unsupported conversion from
+fixedbugs/issue59169.go	pass	
 fixedbugs/issue59174.go	pass	
 fixedbugs/issue59190.go	skip	todo:errorcheck
 fixedbugs/issue59293.go	fail	exit: exit status 2 panic: bad g
@@ -1812,7 +1812,7 @@ fixedbugs/issue61908.go	pass
 fixedbugs/issue61992.go	pass	
 fixedbugs/issue62203.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
 fixedbugs/issue62313.go	pass	
-fixedbugs/issue62360.go	fail	c11: error: implicit declaration of function 'CallersFrames_go_runtime_package'; did you mean 'Callers_go_runtime_package'? […
+fixedbugs/issue62360.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
 fixedbugs/issue62469.go	pass	
 fixedbugs/issue6247.go	pass	
 fixedbugs/issue62498.go	skip	todo:rundir
@@ -1917,7 +1917,7 @@ fixedbugs/issue6977.go	skip	todo:errorcheck
 fixedbugs/issue69825.go	skip	gc:flags -d=libfuzzer
 fixedbugs/issue70156.go	pass	
 fixedbugs/issue70175.go	fail	c11: error: duplicate label 'go_label__'
-fixedbugs/issue70189.go	fail	exit: exit status 2 panic: 7
+fixedbugs/issue70189.go	fail	exit: exit status 2 panic: 0
 fixedbugs/issue7023.go	skip	todo:compiledir
 fixedbugs/issue7044.go	pass	
 fixedbugs/issue70481.go	pass	
@@ -1939,7 +1939,7 @@ fixedbugs/issue72063.go	pass
 fixedbugs/issue72090.go	pass	
 fixedbugs/issue7214.go	skip	todo:errorcheck
 fixedbugs/issue7223.go	skip	todo:errorcheck
-fixedbugs/issue7272.go	fail	gd: unsupported go of builtin close
+fixedbugs/issue7272.go	pass	
 fixedbugs/issue72844.go	fail	exit: exit status 2 panic: runtime error: invalid memory address or nil pointer …
 fixedbugs/issue72860.go	pass	
 fixedbugs/issue7310.go	skip	todo:errorcheck
@@ -1987,7 +1987,7 @@ fixedbugs/issue75365.go	fail	output: mismatch
 fixedbugs/issue7538a.go	skip	todo:errorcheck
 fixedbugs/issue7538b.go	pass	
 fixedbugs/issue7547.go	pass	
-fixedbugs/issue7550.go	fail	exit: signal: trace/breakpoint trap filc safety error: attempt to allocate object that is too bi…
+fixedbugs/issue7550.go	pass	
 fixedbugs/issue75569.go	pass	
 fixedbugs/issue75764.go	skip	gc:stack-introspection runtime.Callers
 fixedbugs/issue7590.go	pass	
@@ -2040,7 +2040,7 @@ fixedbugs/issue7921.go	skip	gc:diagnostics -m
 fixedbugs/issue79236.go	pass	
 fixedbugs/issue79236b.go	pass	
 fixedbugs/issue79258.go	skip	todo:errorcheck
-fixedbugs/issue79274.go	fail	c11: error: implicit declaration of function 'CallersFrames_go_runtime_package'; did you mean 'Callers_go_runtime_package'? […
+fixedbugs/issue79274.go	pass	
 fixedbugs/issue79274a.go	skip	todo:compiledir
 fixedbugs/issue7944.go	pass	
 fixedbugs/issue79762.go	skip	gc:import runtime/debug
@@ -2066,7 +2066,7 @@ fixedbugs/issue80188.go	pass
 fixedbugs/issue80196.go	pass	
 fixedbugs/issue8028.go	pass	
 fixedbugs/issue8036.go	pass	
-fixedbugs/issue8039.go	fail	gd: unsupported deferred of builtin copy
+fixedbugs/issue8039.go	pass	
 fixedbugs/issue8042.go	pass	
 fixedbugs/issue8047.go	pass	
 fixedbugs/issue8047b.go	pass	
@@ -2077,7 +2077,7 @@ fixedbugs/issue80517_3.go	pass
 fixedbugs/issue80577.go	pass	
 fixedbugs/issue8060.go	skip	todo:compiledir
 fixedbugs/issue8073.go	pass	
-fixedbugs/issue8074.go	fail	gd: unsupported go of builtin copy
+fixedbugs/issue8074.go	pass	
 fixedbugs/issue8076.go	pass	
 fixedbugs/issue8079.go	pass	
 fixedbugs/issue80976.go	fail	c11: error: implicit declaration of function 'TypeMap_Set_go_main_package'; did you mean 'go_same_res_go_main_package'? [-Wim…
@@ -2233,7 +2233,7 @@ ken/cplx2.go	pass
 ken/cplx3.go	pass	
 ken/cplx4.go	pass	
 ken/cplx5.go	pass	
-ken/divconst.go	fail	c11: error: implicit declaration of function 'CallersFrames_go_runtime_package'; did you mean 'Callers_go_runtime_package'? […
+ken/divconst.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
 ken/divmod.go	pass	
 ken/embed.go	pass	
 ken/for.go	pass	
@@ -2243,7 +2243,7 @@ ken/intervar.go	pass
 ken/label.go	pass	
 ken/litfun.go	pass	
 ken/mfunc.go	pass	
-ken/modconst.go	fail	c11: error: implicit declaration of function 'CallersFrames_go_runtime_package'; did you mean 'Callers_go_runtime_package'? […
+ken/modconst.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
 ken/ptrfun.go	pass	
 ken/ptrvar.go	pass	
 ken/range.go	pass	
@@ -2285,7 +2285,7 @@ mainsig.go	skip	todo:errorcheck
 makechan.go	skip	todo:errorcheck
 makemap.go	skip	todo:errorcheck
 makenew.go	skip	todo:errorcheck
-makeslice.go	fail	exit: signal: trace/breakpoint trap filc safety error: attempt to allocate object that is too bi…
+makeslice.go	pass	
 mallocfin.go	skip	gc:finalizers runtime.SetFinalizer
 map.go	fail	c11: error: 'nana' undeclared (first use in this function); did you mean 'nanl'?
 map1.go	skip	todo:errorcheck
@@ -2337,7 +2337,7 @@ rangegen.go	skip	todo:runoutput
 recover.go	fail	exit: exit status 2 panic: interface conversion: interface {} is interface{}, no…
 recover1.go	fail	exit: exit status 2 panic: nil
 recover2.go	pass	
-recover3.go	fail	c11: error: 'Error_go_runtime_package' has no member named 'Error'; did you mean 'error'?
+recover3.go	pass	
 recover4.go	skip	gc:import runtime/debug
 recover5.go	skip	todo:errorcheck
 reflectmethod1.go	fail	exit: exit status 2 panic: (*reflect.ValueError) 0x?
@@ -2439,7 +2439,7 @@ typeparam/devirtualize1.go	pass
 typeparam/devirtualize2.go	pass	
 typeparam/dictionaryCapture-noinline.go	skip	gc:flags -gcflags="-l"
 typeparam/dictionaryCapture.go	fail	c11: error: 'go_if' has no member named 'a'
-typeparam/dottype.go	fail	gd: panic: unsupported node type: BuiltinFunction
+typeparam/dottype.go	fail	exit: exit status 2 panic: interface conversion: main.mybar is not interface{bar…
 typeparam/double.go	pass	
 typeparam/eface.go	pass	
 typeparam/equal.go	pass	
@@ -2548,7 +2548,7 @@ typeparam/issue49027.go	skip	todo:rundir
 typeparam/issue49049.go	pass	
 typeparam/issue49241.go	skip	todo:rundir
 typeparam/issue49246.go	skip	todo:compiledir
-typeparam/issue49295.go	fail	gd: panic: unsupported conversion to test.Token
+typeparam/issue49295.go	pass	
 typeparam/issue49309.go	pass	
 typeparam/issue49421.go	pass	
 typeparam/issue49432.go	pass	
@@ -2651,7 +2651,7 @@ typeparam/mdempsky/12.go	skip	todo:rundir
 typeparam/mdempsky/13.go	fail	exit: signal: trace/breakpoint trap filc safety error: cannot read 24 bytes when upper - ptr = 1…
 typeparam/mdempsky/14.go	pass	
 typeparam/mdempsky/15.go	skip	gc:goexperiment fieldtrack
-typeparam/mdempsky/16.go	fail	c11: error: 'Error_go_runtime_package' has no member named 'Error'; did you mean 'error'?
+typeparam/mdempsky/16.go	fail	output: mismatch
 typeparam/mdempsky/17.go	fail	c11: error: invalid initializer
 typeparam/mdempsky/18.go	pass	
 typeparam/mdempsky/19.go	pass	
@@ -2730,5 +2730,5 @@ wasmmemsize.go	skip	upstream:build wasm
 weak.go	skip	todo:errorcheck
 winbatch.go	fail	c11: error: expected specifier-qualifier-list before 'FileMode_go_io_fs_package'
 writebarrier.go	skip	gc:diagnostics -d=wb
-zerodivide.go	fail	c11: error: 'Error_go_runtime_package' has no member named 'Error'; did you mean 'error'?
+zerodivide.go	pass	
 zerosize.go	fail	exit: exit status 2 panic: FAIL
