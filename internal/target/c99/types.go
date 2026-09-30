@@ -293,6 +293,9 @@ func (c99 Target) ReflectTypeOf(t types.Type) string {
 	t = types.Unalias(t)
 	switch typ := t.(type) {
 	case *types.Basic:
+		if typ.Kind() == types.UnsafePointer {
+			return "&go_type_unsafe_pointer"
+		}
 		return "&go_type_" + types.Default(typ).(*types.Basic).Name()
 	case *types.Named:
 		if typ.Obj().Pkg() == nil {

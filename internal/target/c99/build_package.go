@@ -24,6 +24,7 @@ func Build(dir string, test bool) error {
 	if err != nil {
 		return err
 	}
+	clear(compiledPackages)
 	if err := os.RemoveAll("./.c"); err != nil {
 		return err
 	}
@@ -121,6 +122,7 @@ func compilePackage(pkg source.Package, compiled map[string]bool, byPath map[str
 	typeDefinitions := NewTypeDefs()
 	closures := NewClosures(&pkg.Info, syntax)
 	closures.generics = NewGenerics(pkg.Files)
+	compiledPackages[pkg.Path] = closures
 	for _, file := range pkg.Files {
 		out, err := os.Create(dir + "/" + filepath.Base(file.FileSet.File(file.Open).Name()) + ".c")
 		if err != nil {

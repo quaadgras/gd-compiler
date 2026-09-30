@@ -330,6 +330,7 @@ static const go_type go_type_complex128 = {.name="complex128", .kind=go_kind_com
 static const go_type go_type_byte = go_type_uint8;
 static const go_type go_type_rune = go_type_int32;
 static const go_type go_type_string = {.name="string", .kind=go_kind_string};
+static const go_type go_type_unsafe_pointer = {.name="unsafe.Pointer", .kind=go_kind_unsafe_pointer};
 static const go_type go_type_error = {.name="error", .kind=go_kind_interface};
 
 typedef struct { go_ss(*Error)(void*);} go_error;

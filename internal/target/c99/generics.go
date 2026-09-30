@@ -189,8 +189,13 @@ func (c99 Target) FunctionInstance(name source.DefinedFunction) (string, error) 
 		return cname, nil
 	}
 	decl, ok := c99.Closures.generics.funcs[fn.Origin()]
-	if !ok {
-		return "", name.Errorf("unsupported instance of %s (from another package)", fn.Name())
+	if !ok { // of another package.
+		var done func()
+		c99, done = c99.inPackage(fn.Origin().Pkg())
+		defer done()
+		if decl, ok = c99.Closures.generics.funcs[fn.Origin()]; !ok {
+			return "", name.Errorf("unsupported instance of %s (from another package)", fn.Name())
+		}
 	}
 	var args []types.Type
 	for a := range inst.TypeArgs.Types() {
@@ -207,13 +212,42 @@ func (c99 Target) MethodInstance(named *types.Named, method string) error {
 		return nil
 	}
 	decl, ok := c99.Closures.generics.methods[named.Origin().Obj()][method]
-	if !ok {
-		return nil // promoted, or from another package.
+	if !ok { // promoted, or of another package.
+		var done func()
+		c99, done = c99.inPackage(named.Origin().Obj().Pkg())
+		defer done()
+		if decl, ok = c99.Closures.generics.methods[named.Origin().Obj()][method]; !ok {
+			return nil
+		}
 	}
 	fn := decl.Name.Unique.(*types.Func)
 	sig := fn.Type().(*types.Signature)
 	cname := c99.typeCName(named) + "_" + c99.FunctionName(decl.Name)
 	return c99.emitInstance(decl, c99.Closures.generics.substituter(sig.RecvTypeParams(), slicesOf(named.TypeArgs())), cname)
+}
+
+// compiledPackages are the closures (and generics) of the packages compiled so far, by import path,
+// for the instances of their generic functions and methods in the packages that import them.
+var compiledPackages = make(map[string]*Closures)
+
+// inPackage returns c99, switched to compiling the code of pkg (the instance of one of its
+// generic functions or methods, in a file of another package, which includes its header),
+// and a function to call after.
+func (c99 Target) inPackage(pkg *types.Package) (Target, func()) {
+	other, ok := compiledPackages[pkg.Path()]
+	if pkg == nil || pkg.Path() == c99.CurrentPath || !ok {
+		return c99, func() {}
+	}
+	c99.Requires("#include "+pkg.Path(), c99.Prelude, func(w io.Writer) error {
+		fmt.Fprintf(w, "#include <go/%s.h>\n", pkg.Path())
+		return nil
+	})
+	closures := *other
+	closures.count = c99.Closures.count // for names that are unique in the file.
+	outer := c99.Closures
+	c99.Closures = &closures
+	c99.CurrentPackage, c99.CurrentPath, c99.CurrentName = source.PackageIdent(pkg), pkg.Path(), pkg.Name()
+	return c99, func() { outer.count = closures.count }
 }
 
 func (c99 Target) emitInstance(decl source.FunctionDefinition, substitute func(types.Type) types.Type, cname string) error {

@@ -108,7 +108,7 @@ func (c99 Target) new(expr source.FunctionCall) error {
 }
 
 func (c99 Target) make(expr source.FunctionCall) error {
-	switch typ := expr.Arguments[0].TypeAndValue().Type.(type) {
+	switch typ := expr.Arguments[0].TypeAndValue().Type.Underlying().(type) {
 	case *types.Slice:
 		switch len(expr.Arguments) {
 		case 2, 3:
@@ -158,7 +158,7 @@ func (c99 Target) make(expr source.FunctionCall) error {
 		}
 		return nil
 	default:
-		return fmt.Errorf("unsupported type %T", expr.Arguments[0].TypeAndValue().Type)
+		return expr.Errorf("unsupported make of %s", expr.Arguments[0].TypeAndValue().Type)
 	}
 }
 

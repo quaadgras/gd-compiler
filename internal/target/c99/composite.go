@@ -2,6 +2,7 @@ package c99
 
 import (
 	"fmt"
+	"go/constant"
 	"go/types"
 	"io"
 	"strings"
@@ -34,7 +35,7 @@ func (c99 Target) DataComposite(data source.DataComposite) error {
 			}
 			if xyz.ValueOf(elem) == source.Expressions.KeyValue {
 				pair := source.Expressions.KeyValue.Get(elem)
-				fmt.Fprintf(c99, "[%s]=", c99.toString(pair.Key))
+				fmt.Fprintf(c99, "[%s]=", pair.Key.TypeAndValue().Value.ExactString())
 				elem = pair.Value
 			}
 			if err := c99.ExpressionAs(elem, typ.Elem()); err != nil {
@@ -48,10 +49,26 @@ func (c99 Target) DataComposite(data source.DataComposite) error {
 			fmt.Fprintf(c99, "go_slice_make(%s, 0, 0)", c99.TypeOf(typ.Elem()))
 			return nil
 		}
-		fmt.Fprintf(c99, "go_slice_literal(%d, %s, ", len(data.Elements), c99.TypeOf(typ.Elem()))
+		length, index := 0, 0 // elements may have (constant) indexes, as keys.
+		for _, elem := range data.Elements {
+			if xyz.ValueOf(elem) == source.Expressions.KeyValue {
+				if key := source.Expressions.KeyValue.Get(elem).Key.TypeAndValue().Value; key != nil {
+					v, _ := constant.Int64Val(constant.ToInt(key))
+					index = int(v)
+				}
+			}
+			index++
+			length = max(length, index)
+		}
+		fmt.Fprintf(c99, "go_slice_literal(%d, %s, ", length, c99.TypeOf(typ.Elem()))
 		for i, elem := range data.Elements {
 			if i > 0 {
 				fmt.Fprintf(c99, ", ")
+			}
+			if xyz.ValueOf(elem) == source.Expressions.KeyValue {
+				pair := source.Expressions.KeyValue.Get(elem)
+				fmt.Fprintf(c99, "[%s]=", pair.Key.TypeAndValue().Value.ExactString())
+				elem = pair.Value
 			}
 			if err := c99.ExpressionAs(elem, typ.Elem()); err != nil {
 				return err

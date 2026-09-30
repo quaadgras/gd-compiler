@@ -35,6 +35,9 @@ func (c99 Target) definedVariable(decl bool, name source.DefinedVariable) error 
 // function's name directly, see [Target.FunctionName]).
 func (c99 Target) DefinedFunction(name source.DefinedFunction) error {
 	sig, ok := name.TypeAndValue().Type.(*types.Signature)
+	if fn, isFunc := name.Unique.(*types.Func); !ok && isFunc { // pkg.F
+		sig, ok = fn.Type().(*types.Signature)
+	}
 	if id, isIdent := name.Location.Node.(*ast.Ident); isIdent && c99.Closures.info != nil {
 		if inst, isInstance := c99.Closures.info.Instances[id]; isInstance {
 			sig, ok = subst(inst.Type).(*types.Signature)

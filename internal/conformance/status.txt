@@ -4,7 +4,7 @@
 #	GD_CC=filcc GD_LDFLAGS=-static go test ./internal/conformance -update
 #
 # path	pass|fail|skip	reason
-235.go	fail	gd: unsupported type *types.Named
+235.go	pass	
 64bit.go	skip	todo:runoutput
 abi/bad_internal_offsets.go	pass	
 abi/bad_select_crash.go	skip	gc:goexperiment regabi,regabiargs
@@ -54,7 +54,7 @@ align.go	pass
 append.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 append1.go	skip	todo:errorcheck
 arenas/smoke.go	skip	gc:goexperiment arenas
-args.go	fail	gd: unsupported return of (*os.rawConn, error) results
+args.go	fail	gd: unsupported instance of AddCleanup (from another package)
 armimm.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 asmhdr.go	skip	todo:buildrundir
 assign.go	skip	todo:errorcheck
@@ -70,15 +70,15 @@ bombad.go	skip	todo:errorcheck
 bounds.go	skip	gc:diagnostics -m
 cannotassign.go	skip	todo:errorcheck
 chan/doubleselect.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
-chan/fifo.go	fail	gd: unsupported return of (*os.rawConn, error) results
-chan/goroutines.go	fail	gd: unsupported return of (*os.rawConn, error) results
-chan/nonblock.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
+chan/fifo.go	fail	gd: unsupported instance of AddCleanup (from another package)
+chan/goroutines.go	fail	gd: unsupported instance of AddCleanup (from another package)
+chan/nonblock.go	fail	c11: error: expected identifier or '(' before 'void'
 chan/perm.go	skip	todo:errorcheck
-chan/powser1.go	fail	gd: unsupported return of (*os.rawConn, error) results
-chan/powser2.go	fail	gd: unsupported return of (*os.rawConn, error) results
+chan/powser1.go	fail	gd: unsupported instance of AddCleanup (from another package)
+chan/powser2.go	fail	gd: unsupported instance of AddCleanup (from another package)
 chan/select.go	fail	exit: exit status 2 panic: fail
 chan/select2.go	skip	gc:memstats runtime.MemProfileRate
-chan/select3.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
+chan/select3.go	fail	c11: error: expected identifier or '(' before 'void'
 chan/select4.go	pass	
 chan/select5.go	skip	todo:runoutput
 chan/select6.go	pass	
@@ -86,16 +86,16 @@ chan/select7.go	pass
 chan/select8.go	pass	
 chan/sendstmt.go	pass	
 chan/sieve1.go	pass	
-chan/sieve2.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
+chan/sieve2.go	fail	c11: error: invalid initializer
 chan/zerosize.go	pass	
-chancap.go	fail	gd: unsupported type *types.Named
+chancap.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
 chanlinear.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
-char_lit.go	fail	gd: unsupported return of (*os.rawConn, error) results
+char_lit.go	fail	gd: unsupported instance of AddCleanup (from another package)
 char_lit1.go	skip	gc:diagnostics -d=panic
 checkbce.go	skip	gc:diagnostics -d=ssa/check_bce/debug=3
 clear.go	fail	c11: error: incompatible type for argument 1 of 'go_slice_clear'
 clearfat.go	skip	todo:runoutput
-closedchan.go	fail	gd: unsupported return of (*os.rawConn, error) results
+closedchan.go	fail	gd: unsupported instance of AddCleanup (from another package)
 closure.go	skip	gc:memstats runtime.ReadMemStats
 closure1.go	pass	
 closure2.go	fail	gd: panic: interface conversion: ast.Expr is *ast.IndexExpr, not *ast.Ident
@@ -104,7 +104,7 @@ closure4.go	pass
 closure5.go	skip	todo:compiledir
 closure6.go	pass	
 closure7.go	pass	
-cmp.go	fail	gd: unsupported return of (*os.rawConn, error) results
+cmp.go	fail	gd: unsupported instance of AddCleanup (from another package)
 cmp6.go	skip	todo:errorcheck
 cmplx.go	skip	todo:errorcheck
 cmplxdivide.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
@@ -200,7 +200,7 @@ complit.go	pass
 complit1.go	skip	todo:errorcheck
 complit2.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 compos.go	pass	
-const.go	fail	gd: unsupported return of (*os.rawConn, error) results
+const.go	fail	gd: unsupported instance of AddCleanup (from another package)
 const1.go	skip	todo:errorcheck
 const2.go	skip	todo:errorcheck
 const3.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
@@ -209,7 +209,7 @@ const5.go	skip	todo:errorcheck
 const6.go	skip	todo:errorcheck
 const7.go	skip	gc:toolchain
 const8.go	pass	
-convT2X.go	fail	gd: unsupported type *types.Named
+convT2X.go	pass	
 convert.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 convert1.go	skip	todo:errorcheck
 convert2.go	skip	todo:errorcheck
@@ -245,7 +245,7 @@ dwarf/linedirectives.go	pass
 embedfunc.go	skip	todo:errorcheck
 embedvers.go	skip	todo:errorcheck
 empty.go	pass	
-env.go	fail	gd: unsupported return of (*os.rawConn, error) results
+env.go	fail	gd: unsupported instance of AddCleanup (from another package)
 eof.go	pass	
 eof1.go	pass	
 escape.go	fail	exit: exit status 2 panic: BUG: no escape
@@ -289,7 +289,7 @@ fixedbugs/bug002.go	pass
 fixedbugs/bug003.go	pass	
 fixedbugs/bug004.go	pass	
 fixedbugs/bug005.go	pass	
-fixedbugs/bug006.go	fail	gd: unsupported return of (*os.rawConn, error) results
+fixedbugs/bug006.go	fail	gd: unsupported instance of AddCleanup (from another package)
 fixedbugs/bug007.go	pass	
 fixedbugs/bug008.go	pass	
 fixedbugs/bug009.go	pass	
@@ -329,8 +329,8 @@ fixedbugs/bug055.go	pass
 fixedbugs/bug056.go	pass	
 fixedbugs/bug057.go	pass	
 fixedbugs/bug058.go	pass	
-fixedbugs/bug059.go	fail	gd: unsupported return of (*os.rawConn, error) results
-fixedbugs/bug060.go	fail	gd: unsupported return of (*os.rawConn, error) results
+fixedbugs/bug059.go	fail	gd: unsupported instance of AddCleanup (from another package)
+fixedbugs/bug060.go	fail	gd: unsupported instance of AddCleanup (from another package)
 fixedbugs/bug061.go	pass	
 fixedbugs/bug062.go	skip	todo:errorcheck
 fixedbugs/bug063.go	pass	
@@ -386,7 +386,7 @@ fixedbugs/bug116.go	pass
 fixedbugs/bug117.go	skip	todo:errorcheck
 fixedbugs/bug118.go	pass	
 fixedbugs/bug119.go	pass	
-fixedbugs/bug120.go	fail	gd: unsupported return of (*os.rawConn, error) results
+fixedbugs/bug120.go	fail	gd: unsupported instance of AddCleanup (from another package)
 fixedbugs/bug121.go	skip	todo:errorcheck
 fixedbugs/bug122.go	skip	todo:errorcheck
 fixedbugs/bug123.go	skip	todo:errorcheck
@@ -394,7 +394,7 @@ fixedbugs/bug126.go	skip	todo:errorcheck
 fixedbugs/bug127.go	skip	todo:errorcheck
 fixedbugs/bug128.go	pass	
 fixedbugs/bug129.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
-fixedbugs/bug130.go	fail	gd: unsupported return of (*os.rawConn, error) results
+fixedbugs/bug130.go	fail	gd: unsupported instance of AddCleanup (from another package)
 fixedbugs/bug131.go	skip	todo:errorcheck
 fixedbugs/bug132.go	skip	todo:errorcheck
 fixedbugs/bug133.go	skip	todo:errorcheck
@@ -404,13 +404,13 @@ fixedbugs/bug136.go	skip	todo:errorcheck
 fixedbugs/bug137.go	pass	
 fixedbugs/bug139.go	pass	
 fixedbugs/bug140.go	fail	c11: error: implicit declaration of function 'main_go_main_package'; did you mean 'init_go_main_package'? [-Wimplicit-functio…
-fixedbugs/bug141.go	fail	gd: unsupported return of (*os.rawConn, error) results
+fixedbugs/bug141.go	fail	gd: unsupported instance of AddCleanup (from another package)
 fixedbugs/bug142.go	pass	
-fixedbugs/bug143.go	fail	gd: unsupported type *types.Named
+fixedbugs/bug143.go	pass	
 fixedbugs/bug144.go	pass	
 fixedbugs/bug145.go	pass	
 fixedbugs/bug146.go	skip	todo:errorcheck
-fixedbugs/bug147.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
+fixedbugs/bug147.go	fail	c11: error: expected identifier or '(' before 'void'
 fixedbugs/bug148.go	fail	exit: exit status 2 panic: function should panic
 fixedbugs/bug149.go	pass	
 fixedbugs/bug150.go	pass	
@@ -422,7 +422,7 @@ fixedbugs/bug155.go	pass
 fixedbugs/bug156.go	pass	
 fixedbugs/bug157.go	pass	
 fixedbugs/bug158.go	pass	
-fixedbugs/bug159.go	fail	gd: unsupported return of (*os.rawConn, error) results
+fixedbugs/bug159.go	fail	gd: unsupported instance of AddCleanup (from another package)
 fixedbugs/bug160.go	skip	todo:rundir
 fixedbugs/bug161.go	pass	
 fixedbugs/bug163.go	skip	todo:errorcheck
@@ -448,14 +448,14 @@ fixedbugs/bug183.go	skip	todo:errorcheck
 fixedbugs/bug184.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/bug185.go	pass	
 fixedbugs/bug186.go	skip	todo:errorcheck
-fixedbugs/bug187.go	fail	gd: unsupported return of (*os.rawConn, error) results
+fixedbugs/bug187.go	fail	gd: unsupported instance of AddCleanup (from another package)
 fixedbugs/bug188.go	skip	gc:diagnostics -d=panic
 fixedbugs/bug189.go	skip	todo:errorcheck
 fixedbugs/bug190.go	pass	
 fixedbugs/bug191.go	skip	todo:rundir
 fixedbugs/bug192.go	skip	todo:errorcheck
 fixedbugs/bug193.go	skip	todo:errorcheck
-fixedbugs/bug194.go	fail	c11: error: invalid suffix "LL" on floating constant
+fixedbugs/bug194.go	pass	
 fixedbugs/bug19403.go	pass	
 fixedbugs/bug195.go	skip	todo:errorcheck
 fixedbugs/bug196.go	fail	c11: error: lvalue required as left operand of assignment
@@ -516,7 +516,7 @@ fixedbugs/bug253.go	pass
 fixedbugs/bug254.go	pass	
 fixedbugs/bug255.go	skip	todo:errorcheck
 fixedbugs/bug256.go	skip	todo:errorcheck
-fixedbugs/bug257.go	fail	gd: unsupported type *types.Named
+fixedbugs/bug257.go	fail	gd: panic: unsupported conversion from
 fixedbugs/bug258.go	fail	c11: error: implicit declaration of function 'Pow_go_math_package'; did you mean 'Sqrt_go_math_package'? [-Wimplicit-function…
 fixedbugs/bug259.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/bug260.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
@@ -524,7 +524,7 @@ fixedbugs/bug261.go	pass
 fixedbugs/bug262.go	fail	c11: error: expected identifier or '(' before 'void'
 fixedbugs/bug263.go	pass	
 fixedbugs/bug264.go	pass	
-fixedbugs/bug265.go	fail	gd: unsupported return of (*os.rawConn, error) results
+fixedbugs/bug265.go	fail	gd: unsupported instance of AddCleanup (from another package)
 fixedbugs/bug266.go	pass	
 fixedbugs/bug267.go	pass	
 fixedbugs/bug269.go	pass	
@@ -542,7 +542,7 @@ fixedbugs/bug281.go	pass
 fixedbugs/bug282.go	skip	todo:compiledir
 fixedbugs/bug283.go	pass	
 fixedbugs/bug284.go	skip	todo:errorcheck
-fixedbugs/bug285.go	fail	gd: unsupported type *types.Named
+fixedbugs/bug285.go	pass	
 fixedbugs/bug286.go	pass	
 fixedbugs/bug287.go	skip	todo:errorcheck
 fixedbugs/bug288.go	pass	
@@ -559,7 +559,7 @@ fixedbugs/bug298.go	skip	todo:errorcheck
 fixedbugs/bug299.go	skip	todo:errorcheck
 fixedbugs/bug300.go	skip	todo:errorcheck
 fixedbugs/bug301.go	pass	
-fixedbugs/bug303.go	fail	gd: unsupported type *types.Named
+fixedbugs/bug303.go	fail	cc: timeout
 fixedbugs/bug304.go	pass	
 fixedbugs/bug305.go	skip	todo:errorcheck
 fixedbugs/bug306.go	skip	todo:compiledir
@@ -586,7 +586,7 @@ fixedbugs/bug327.go	pass
 fixedbugs/bug328.go	pass	
 fixedbugs/bug329.go	fail	c11: error: initializer element is not constant
 fixedbugs/bug330.go	skip	todo:errorcheck
-fixedbugs/bug331.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
+fixedbugs/bug331.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
 fixedbugs/bug332.go	skip	todo:errorcheck
 fixedbugs/bug333.go	pass	
 fixedbugs/bug334.go	pass	
@@ -601,7 +601,7 @@ fixedbugs/bug342.go	skip	todo:errorcheck
 fixedbugs/bug343.go	pass	
 fixedbugs/bug344.go	skip	todo:errorcheck
 fixedbugs/bug345.go	skip	todo:errorcheck
-fixedbugs/bug346.go	fail	gd: unsupported return of (*os.rawConn, error) results
+fixedbugs/bug346.go	fail	gd: unsupported instance of AddCleanup (from another package)
 fixedbugs/bug347.go	skip	gc:stack-introspection runtime.Caller
 fixedbugs/bug348.go	skip	gc:stack-introspection runtime.Caller
 fixedbugs/bug349.go	skip	todo:errorcheck
@@ -725,7 +725,7 @@ fixedbugs/bug470.go	fail	gd: panic: unsupported index of func() *internal/abi.Ty
 fixedbugs/bug471.go	pass	
 fixedbugs/bug472.go	skip	todo:rundir
 fixedbugs/bug473.go	pass	
-fixedbugs/bug474.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
+fixedbugs/bug474.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
 fixedbugs/bug475.go	pass	
 fixedbugs/bug476.go	pass	
 fixedbugs/bug477.go	pass	
@@ -763,7 +763,7 @@ fixedbugs/bug508.go	pass
 fixedbugs/bug509.go	pass	
 fixedbugs/bug510.go	skip	todo:rundir
 fixedbugs/bug511.go	skip	todo:compiledir
-fixedbugs/bug512.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
+fixedbugs/bug512.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
 fixedbugs/bug513.go	skip	gc:build ((linux && amd64) || (linux && ppc64le) || (darwin && amd64) || (freebsd && amd64) || (netbsd && amd64) || (windows && amd64)) && cgo
 fixedbugs/bug514.go	skip	gc:build cgo
 fixedbugs/bug515.go	skip	gc:build gccgo
@@ -809,7 +809,7 @@ fixedbugs/issue10958.go	skip	upstream:build !nacl && !js && disabled_see_issue_1
 fixedbugs/issue10975.go	skip	todo:errorcheck
 fixedbugs/issue10977.go	pass	
 fixedbugs/issue11053.go	skip	todo:rundir
-fixedbugs/issue11256.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
+fixedbugs/issue11256.go	fail	c11: error: expected identifier or '(' before 'void'
 fixedbugs/issue11286.go	pass	
 fixedbugs/issue11326.go	skip	todo:errorcheck
 fixedbugs/issue11326b.go	fail	c11: error: 'Inf' undeclared (first use in this function)
@@ -911,7 +911,7 @@ fixedbugs/issue15175.go	fail	gd: panic: unsupported index of func() *internal/ab
 fixedbugs/issue15252.go	pass	
 fixedbugs/issue15277.go	skip	gc:memstats runtime.ReadMemStats
 fixedbugs/issue15281.go	skip	gc:memstats runtime.ReadMemStats
-fixedbugs/issue15303.go	fail	gd: unsupported return of (*os.rawConn, error) results
+fixedbugs/issue15303.go	fail	gd: unsupported instance of AddCleanup (from another package)
 fixedbugs/issue15311.go	skip	todo:errorcheck
 fixedbugs/issue15329.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue15439.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
@@ -923,7 +923,7 @@ fixedbugs/issue15550.go	fail	c11: error: expected identifier or '(' before 'void
 fixedbugs/issue15572.go	skip	todo:compiledir
 fixedbugs/issue15585.go	pass	
 fixedbugs/issue15602.go	pass	
-fixedbugs/issue15604.go	fail	gd: unsupported return of (*os.rawConn, error) results
+fixedbugs/issue15604.go	fail	gd: unsupported instance of AddCleanup (from another package)
 fixedbugs/issue15609.go	skip	todo:runindir
 fixedbugs/issue15611.go	skip	todo:errorcheck
 fixedbugs/issue15646.go	skip	todo:rundir
@@ -942,7 +942,7 @@ fixedbugs/issue15975.go	fail	exit: signal: trace/breakpoint trap filc safety err
 fixedbugs/issue15988.go	pass	
 fixedbugs/issue15992.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue16008.go	skip	todo:errorcheck
-fixedbugs/issue16016.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
+fixedbugs/issue16016.go	fail	c11: error: expected identifier or '(' before 'void'
 fixedbugs/issue16037_run.go	skip	gc:toolchain
 fixedbugs/issue16095.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue16130.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
@@ -964,9 +964,9 @@ fixedbugs/issue16741.go	pass
 fixedbugs/issue16760.go	fail	exit: signal: trace/breakpoint trap filc safety error: cannot read pointer with null object.
 fixedbugs/issue16804.go	pass	
 fixedbugs/issue16870.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
-fixedbugs/issue16948.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
+fixedbugs/issue16948.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
 fixedbugs/issue16949.go	skip	todo:errorcheck
-fixedbugs/issue16985.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
+fixedbugs/issue16985.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
 fixedbugs/issue17005.go	pass	
 fixedbugs/issue17038.go	skip	todo:errorcheck
 fixedbugs/issue17039.go	pass	
@@ -1002,7 +1002,7 @@ fixedbugs/issue18636.go	skip	gc:import runtime/debug
 fixedbugs/issue18640.go	pass	
 fixedbugs/issue18655.go	skip	todo:errorcheck
 fixedbugs/issue18661.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
-fixedbugs/issue18725.go	fail	gd: unsupported return of (*os.rawConn, error) results
+fixedbugs/issue18725.go	fail	gd: unsupported instance of AddCleanup (from another package)
 fixedbugs/issue18747.go	skip	todo:errorcheck
 fixedbugs/issue18808.go	pass	
 fixedbugs/issue18882.go	skip	todo:errorcheck
@@ -1023,7 +1023,7 @@ fixedbugs/issue19168.go	skip	gc:diagnostics -d=wb
 fixedbugs/issue19182.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue19201.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue19217.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
-fixedbugs/issue19246.go	fail	gd: unsupported return of (*os.rawConn, error) results
+fixedbugs/issue19246.go	fail	gd: unsupported instance of AddCleanup (from another package)
 fixedbugs/issue19261.go	skip	gc:diagnostics -m
 fixedbugs/issue19275.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue19323.go	skip	todo:errorcheck
@@ -1035,7 +1035,7 @@ fixedbugs/issue19515.go	pass
 fixedbugs/issue19548.go	skip	todo:rundir
 fixedbugs/issue19555.go	pass	
 fixedbugs/issue19610.go	skip	todo:errorcheck
-fixedbugs/issue19632.go	fail	gd: unsupported type *types.Named
+fixedbugs/issue19632.go	fail	cc: timeout
 fixedbugs/issue19658.go	skip	gc:toolchain
 fixedbugs/issue19667.go	skip	todo:errorcheck
 fixedbugs/issue19671.go	pass	
@@ -1069,7 +1069,7 @@ fixedbugs/issue20245.go	skip	gc:diagnostics -d=panic
 fixedbugs/issue20250.go	skip	gc:diagnostics -live
 fixedbugs/issue20298.go	skip	todo:errorcheck
 fixedbugs/issue20333.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
-fixedbugs/issue20335.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
+fixedbugs/issue20335.go	pass	
 fixedbugs/issue20415.go	skip	todo:errorcheck
 fixedbugs/issue20529.go	skip	todo:errorcheck
 fixedbugs/issue20530.go	pass	
@@ -1086,7 +1086,7 @@ fixedbugs/issue20813.go	skip	todo:errorcheck
 fixedbugs/issue20923.go	pass	
 fixedbugs/issue21048.go	pass	
 fixedbugs/issue21120.go	skip	todo:rundir
-fixedbugs/issue21221.go	fail	c11: error: invalid operands to binary != (have 'go_pt' and 'go_pt')
+fixedbugs/issue21221.go	pass	
 fixedbugs/issue21253.go	pass	
 fixedbugs/issue21256.go	skip	todo:errorcheck
 fixedbugs/issue21273.go	skip	todo:errorcheck
@@ -1105,7 +1105,7 @@ fixedbugs/issue21963.go	fail	gd: panic: unsupported index of func() *internal/ab
 fixedbugs/issue21979.go	skip	todo:errorcheck
 fixedbugs/issue21988.go	skip	todo:errorcheck
 fixedbugs/issue22063.go	skip	todo:errorcheck
-fixedbugs/issue22076.go	fail	c11: error: implicit declaration of function 'LastIndexRabinKarp_go_internal_bytealg_package'; did you mean 'LastIndexByte_go…
+fixedbugs/issue22076.go	fail	cc: timeout
 fixedbugs/issue22083.go	skip	gc:import runtime/debug
 fixedbugs/issue22164.go	skip	todo:errorcheck
 fixedbugs/issue22198.go	pass	
@@ -1158,8 +1158,8 @@ fixedbugs/issue23664.go	skip	todo:errorcheck
 fixedbugs/issue23719.go	pass	
 fixedbugs/issue23732.go	skip	todo:errorcheck
 fixedbugs/issue23734.go	fail	exit: exit status 2 panic: didn't panic
-fixedbugs/issue23780.go	fail	c11: error: invalid suffix "LL" on floating constant
-fixedbugs/issue23781.go	fail	c11: error: invalid suffix "LL" on floating constant
+fixedbugs/issue23780.go	fail	cc: timeout
+fixedbugs/issue23781.go	fail	cc: timeout
 fixedbugs/issue23812.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue23814.go	fail	c11: error: macro "go_ignore" passed 2 arguments, but takes just 1
 fixedbugs/issue23823.go	skip	todo:errorcheck
@@ -1172,8 +1172,8 @@ fixedbugs/issue24159.go	skip	todo:errorcheck
 fixedbugs/issue24173.go	pass	
 fixedbugs/issue24187.go	skip	upstream:build amd64p32
 fixedbugs/issue24339.go	skip	todo:errorcheck
-fixedbugs/issue24419.go	fail	gd: unsupported type *types.Named
-fixedbugs/issue24449.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
+fixedbugs/issue24419.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
+fixedbugs/issue24449.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
 fixedbugs/issue24470.go	skip	gc:diagnostics -d=panic
 fixedbugs/issue24488.go	skip	gc:stack-introspection runtime.Stack
 fixedbugs/issue24491a.go	skip	gc:finalizers runtime.SetFinalizer
@@ -1209,7 +1209,7 @@ fixedbugs/issue25984.go	skip	todo:compiledir
 fixedbugs/issue25993.go	skip	gc:flags -d=ssa/check/on
 fixedbugs/issue26024.go	pass	
 fixedbugs/issue26043.go	pass	
-fixedbugs/issue26094.go	fail	gd: unsupported type *types.Named
+fixedbugs/issue26094.go	fail	cc: timeout
 fixedbugs/issue26097.go	pass	
 fixedbugs/issue26105.go	pass	
 fixedbugs/issue26116.go	pass	
@@ -1270,7 +1270,7 @@ fixedbugs/issue28797.go	fail	gd: panic: unsupported index of func() *internal/ab
 fixedbugs/issue28926.go	skip	todo:errorcheck
 fixedbugs/issue29013a.go	pass	
 fixedbugs/issue29013b.go	pass	
-fixedbugs/issue29190.go	fail	gd: unsupported type *types.Named
+fixedbugs/issue29190.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
 fixedbugs/issue29215.go	pass	
 fixedbugs/issue29218.go	pass	
 fixedbugs/issue29220.go	pass	
@@ -1281,7 +1281,7 @@ fixedbugs/issue29329.go	skip	gc:build cgo && linux && amd64
 fixedbugs/issue29350.go	pass	
 fixedbugs/issue29362.go	pass	
 fixedbugs/issue29362b.go	pass	
-fixedbugs/issue29389.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
+fixedbugs/issue29389.go	pass	
 fixedbugs/issue29402.go	pass	
 fixedbugs/issue29504.go	skip	gc:stack-introspection runtime.Callers
 fixedbugs/issue29562.go	pass	
@@ -1358,7 +1358,7 @@ fixedbugs/issue33219.go	skip	todo:compiledir
 fixedbugs/issue33275.go	skip	upstream:skip
 fixedbugs/issue33275_run.go	skip	gc:toolchain
 fixedbugs/issue33308.go	skip	todo:errorcheck
-fixedbugs/issue33355.go	fail	c11: error: implicit declaration of function 'LastIndexRabinKarp_go_internal_bytealg_package'; did you mean 'LastIndexByte_go…
+fixedbugs/issue33355.go	fail	cc: timeout
 fixedbugs/issue33386.go	skip	todo:errorcheck
 fixedbugs/issue33438.go	pass	
 fixedbugs/issue33460.go	skip	todo:errorcheck
@@ -1400,7 +1400,7 @@ fixedbugs/issue37716.go	fail	gd: panic: unsupported index of func() *internal/ab
 fixedbugs/issue37753.go	pass	
 fixedbugs/issue3783.go	skip	todo:errorcheck
 fixedbugs/issue37837.go	skip	gc:diagnostics -m
-fixedbugs/issue37975.go	fail	gd: unsupported type *types.Named
+fixedbugs/issue37975.go	fail	cc: timeout
 fixedbugs/issue38093.go	skip	upstream:build js
 fixedbugs/issue38117.go	skip	todo:errorcheck
 fixedbugs/issue38125.go	pass	
@@ -1428,7 +1428,7 @@ fixedbugs/issue40629.go	fail	gd: panic: unsupported index of func() *internal/ab
 fixedbugs/issue4066.go	pass	
 fixedbugs/issue40746.go	pass	
 fixedbugs/issue4085a.go	skip	todo:errorcheck
-fixedbugs/issue4085b.go	fail	gd: unsupported type *types.Named
+fixedbugs/issue4085b.go	fail	cc: timeout
 fixedbugs/issue40917.go	skip	gc:flags -gcflags=-d=checkptr
 fixedbugs/issue40954.go	skip	gc:build cgo
 fixedbugs/issue4097.go	skip	todo:errorcheck
@@ -1605,7 +1605,7 @@ fixedbugs/issue4847.go	skip	todo:errorcheck
 fixedbugs/issue48471.go	skip	todo:errorcheck
 fixedbugs/issue48473.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue48476.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
-fixedbugs/issue48536.go	fail	c11: error: invalid operands to binary != (have 'go_pt' and 'go_pt')
+fixedbugs/issue48536.go	pass	
 fixedbugs/issue48558.go	skip	todo:errorcheck
 fixedbugs/issue48784.go	skip	todo:errorcheck
 fixedbugs/issue4879.go	skip	todo:compiledir
@@ -1679,7 +1679,7 @@ fixedbugs/issue52535.go	pass
 fixedbugs/issue5259.go	skip	todo:compiledir
 fixedbugs/issue52590.go	skip	todo:compiledir
 fixedbugs/issue5260.go	skip	todo:rundir
-fixedbugs/issue52612.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
+fixedbugs/issue52612.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
 fixedbugs/issue52673.go	pass	
 fixedbugs/issue52697.go	skip	todo:errorcheck
 fixedbugs/issue52701.go	pass	
@@ -1717,7 +1717,7 @@ fixedbugs/issue54348.go	pass
 fixedbugs/issue54467.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue54542.go	skip	gc:toolchain
 fixedbugs/issue54632.go	pass	
-fixedbugs/issue54638.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
+fixedbugs/issue54638.go	pass	
 fixedbugs/issue5470.go	skip	todo:compiledir
 fixedbugs/issue54722.go	pass	
 fixedbugs/issue54722b.go	pass	
@@ -1725,7 +1725,7 @@ fixedbugs/issue54911.go	pass
 fixedbugs/issue54912.go	skip	todo:rundir
 fixedbugs/issue5493.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue54959.go	pass	
-fixedbugs/issue54991.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
+fixedbugs/issue54991.go	pass	
 fixedbugs/issue55122.go	pass	
 fixedbugs/issue55122b.go	pass	
 fixedbugs/issue5515.go	pass	
@@ -1789,15 +1789,15 @@ fixedbugs/issue59404part2.go	pass
 fixedbugs/issue59411.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue5957.go	skip	todo:errorcheck
 fixedbugs/issue59572.go	pass	
-fixedbugs/issue5963.go	fail	gd: unsupported return of (*os.rawConn, error) results
+fixedbugs/issue5963.go	fail	gd: unsupported instance of AddCleanup (from another package)
 fixedbugs/issue59638.go	skip	gc:flags -gcflags=-l=4
-fixedbugs/issue59680.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
+fixedbugs/issue59680.go	fail	c11: error: expected identifier or '(' before 'void'
 fixedbugs/issue59709.go	skip	todo:rundir
 fixedbugs/issue6004.go	skip	todo:errorcheck
 fixedbugs/issue6036.go	pass	
 fixedbugs/issue6055.go	fail	exit: signal: trace/breakpoint trap filc safety error: cannot read pointer with null object.
 fixedbugs/issue60582.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
-fixedbugs/issue60601.go	fail	gd: unsupported type *types.Named
+fixedbugs/issue60601.go	fail	cc: timeout
 fixedbugs/issue60945.go	skip	todo:compiledir
 fixedbugs/issue60982.go	pass	
 fixedbugs/issue60990.go	pass	
@@ -1842,7 +1842,7 @@ fixedbugs/issue64826.go	pass
 fixedbugs/issue6500.go	skip	todo:errorcheck
 fixedbugs/issue6513.go	skip	todo:compiledir
 fixedbugs/issue65362.go	pass	
-fixedbugs/issue65417.go	fail	gd: unsupported type *types.Named
+fixedbugs/issue65417.go	fail	cc: timeout
 fixedbugs/issue65593.go	pass	
 fixedbugs/issue6572.go	skip	todo:errorcheck
 fixedbugs/issue65778.go	skip	gc:godebug gotypesalias=1
@@ -1909,7 +1909,7 @@ fixedbugs/issue68809.go	pass
 fixedbugs/issue68816.go	fail	exit: signal: trace/breakpoint trap filc safety error: attempt to allocate object that is too bi…
 fixedbugs/issue6889.go	skip	todo:errorcheck
 fixedbugs/issue6899.go	fail	c11: error: implicit declaration of function 'Copysign_go_math_package'; did you mean 'Sqrt_go_math_package'? [-Wimplicit-fun…
-fixedbugs/issue6902.go	fail	gd: unsupported return of (*os.rawConn, error) results
+fixedbugs/issue6902.go	fail	gd: unsupported instance of AddCleanup (from another package)
 fixedbugs/issue69434.go	fail	gd: range over unsupported type *types.Named
 fixedbugs/issue69507.go	fail	gd: range over unsupported type *types.Named
 fixedbugs/issue6964.go	skip	todo:errorcheck
@@ -1933,7 +1933,7 @@ fixedbugs/issue71675.go	fail	gd: range over unsupported type *types.Signature
 fixedbugs/issue71680.go	pass	
 fixedbugs/issue71759.go	pass	
 fixedbugs/issue71852.go	fail	c11: error: implicit declaration of function 'Pow10_go_math_package'; did you mean 'Sqrt_go_math_package'? [-Wimplicit-functi…
-fixedbugs/issue71857.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
+fixedbugs/issue71857.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
 fixedbugs/issue71932.go	pass	
 fixedbugs/issue72063.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue72090.go	fail	gd: range over unsupported type *types.Named
@@ -1964,7 +1964,7 @@ fixedbugs/issue73916b.go	pass
 fixedbugs/issue73917.go	pass	
 fixedbugs/issue73920.go	pass	
 fixedbugs/issue7405.go	pass	
-fixedbugs/issue7419.go	fail	gd: unsupported return of (*os.rawConn, error) results
+fixedbugs/issue7419.go	fail	gd: unsupported instance of AddCleanup (from another package)
 fixedbugs/issue74379.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue74379b.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue74379c.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
@@ -2005,7 +2005,7 @@ fixedbugs/issue7746.go	skip	todo:errorcheck
 fixedbugs/issue77534.go	pass	
 fixedbugs/issue7760.go	skip	todo:errorcheck
 fixedbugs/issue77604.go	pass	
-fixedbugs/issue77613.go	fail	gd: unsupported type *types.Named
+fixedbugs/issue77613.go	fail	cc: timeout
 fixedbugs/issue77635.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue77635b.go	pass	
 fixedbugs/issue77779.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
@@ -2034,11 +2034,11 @@ fixedbugs/issue7867.go	skip	todo:runoutput
 fixedbugs/issue7884.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue78892.go	pass	
 fixedbugs/issue79182.go	pass	
-fixedbugs/issue79186.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
+fixedbugs/issue79186.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
 fixedbugs/issue79197.go	pass	
 fixedbugs/issue7921.go	skip	gc:diagnostics -m
 fixedbugs/issue79236.go	pass	
-fixedbugs/issue79236b.go	fail	gd: unsupported type *types.Named
+fixedbugs/issue79236b.go	fail	cc: timeout
 fixedbugs/issue79258.go	skip	todo:errorcheck
 fixedbugs/issue79274.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue79274a.go	skip	todo:compiledir
@@ -2086,7 +2086,7 @@ fixedbugs/issue8132.go	pass
 fixedbugs/issue8139.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue8154.go	pass	
 fixedbugs/issue8155.go	pass	
-fixedbugs/issue8158.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
+fixedbugs/issue8158.go	fail	c11: error: expected identifier or '(' before 'void'
 fixedbugs/issue8183.go	skip	todo:errorcheck
 fixedbugs/issue8280.go	skip	todo:compiledir
 fixedbugs/issue8311.go	skip	todo:errorcheck
@@ -2136,7 +2136,7 @@ fixedbugs/notinheap2.go	skip	gc:build cgo
 fixedbugs/notinheap3.go	skip	gc:build cgo
 fixedbugs/shrd_zero_count.go	pass	
 fixedbugs/splitload_pointer_compare.go	pass	
-fixedbugs/walk_bounded_overshift_empty_bound.go	fail	gd: unsupported type *types.Named
+fixedbugs/walk_bounded_overshift_empty_bound.go	fail	cc: timeout
 float_lit.go	pass	
 float_lit2.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 float_lit3.go	skip	todo:errorcheck
@@ -2167,7 +2167,7 @@ goto.go	skip	todo:errorcheck
 heapsampling.go	skip	gc:memstats runtime.MemProfileRate
 helloworld.go	pass	
 if.go	pass	
-import.go	fail	gd: unsupported return of (*os.rawConn, error) results
+import.go	fail	gd: unsupported instance of AddCleanup (from another package)
 import1.go	skip	todo:errorcheck
 import2.go	skip	todo:compiledir
 import4.go	skip	todo:errorcheck
@@ -2195,14 +2195,14 @@ inline_literal.go	skip	gc:stack-introspection runtime.FuncForPC
 inline_math_bits_rotate.go	skip	gc:diagnostics -m
 inline_sync.go	skip	gc:diagnostics -m
 inline_variadic.go	skip	gc:diagnostics -m
-int_lit.go	fail	gd: unsupported return of (*os.rawConn, error) results
+int_lit.go	fail	gd: unsupported instance of AddCleanup (from another package)
 intcvt.go	pass	
 interface/assertinline.go	skip	gc:diagnostics -d=typeassert
 interface/bigdata.go	pass	
 interface/convert.go	pass	
 interface/convert1.go	pass	
 interface/convert2.go	pass	
-interface/embed.go	fail	gd: unsupported return of (*os.rawConn, error) results
+interface/embed.go	fail	gd: unsupported instance of AddCleanup (from another package)
 interface/embed1.go	skip	todo:rundir
 interface/embed2.go	skip	todo:errorcheck
 interface/embed3.go	skip	todo:rundir
@@ -2217,13 +2217,13 @@ interface/receiver1.go	skip	todo:errorcheck
 interface/recursive.go	pass	
 interface/recursive1.go	skip	todo:compiledir
 interface/returntype.go	pass	
-interface/struct.go	fail	gd: unsupported return of (*os.rawConn, error) results
+interface/struct.go	fail	gd: unsupported instance of AddCleanup (from another package)
 internal/runtime/sys/inlinegcpc.go	skip	gc:diagnostics -m
 intrinsic.go	skip	gc:diagnostics -d=ssa/intrinsics/debug
 intrinsic_atomic.go	skip	gc:diagnostics -d=ssa/intrinsics/debug
 iota.go	pass	
 ken/array.go	pass	
-ken/chan.go	fail	gd: unsupported return of (*os.rawConn, error) results
+ken/chan.go	fail	gd: unsupported instance of AddCleanup (from another package)
 ken/chan1.go	pass	
 ken/complit.go	pass	
 ken/convert.go	pass	
@@ -2233,9 +2233,9 @@ ken/cplx2.go	fail	c11: error: initializer element is not constant
 ken/cplx3.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 ken/cplx4.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 ken/cplx5.go	pass	
-ken/divconst.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
+ken/divconst.go	fail	c11: error: implicit declaration of function 'CallersFrames_go_runtime_package'; did you mean 'Callers_go_runtime_package'? […
 ken/divmod.go	pass	
-ken/embed.go	fail	c11: error: 'go_pt' has no member named 'a3'
+ken/embed.go	pass	
 ken/for.go	pass	
 ken/interbasic.go	pass	
 ken/interfun.go	pass	
@@ -2243,7 +2243,7 @@ ken/intervar.go	pass
 ken/label.go	pass	
 ken/litfun.go	pass	
 ken/mfunc.go	pass	
-ken/modconst.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
+ken/modconst.go	fail	c11: error: implicit declaration of function 'CallersFrames_go_runtime_package'; did you mean 'Callers_go_runtime_package'? […
 ken/ptrfun.go	pass	
 ken/ptrvar.go	pass	
 ken/range.go	fail	gd: range over unsupported type *types.Map
@@ -2285,7 +2285,7 @@ mainsig.go	skip	todo:errorcheck
 makechan.go	skip	todo:errorcheck
 makemap.go	skip	todo:errorcheck
 makenew.go	skip	todo:errorcheck
-makeslice.go	fail	gd: unsupported type *types.Named
+makeslice.go	fail	cc: timeout
 mallocfin.go	skip	gc:finalizers runtime.SetFinalizer
 map.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 map1.go	skip	todo:errorcheck
@@ -2301,13 +2301,13 @@ method4.go	skip	todo:rundir
 method5.go	fail	exit: exit status 2 panic: not panicking
 method6.go	skip	todo:errorcheck
 method7.go	fail	gd: panic: unsupported node type: DefinedType
-named.go	fail	gd: unsupported type *types.Named
+named.go	pass	
 named1.go	skip	todo:errorcheck
 newexpr.go	fail	exit: exit status 2 panic: wrong value
 newinline.go	skip	gc:build goexperiment.newinliner
 nil.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 nilcheck.go	skip	gc:diagnostics -d=nil
-nilptr.go	fail	c11: error: 'go_pt' has no member named 'T'
+nilptr.go	fail	exit: exit status 2 panic: dummy too far out
 nilptr2.go	fail	exit: signal: segmentation fault
 nilptr3.go	skip	gc:diagnostics -d=nil
 nilptr4.go	pass	
@@ -2334,10 +2334,10 @@ range2.go	skip	todo:errorcheck
 range3.go	pass	
 range4.go	fail	gd: panic: interface conversion: ast.Expr is *ast.StarExpr, not *ast.Ident
 rangegen.go	skip	todo:runoutput
-recover.go	fail	gd: unsupported return of (*os.rawConn, error) results
+recover.go	fail	gd: unsupported instance of AddCleanup (from another package)
 recover1.go	fail	exit: exit status 2 panic: nil
-recover2.go	fail	gd: unsupported type *types.Named
-recover3.go	fail	gd: unsupported type *types.Named
+recover2.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
+recover3.go	fail	c11: error: 'Error_go_runtime_package' has no member named 'Error'; did you mean 'error'?
 recover4.go	skip	gc:import runtime/debug
 recover5.go	skip	todo:errorcheck
 reflectmethod1.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
@@ -2365,7 +2365,7 @@ shift1.go	skip	todo:errorcheck
 shift2.go	fail	c11: error: invalid operands to binary << (have 'double' and 'go_uu' {aka 'long int'})
 shift3.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 sieve.go	pass	
-sigchld.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
+sigchld.go	fail	c11: error: expected identifier or '(' before 'void'
 simassign.go	fail	c11: error: incompatible type for argument 1 of 'swap_go_main_package'
 simd.go	skip	gc:build goexperiment.simd && amd64
 simd/bug1.go	skip	gc:build amd64 && goexperiment.simd
@@ -2384,10 +2384,10 @@ stackobj2.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 stackobj3.go	skip	gc:finalizers runtime.SetFinalizer
 strcopy.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 strength.go	skip	todo:runoutput
-string_lit.go	fail	gd: unsupported return of (*os.rawConn, error) results
+string_lit.go	fail	gd: unsupported instance of AddCleanup (from another package)
 stringrange.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 struct0.go	fail	c11: error: incompatible type for argument 2 of 'go_send_vv'
-switch.go	fail	gd: unsupported return of (*os.rawConn, error) results
+switch.go	fail	gd: unsupported instance of AddCleanup (from another package)
 switch2.go	skip	todo:errorcheck
 switch3.go	skip	todo:errorcheck
 switch4.go	skip	todo:errorcheck
@@ -2427,7 +2427,7 @@ typeparam/absdiffimp.go	skip	todo:rundir
 typeparam/absdiffimp2.go	skip	todo:rundir
 typeparam/adder.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 typeparam/aliasimp.go	skip	todo:rundir
-typeparam/append.go	fail	gd: unsupported type *types.Named
+typeparam/append.go	pass	
 typeparam/boundmethod.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 typeparam/builtins.go	pass	
 typeparam/chans.go	skip	gc:finalizers runtime.SetFinalizer
@@ -2522,8 +2522,8 @@ typeparam/issue48276a.go	fail	gd: panic: unsupported index of func() *internal/a
 typeparam/issue48276b.go	pass	
 typeparam/issue48280.go	skip	todo:rundir
 typeparam/issue48306.go	skip	todo:rundir
-typeparam/issue48317.go	fail	gd: unsupported type *types.Named
-typeparam/issue48318.go	fail	gd: unsupported type *types.Named
+typeparam/issue48317.go	fail	gd: panic: unsupported node type: DefinedType
+typeparam/issue48318.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 typeparam/issue48337a.go	skip	todo:rundir
 typeparam/issue48337b.go	skip	todo:rundir
 typeparam/issue48344.go	fail	c11: error: unknown type name 'G__go_ii_go_main_package'; did you mean 'Foo__go_ii_go_main_package'?
@@ -2640,7 +2640,7 @@ typeparam/list.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 typeparam/list2.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 typeparam/listimp.go	skip	todo:rundir
 typeparam/listimp2.go	skip	todo:rundir
-typeparam/lockable.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
+typeparam/lockable.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
 typeparam/map.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 typeparam/mapimp.go	skip	todo:rundir
 typeparam/maps.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
@@ -2664,7 +2664,7 @@ typeparam/mdempsky/5.go	pass
 typeparam/mdempsky/6.go	pass	
 typeparam/mdempsky/7.go	skip	todo:compiledir
 typeparam/mdempsky/8.go	skip	todo:errorcheck
-typeparam/mdempsky/9.go	fail	c11: error: invalid suffix "LL" on floating constant
+typeparam/mdempsky/9.go	pass	
 typeparam/metrics.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 typeparam/min.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 typeparam/mincheck.go	skip	todo:errorcheck
@@ -2706,7 +2706,7 @@ typeparam/typeswitch6.go	pass
 typeparam/typeswitch7.go	fail	output: mismatch
 typeparam/valimp.go	skip	todo:rundir
 typeparam/value.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
-typeswitch.go	fail	gd: unsupported return of (*os.rawConn, error) results
+typeswitch.go	fail	gd: unsupported instance of AddCleanup (from another package)
 typeswitch1.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 typeswitch2.go	skip	todo:errorcheck
 typeswitch2b.go	skip	todo:errorcheck

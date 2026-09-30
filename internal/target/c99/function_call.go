@@ -162,7 +162,11 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 					fmt.Fprint(c99, c99.methodCName(recv, defined.String))
 				}
 			} else {
-				fmt.Fprint(c99, c99.FunctionName(defined))
+				name, err := c99.FunctionInstance(defined) // pkg.F
+				if err != nil {
+					return err
+				}
+				fmt.Fprint(c99, name)
 			}
 		} else { // a func value, such as a struct field.
 			if err := c99.invoke(function, deferred.Callee); err != nil {

@@ -191,19 +191,27 @@ func (c99 Target) Selection(sel source.Selection) error {
 		}
 	}
 	if xtype := sel.X.TypeAndValue().Type; xtype != nil {
-		if pointer, ok := xtype.Underlying().(*types.Pointer); ok { // p.f is (*p).f
-			fmt.Fprintf(c99, "go_pointer_get(")
-			if err := c99.Compile(sel.X); err != nil {
-				return err
+		// Through the embedded fields of the path (p.f is (*p).f, also for embedded pointers).
+		expr, typ := c99.toString(sel.X), xtype
+		for _, elem := range append(sel.Path, "") {
+			if pointer, ok := typ.Underlying().(*types.Pointer); ok {
+				expr = fmt.Sprintf("go_pointer_get(%s, %s)", expr, c99.TypeOf(pointer.Elem()))
+				typ = pointer.Elem()
 			}
-			fmt.Fprintf(c99, ", %s)", c99.TypeOf(pointer.Elem()))
-		} else if err := c99.Compile(sel.X); err != nil {
-			return err
+			if elem == "" {
+				break
+			}
+			if st, ok := typ.Underlying().(*types.Struct); ok {
+				for i := range st.NumFields() {
+					if st.Field(i).Name() == elem {
+						expr += "." + fieldName(st.Field(i), i)
+						typ = st.Field(i).Type()
+						break
+					}
+				}
+			}
 		}
-		for _, elem := range sel.Path {
-			fmt.Fprintf(c99, ".%s", elem)
-		}
-		fmt.Fprintf(c99, ".")
+		fmt.Fprintf(c99, "%s.", expr)
 	}
 	return c99.Compile(sel.Selection)
 }

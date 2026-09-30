@@ -130,8 +130,7 @@ func (c99 Target) ExpressionBinary(expr source.ExpressionBinary) error {
 	if err := c99.Expression(expr.X); err != nil {
 		return err
 	}
-	switch expr.X.TypeAndValue().Type.Underlying().(type) {
-	case *types.Pointer:
+	if isGoPointer(expr.X.TypeAndValue().Type) {
 		fmt.Fprintf(c99, ".ptr")
 	}
 	switch expr.Operation.Value {
@@ -145,8 +144,7 @@ func (c99 Target) ExpressionBinary(expr source.ExpressionBinary) error {
 	if err := c99.Expression(expr.Y); err != nil {
 		return err
 	}
-	switch expr.X.TypeAndValue().Type.Underlying().(type) {
-	case *types.Pointer:
+	if isGoPointer(expr.X.TypeAndValue().Type) {
 		fmt.Fprintf(c99, ".ptr")
 	}
 	return nil
@@ -226,6 +224,11 @@ func (c99 Target) DivisionOf(op token.Token, t types.Type) string {
 func isString(t types.Type) bool {
 	basic, ok := t.Underlying().(*types.Basic)
 	return ok && basic.Info()&types.IsString != 0
+}
+
+// isGoPointer reports whether t is a pointer type, or unsafe.Pointer (both go_pt).
+func isGoPointer(t types.Type) bool {
+	return isPointerType(t) || isUnsafePointer(t)
 }
 
 func isComplex(t types.Type) bool {
