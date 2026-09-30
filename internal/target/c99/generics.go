@@ -239,7 +239,7 @@ func (c99 Target) inPackage(pkg *types.Package) (Target, func()) {
 		return c99, func() {}
 	}
 	c99.Requires("#include "+pkg.Path(), c99.Prelude, func(w io.Writer) error {
-		fmt.Fprintf(w, "#include <go/%s.h>\n", pkg.Path())
+		fmt.Fprintf(w, "\n#include <go/%s.h>\n", pkg.Path())
 		return nil
 	})
 	closures := *other
@@ -275,10 +275,6 @@ func (c99 Target) instanceType(named *types.Named, cname string) {
 // generic type, static in each file.
 func (c99 Target) instanceDescriptor(named *types.Named) string {
 	symbol := "go_rtype_" + identifier.ReplaceAllString(c99.typeCName(named), "_")
-	c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
-		name := types.TypeString(named, func(pkg *types.Package) string { return pkg.Name() })
-		fmt.Fprintf(w, "static const go_type %s = {.name=%s, .kind=go_kind_%s%s%s};\n", symbol, cString(name), kindOf(named.Underlying()), c99.methodTable(named), c99.equalField(named))
-		return nil
-	})
+	c99.staticDescriptor(symbol, types.TypeString(named, func(pkg *types.Package) string { return pkg.Name() }), named)
 	return "&" + symbol
 }

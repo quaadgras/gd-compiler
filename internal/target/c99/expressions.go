@@ -103,6 +103,13 @@ func (c99 Target) ExpressionBinary(expr source.ExpressionBinary) error {
 		fmt.Fprintf(c99, "%s_%s(%s, %s)", c99.TypeOf(expr.TypeAndValue().Type), op, c99.toString(expr.X), c99.toString(expr.Y))
 		return nil
 	}
+	if !isIntegerOp(expr.Operation.Value, expr.TypeAndValue().Type) {
+		// (the operands are written below)
+	} else if value, ok := c99.integerOp(expr.Operation.Value, c99.toString(expr.X), c99.toString(expr.Y), expr.TypeAndValue().Type,
+		expr.Y.TypeAndValue().Type, expr.Y.TypeAndValue().Value != nil); ok {
+		fmt.Fprint(c99, value)
+		return nil
+	}
 	switch expr.Operation.Value {
 	case token.AND_NOT:
 		fmt.Fprintf(c99, "(%s & ~%s)", c99.toString(expr.X), c99.toString(expr.Y))
@@ -472,6 +479,9 @@ func (c99 Target) ExpressionSlice(e source.ExpressionSlice) error {
 }
 
 func (c99 Target) ExpressionUnary(e source.ExpressionUnary) error {
+	if tv := e.TypeAndValue(); tv.Value != nil {
+		return c99.Constant(tv)
+	}
 	if basic, ok := e.X.TypeAndValue().Type.Underlying().(*types.Basic); ok && basic.Info()&types.IsComplex != 0 {
 		switch e.Operation.Value {
 		case token.SUB:
@@ -508,6 +518,12 @@ func (c99 Target) ExpressionUnary(e source.ExpressionUnary) error {
 		return nil
 	case token.XOR: // bitwise complement.
 		fmt.Fprintf(c99, "(%s)~", c99.TypeOf(e.TypeAndValue().Type))
+	case token.SUB:
+		if ut := wrapType(e.TypeAndValue().Type); ut != "" { // -x wraps (for the most negative x).
+			fmt.Fprintf(c99, "((%s)(0 - (%s)(%s)))", c99.TypeOf(e.TypeAndValue().Type), ut, c99.toString(e.X))
+			return nil
+		}
+		fmt.Fprintf(c99, "-")
 	default:
 		fmt.Fprintf(c99, "%s", e.Operation.Value)
 	}

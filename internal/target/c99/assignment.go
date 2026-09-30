@@ -6,6 +6,7 @@ import (
 	"go/token"
 	"go/types"
 	"io"
+	"strings"
 
 	"github.com/quaadgras/gd-compiler/internal/source"
 	"runtime.link/xyz"
@@ -293,6 +294,24 @@ func (c99 Target) assignment(stmt source.StatementAssignment) error {
 				fmt.Fprintf(c99, ")")
 				continue
 			}
+			if op := stmt.Token.Value; op >= token.ADD_ASSIGN && op <= token.AND_NOT_ASSIGN &&
+				isIntegerOp(op-(token.ADD_ASSIGN-token.ADD), variable.TypeAndValue().Type) {
+				var buf strings.Builder
+				cc := c99
+				cc.Writer = &buf
+				if err := cc.ExpressionAs(stmt.Values[i], variable.TypeAndValue().Type); err != nil {
+					return err
+				}
+				value := buf.String()
+				if isShift(op) { // the count may have any integer type.
+					value = c99.toString(stmt.Values[i])
+				}
+				if expr, ok := c99.integerOp(op-(token.ADD_ASSIGN-token.ADD), c99.toString(variable), value, variable.TypeAndValue().Type,
+					stmt.Values[i].TypeAndValue().Type, stmt.Values[i].TypeAndValue().Value != nil); ok {
+					fmt.Fprintf(c99, " = %s", expr)
+					continue
+				}
+			}
 			fmt.Fprintf(c99, " %s ", stmt.Token.Value)
 			switch variable.TypeAndValue().Type.(type) {
 			case *types.Interface:
@@ -327,4 +346,8 @@ func isAssignable(variable source.Expression) bool {
 		return !isMap
 	}
 	return true
+}
+
+func isShift(op token.Token) bool {
+	return op == token.SHL || op == token.SHR || op == token.SHL_ASSIGN || op == token.SHR_ASSIGN
 }

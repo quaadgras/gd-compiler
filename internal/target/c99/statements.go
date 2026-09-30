@@ -2,6 +2,7 @@ package c99
 
 import (
 	"fmt"
+	"go/constant"
 	"go/token"
 	"go/types"
 	"io"
@@ -82,12 +83,22 @@ func (c99 Target) StatementBlock(stmt source.StatementBlock) error {
 }
 
 func (c99 Target) StatementDecrement(stmt source.StatementDecrement) error {
-	value, _ := stmt.WithLocation.Value.Get()
-	if err := c99.Compile(value); err != nil {
-		return err
-	}
-	fmt.Fprintf(c99, "-=1")
-	return nil
+	return c99.incDec(stmt.WithLocation.SourceLocation, stmt.WithLocation.Value, token.SUB_ASSIGN)
+}
+
+// incDec writes x++ or x-- (op is token.ADD_ASSIGN or token.SUB_ASSIGN) as x op= 1.
+func (c99 Target) incDec(loc source.Location, x source.Expression, op token.Token) error {
+	t := x.TypeAndValue().Type
+	one := source.Expressions.DefinedVariable.New(source.DefinedVariable{
+		Typed:    source.Typed{TV: types.TypeAndValue{Type: t, Value: constant.MakeInt64(1)}},
+		Location: loc,
+		String:   "1",
+	})
+	return c99.assignment(source.StatementAssignment{Location: loc,
+		Token:     source.WithLocation[token.Token]{Value: op},
+		Variables: []source.Expression{x},
+		Values:    []source.Expression{one},
+	})
 }
 
 func (c99 Target) StatementEmpty(stmt source.StatementEmpty) error { return nil }
@@ -106,11 +117,7 @@ func (c99 Target) StatementBreak(stmt source.StatementBreak) error {
 }
 
 func (c99 Target) StatementIncrement(stmt source.StatementIncrement) error {
-	if err := c99.Expression(stmt.WithLocation.Value); err != nil {
-		return err
-	}
-	fmt.Fprintf(c99, "+=1")
-	return nil
+	return c99.incDec(stmt.WithLocation.SourceLocation, stmt.WithLocation.Value, token.ADD_ASSIGN)
 }
 
 func (c99 Target) StatementSend(stmt source.StatementSend) error {

@@ -310,32 +310,86 @@ func (c99 Target) ReflectTypeOf(t types.Type) string {
 	}
 	name := typeName(t)
 	symbol := "go_rtype_" + identifier.ReplaceAllString(name, "_")
-	var data string
-	switch typ := t.(type) {
-	case *types.Pointer:
-		data = fmt.Sprintf(".kind=go_kind_pointer, .data={.pointer={.elem=%s}}%s", c99.ReflectTypeOf(typ.Elem()), c99.methodTable(typ))
-	case *types.Slice:
-		data = fmt.Sprintf(".kind=go_kind_slice, .data={.slice={.elem=%s}}", c99.ReflectTypeOf(typ.Elem()))
-	case *types.Array:
-		data = fmt.Sprintf(".kind=go_kind_array, .data={.array={.elem=%s, .len=%d}}%s", c99.ReflectTypeOf(typ.Elem()), typ.Len(), c99.equalField(typ))
-	case *types.Map:
-		data = fmt.Sprintf(".kind=go_kind_map, .data={.map={.key=%s, .elem=%s}}", c99.ReflectTypeOf(typ.Key()), c99.ReflectTypeOf(typ.Elem()))
-	case *types.Chan:
-		data = fmt.Sprintf(".kind=go_kind_chan, .data={.chan={.elem=%s, .dir=%d}}", c99.ReflectTypeOf(typ.Elem()), typ.Dir())
-	case *types.Signature:
-		data = ".kind=go_kind_func" // TODO: parameter and result types.
-	case *types.Interface:
-		data = ".kind=go_kind_interface" // TODO: methods.
-	case *types.Struct:
-		data = ".kind=go_kind_struct" + c99.equalField(typ) // TODO: fields.
-	default:
-		panic("unsupported type " + reflect.TypeOf(typ).String())
+	c99.staticDescriptor(symbol, name, t)
+	return "&" + symbol
+}
+
+// descriptorFields returns the fields of the type descriptor (go_type) of t, other than
+// its name: its kind and size, the types it's made of, its methods, and how its values are
+// compared and hashed (when they are the dynamic values of interfaces).
+func (c99 Target) descriptorFields(t types.Type) string {
+	var b strings.Builder
+	fmt.Fprintf(&b, ", .kind=go_kind_%s", kindOf(t))
+	if zeroSize(t) {
+		fmt.Fprintf(&b, ", .size=0") // C has no empty types.
+	} else {
+		fmt.Fprintf(&b, ", .size=sizeof(%s)", c99.TypeOf(t))
 	}
-	c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
-		fmt.Fprintf(w, "static const go_type %s = {.name=%s, %s};\n", symbol, cString(name), data)
+	switch typ := t.Underlying().(type) {
+	case *types.Pointer:
+		fmt.Fprintf(&b, ", .data={.pointer={.elem=%s}}", c99.ReflectTypeOf(typ.Elem()))
+	case *types.Slice:
+		fmt.Fprintf(&b, ", .data={.slice={.elem=%s}}", c99.ReflectTypeOf(typ.Elem()))
+	case *types.Array:
+		fmt.Fprintf(&b, ", .data={.array={.elem=%s, .len=%d}}", c99.ReflectTypeOf(typ.Elem()), typ.Len())
+	case *types.Map:
+		fmt.Fprintf(&b, ", .data={.map={.key=%s, .elem=%s}}", c99.ReflectTypeOf(typ.Key()), c99.ReflectTypeOf(typ.Elem()))
+	case *types.Chan:
+		fmt.Fprintf(&b, ", .data={.chan={.elem=%s, .dir=%d}}", c99.ReflectTypeOf(typ.Elem()), typ.Dir())
+	case *types.Interface:
+		if methods, n := c99.interfaceMethods(t); n > 0 {
+			fmt.Fprintf(&b, ", .data={.interface={%s, %d}}", methods, n)
+		}
+	case *types.Struct:
+		if typ.NumFields() > 0 {
+			ctype := c99.TypeOf(t)
+			var fields []string
+			for i := range typ.NumFields() {
+				field := typ.Field(i)
+				fields = append(fields, fmt.Sprintf("{.name=%s, .type=%s, .offset=offsetof(%s, %s), .exported=%t, .embedded=%t}",
+					cString(field.Name()), c99.ReflectTypeOf(field.Type()), ctype, fieldName(field, i), field.Exported(), field.Anonymous()))
+			}
+			symbol := "go_fields_" + identifier.ReplaceAllString(typeName(t), "_")
+			c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
+				fmt.Fprintf(w, "static const go_field %s[] = {%s};\n", symbol, strings.Join(fields, ", "))
+				return nil
+			})
+			fmt.Fprintf(&b, ", .data={.fields={%s, %d}}", symbol, typ.NumFields())
+		}
+	}
+	b.WriteString(c99.methodTable(t))
+	b.WriteString(c99.equalField(t))
+	return b.String()
+}
+
+// zeroSize reports whether values of t take no memory (in Go: C has no empty types).
+func zeroSize(t types.Type) bool {
+	switch typ := t.Underlying().(type) {
+	case *types.Struct:
+		for field := range typ.Fields() {
+			if !zeroSize(field.Type()) {
+				return false
+			}
+		}
+		return true
+	case *types.Array:
+		return typ.Len() == 0 || zeroSize(typ.Elem())
+	}
+	return false
+}
+
+// staticDescriptor defines (if it hasn't been) the type descriptor of t, static in the file,
+// declared first, as it may be used by the descriptors it uses (of recursive types).
+func (c99 Target) staticDescriptor(symbol, name string, t types.Type) {
+	c99.Requires("declare "+symbol, c99.Generic, func(w io.Writer) error {
+		fmt.Fprintf(w, "static const go_type %s;\n", symbol)
 		return nil
 	})
-	return "&" + symbol
+	c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
+		fields := c99.descriptorFields(t) // first, as it may write the descriptors it uses.
+		fmt.Fprintf(w, "static const go_type %s = {.name=%s%s};\n", symbol, cString(name), fields)
+		return nil
+	})
 }
 
 // typeName returns the name of t for its type descriptor, which identifies the type: like

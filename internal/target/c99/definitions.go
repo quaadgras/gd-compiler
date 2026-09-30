@@ -27,8 +27,17 @@ func (c99 Target) definedVariable(decl bool, name source.DefinedVariable) error 
 		fmt.Fprintf(c99, "(*%s)", name.String) // boxed.
 		return nil
 	}
-	_, err := c99.Write([]byte(name.String))
+	_, err := c99.Write([]byte(variableName(name)))
 	return err
+}
+
+// variableName returns the C name of a variable: package-level variables are qualified by
+// their package (like functions), as they have external linkage.
+func variableName(name source.DefinedVariable) string {
+	if v, ok := name.Unique.(*types.Var); ok && v.Pkg() != nil && v.Parent() == v.Pkg().Scope() {
+		return fmt.Sprintf("%s_go_%s_package", name.String, source.PackageIdent(v.Pkg()))
+	}
+	return name.String
 }
 
 // DefinedFunction writes a package-level function used as a value (calls use the
@@ -114,26 +123,15 @@ func (c99 Target) TypeDefinition(spec source.TypeDefinition) error {
 	if spec.Global {
 		fmt.Fprintf(c99.Declarations, "\nextern const go_type go_type_%s;", name)
 	}
-	var fields string
-	if rtype, ok := spec.Type.TypeAndValue().Type.(*types.Struct); ok {
-		var list []string // (first, as the descriptors of the fields' types may be written to out)
-		for i := range rtype.NumFields() {
-			field := rtype.Field(i)
-			list = append(list, fmt.Sprintf("{.name=%q,.type=%s,.offset=offsetof(%s, %s),.exported=%v,.embedded=%v}",
-				field.Name(), c99.ReflectTypeOf(field.Type()), name, fieldName(field, i), field.Exported(), field.Anonymous()))
-		}
-		if rtype.NumFields() == 0 {
-			list = append(list, "{0}") // C has no empty arrays.
-		}
-		fmt.Fprintf(out, "\n%sconst go_field go_fields_%s[] = {%s};", static, name, strings.Join(list, ", "))
-		fields = fmt.Sprintf(", .data={.fields={&go_fields_%s[0], %d}}", name, rtype.NumFields())
+	if obj == nil {
+		return spec.Location.Errorf("unsupported type definition")
 	}
-	var methods string
-	if obj != nil {
-		methods = c99.methodTable(obj.Type()) + c99.equalField(obj.Type())
+	var described types.Type = obj.Type()
+	if source.Substitute != nil { // a local type of an instance: its underlying type, with the type arguments.
+		described = spec.Type.TypeAndValue().Type
 	}
-	fmt.Fprintf(out, "\n%sconst go_type go_type_%s = {.name=%q, .kind=go_kind_%s%s%s};\n", static, name,
-		c99.CurrentName+"."+spec.Name.String, kindOf(spec.Type.TypeAndValue().Type), fields, methods)
+	fields := c99.descriptorFields(described)
+	fmt.Fprintf(out, "\n%sconst go_type go_type_%s = {.name=%q%s};\n", static, name, c99.CurrentName+"."+spec.Name.String, fields)
 	return nil
 }
 
@@ -242,7 +240,7 @@ func (c99 Target) VariableDefinition(spec source.VariableDefinition) error {
 				fmt.Fprintf(c99, " = %s", static)
 			}
 			fmt.Fprintf(c99, ";")
-			fmt.Fprintf(c99.Declarations, "extern %s %s;\n", c99.TypeOf(rtype), name.String)
+			fmt.Fprintf(c99.Declarations, "extern %s %s;\n", c99.TypeOf(rtype), variableName(name))
 		}
 		if !hasValue || isStatic {
 			return nil // C zero initializes globals.

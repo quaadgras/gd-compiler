@@ -86,7 +86,7 @@ chan/select7.go	pass
 chan/select8.go	pass	
 chan/sendstmt.go	pass	
 chan/sieve1.go	pass	
-chan/sieve2.go	fail	c11: error: invalid initializer
+chan/sieve2.go	fail	c11: error: conflicting types for 'primes'; have 'go_ch' {aka 'void *'}
 chan/zerosize.go	pass	
 chancap.go	fail	exit: signal: trace/breakpoint trap filc safety error: attempt to allocate object that is too bi…
 chanlinear.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
@@ -239,7 +239,7 @@ devirtualization_with_type_assertions_interleaved.go	skip	gc:diagnostics -m
 directive.go	skip	todo:errorcheck
 directive2.go	skip	todo:errorcheck
 divide.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
-divmod.go	pass	
+divmod.go	fail	exit: timeout
 dwarf/dwarf.go	skip	todo:rundir
 dwarf/linedirectives.go	pass	
 embedfunc.go	skip	todo:errorcheck
@@ -458,7 +458,7 @@ fixedbugs/bug193.go	skip	todo:errorcheck
 fixedbugs/bug194.go	pass	
 fixedbugs/bug19403.go	pass	
 fixedbugs/bug195.go	skip	todo:errorcheck
-fixedbugs/bug196.go	fail	c11: error: lvalue required as left operand of assignment
+fixedbugs/bug196.go	fail	exit: exit status 2 panic: fail
 fixedbugs/bug197.go	skip	todo:errorcheck
 fixedbugs/bug198.go	skip	todo:errorcheck
 fixedbugs/bug199.go	pass	
@@ -551,7 +551,7 @@ fixedbugs/bug290.go	fail	c11: error: 'go_type_Y_261_go_main_package' undeclared 
 fixedbugs/bug291.go	pass	
 fixedbugs/bug292.go	pass	
 fixedbugs/bug293.go	pass	
-fixedbugs/bug294.go	fail	c11: error: 'log' redeclared as different kind of symbol
+fixedbugs/bug294.go	pass	
 fixedbugs/bug295.go	fail	c11: error: unknown type name 'B_go_testing_package'
 fixedbugs/bug296.go	pass	
 fixedbugs/bug297.go	skip	gc:diagnostics -d=panic
@@ -611,7 +611,7 @@ fixedbugs/bug352.go	fail	output: mismatch
 fixedbugs/bug353.go	skip	todo:errorcheck
 fixedbugs/bug354.go	pass	
 fixedbugs/bug355.go	pass	
-fixedbugs/bug356.go	fail	output: mismatch
+fixedbugs/bug356.go	pass	
 fixedbugs/bug357.go	skip	todo:errorcheck
 fixedbugs/bug358.go	skip	gc:diagnostics -d=panic
 fixedbugs/bug361.go	pass	
@@ -685,7 +685,7 @@ fixedbugs/bug430.go	pass
 fixedbugs/bug431.go	pass	
 fixedbugs/bug432.go	pass	
 fixedbugs/bug433.go	pass	
-fixedbugs/bug434.go	fail	exit: exit status 2 panic: 9223372036854775808
+fixedbugs/bug434.go	pass	
 fixedbugs/bug435.go	skip	todo:errorcheck
 fixedbugs/bug436.go	pass	
 fixedbugs/bug437.go	skip	todo:rundir
@@ -780,7 +780,7 @@ fixedbugs/gcc61253.go	pass
 fixedbugs/gcc61254.go	pass	
 fixedbugs/gcc61255.go	pass	
 fixedbugs/gcc61258.go	pass	
-fixedbugs/gcc61264.go	fail	c11: error: lvalue required as left operand of assignment
+fixedbugs/gcc61264.go	pass	
 fixedbugs/gcc61265.go	pass	
 fixedbugs/gcc61273.go	pass	
 fixedbugs/gcc65755.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
@@ -842,7 +842,7 @@ fixedbugs/issue12411.go	pass
 fixedbugs/issue12413.go	pass	
 fixedbugs/issue12525.go	skip	todo:errorcheck
 fixedbugs/issue12536.go	pass	
-fixedbugs/issue12577.go	fail	output: mismatch
+fixedbugs/issue12577.go	pass	
 fixedbugs/issue12588.go	skip	gc:diagnostics -m
 fixedbugs/issue12621.go	pass	
 fixedbugs/issue12677.go	skip	todo:compiledir
@@ -1093,7 +1093,7 @@ fixedbugs/issue21273.go	skip	todo:errorcheck
 fixedbugs/issue21317.go	skip	gc:build !js && !wasip1 && gc
 fixedbugs/issue21576.go	skip	gc:toolchain
 fixedbugs/issue21655.go	pass	
-fixedbugs/issue21687.go	fail	exit: exit status 2 panic: 1
+fixedbugs/issue21687.go	fail	exit: exit status 2 panic: 2
 fixedbugs/issue21709.go	skip	gc:diagnostics -m
 fixedbugs/issue21770.go	skip	todo:errorcheck
 fixedbugs/issue21808.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
@@ -1172,7 +1172,7 @@ fixedbugs/issue24159.go	skip	todo:errorcheck
 fixedbugs/issue24173.go	pass	
 fixedbugs/issue24187.go	skip	upstream:build amd64p32
 fixedbugs/issue24339.go	skip	todo:errorcheck
-fixedbugs/issue24419.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
+fixedbugs/issue24419.go	fail	cc: timeout
 fixedbugs/issue24449.go	pass	
 fixedbugs/issue24470.go	skip	gc:diagnostics -d=panic
 fixedbugs/issue24488.go	skip	gc:stack-introspection runtime.Stack
@@ -1270,7 +1270,7 @@ fixedbugs/issue28797.go	fail	gd: panic: unsupported index of func() *internal/ab
 fixedbugs/issue28926.go	skip	todo:errorcheck
 fixedbugs/issue29013a.go	pass	
 fixedbugs/issue29013b.go	pass	
-fixedbugs/issue29190.go	fail	cc: timeout
+fixedbugs/issue29190.go	fail	exit: signal: trace/breakpoint trap filc safety error: attempt to allocate object that is too bi…
 fixedbugs/issue29215.go	pass	
 fixedbugs/issue29218.go	pass	
 fixedbugs/issue29220.go	pass	
@@ -1515,7 +1515,7 @@ fixedbugs/issue44378.go	pass
 fixedbugs/issue44383.go	pass	
 fixedbugs/issue44432.go	skip	gc:diagnostics -d=panic
 fixedbugs/issue44465.go	skip	gc:flags -d=ssa/check/seed
-fixedbugs/issue4448.go	fail	exit: exit status 2 panic: runtime error: index out of range [-30]
+fixedbugs/issue4448.go	pass	
 fixedbugs/issue4452.go	skip	todo:errorcheck
 fixedbugs/issue4458.go	skip	todo:errorcheck
 fixedbugs/issue4463.go	skip	todo:errorcheck
@@ -2122,7 +2122,7 @@ fixedbugs/issue9370.go	skip	todo:errorcheck
 fixedbugs/issue9432.go	skip	todo:errorcheck
 fixedbugs/issue9521.go	skip	todo:errorcheck
 fixedbugs/issue9537.go	skip	todo:rundir
-fixedbugs/issue9604.go	fail	exit: exit status 2 panic: -uint16(0x?) != 1
+fixedbugs/issue9604.go	pass	
 fixedbugs/issue9604b.go	skip	todo:runoutput
 fixedbugs/issue9608.go	skip	todo:rundir
 fixedbugs/issue9634.go	skip	todo:errorcheck
@@ -2140,7 +2140,7 @@ fixedbugs/walk_bounded_overshift_empty_bound.go	fail	cc: timeout
 float_lit.go	pass	
 float_lit2.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 float_lit3.go	skip	todo:errorcheck
-floatcmp.go	fail	c11: error: 'nan' redeclared as different kind of symbol
+floatcmp.go	pass	
 for.go	fail	exit: exit status 2 panic: 1
 func.go	pass	
 func1.go	skip	todo:errorcheck
@@ -2251,10 +2251,10 @@ ken/rob1.go	pass
 ken/rob2.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 ken/robfor.go	pass	
 ken/robfunc.go	pass	
-ken/shift.go	fail	output: mismatch
+ken/shift.go	pass	
 ken/simparray.go	pass	
 ken/simpbool.go	pass	
-ken/simpconv.go	fail	c11: error: unknown type name 'short_go_main_package'; did you mean 'short__go_main_package'?
+ken/simpconv.go	fail	c11: error: 'short_go_main_package' undeclared here (not in a function); did you mean 'short__go_main_package'?
 ken/simpfun.go	pass	
 ken/simpswitch.go	pass	
 ken/simpvar.go	pass	
@@ -2285,7 +2285,7 @@ mainsig.go	skip	todo:errorcheck
 makechan.go	skip	todo:errorcheck
 makemap.go	skip	todo:errorcheck
 makenew.go	skip	todo:errorcheck
-makeslice.go	fail	exit: signal: trace/breakpoint trap filc safety error: attempt to allocate object that is too bi…
+makeslice.go	fail	cc: timeout
 mallocfin.go	skip	gc:finalizers runtime.SetFinalizer
 map.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 map1.go	skip	todo:errorcheck
@@ -2351,7 +2351,7 @@ reflectmethod8.go	fail	gd: panic: unsupported node type: DefinedType
 rename.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 rename1.go	skip	todo:errorcheck
 reorder.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
-reorder2.go	fail	c11: error: 'log' redeclared as different kind of symbol
+reorder2.go	pass	
 retjmp.go	skip	todo:buildrundir
 return.go	skip	todo:errorcheck
 rotate.go	skip	upstream:skip
@@ -2362,7 +2362,7 @@ rotate3.go	skip	todo:runoutput
 rune.go	pass	
 runtime.go	skip	todo:errorcheck
 shift1.go	skip	todo:errorcheck
-shift2.go	fail	c11: error: invalid operands to binary << (have 'double' and 'go_uu' {aka 'long int'})
+shift2.go	pass	
 shift3.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 sieve.go	pass	
 sigchld.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
@@ -2687,7 +2687,7 @@ typeparam/shape_assert.go	fail	gd: panic: unsupported index of func() *internal/
 typeparam/sliceimp.go	skip	todo:rundir
 typeparam/slices.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 typeparam/smallest.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
-typeparam/smoketest.go	fail	c11: error: '__go_test_package' {aka 'go_az'} has no member named 'T2'
+typeparam/smoketest.go	fail	c11: error: '__go_test_package' {aka 'go_az'} has no member named 'f1'
 typeparam/stringable.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 typeparam/stringer.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 typeparam/stringerimp.go	skip	todo:rundir

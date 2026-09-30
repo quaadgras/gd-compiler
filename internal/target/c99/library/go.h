@@ -29,9 +29,9 @@ typedef int16_t go_i2;
 typedef int32_t go_i4;
 typedef int64_t go_i8;
 #ifdef __LP64__
-typedef int64_t go_uu;
+typedef uint64_t go_uu;
 #else
-typedef int32_t go_uu;
+typedef uint32_t go_uu;
 #endif
 typedef uint8_t go_u1;
 typedef uint16_t go_u2;
@@ -55,7 +55,7 @@ typedef struct { const char *ptr; go_ii len; } go_ss;
 // C has no empty structs.
 typedef struct { char _; } go_az;
 
-typedef enum {
+typedef enum { // the same as reflect.Kind.
     go_kind_invalid = 0,
     go_kind_bool = 1,
     go_kind_int = 2,
@@ -70,19 +70,19 @@ typedef enum {
     go_kind_uint64 = 11,
     go_kind_uintptr = 12,
     go_kind_float32 = 13,
-    go_kind_float64 = 15,
-    go_kind_complex64 = 16,
-    go_kind_complex128 = 17,
-    go_kind_array = 18,
-    go_kind_chan = 19,
-    go_kind_func = 20,
-    go_kind_interface = 21,
-    go_kind_map = 22,
-    go_kind_pointer = 23,
-    go_kind_slice = 24,
-    go_kind_string = 25,
-    go_kind_struct = 26,
-    go_kind_unsafe_pointer = 27,
+    go_kind_float64 = 14,
+    go_kind_complex64 = 15,
+    go_kind_complex128 = 16,
+    go_kind_array = 17,
+    go_kind_chan = 18,
+    go_kind_func = 19,
+    go_kind_interface = 20,
+    go_kind_map = 21,
+    go_kind_pointer = 22,
+    go_kind_slice = 23,
+    go_kind_string = 24,
+    go_kind_struct = 25,
+    go_kind_unsafe_pointer = 26,
 } go_kind;
 
 #define go_kind_byte go_kind_uint8
@@ -99,7 +99,7 @@ typedef struct {
 typedef struct { const struct go_type* elem; go_ii len; } go_type_array;
 typedef struct { const struct go_type* elem; go_ii dir; } go_type_chan;
 typedef struct { go_ll ins; go_ll outs; } go_type_func;
-typedef struct { go_ll methods; } go_type_interface;
+typedef struct { const struct go_imethod* methods; go_ii count; } go_type_interface;
 typedef struct { const struct go_type* key; const struct go_type* elem; } go_type_map;
 typedef struct { const struct go_type* elem; } go_type_pointer;
 typedef struct { const struct go_type* elem; } go_type_slice;
@@ -128,10 +128,11 @@ typedef struct go_type {
     go_ii nmethods;
     go_tf (*equal)(const void*, const void*); // of structs and arrays, NULL if not comparable.
     go_u8 (*hash)(const void*, go_u8, go_u8); // of structs and arrays, for map keys.
+    go_ii size; // of values.
 } go_type;
 
 // The methods an interface requires, in the order of its table of methods.
-typedef struct { const char* name; const char* type; } go_imethod;
+typedef struct go_imethod { const char* name; const char* type; } go_imethod;
 
 typedef struct go_if { go_pt ptr; const go_type* go_type; void* vtable; } go_if;
 typedef struct { go_pt ptr; const go_type* go_type; } go_vv;
@@ -310,6 +311,7 @@ go_tf go_same_ss(const void* a, const void* b);
 // Runtime errors panic with a value of type runtime.Error, holding the message (a string).
 extern const go_type go_type_runtime_error;
 _Noreturn void go_panic_error(const char* format, ...);
+static inline go_u8 go_shift_count(go_i8 n) { if (n < 0) go_panic_error("runtime error: negative shift amount"); return (go_u8)n; }
 static inline void go_panic(const char* msg) { go_panic_error("%s", msg); }
 static inline void* go_nil_check(void* p) {
     if (!p) go_panic_error("runtime error: invalid memory address or nil pointer dereference");
@@ -321,27 +323,28 @@ static inline go_ii go_index_check(go_ii i, go_ii length) {
     return i;
 }
 
-static const go_type go_type_bool = {.name="bool", .kind=go_kind_bool};
-static const go_type go_type_int = {.name="int", .kind=go_kind_int};
-static const go_type go_type_int8 = {.name="int8", .kind=go_kind_int8};
-static const go_type go_type_int16 = {.name="int16", .kind=go_kind_int16};
-static const go_type go_type_int32 = {.name="int32", .kind=go_kind_int32};
-static const go_type go_type_int64 = {.name="int64", .kind=go_kind_int64};
-static const go_type go_type_uint = {.name="uint", .kind=go_kind_uint};
-static const go_type go_type_uint8 = {.name="uint8", .kind=go_kind_uint8};
-static const go_type go_type_uint16 = {.name="uint16", .kind=go_kind_uint16};
-static const go_type go_type_uint32 = {.name="uint32", .kind=go_kind_uint32};
-static const go_type go_type_uint64 = {.name="uint64", .kind=go_kind_uint64};
-static const go_type go_type_uintptr = {.name="uintptr", .kind=go_kind_uintptr};
-static const go_type go_type_float32 = {.name="float32", .kind=go_kind_float32};
-static const go_type go_type_float64 = {.name="float64", .kind=go_kind_float64};
-static const go_type go_type_complex64 = {.name="complex64", .kind=go_kind_complex64};
-static const go_type go_type_complex128 = {.name="complex128", .kind=go_kind_complex128};
+static const go_type go_type_bool = {.name="bool", .kind=go_kind_bool, .size=sizeof(go_tf)};
+static const go_type go_type_int = {.name="int", .kind=go_kind_int, .size=sizeof(go_ii)};
+static const go_type go_type_int8 = {.name="int8", .kind=go_kind_int8, .size=sizeof(go_i1)};
+static const go_type go_type_int16 = {.name="int16", .kind=go_kind_int16, .size=sizeof(go_i2)};
+static const go_type go_type_int32 = {.name="int32", .kind=go_kind_int32, .size=sizeof(go_i4)};
+static const go_type go_type_int64 = {.name="int64", .kind=go_kind_int64, .size=sizeof(go_i8)};
+static const go_type go_type_uint = {.name="uint", .kind=go_kind_uint, .size=sizeof(go_uu)};
+static const go_type go_type_uint8 = {.name="uint8", .kind=go_kind_uint8, .size=sizeof(go_u1)};
+static const go_type go_type_uint16 = {.name="uint16", .kind=go_kind_uint16, .size=sizeof(go_u2)};
+static const go_type go_type_uint32 = {.name="uint32", .kind=go_kind_uint32, .size=sizeof(go_u4)};
+static const go_type go_type_uint64 = {.name="uint64", .kind=go_kind_uint64, .size=sizeof(go_u8)};
+static const go_type go_type_uintptr = {.name="uintptr", .kind=go_kind_uintptr, .size=sizeof(go_up)};
+static const go_type go_type_float32 = {.name="float32", .kind=go_kind_float32, .size=sizeof(go_f4)};
+static const go_type go_type_float64 = {.name="float64", .kind=go_kind_float64, .size=sizeof(go_f8)};
+static const go_type go_type_complex64 = {.name="complex64", .kind=go_kind_complex64, .size=sizeof(go_aaf4f4zz)};
+static const go_type go_type_complex128 = {.name="complex128", .kind=go_kind_complex128, .size=sizeof(go_aaf8f8zz)};
 static const go_type go_type_byte = go_type_uint8;
 static const go_type go_type_rune = go_type_int32;
-static const go_type go_type_string = {.name="string", .kind=go_kind_string};
-static const go_type go_type_unsafe_pointer = {.name="unsafe.Pointer", .kind=go_kind_unsafe_pointer};
-static const go_type go_type_error = {.name="error", .kind=go_kind_interface};
+static const go_type go_type_string = {.name="string", .kind=go_kind_string, .size=sizeof(go_ss)};
+static const go_type go_type_unsafe_pointer = {.name="unsafe.Pointer", .kind=go_kind_unsafe_pointer, .size=sizeof(go_pt)};
+static const go_imethod go_imethods_error[] = {{"Error", "func() string"}};
+static const go_type go_type_error = {.name="error", .kind=go_kind_interface, .size=sizeof(go_if), .data={.interface={go_imethods_error, 1}}};
 
 typedef struct { go_ss(*Error)(void*);} go_error;
 
