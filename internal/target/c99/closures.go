@@ -63,8 +63,7 @@ func NewClosures(info *types.Info, files []*ast.File) *Closures {
 				}
 			case *ast.SelectorExpr: // x.M(), where M has a pointer receiver, is (&x).M()
 				if sel, ok := info.Selections[expr]; ok && sel.Kind() == types.MethodVal {
-					recv := sel.Obj().Type().(*types.Signature).Recv()
-					_, wantPointer := recv.Type().Underlying().(*types.Pointer)
+					wantPointer := pointerReceiver(sel.Recv(), sel.Obj().(*types.Func))
 					_, isPointer := sel.Recv().Underlying().(*types.Pointer)
 					if wantPointer && !isPointer {
 						root = expr.X

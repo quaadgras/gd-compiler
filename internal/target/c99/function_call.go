@@ -149,7 +149,12 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 					if err := c99.MethodInstance(named, defined.String); err != nil {
 						return err
 					}
-					fmt.Fprintf(c99, `%s_%s`, c99.typeCName(named), c99.FunctionName(defined))
+					if fn, ok := defined.Unique.(*types.Func); ok {
+						if err := c99.promotedMethod(named, fn.Pkg(), fn.Name()); err != nil {
+							return err
+						}
+					}
+					fmt.Fprint(c99, c99.methodCName(named, defined.String))
 				}
 			} else {
 				fmt.Fprint(c99, c99.FunctionName(defined))
@@ -380,9 +385,12 @@ func isNumeric(t types.Type) bool {
 // with pointer receivers (x.M() is (&x).M()), and dereferences pointers for methods with
 // value receivers (p.M() is (*p).M()).
 func (c99 Target) receiverOf(method, x source.Expression) (string, error) {
+	return c99.methodReceiver(source.Expressions.DefinedFunction.Get(source.Expressions.Selector.Get(method).Selection), x)
+}
+
+// methodReceiver is [Target.receiverOf] for the method fn.
+func (c99 Target) methodReceiver(fn source.DefinedFunction, x source.Expression) (string, error) {
 	value := c99.toString(x)
-	sel := source.Expressions.Selector.Get(method)
-	fn := source.Expressions.DefinedFunction.Get(sel.Selection)
 	obj, ok := fn.Unique.(*types.Func)
 	if !ok {
 		return value, nil
@@ -395,7 +403,7 @@ func (c99 Target) receiverOf(method, x source.Expression) (string, error) {
 			}
 		}
 	}
-	_, wantPointer := obj.Type().(*types.Signature).Recv().Type().Underlying().(*types.Pointer)
+	wantPointer := pointerReceiver(x.TypeAndValue().Type, obj)
 	_, isPointer := x.TypeAndValue().Type.Underlying().(*types.Pointer)
 	switch {
 	case wantPointer && !isPointer:
@@ -441,15 +449,17 @@ func (c99 Target) InterfaceOf(expr source.Expression, iface types.Type) (string,
 		method := typ.Method(i)
 		prefix := "I_"
 		if obj, _, _ := types.LookupFieldOrMethod(dynamic, true, method.Pkg(), method.Name()); isPointer && obj != nil {
-			if _, ptrRecv := obj.Type().(*types.Signature).Recv().Type().Underlying().(*types.Pointer); !ptrRecv {
+			if !pointerReceiver(named, obj.(*types.Func)) {
 				prefix = "IP_" // the receiver is the value pointed to.
 			}
 		}
 		if err := c99.MethodInstance(named, method.Name()); err != nil {
 			return "", err
 		}
-		methods = append(methods, fmt.Sprintf(".%[1]s = %[2]s%[3]s_%[1]s_go_%[4]s_package",
-			source.CIdent(method.Name()), prefix, c99.typeCName(named), source.PackageIdent(named.Obj().Pkg())))
+		if err := c99.promotedMethod(named, method.Pkg(), method.Name()); err != nil {
+			return "", err
+		}
+		methods = append(methods, fmt.Sprintf(".%s = %s%s", source.CIdent(method.Name()), prefix, c99.methodCName(named, method.Name())))
 	}
 	// The table of methods is static, as interface values may outlive any function.
 	hash := fnv.New64a()

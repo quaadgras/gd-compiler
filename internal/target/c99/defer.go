@@ -92,7 +92,11 @@ func (c99 Target) callClosure(call source.FunctionCall, kind string) (string, er
 					rtype := left.X.TypeAndValue().Type
 					if fn, ok := method.Unique.(*types.Func); ok {
 						if _, iface := rtype.Underlying().(*types.Interface); !iface {
-							rtype = fn.Type().(*types.Signature).Recv().Type()
+							// the receiver of the method of the named type (which may be promoted).
+							rtype = derefType(left.X.TypeAndValue().Type)
+							if pointerReceiver(rtype, fn) {
+								rtype = types.NewPointer(rtype)
+							}
 						}
 					}
 					value := c99.toString(left.X)

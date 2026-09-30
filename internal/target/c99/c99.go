@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/quaadgras/gd-compiler/internal/source"
+	"runtime.link/xyz"
 )
 
 type Target struct {
@@ -178,6 +179,11 @@ func (c99 Target) toString(node source.Node) string {
 }
 
 func (c99 Target) Selection(sel source.Selection) error {
+	if xyz.ValueOf(sel.Selection) == source.Expressions.DefinedFunction {
+		if fn := source.Expressions.DefinedFunction.Get(sel.Selection); fn.Method && sel.X.TypeAndValue().Type != nil {
+			return c99.methodValue(sel, fn) // not called (calls are compiled by FunctionCall).
+		}
+	}
 	if xtype := sel.X.TypeAndValue().Type; xtype != nil {
 		if pointer, ok := xtype.Underlying().(*types.Pointer); ok { // p.f is (*p).f
 			fmt.Fprintf(c99, "go_pointer_get(")

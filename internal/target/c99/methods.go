@@ -13,7 +13,7 @@ import (
 // methodTable returns the fields of a type descriptor for the method set of t (a named
 // type, or a pointer to one): a static table of its methods, which the interface values
 // that are made at run time (type assertions, conversions between interfaces) look up by
-// name. Promoted methods (of embedded fields) are not included yet.
+// name.
 func (c99 Target) methodTable(t types.Type) string {
 	named, ok := types.Unalias(derefType(t)).(*types.Named)
 	if !ok || named.Obj().Pkg() == nil {
@@ -26,21 +26,19 @@ func (c99 Target) methodTable(t types.Type) string {
 	var entries []string
 	set := types.NewMethodSet(t)
 	for i := range set.Len() {
-		sel := set.At(i)
-		if len(sel.Index()) > 1 {
-			continue // promoted.
-		}
-		fn := sel.Obj().(*types.Func)
+		fn := set.At(i).Obj().(*types.Func)
 		prefix := "I_"
-		if _, ptrRecv := fn.Type().(*types.Signature).Recv().Type().Underlying().(*types.Pointer); isPointer && !ptrRecv {
+		if isPointer && !pointerReceiver(named, fn) {
 			prefix = "IP_" // the receiver is the value pointed to.
 		}
 		if err := c99.MethodInstance(named, fn.Name()); err != nil {
 			panic(err)
 		}
-		entries = append(entries, fmt.Sprintf("{ %s, %s, (void(*)(void))%s%s_%s_go_%s_package }",
-			cString(fn.Name()), cString(typeName(fn.Type())), prefix, c99.typeCName(named),
-			source.CIdent(fn.Name()), source.PackageIdent(named.Obj().Pkg())))
+		if err := c99.promotedMethod(named, fn.Pkg(), fn.Name()); err != nil {
+			panic(err)
+		}
+		entries = append(entries, fmt.Sprintf("{ %s, %s, (void(*)(void))%s%s }",
+			cString(fn.Name()), cString(typeName(fn.Type())), prefix, c99.methodCName(named, fn.Name())))
 	}
 	if len(entries) == 0 {
 		return ""
@@ -96,4 +94,191 @@ func asEmptyInterface(value string, t types.Type) string {
 		return value
 	}
 	return "go_if_to_vv(" + value + ")"
+}
+
+// methodCName returns the C name of the method of the named type.
+func (c99 Target) methodCName(named *types.Named, method string) string {
+	return fmt.Sprintf("%s_%s_go_%s_package", c99.typeCName(named), source.CIdent(method), source.PackageIdent(named.Obj().Pkg()))
+}
+
+// pointerReceiver reports whether the method fn of t (a named type, or a pointer to one)
+// takes a pointer receiver. The wrappers of promoted methods take one when they are not in
+// the method set of the named type itself.
+func pointerReceiver(t types.Type, fn *types.Func) bool {
+	named := derefType(t)
+	if _, index, _ := types.LookupFieldOrMethod(named, true, fn.Pkg(), fn.Name()); len(index) > 1 {
+		return types.NewMethodSet(named).Lookup(fn.Pkg(), fn.Name()) == nil
+	}
+	_, ok := fn.Type().(*types.Signature).Recv().Type().Underlying().(*types.Pointer)
+	return ok
+}
+
+// promotedMethod emits (if it hasn't been, and if the method is promoted from an embedded
+// field of the named type) a function, static in each file, with the C name of the method
+// of the named type, that calls the method of the embedded field, and its interface wrappers.
+func (c99 Target) promotedMethod(named *types.Named, pkg *types.Package, method string) error {
+	obj, index, _ := types.LookupFieldOrMethod(named, true, pkg, method)
+	fn, ok := obj.(*types.Func)
+	if !ok || len(index) < 2 {
+		return nil
+	}
+	name := c99.methodCName(named, method)
+	return c99.Requires(name, c99.Generic, func(w io.Writer) error {
+		sig := fn.Type().(*types.Signature)
+		pointer := pointerReceiver(named, fn)
+		recvType := c99.TypeOf(named)
+		expr := "go_recv"
+		var typ types.Type = named
+		if pointer {
+			recvType = "go_pt"
+			expr = fmt.Sprintf("go_pointer_get(go_recv, %s)", c99.TypeOf(named))
+		}
+		for _, i := range index[:len(index)-1] { // the embedded field.
+			if ptr, ok := typ.Underlying().(*types.Pointer); ok {
+				expr = fmt.Sprintf("go_pointer_get(%s, %s)", expr, c99.TypeOf(ptr.Elem()))
+				typ = ptr.Elem()
+			}
+			field := typ.Underlying().(*types.Struct).Field(i)
+			expr += "." + fieldName(field, i)
+			typ = field.Type()
+		}
+		var params, args []string
+		for i, v := range slicesOfVars(sig.Params()) {
+			args = append(args, fmt.Sprintf("p%d", i))
+			params = append(params, c99.TypeOf(v.Type())+" "+args[i])
+		}
+		var call string
+		if _, iface := typ.Underlying().(*types.Interface); iface {
+			call = fmt.Sprintf("go_interface_methods(%s, %s)->%s(%s)", c99.InterfaceTypeOf(typ), expr, source.CIdent(method),
+				strings.Join(append([]string{expr + ".ptr.ptr"}, args...), ", "))
+		} else {
+			recvNamed, ok := types.Unalias(derefType(sig.Recv().Type())).(*types.Named)
+			if !ok {
+				return fmt.Errorf("unsupported receiver type %s", sig.Recv().Type())
+			}
+			if err := c99.MethodInstance(recvNamed, method); err != nil {
+				return err
+			}
+			if err := c99.promotedMethod(recvNamed, pkg, method); err != nil {
+				return err
+			}
+			_, wantPointer := sig.Recv().Type().Underlying().(*types.Pointer)
+			_, isPointer := typ.Underlying().(*types.Pointer)
+			recv := expr
+			switch {
+			case wantPointer && !isPointer:
+				recv = fmt.Sprintf("((go_pt){ .ptr = &(%s) })", expr)
+			case !wantPointer && isPointer:
+				recv = fmt.Sprintf("go_pointer_get(%s, %s)", expr, c99.TypeOf(derefType(typ)))
+			}
+			call = fmt.Sprintf("%s(%s)", c99.methodCName(recvNamed, method), strings.Join(append([]string{recv}, args...), ", "))
+		}
+		result, ret := c99.TupleOfResults(sig), ""
+		if sig.Results().Len() > 0 {
+			ret = "return "
+		}
+		wrapper := func(prefix, recv string) {
+			fmt.Fprintf(w, "static %s %s%s(%s) { %s%s(%s); }\n", result, prefix, name,
+				strings.Join(append([]string{"void* go_recv"}, params...), ", "), ret, name, strings.Join(append([]string{recv}, args...), ", "))
+		}
+		fmt.Fprintf(w, "static %s %s(%s) { %s%s; }\n", result, name, strings.Join(append([]string{recvType + " go_recv"}, params...), ", "), ret, call)
+		wrapper("I_", fmt.Sprintf("*(%s*)go_recv", recvType))
+		if !pointer {
+			wrapper("IP_", fmt.Sprintf("go_pointer_get(*(go_pt*)go_recv, %s)", recvType))
+		}
+		return nil
+	})
+}
+
+func slicesOfVars(tuple *types.Tuple) []*types.Var {
+	var vars []*types.Var
+	for v := range tuple.Variables() {
+		vars = append(vars, v)
+	}
+	return vars
+}
+
+// methodValue writes a method value x.M (a func value, bound to a copy of the receiver x), or
+// a method expression T.M (a func value, that takes the receiver as its first argument).
+func (c99 Target) methodValue(sel source.Selection, fn source.DefinedFunction) error {
+	xtype := sel.X.TypeAndValue().Type
+	obj, ok := fn.Unique.(*types.Func)
+	if !ok {
+		return sel.Errorf("unsupported method value")
+	}
+	if concrete, _, _ := types.LookupFieldOrMethod(xtype, true, obj.Pkg(), obj.Name()); concrete != nil {
+		if m, ok := concrete.(*types.Func); ok {
+			obj = m // the method of a type parameter's constraint, in an instance.
+		}
+	}
+	name := source.CIdent(obj.Name())
+	iface, isInterface := xtype.Underlying().(*types.Interface)
+	var named *types.Named
+	if !isInterface {
+		if named, ok = types.Unalias(derefType(xtype)).(*types.Named); !ok {
+			return sel.Errorf("unsupported method value of %s", xtype)
+		}
+		if err := c99.MethodInstance(named, obj.Name()); err != nil {
+			return err
+		}
+		if err := c99.promotedMethod(named, obj.Pkg(), obj.Name()); err != nil {
+			return err
+		}
+	}
+	if sel.X.TypeAndValue().IsType() { // a method expression.
+		sig := obj.Type().(*types.Signature)
+		ctype := c99.TypeOf(xtype)
+		var call string
+		if isInterface {
+			call = fmt.Sprintf("go_interface_methods(%s, go_recv)->%s(go_recv.ptr.ptr", c99.InterfaceTypeOf(iface), name)
+		} else {
+			recv := "go_recv"
+			if _, isPointer := xtype.Underlying().(*types.Pointer); isPointer && !pointerReceiver(xtype, obj) {
+				recv = fmt.Sprintf("go_pointer_get(go_recv, %s)", c99.TypeOf(named))
+			}
+			call = fmt.Sprintf("%s(%s", c99.methodCName(named, obj.Name()), recv)
+		}
+		params := []string{"void* go_env", ctype + " go_recv"}
+		for i, v := range slicesOfVars(sig.Params()) {
+			params = append(params, fmt.Sprintf("%s p%d", c99.TypeOf(v.Type()), i))
+			call += fmt.Sprintf(", p%d", i)
+		}
+		ret := ""
+		if sig.Results().Len() > 0 {
+			ret = "return "
+		}
+		symbol := "go_method_expr_" + identifier.ReplaceAllString(typeName(xtype)+"_"+obj.Name(), "_")
+		c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
+			fmt.Fprintf(w, "static %s %s(%s) { %s%s); }\n", c99.TupleOfResults(sig), symbol, strings.Join(params, ", "), ret, call)
+			return nil
+		})
+		fmt.Fprintf(c99, "go_make_func(%s)", symbol)
+		return nil
+	}
+	if isInterface {
+		ctype := c99.InterfaceTypeOf(iface)
+		symbol := "go_method_value_" + identifier.ReplaceAllString(typeName(xtype)+"_"+name, "_")
+		c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
+			fmt.Fprintf(w, "static inline go_fn %s(go_if v) { go_nil_check(v.vtable); return go_make_closure(go_interface_methods(%s, v)->%s, v.ptr.ptr); }\n",
+				symbol, ctype, name)
+			return nil
+		})
+		fmt.Fprintf(c99, "%s(%s)", symbol, c99.toString(sel.X))
+		return nil
+	}
+	recv, err := c99.methodReceiver(fn, sel.X)
+	if err != nil {
+		return err
+	}
+	ctype := c99.TypeOf(named)
+	if pointerReceiver(xtype, obj) {
+		ctype = "go_pt"
+	}
+	box := "go_box_" + identifier.ReplaceAllString(ctype, "_")
+	c99.Requires(box, c99.Generic, func(w io.Writer) error {
+		fmt.Fprintf(w, "static inline void* %s(%s v) { return go_new(sizeof v, &v).ptr; }\n", box, ctype)
+		return nil
+	})
+	fmt.Fprintf(c99, "go_make_closure(I_%s, %s(%s))", c99.methodCName(named, obj.Name()), box, recv)
+	return nil
 }

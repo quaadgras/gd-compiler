@@ -24,7 +24,7 @@ abi/leaf2.go	fail	gd: unsupported builtin function
 abi/many_int_input.go	fail	gd: unsupported builtin function
 abi/many_intstar_input.go	fail	gd: unsupported builtin function
 abi/map.go	skip	gc:finalizers runtime.SetFinalizer
-abi/method_wrapper.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
+abi/method_wrapper.go	fail	c11: error: invalid operands to binary != (have 'go_arr2_go_ii' and 'go_arr2_go_ii')
 abi/more_intstar_input.go	pass	
 abi/named_results.go	fail	gd: unsupported builtin function
 abi/named_return_stuff.go	fail	gd: unsupported builtin function
@@ -736,7 +736,7 @@ fixedbugs/bug481.go	pass
 fixedbugs/bug482.go	pass	
 fixedbugs/bug483.go	fail	gd: unsupported builtin function
 fixedbugs/bug484.go	pass	
-fixedbugs/bug485.go	fail	c11: error: implicit declaration of function 'B_val_go_main_package'; did you mean 'init_go_main_package'? [-Wimplicit-functi…
+fixedbugs/bug485.go	pass	
 fixedbugs/bug486.go	pass	
 fixedbugs/bug487.go	skip	todo:errorcheck
 fixedbugs/bug488.go	skip	todo:errorcheck
@@ -796,7 +796,7 @@ fixedbugs/issue10253.go	pass
 fixedbugs/issue10284.go	pass	
 fixedbugs/issue10320.go	pass	
 fixedbugs/issue10332.go	fail	gd: unsupported builtin function
-fixedbugs/issue10353.go	fail	c11: error: request for member 'foo_go_main_package' in something not a structure or union
+fixedbugs/issue10353.go	pass	
 fixedbugs/issue10407.go	skip	todo:runoutput
 fixedbugs/issue10441.go	pass	
 fixedbugs/issue10486.go	skip	gc:stack-introspection runtime.Callers
@@ -834,7 +834,7 @@ fixedbugs/issue11790.go	fail	gd: unsupported builtin function
 fixedbugs/issue11945.go	fail	gd: unsupported builtin function
 fixedbugs/issue11987.go	fail	gd: unsupported builtin function
 fixedbugs/issue12006.go	skip	gc:diagnostics -m
-fixedbugs/issue12108.go	fail	c11: error: 'I_Super_Method_go_main_package' undeclared here (not in a function); did you mean 'I_Base_Method_go_main_package…
+fixedbugs/issue12108.go	pass	
 fixedbugs/issue12133.go	fail	gd: unsupported builtin function
 fixedbugs/issue12226.go	fail	gd: unsupported builtin function
 fixedbugs/issue12347.go	pass	
@@ -863,7 +863,7 @@ fixedbugs/issue13268.go	skip	gc:build gc
 fixedbugs/issue13273.go	skip	todo:errorcheck
 fixedbugs/issue13274.go	skip	todo:errorcheck
 fixedbugs/issue13319.go	skip	todo:errorcheck
-fixedbugs/issue13337.go	fail	gd: unsupported node type: DefinedType
+fixedbugs/issue13337.go	pass	
 fixedbugs/issue13365.go	skip	todo:errorcheck
 fixedbugs/issue13415.go	skip	todo:errorcheck
 fixedbugs/issue13471.go	skip	todo:errorcheck
@@ -936,7 +936,7 @@ fixedbugs/issue15895.go	fail	c11: error: invalid operands to binary == (have 'A_
 fixedbugs/issue15898.go	skip	todo:errorcheck
 fixedbugs/issue15902.go	pass	
 fixedbugs/issue15920.go	skip	todo:compiledir
-fixedbugs/issue15926.go	fail	gd: unsupported node type: DefinedType
+fixedbugs/issue15926.go	pass	
 fixedbugs/issue15961.go	pass	
 fixedbugs/issue15975.go	fail	exit: signal: trace/breakpoint trap filc safety error: cannot read pointer with null object.
 fixedbugs/issue15988.go	pass	
@@ -994,7 +994,7 @@ fixedbugs/issue18231.go	skip	todo:errorcheck
 fixedbugs/issue18331.go	skip	todo:errorcheck
 fixedbugs/issue18392.go	skip	todo:errorcheck
 fixedbugs/issue18393.go	skip	todo:errorcheck
-fixedbugs/issue18410.go	fail	c11: error: 'X_go_main_package' {aka 'go_struct_8d48c106444b19a9'} has no member named 'Print_go_main_package'
+fixedbugs/issue18410.go	pass	
 fixedbugs/issue18419.go	skip	todo:errorcheck
 fixedbugs/issue18459.go	skip	todo:errorcheck
 fixedbugs/issue18595.go	fail	c11: error: incompatible types when returning type 'struct <anonymous>' but 'struct <anonymous>' was expected
@@ -1194,7 +1194,7 @@ fixedbugs/issue24937.go	pass
 fixedbugs/issue24939.go	pass	
 fixedbugs/issue25006.go	pass	
 fixedbugs/issue25055.go	skip	todo:compiledir
-fixedbugs/issue25101.go	fail	c11: error: 'struct <anonymous>' has no member named 'm_go_test_package'
+fixedbugs/issue25101.go	fail	c11: error: incompatible type for argument 1 of 'go_method_value_interface_m_int__m'
 fixedbugs/issue25322.go	fail	gd: unsupported builtin function
 fixedbugs/issue25507.go	skip	todo:errorcheck
 fixedbugs/issue25516.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
@@ -1217,7 +1217,7 @@ fixedbugs/issue26120.go	pass
 fixedbugs/issue2615.go	fail	exit: exit status 2 panic: failed
 fixedbugs/issue26153.go	pass	
 fixedbugs/issue26163.go	skip	gc:flags -N -d=softfloat
-fixedbugs/issue26248.go	fail	c11: error: 'go_if' has no member named 'M_go_main_package'
+fixedbugs/issue26248.go	pass	
 fixedbugs/issue26335.go	fail	gd: unsupported builtin function
 fixedbugs/issue26340.go	pass	
 fixedbugs/issue26341.go	skip	todo:compiledir
@@ -1403,7 +1403,7 @@ fixedbugs/issue37837.go	skip	gc:diagnostics -m
 fixedbugs/issue37975.go	fail	gd: unsupported type *types.Named
 fixedbugs/issue38093.go	skip	upstream:build js
 fixedbugs/issue38117.go	skip	todo:errorcheck
-fixedbugs/issue38125.go	fail	gd: unsupported node type: DefinedType
+fixedbugs/issue38125.go	fail	gd: unsupported method value of test.T
 fixedbugs/issue38356.go	pass	
 fixedbugs/issue38359.go	pass	
 fixedbugs/issue38496.go	pass	
@@ -1477,7 +1477,7 @@ fixedbugs/issue43164.go	skip	todo:compiledir
 fixedbugs/issue43167.go	skip	todo:errorcheck
 fixedbugs/issue4323.go	pass	
 fixedbugs/issue4326.go	skip	todo:compiledir
-fixedbugs/issue43292.go	fail	c11: error: 'I_A_M_go_main_package' undeclared here (not in a function); did you mean 'I_T_M_go_main_package'?
+fixedbugs/issue43292.go	fail	c11: error: incompatible type for argument 2 of 'go_send_if01'
 fixedbugs/issue43384.go	skip	todo:errorcheck
 fixedbugs/issue43428.go	skip	todo:errorcheck
 fixedbugs/issue43444.go	pass	
@@ -1633,7 +1633,7 @@ fixedbugs/issue49282.go	pass
 fixedbugs/issue4932.go	skip	todo:compiledir
 fixedbugs/issue49368.go	skip	todo:errorcheck
 fixedbugs/issue49378.go	pass	
-fixedbugs/issue49512.go	fail	c11: error: 'S_go_main_package' {aka 'go_struct_463b02aa177e35bc'} has no member named 'M1_go_main_package'
+fixedbugs/issue49512.go	pass	
 fixedbugs/issue49592.go	fail	c11: error: invalid operands to binary == (have 'void *' and 'go_pt')
 fixedbugs/issue49611.go	pass	
 fixedbugs/issue49619.go	pass	
@@ -1672,7 +1672,7 @@ fixedbugs/issue52128.go	skip	todo:compiledir
 fixedbugs/issue52193.go	skip	gc:diagnostics -m
 fixedbugs/issue52278.go	skip	gc:flags -d=ssa/check/on
 fixedbugs/issue52279.go	skip	todo:rundir
-fixedbugs/issue5231.go	fail	c11: error: request for member 'NotVariadic_go_test_package' in something not a structure or union
+fixedbugs/issue5231.go	pass	
 fixedbugs/issue52438.go	pass	
 fixedbugs/issue5244.go	pass	
 fixedbugs/issue52535.go	pass	
@@ -1691,7 +1691,7 @@ fixedbugs/issue52846.go	pass
 fixedbugs/issue52856.go	skip	todo:rundir
 fixedbugs/issue52862.go	skip	todo:compiledir
 fixedbugs/issue52870.go	pass	
-fixedbugs/issue52871.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
+fixedbugs/issue52871.go	pass	
 fixedbugs/issue52907.go	pass	
 fixedbugs/issue5291.go	skip	todo:rundir
 fixedbugs/issue52953.go	pass	
@@ -1705,15 +1705,15 @@ fixedbugs/issue53600.go	fail	c11: error: 'MinInt64' undeclared (first use in thi
 fixedbugs/issue53619.go	fail	c11: error: invalid operands to binary != (have 'go_vv' and 'int')
 fixedbugs/issue53635.go	pass	
 fixedbugs/issue53653.go	fail	c11: error: 'MinInt64' undeclared (first use in this function)
-fixedbugs/issue53702.go	fail	c11: error: implicit declaration of function 'Sub_Do_go_main_package'; did you mean 'Base_Do_go_main_package'? [-Wimplicit-fu…
+fixedbugs/issue53702.go	pass	
 fixedbugs/issue5373.go	fail	gd: panic: interface conversion: ast.Expr is *ast.IndexExpr, not *ast.Ident
-fixedbugs/issue53982.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
+fixedbugs/issue53982.go	pass	
 fixedbugs/issue54159.go	skip	gc:diagnostics -m=2
 fixedbugs/issue54220.go	fail	gd: unsupported builtin function
 fixedbugs/issue54280.go	skip	todo:errorcheck
 fixedbugs/issue54307.go	pass	
 fixedbugs/issue54343.go	skip	gc:finalizers runtime.SetFinalizer
-fixedbugs/issue54348.go	fail	c11: error: implicit declaration of function 'T__go_ii_M_go_main_package'; did you mean 'IP_E_M_go_main_package'? [-Wimplicit…
+fixedbugs/issue54348.go	pass	
 fixedbugs/issue54467.go	fail	gd: unsupported builtin function
 fixedbugs/issue54542.go	skip	gc:toolchain
 fixedbugs/issue54632.go	pass	
@@ -1751,7 +1751,7 @@ fixedbugs/issue56990.go	fail	gd: unsupported builtin function
 fixedbugs/issue5704.go	pass	
 fixedbugs/issue57184.go	fail	gd: unsupported builtin function
 fixedbugs/issue57309.go	pass	
-fixedbugs/issue5753.go	fail	c11: error: 'Thing_go_main_package' {aka 'go_az'} has no member named 'broken_go_main_package'
+fixedbugs/issue5753.go	pass	
 fixedbugs/issue5755.go	skip	todo:compiledir
 fixedbugs/issue57778.go	pass	
 fixedbugs/issue57823.go	skip	gc:finalizers runtime.SetFinalizer
@@ -1805,7 +1805,7 @@ fixedbugs/issue60991.go	pass
 fixedbugs/issue61127.go	pass	
 fixedbugs/issue61187.go	fail	gd: unsupported builtin function
 fixedbugs/issue6131.go	pass	
-fixedbugs/issue6140.go	fail	c11: error: 'struct <anonymous>' has no member named 'm_go_test_package'
+fixedbugs/issue6140.go	fail	gd: unsupported method value of *struct
 fixedbugs/issue61778.go	pass	
 fixedbugs/issue61895.go	pass	
 fixedbugs/issue61908.go	pass	
@@ -1961,8 +1961,8 @@ fixedbugs/issue73888.go	pass
 fixedbugs/issue73888b.go	pass	
 fixedbugs/issue73916.go	pass	
 fixedbugs/issue73916b.go	pass	
-fixedbugs/issue73917.go	fail	gd: unsupported node type: DefinedType
-fixedbugs/issue73920.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
+fixedbugs/issue73917.go	pass	
+fixedbugs/issue73920.go	pass	
 fixedbugs/issue7405.go	fail	c11: error: invalid operands to binary == (have 'T1_go_test_package' {aka 'go_struct_683cbf3908bf1395'} and 'T1_go_test_packa…
 fixedbugs/issue7419.go	fail	gd: unsupported builtin function
 fixedbugs/issue74379.go	fail	gd: unsupported builtin function
@@ -2212,7 +2212,7 @@ interface/fake.go	fail	gd: unsupported builtin function
 interface/noeq.go	fail	c11: error: invalid operands to binary == (have 'go_vv' and 'go_vv')
 interface/pointer.go	skip	todo:errorcheck
 interface/private.go	skip	todo:errorcheck
-interface/receiver.go	fail	c11: error: 'I_S_V_go_main_package' undeclared here (not in a function); did you mean 'I_T_V_go_main_package'?
+interface/receiver.go	pass	
 interface/receiver1.go	skip	todo:errorcheck
 interface/recursive.go	pass	
 interface/recursive1.go	skip	todo:compiledir
@@ -2235,7 +2235,7 @@ ken/cplx4.go	fail	gd: unsupported builtin function
 ken/cplx5.go	fail	gd: unsupported builtin function
 ken/divconst.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
 ken/divmod.go	pass	
-ken/embed.go	fail	c11: error: 'I_S_test2_go_main_package' undeclared here (not in a function); did you mean 'I_S_test1_go_main_package'?
+ken/embed.go	fail	c11: error: 'go_pt' has no member named 'a3'
 ken/for.go	pass	
 ken/interbasic.go	fail	c11: error: invalid operands to binary != (have 'go_vv' and 'go_vv')
 ken/interfun.go	pass	
@@ -2298,7 +2298,7 @@ method1.go	skip	todo:errorcheck
 method2.go	skip	todo:errorcheck
 method3.go	fail	gd: panic: unsupported node type: DefinedType
 method4.go	skip	todo:rundir
-method5.go	fail	c11: error: 'I_T3_M_go_main_package' undeclared here (not in a function); did you mean 'I_T4_M_go_main_package'?
+method5.go	fail	exit: exit status 2 panic: not panicking
 method6.go	skip	todo:errorcheck
 method7.go	fail	gd: panic: unsupported node type: DefinedType
 named.go	fail	gd: unsupported type *types.Named
@@ -2308,7 +2308,7 @@ newinline.go	skip	gc:build goexperiment.newinliner
 nil.go	fail	gd: unsupported builtin function
 nilcheck.go	skip	gc:diagnostics -d=nil
 nilptr.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
-nilptr2.go	fail	c11: error: implicit declaration of function 'M1_F_go_main_package'; did you mean 'M_F_go_main_package'? [-Wimplicit-function…
+nilptr2.go	fail	exit: signal: segmentation fault
 nilptr3.go	skip	gc:diagnostics -d=nil
 nilptr4.go	pass	
 nilptr5.go	skip	gc:diagnostics -d=nil
@@ -2454,12 +2454,12 @@ typeparam/ifaceconv.go	fail	gd: unsupported builtin function
 typeparam/importtest.go	fail	gd: unsupported builtin function
 typeparam/index.go	fail	gd: unsupported builtin function
 typeparam/index2.go	fail	gd: unsupported builtin function
-typeparam/interfacearg.go	fail	gd: unsupported node type: DefinedType
+typeparam/interfacearg.go	pass	
 typeparam/issue23536.go	pass	
 typeparam/issue376214.go	pass	
 typeparam/issue39755.go	pass	
 typeparam/issue42758.go	fail	gd: panic: unsupported map key type interface
-typeparam/issue44688.go	fail	gd: unsupported index of test.B1
+typeparam/issue44688.go	fail	c11: error: unknown type name 'A2__go_ss_go_main_package'; did you mean 'A__go_ss_go_main_package'?
 typeparam/issue45547.go	pass	
 typeparam/issue45722.go	fail	gd: unsupported builtin function
 typeparam/issue45738.go	pass	
@@ -2486,8 +2486,8 @@ typeparam/issue47723.go	pass
 typeparam/issue47740.go	fail	gd: unsupported builtin function
 typeparam/issue47740b.go	fail	gd: unsupported builtin function
 typeparam/issue47775.go	skip	todo:rundir
-typeparam/issue47775b.go	fail	c11: error: 'C__go_ii_go_main_package' {aka 'go_az'} has no member named 'reset_go_main_package'
-typeparam/issue47797.go	fail	c11: error: implicit declaration of function 'Bar_Bat_go_test_package'; did you mean 'init_go_test_package'? [-Wimplicit-func…
+typeparam/issue47775b.go	pass	
+typeparam/issue47797.go	pass	
 typeparam/issue47877.go	pass	
 typeparam/issue47878.go	pass	
 typeparam/issue47892.go	skip	todo:rundir
@@ -2551,9 +2551,9 @@ typeparam/issue49246.go	skip	todo:compiledir
 typeparam/issue49295.go	fail	gd: panic: unsupported len of *
 typeparam/issue49309.go	pass	
 typeparam/issue49421.go	pass	
-typeparam/issue49432.go	fail	c11: error: 'Foo__go_ii_go_main_package' {aka 'go_az'} has no member named 'Bar_go_main_package'
+typeparam/issue49432.go	pass	
 typeparam/issue49497.go	skip	todo:rundir
-typeparam/issue49516.go	fail	gd: panic: reflect: call of reflect.Value.IsNil on string Value
+typeparam/issue49516.go	pass	
 typeparam/issue49524.go	skip	todo:rundir
 typeparam/issue49536.go	skip	todo:compiledir
 typeparam/issue49538.go	pass	
@@ -2618,11 +2618,11 @@ typeparam/issue52026.go	fail	c11: error: unknown type name 'Option__go_ii_go_mai
 typeparam/issue52117.go	skip	todo:compiledir
 typeparam/issue52124.go	pass	
 typeparam/issue52228.go	pass	
-typeparam/issue52241.go	fail	c11: error: 'Collector__go_ii_go_main_package' {aka 'go_az'} has no member named 'Collect_go_main_package'
+typeparam/issue52241.go	pass	
 typeparam/issue53087.go	fail	gd: unsupported builtin function
 typeparam/issue53254.go	pass	
 typeparam/issue53390.go	fail	gd: unsupported unsafe.Alignof
-typeparam/issue53406.go	fail	c11: error: implicit declaration of function 'Outer__go_ii__go_ii_M_go_main_package'; did you mean 'Outer__go_ii__go_ii_go_ma…
+typeparam/issue53406.go	pass	
 typeparam/issue53419.go	pass	
 typeparam/issue53477.go	fail	gd: unsupported call for function of type xyz.Case
 typeparam/issue53762.go	fail	gd: unsupported call for function of type xyz.Case
@@ -2654,14 +2654,14 @@ typeparam/mdempsky/15.go	skip	gc:goexperiment fieldtrack
 typeparam/mdempsky/16.go	fail	gd: unsupported builtin function
 typeparam/mdempsky/17.go	fail	gd: unsupported builtin function
 typeparam/mdempsky/18.go	fail	gd: unsupported builtin function
-typeparam/mdempsky/19.go	fail	gd: unsupported node type: DefinedType
+typeparam/mdempsky/19.go	pass	
 typeparam/mdempsky/2.go	pass	
-typeparam/mdempsky/20.go	fail	gd: unsupported index of test.T
+typeparam/mdempsky/20.go	pass	
 typeparam/mdempsky/21.go	fail	c11: error: unknown type name 'I__go_ii_go_main_package'; did you mean 'X_go_main_package'?
 typeparam/mdempsky/3.go	skip	todo:compiledir
 typeparam/mdempsky/4.go	skip	todo:compiledir
 typeparam/mdempsky/5.go	pass	
-typeparam/mdempsky/6.go	fail	gd: unsupported index of test.I
+typeparam/mdempsky/6.go	pass	
 typeparam/mdempsky/7.go	skip	todo:compiledir
 typeparam/mdempsky/8.go	skip	todo:errorcheck
 typeparam/mdempsky/9.go	fail	c11: error: invalid suffix "LL" on floating constant
@@ -2687,7 +2687,7 @@ typeparam/shape_assert.go	fail	gd: unsupported builtin function
 typeparam/sliceimp.go	skip	todo:rundir
 typeparam/slices.go	fail	gd: unsupported builtin function
 typeparam/smallest.go	fail	gd: unsupported builtin function
-typeparam/smoketest.go	fail	c11: error: redefinition of 'go_type___go_test_package'
+typeparam/smoketest.go	fail	c11: error: '__go_test_package' {aka 'go_az'} has no member named 'T2'
 typeparam/stringable.go	fail	gd: unsupported builtin function
 typeparam/stringer.go	fail	gd: unsupported builtin function
 typeparam/stringerimp.go	skip	todo:rundir
