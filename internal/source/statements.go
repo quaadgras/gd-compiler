@@ -95,13 +95,16 @@ type StatementRange struct {
 
 	Label string
 
-	For     Location
-	Key     xyz.Maybe[DefinedVariable]
-	Value   xyz.Maybe[DefinedVariable]
-	Token   WithLocation[token.Token]
-	Keyword Location
-	X       Expression
-	Body    StatementBlock
+	For   Location
+	Key   xyz.Maybe[DefinedVariable]
+	Value xyz.Maybe[DefinedVariable]
+
+	// KeyTarget and ValueTarget are what range with = assigns, when they're not variables.
+	KeyTarget, ValueTarget xyz.Maybe[Expression]
+	Token                  WithLocation[token.Token]
+	Keyword                Location
+	X                      Expression
+	Body                   StatementBlock
 }
 
 // continue Label

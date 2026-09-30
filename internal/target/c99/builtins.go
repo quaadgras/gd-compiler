@@ -246,6 +246,10 @@ func (c99 Target) len(expr source.FunctionCall) error {
 		return c99.Constant(tv)
 	}
 	arg := expr.Arguments[0]
+	if n, ok := arrayLength(arg.TypeAndValue().Type); ok { // (with the operand's side effects)
+		fmt.Fprintf(c99, "((go_ii)((void)(%s), %d))", c99.toString(arg), n)
+		return nil
+	}
 	switch typ := arg.TypeAndValue().Type.Underlying().(type) {
 	case *types.Basic:
 		fmt.Fprintf(c99, "go_string_len(")
@@ -271,6 +275,10 @@ func (c99 Target) cap(expr source.FunctionCall) error {
 	}
 	if tv := expr.TypeAndValue(); tv.Value != nil { // arrays.
 		return c99.Constant(tv)
+	}
+	if n, ok := arrayLength(expr.Arguments[0].TypeAndValue().Type); ok {
+		fmt.Fprintf(c99, "((go_ii)((void)(%s), %d))", c99.toString(expr.Arguments[0]), n)
+		return nil
 	}
 	switch expr.Arguments[0].TypeAndValue().Type.Underlying().(type) {
 	case *types.Slice:
@@ -369,4 +377,15 @@ func (c99 Target) minmax(expr source.FunctionCall, name string) error {
 func isFloat(t types.Type) bool {
 	basic, ok := t.Underlying().(*types.Basic)
 	return ok && basic.Info()&types.IsFloat != 0
+}
+
+// arrayLength returns the length of t, an array or a pointer to an array.
+func arrayLength(t types.Type) (int64, bool) {
+	if p, ok := t.Underlying().(*types.Pointer); ok {
+		t = p.Elem()
+	}
+	if a, ok := t.Underlying().(*types.Array); ok {
+		return a.Len(), true
+	}
+	return 0, false
 }

@@ -140,22 +140,29 @@ func loadStatementFor(pkg *source.Package, in *ast.ForStmt) source.StatementFor 
 
 func loadStatementRange(pkg *source.Package, in *ast.RangeStmt) source.StatementRange {
 	var key xyz.Maybe[source.DefinedVariable]
-	if in.Key != nil {
-		key = xyz.New(source.DefinedVariable(loadIdentifier(pkg, in.Key.(*ast.Ident))))
+	var keyTarget, valTarget xyz.Maybe[source.Expression]
+	if id, ok := in.Key.(*ast.Ident); ok {
+		key = xyz.New(source.DefinedVariable(loadIdentifier(pkg, id)))
+	} else if in.Key != nil {
+		keyTarget = xyz.New(loadExpression(pkg, in.Key))
 	}
 	var val xyz.Maybe[source.DefinedVariable]
-	if in.Value != nil {
-		val = xyz.New(source.DefinedVariable(loadIdentifier(pkg, in.Value.(*ast.Ident))))
+	if id, ok := in.Value.(*ast.Ident); ok {
+		val = xyz.New(source.DefinedVariable(loadIdentifier(pkg, id)))
+	} else if in.Value != nil {
+		valTarget = xyz.New(loadExpression(pkg, in.Value))
 	}
 	return source.StatementRange{
-		Location: locationRangeIn(pkg, in, in.Pos(), in.End()),
-		For:      locationIn(pkg, in, in.For),
-		Key:      key,
-		Value:    val,
-		Token:    source.WithLocation[token.Token]{Value: in.Tok, SourceLocation: locationIn(pkg, in, in.TokPos)},
-		Keyword:  locationIn(pkg, in, in.Range),
-		X:        loadExpression(pkg, in.X),
-		Body:     loadStatementBlock(pkg, in.Body),
+		Location:    locationRangeIn(pkg, in, in.Pos(), in.End()),
+		For:         locationIn(pkg, in, in.For),
+		Key:         key,
+		Value:       val,
+		KeyTarget:   keyTarget,
+		ValueTarget: valTarget,
+		Token:       source.WithLocation[token.Token]{Value: in.Tok, SourceLocation: locationIn(pkg, in, in.TokPos)},
+		Keyword:     locationIn(pkg, in, in.Range),
+		X:           loadExpression(pkg, in.X),
+		Body:        loadStatementBlock(pkg, in.Body),
 	}
 }
 

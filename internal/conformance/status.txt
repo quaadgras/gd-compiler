@@ -98,7 +98,7 @@ clearfat.go	skip	todo:runoutput
 closedchan.go	pass	
 closure.go	skip	gc:memstats runtime.ReadMemStats
 closure1.go	pass	
-closure2.go	fail	gd: panic: interface conversion: ast.Expr is *ast.IndexExpr, not *ast.Ident
+closure2.go	pass	
 closure3.go	skip	gc:diagnostics -m
 closure4.go	pass	
 closure5.go	skip	todo:compiledir
@@ -204,7 +204,7 @@ const.go	pass
 const1.go	skip	todo:errorcheck
 const2.go	skip	todo:errorcheck
 const3.go	pass	
-const4.go	fail	gd: unsupported len of *
+const4.go	pass	
 const5.go	skip	todo:errorcheck
 const6.go	skip	todo:errorcheck
 const7.go	skip	gc:toolchain
@@ -248,7 +248,7 @@ empty.go	pass
 env.go	pass	
 eof.go	pass	
 eof1.go	pass	
-escape.go	fail	exit: exit status 2 panic: BUG: no escape
+escape.go	pass	
 escape2.go	skip	gc:diagnostics -m
 escape2n.go	skip	gc:diagnostics -m
 escape3.go	pass	
@@ -850,7 +850,7 @@ fixedbugs/issue12686.go	pass
 fixedbugs/issue12944.go	skip	todo:errorcheck
 fixedbugs/issue1304.go	pass	
 fixedbugs/issue13160.go	fail	c11: error: assignment to 'go_ii' {aka 'long int'} from 'go_ii *' {aka 'long int *'} makes integer from pointer without a cas…
-fixedbugs/issue13162.go	fail	exit: exit status 1 index after range with side-effect = -1 want 0
+fixedbugs/issue13162.go	pass	
 fixedbugs/issue13169.go	fail	exit: timeout
 fixedbugs/issue13171.go	pass	
 fixedbugs/issue13248.go	skip	todo:errorcheck
@@ -1139,7 +1139,7 @@ fixedbugs/issue23093.go	skip	todo:errorcheck
 fixedbugs/issue23094.go	skip	todo:errorcheck
 fixedbugs/issue23116.go	skip	todo:errorcheck
 fixedbugs/issue23179.go	skip	todo:compiledir
-fixedbugs/issue23188.go	fail	exit: exit status 2 panic: ([]int) 0x?
+fixedbugs/issue23188.go	pass	
 fixedbugs/issue23298.go	pass	
 fixedbugs/issue23305.go	pass	
 fixedbugs/issue23311.go	skip	todo:compiledir
@@ -1546,7 +1546,7 @@ fixedbugs/issue45606.go	pass
 fixedbugs/issue4562.go	skip	gc:stack-introspection runtime.Caller
 fixedbugs/issue45665.go	fail	gd: unsupported conversion from
 fixedbugs/issue45693.go	pass	
-fixedbugs/issue45706.go	fail	gd: panic: interface conversion: ast.Expr is *ast.StarExpr, not *ast.Ident
+fixedbugs/issue45706.go	pass	
 fixedbugs/issue45743.go	pass	
 fixedbugs/issue45804.go	skip	todo:errorcheck
 fixedbugs/issue4585.go	pass	
@@ -1558,7 +1558,7 @@ fixedbugs/issue45948.go	skip	gc:flags -N
 fixedbugs/issue4610.go	skip	todo:errorcheck
 fixedbugs/issue4614.go	pass	
 fixedbugs/issue4618.go	fail	c11: error: implicit declaration of function 'AllocsPerRun_go_testing_package' [-Wimplicit-function-declaration]
-fixedbugs/issue4620.go	fail	exit: exit status 2 panic: m[i] != 2
+fixedbugs/issue4620.go	pass	
 fixedbugs/issue46234.go	skip	todo:buildrun
 fixedbugs/issue46304.go	pass	
 fixedbugs/issue46386.go	skip	gc:flags -p=main
@@ -1706,7 +1706,7 @@ fixedbugs/issue53619.go	pass
 fixedbugs/issue53635.go	pass	
 fixedbugs/issue53653.go	pass	
 fixedbugs/issue53702.go	pass	
-fixedbugs/issue5373.go	fail	gd: panic: interface conversion: ast.Expr is *ast.IndexExpr, not *ast.Ident
+fixedbugs/issue5373.go	pass	
 fixedbugs/issue53982.go	pass	
 fixedbugs/issue54159.go	skip	gc:diagnostics -m=2
 fixedbugs/issue54220.go	pass	
@@ -1917,7 +1917,7 @@ fixedbugs/issue6977.go	skip	todo:errorcheck
 fixedbugs/issue69825.go	skip	gc:flags -d=libfuzzer
 fixedbugs/issue70156.go	pass	
 fixedbugs/issue70175.go	fail	c11: error: duplicate label 'go_label__'
-fixedbugs/issue70189.go	fail	exit: exit status 2 panic: 4
+fixedbugs/issue70189.go	fail	exit: exit status 2 panic: 3
 fixedbugs/issue7023.go	skip	todo:compiledir
 fixedbugs/issue7044.go	pass	
 fixedbugs/issue70481.go	pass	
@@ -1940,7 +1940,7 @@ fixedbugs/issue72090.go	fail	gd: range over unsupported type *types.Named
 fixedbugs/issue7214.go	skip	todo:errorcheck
 fixedbugs/issue7223.go	skip	todo:errorcheck
 fixedbugs/issue7272.go	fail	gd: unsupported go of builtin close
-fixedbugs/issue72844.go	fail	gd: unsupported len of
+fixedbugs/issue72844.go	fail	exit: exit status 2 panic: runtime error: invalid memory address or nil pointer …
 fixedbugs/issue72860.go	pass	
 fixedbugs/issue7310.go	skip	todo:errorcheck
 fixedbugs/issue7316.go	skip	todo:runoutput
@@ -2061,7 +2061,7 @@ fixedbugs/issue80096.go	pass
 fixedbugs/issue80097.go	pass	
 fixedbugs/issue8011.go	pass	
 fixedbugs/issue80127.go	pass	
-fixedbugs/issue8017.go	fail	gd: panic: unsupported len of
+fixedbugs/issue8017.go	pass	
 fixedbugs/issue80188.go	pass	
 fixedbugs/issue80196.go	pass	
 fixedbugs/issue8028.go	pass	
@@ -2126,7 +2126,7 @@ fixedbugs/issue9604.go	pass
 fixedbugs/issue9604b.go	skip	todo:runoutput
 fixedbugs/issue9608.go	skip	todo:rundir
 fixedbugs/issue9634.go	skip	todo:errorcheck
-fixedbugs/issue9691.go	fail	gd: panic: interface conversion: ast.Expr is *ast.IndexExpr, not *ast.Ident
+fixedbugs/issue9691.go	pass	
 fixedbugs/issue9731.go	pass	
 fixedbugs/issue9738.go	pass	
 fixedbugs/issue9862.go	skip	upstream:skip
@@ -2141,7 +2141,7 @@ float_lit.go	pass
 float_lit2.go	pass	
 float_lit3.go	skip	todo:errorcheck
 floatcmp.go	pass	
-for.go	fail	exit: exit status 2 panic: 1
+for.go	pass	
 func.go	pass	
 func1.go	skip	todo:errorcheck
 func2.go	pass	
@@ -2329,10 +2329,10 @@ prove.go	skip	gc:diagnostics -d=ssa/prove/debug=1
 prove_constant_folding.go	skip	gc:diagnostics -d=ssa/prove/debug=2
 prove_invert_loop_with_unused_iterators.go	skip	gc:diagnostics -d=ssa/prove/debug=1
 prove_popcount.go	skip	upstream:build amd64.v3 || arm64
-range.go	fail	gd: panic: interface conversion: ast.Expr is *ast.IndexExpr, not *ast.Ident
+range.go	pass	
 range2.go	skip	todo:errorcheck
 range3.go	pass	
-range4.go	fail	gd: panic: interface conversion: ast.Expr is *ast.StarExpr, not *ast.Ident
+range4.go	fail	gd: range over unsupported type *types.Signature
 rangegen.go	skip	todo:runoutput
 recover.go	fail	exit: exit status 2 panic: interface conversion: interface {} is interface{}, no…
 recover1.go	fail	exit: exit status 2 panic: nil
@@ -2350,7 +2350,7 @@ reflectmethod7.go	fail	exit: exit status 2 panic: FAIL
 reflectmethod8.go	pass	
 rename.go	pass	
 rename1.go	skip	todo:errorcheck
-reorder.go	fail	exit: exit status 2 panic: failed
+reorder.go	fail	exit: exit status 2 panic: runtime error: invalid memory address or nil pointer …
 reorder2.go	pass	
 retjmp.go	skip	todo:buildrundir
 return.go	skip	todo:errorcheck
@@ -2385,7 +2385,7 @@ stackobj3.go	skip	gc:finalizers runtime.SetFinalizer
 strcopy.go	pass	
 strength.go	skip	todo:runoutput
 string_lit.go	pass	
-stringrange.go	fail	exit: exit status 1 after loop i is 0 not 17
+stringrange.go	pass	
 struct0.go	pass	
 switch.go	fail	c11: error: used struct type value where scalar is required
 switch2.go	skip	todo:errorcheck
@@ -2548,7 +2548,7 @@ typeparam/issue49027.go	skip	todo:rundir
 typeparam/issue49049.go	pass	
 typeparam/issue49241.go	skip	todo:rundir
 typeparam/issue49246.go	skip	todo:compiledir
-typeparam/issue49295.go	fail	gd: panic: unsupported len of *
+typeparam/issue49295.go	fail	gd: panic: unsupported conversion to test.Token
 typeparam/issue49309.go	pass	
 typeparam/issue49421.go	pass	
 typeparam/issue49432.go	pass	
@@ -2652,7 +2652,7 @@ typeparam/mdempsky/13.go	fail	exit: signal: trace/breakpoint trap filc safety er
 typeparam/mdempsky/14.go	pass	
 typeparam/mdempsky/15.go	skip	gc:goexperiment fieldtrack
 typeparam/mdempsky/16.go	fail	c11: error: 'Error_go_runtime_package' has no member named 'Error'; did you mean 'error'?
-typeparam/mdempsky/17.go	fail	c11: error: incompatible types when assigning to type 'go_vv' from type 'K_go_main_package' {aka 'long int'}
+typeparam/mdempsky/17.go	fail	c11: error: invalid initializer
 typeparam/mdempsky/18.go	pass	
 typeparam/mdempsky/19.go	pass	
 typeparam/mdempsky/2.go	pass	

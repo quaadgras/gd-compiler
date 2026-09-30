@@ -2,6 +2,8 @@ package c99
 
 import (
 	"fmt"
+	"go/ast"
+	"go/token"
 	"go/types"
 	"strings"
 
@@ -147,6 +149,9 @@ func (c99 Target) forLoop(stmt source.StatementFor) error {
 }
 
 func (c99 Target) StatementRange(stmt source.StatementRange) error {
+	if err := c99.rangeTargets(&stmt); err != nil {
+		return err
+	}
 	if stmt.Label != "" {
 		fmt.Fprintf(c99, "go_label_%s:; ", stmt.Label)
 		defer fmt.Fprintf(c99, " go_break_%s:;", stmt.Label)
@@ -373,5 +378,52 @@ func (c99 Target) rangeChan(stmt source.StatementRange, typ *types.Chan) error {
 		return err
 	}
 	fmt.Fprintf(c99, "\n%s}}", strings.Repeat("\t", c99.Tabs))
+	return nil
+}
+
+// rangeTargets rewrites a range statement that assigns (for i, a[j] = range x) to one that
+// defines variables, and assigns them first in its body.
+func (c99 Target) rangeTargets(stmt *source.StatementRange) error {
+	var targets, values []source.Expression
+	temp := func(target source.Expression) source.DefinedVariable {
+		name := fmt.Sprintf("go_rt_%d", c99.Closures.count)
+		c99.Closures.count++
+		t := target.TypeAndValue().Type
+		loc := stmt.Location
+		loc.Node = &ast.Ident{Name: name, NamePos: loc.Open} // (a node of its own, see [Target.Substitutes])
+		v := source.DefinedVariable{
+			Typed:    source.Typed{TV: types.TypeAndValue{Type: t}},
+			Location: loc,
+			String:   name,
+			Unique:   types.NewVar(stmt.Location.Open, nil, name, t),
+		}
+		targets = append(targets, target)
+		values = append(values, source.Expressions.DefinedVariable.New(v))
+		return v
+	}
+	if key, ok := stmt.Key.Get(); ok && key.String != "_" && !key.Defines() { // for i = range x
+		stmt.KeyTarget, stmt.Key = xyz.New(source.Expressions.DefinedVariable.New(key)), xyz.Maybe[source.DefinedVariable]{}
+	}
+	if val, ok := stmt.Value.Get(); ok && val.String != "_" && !val.Defines() {
+		stmt.ValueTarget, stmt.Value = xyz.New(source.Expressions.DefinedVariable.New(val)), xyz.Maybe[source.DefinedVariable]{}
+	}
+	if target, ok := stmt.KeyTarget.Get(); ok {
+		stmt.Key = xyz.New(temp(target))
+		stmt.KeyTarget = xyz.Maybe[source.Expression]{}
+	}
+	if target, ok := stmt.ValueTarget.Get(); ok {
+		stmt.Value = xyz.New(temp(target))
+		stmt.ValueTarget = xyz.Maybe[source.Expression]{}
+	}
+	if len(targets) == 0 {
+		return nil
+	}
+	assign := source.Statements.Assignment.New(source.StatementAssignment{
+		Location:  stmt.Location,
+		Token:     source.WithLocation[token.Token]{Value: token.ASSIGN},
+		Variables: targets,
+		Values:    values,
+	})
+	stmt.Body.Statements = append([]source.Statement{assign}, stmt.Body.Statements...)
 	return nil
 }

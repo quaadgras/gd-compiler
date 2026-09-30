@@ -54,6 +54,40 @@ func (c99 Target) StatementAssignment(stmt source.StatementAssignment) error {
 	for k, v := range c99.Substitutes {
 		subs[k] = v
 	}
+	// The operands of index expressions and pointer indirections on the left are evaluated
+	// first (i, x[i] = 0, 1 sets x[i] of the i before), then the values.
+	capture := func(expr source.Expression) error {
+		if expr.TypeAndValue().Value != nil {
+			return nil
+		}
+		name := fmt.Sprintf("go_assign_%d", c99.Closures.count)
+		c99.Closures.count++
+		fmt.Fprintf(c99, "%s %s = ", c99.TypeOf(types.Default(expr.TypeAndValue().Type)), name)
+		if err := c99.Expression(expr); err != nil {
+			return err
+		}
+		fmt.Fprintf(c99, "; ")
+		subs[source.LocationOf(expr).Node] = name
+		return nil
+	}
+	for _, variable := range stmt.Variables {
+		switch xyz.ValueOf(variable) {
+		case source.Expressions.Index:
+			index := source.Expressions.Index.Get(variable)
+			if _, isArray := index.X.TypeAndValue().Type.Underlying().(*types.Array); !isArray {
+				if err := capture(index.X); err != nil {
+					return err
+				}
+			}
+			if err := capture(index.Index); err != nil {
+				return err
+			}
+		case source.Expressions.Star:
+			if err := capture(source.Expressions.Star.Get(variable).Value); err != nil {
+				return err
+			}
+		}
+	}
 	for _, value := range stmt.Values {
 		if reevaluate(value) {
 			continue
