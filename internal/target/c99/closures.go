@@ -16,7 +16,8 @@ import (
 type Closures struct {
 	captures map[*ast.FuncLit][]*types.Var // in order of first use.
 	captured map[types.Object]bool
-	count    int // closures (and deferred calls) compiled so far, for unique names.
+	count    int // closures, deferred calls and temporaries so far, for unique names.
+	info     *types.Info
 
 	// frames are the functions (*ast.FuncDecl or *ast.FuncLit) with deferred calls, which
 	// need a frame for panics to unwind to. Their named results are boxed, as they are
@@ -30,6 +31,7 @@ func NewClosures(info *types.Info, files []*ast.File) *Closures {
 		captures: make(map[*ast.FuncLit][]*types.Var),
 		captured: make(map[types.Object]bool),
 		frames:   make(map[ast.Node]bool),
+		info:     info,
 	}
 	for _, file := range files {
 		ast.Inspect(file, func(node ast.Node) bool {

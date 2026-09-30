@@ -24,6 +24,7 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 	if isMethod {
 		fnName = fmt.Sprintf(`%s_%s`, receiver.Fields[0].Type.TypeAndValue().Type.(*types.Named).Obj().Name(), fnName)
 	}
+	c99.Order = nil
 	c99.Results = nil
 	if results, ok := decl.Type.Results.Get(); ok {
 		for _, field := range results.Fields {

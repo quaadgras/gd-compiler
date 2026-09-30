@@ -16,29 +16,34 @@ func (c99 Target) StatementIf(stmt source.StatementIf) error {
 		}
 		fmt.Fprintf(c99, "; ")
 	}
-	fmt.Fprintf(c99, "if (")
-	if err := c99.Expression(stmt.Condition); err != nil {
+	if err := c99.ordered([]source.Expression{stmt.Condition}, nil, false, func(c99 Target) error {
+		fmt.Fprintf(c99, "if (")
+		if err := c99.Expression(stmt.Condition); err != nil {
+			return err
+		}
+		fmt.Fprintf(c99, ") {")
+		for _, stmt := range stmt.Body.Statements {
+			c99.Tabs++
+			if err := c99.Statement(stmt); err != nil {
+				return err
+			}
+			c99.Tabs--
+		}
+		ifelse, hasElse := stmt.Else.Get()
+		if hasElse {
+			fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
+			fmt.Fprintf(c99, "} else ")
+			c99.Tabs = -c99.Tabs
+			if err := c99.Statement(ifelse); err != nil {
+				return err
+			}
+		} else {
+			fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
+			fmt.Fprintf(c99, "}")
+		}
+		return nil
+	}); err != nil {
 		return err
-	}
-	fmt.Fprintf(c99, ") {")
-	for _, stmt := range stmt.Body.Statements {
-		c99.Tabs++
-		if err := c99.Statement(stmt); err != nil {
-			return err
-		}
-		c99.Tabs--
-	}
-	ifelse, hasElse := stmt.Else.Get()
-	if hasElse {
-		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
-		fmt.Fprintf(c99, "} else ")
-		c99.Tabs = -c99.Tabs
-		if err := c99.Statement(ifelse); err != nil {
-			return err
-		}
-	} else {
-		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
-		fmt.Fprintf(c99, "}")
 	}
 	if hasInit {
 		fmt.Fprintf(c99, "}") // scope of the init statement.

@@ -15,6 +15,9 @@ func (c99 Target) StatementGo(stmt source.StatementGo) error {
 }
 
 func (c99 Target) FunctionCall(expr source.FunctionCall) error {
+	if ok, err := c99.hoisted(expr.Location.Node, expr.TypeAndValue().Type, func(cc Target) error { return cc.FunctionCall(expr) }); ok {
+		return err
+	}
 	function := expr.Function
 	if xyz.ValueOf(function) == source.Expressions.Parenthesized {
 		function = source.Expressions.Parenthesized.Get(function).X

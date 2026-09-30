@@ -2,6 +2,7 @@ package c99
 
 import (
 	"fmt"
+	"go/token"
 	"go/types"
 	"io"
 	"strings"
@@ -22,7 +23,26 @@ func (c99 Target) Statement(stmt source.Statement) error {
 		c99.Tabs = -c99.Tabs
 	}
 	value, _ := stmt.Get()
-	if err := c99.Compile(value); err != nil {
+	var exprs, roots []source.Expression
+	declares := false
+	switch xyz.ValueOf(stmt) {
+	case source.Statements.Assignment:
+		assign := source.Statements.Assignment.Get(stmt)
+		exprs = append(append(exprs, assign.Variables...), assign.Values...)
+		declares = assign.Token.Value == token.DEFINE
+	case source.Statements.Expression:
+		expr := source.Statements.Expression.Get(stmt)
+		exprs, roots = []source.Expression{expr}, []source.Expression{expr}
+	case source.Statements.Return:
+		exprs = source.Statements.Return.Get(stmt).Results
+	case source.Statements.Send:
+		send := source.Statements.Send.Get(stmt)
+		exprs = []source.Expression{send.X, send.Value}
+	case source.Statements.Defer:
+		call := source.Statements.Defer.Get(stmt).Call
+		exprs = append([]source.Expression{call.Function}, call.Arguments...)
+	}
+	if err := c99.ordered(exprs, roots, declares, func(cc Target) error { return cc.Compile(value) }); err != nil {
 		return err
 	}
 	switch xyz.ValueOf(stmt) {

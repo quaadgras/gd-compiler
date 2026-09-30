@@ -112,6 +112,7 @@ func (c99 Target) StatementDefer(stmt source.StatementDefer) error {
 		cc.Writer = &body
 		cc.Tabs = 0
 		cc.Deferred = deferred
+		cc.Order = nil
 		if err := cc.FunctionCall(call); err != nil {
 			return err
 		}

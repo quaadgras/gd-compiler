@@ -36,6 +36,9 @@ func (c99 Target) Nil(expr source.Nil) error {
 }
 
 func (c99 Target) ExpressionBinary(expr source.ExpressionBinary) error {
+	if ok, err := c99.hoisted(expr.Location.Node, expr.TypeAndValue().Type, func(cc Target) error { return cc.ExpressionBinary(expr) }); ok {
+		return err
+	}
 	if tv := expr.TypeAndValue(); tv.Value != nil && tv.Value.Kind() != constant.Complex {
 		return c99.ConstantValue(tv.Value, false)
 	}
@@ -316,6 +319,9 @@ func (c99 Target) ExpressionKeyValue(e source.ExpressionKeyValue) error {
 }
 
 func (c99 Target) AwaitChannel(e source.AwaitChannel) error {
+	if ok, err := c99.hoisted(e.Location.Node, e.TypeAndValue().Type, func(cc Target) error { return cc.AwaitChannel(e) }); ok {
+		return err
+	}
 	symbol := fmt.Sprintf("go_recv_%s", c99.Mangle(e.Chan.TypeAndValue().Type.(*types.Chan).Elem()))
 	c99.Requires(symbol, c99.Prelude, func(w io.Writer) error {
 		fmt.Fprintf(w, "static inline %s %s(go_ch c) { %s v; go_recv(c, sizeof(%[1]s), &v); return v; }\n",

@@ -44,6 +44,9 @@ type Target struct {
 	// expressions for the parts of the call that were evaluated by the defer statement.
 	Deferred *DeferredCall
 
+	// Order of evaluation of the statement being compiled, see [Order].
+	Order *Order
+
 	// Initializers of package-level variables, which are written to the package's init
 	// function after all of its files are compiled, in the order given by the type
 	// checker.
