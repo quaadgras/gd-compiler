@@ -490,36 +490,11 @@ func cString(s string) string {
 	return b.String()
 }
 
+// ConstantDefinition writes nothing, as constants are written by value where they are
+// used (see [Target.DefinedConstant]), since Go constant expressions (such as 1<<63, iota,
+// or untyped constants that are too large for any C type) don't mean the same in C.
 func (c99 Target) ConstantDefinition(def source.ConstantDefinition) error {
 	if c99.Tabs > 0 {
-		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
-	}
-	if def.Name.String != "_" {
-		fmt.Fprintf(c99, "const %s ", c99.TypeOf(def.TypeAndValue().Type))
-		if err := c99.DefinedConstant(def.Name); err != nil {
-			return err
-		}
-		fmt.Fprintf(c99, " = ")
-	} else {
-		fmt.Fprintf(c99, "go_ignore(")
-	}
-	// Use the exact value computed by the type checker, as Go constant expressions (such
-	// as 1<<63, or iota) don't mean the same thing in C, or may be implied by a previous spec.
-	if tv := def.TypeAndValue(); tv.Value != nil && tv.Value.Kind() != constant.Complex {
-		if err := c99.ConstantValue(tv.Value, def.Global); err != nil {
-			return def.Location.Errorf("%w", err)
-		}
-	} else if value, ok := def.Value.Get(); ok {
-		if err := c99.Expression(value); err != nil {
-			return err
-		}
-	} else {
-		return def.Location.Errorf("constant %s has no value", def.Name.String)
-	}
-	if def.Name.String == "_" {
-		fmt.Fprintf(c99, ")")
-	}
-	if c99.Tabs > 0 || def.Global {
 		fmt.Fprintf(c99, ";")
 	}
 	return nil

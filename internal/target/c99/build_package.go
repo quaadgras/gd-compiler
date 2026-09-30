@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	//go:embed library library/.clangd
+	//go:embed library library/.clangd library/hooks
 	library embed.FS
 )
 
@@ -36,6 +36,9 @@ func Build(dir string, test bool) error {
 		return err
 	}
 	if err := os.CopyFS("./.c", stdlib); err != nil {
+		return err
+	}
+	if err := os.RemoveAll("./.c/hooks"); err != nil { // copied with their packages.
 		return err
 	}
 
@@ -81,6 +84,13 @@ func compilePackage(pkg source.Package, compiled map[string]bool, byPath map[str
 	dir := "./.c/go/" + pkg.Path
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return err
+	}
+	// Hooks implement the functions of the package that have no body (as they are
+	// implemented by the Go runtime, or in assembly) in C11.
+	if hooks, err := fs.ReadFile(library, "library/hooks/"+pkg.Path+".c"); err == nil {
+		if err := os.WriteFile(dir+"/hooks.c", hooks, 0644); err != nil {
+			return err
+		}
 	}
 	public, err := os.Create(dir + ".h")
 	if err != nil {

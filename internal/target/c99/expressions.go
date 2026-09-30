@@ -127,6 +127,7 @@ func (c99 Target) ExpressionBinary(expr source.ExpressionBinary) error {
 			return nil
 		}
 	}
+	fmt.Fprintf(c99, "(") // C's precedence of operators is not Go's (x & y == z).
 	if err := c99.Expression(expr.X); err != nil {
 		return err
 	}
@@ -147,6 +148,7 @@ func (c99 Target) ExpressionBinary(expr source.ExpressionBinary) error {
 	if isGoPointer(expr.X.TypeAndValue().Type) {
 		fmt.Fprintf(c99, ".ptr")
 	}
+	fmt.Fprintf(c99, ")")
 	return nil
 }
 

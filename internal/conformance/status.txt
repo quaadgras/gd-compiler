@@ -72,13 +72,13 @@ cannotassign.go	skip	todo:errorcheck
 chan/doubleselect.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 chan/fifo.go	fail	gd: unsupported instance of AddCleanup (from another package)
 chan/goroutines.go	fail	gd: unsupported instance of AddCleanup (from another package)
-chan/nonblock.go	fail	c11: error: expected identifier or '(' before 'void'
+chan/nonblock.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
 chan/perm.go	skip	todo:errorcheck
 chan/powser1.go	fail	gd: unsupported instance of AddCleanup (from another package)
 chan/powser2.go	fail	gd: unsupported instance of AddCleanup (from another package)
-chan/select.go	fail	exit: exit status 2 panic: fail
+chan/select.go	pass	
 chan/select2.go	skip	gc:memstats runtime.MemProfileRate
-chan/select3.go	fail	c11: error: expected identifier or '(' before 'void'
+chan/select3.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
 chan/select4.go	pass	
 chan/select5.go	skip	todo:runoutput
 chan/select6.go	pass	
@@ -88,7 +88,7 @@ chan/sendstmt.go	pass
 chan/sieve1.go	pass	
 chan/sieve2.go	fail	c11: error: invalid initializer
 chan/zerosize.go	pass	
-chancap.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
+chancap.go	fail	exit: signal: trace/breakpoint trap filc safety error: attempt to allocate object that is too bi…
 chanlinear.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 char_lit.go	fail	gd: unsupported instance of AddCleanup (from another package)
 char_lit1.go	skip	gc:diagnostics -d=panic
@@ -410,7 +410,7 @@ fixedbugs/bug143.go	pass
 fixedbugs/bug144.go	pass	
 fixedbugs/bug145.go	pass	
 fixedbugs/bug146.go	skip	todo:errorcheck
-fixedbugs/bug147.go	fail	c11: error: expected identifier or '(' before 'void'
+fixedbugs/bug147.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
 fixedbugs/bug148.go	fail	exit: exit status 2 panic: function should panic
 fixedbugs/bug149.go	pass	
 fixedbugs/bug150.go	pass	
@@ -517,11 +517,11 @@ fixedbugs/bug254.go	pass
 fixedbugs/bug255.go	skip	todo:errorcheck
 fixedbugs/bug256.go	skip	todo:errorcheck
 fixedbugs/bug257.go	fail	gd: panic: unsupported conversion from
-fixedbugs/bug258.go	fail	c11: error: implicit declaration of function 'Pow_go_math_package'; did you mean 'Sqrt_go_math_package'? [-Wimplicit-function…
+fixedbugs/bug258.go	pass	
 fixedbugs/bug259.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/bug260.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/bug261.go	pass	
-fixedbugs/bug262.go	fail	c11: error: expected identifier or '(' before 'void'
+fixedbugs/bug262.go	fail	exit: exit status 2 panic: fail
 fixedbugs/bug263.go	pass	
 fixedbugs/bug264.go	pass	
 fixedbugs/bug265.go	fail	gd: unsupported instance of AddCleanup (from another package)
@@ -571,7 +571,7 @@ fixedbugs/bug312.go	pass
 fixedbugs/bug313.go	skip	todo:errorcheck
 fixedbugs/bug314.go	pass	
 fixedbugs/bug315.go	pass	
-fixedbugs/bug316.go	fail	c11: error: initializer element is not constant
+fixedbugs/bug316.go	pass	
 fixedbugs/bug317.go	pass	
 fixedbugs/bug318.go	skip	todo:errorcheck
 fixedbugs/bug319.go	pass	
@@ -584,9 +584,9 @@ fixedbugs/bug325.go	skip	todo:errorcheck
 fixedbugs/bug326.go	skip	todo:errorcheck
 fixedbugs/bug327.go	pass	
 fixedbugs/bug328.go	pass	
-fixedbugs/bug329.go	fail	c11: error: initializer element is not constant
+fixedbugs/bug329.go	pass	
 fixedbugs/bug330.go	skip	todo:errorcheck
-fixedbugs/bug331.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
+fixedbugs/bug331.go	pass	
 fixedbugs/bug332.go	skip	todo:errorcheck
 fixedbugs/bug333.go	pass	
 fixedbugs/bug334.go	pass	
@@ -685,7 +685,7 @@ fixedbugs/bug430.go	pass
 fixedbugs/bug431.go	pass	
 fixedbugs/bug432.go	pass	
 fixedbugs/bug433.go	pass	
-fixedbugs/bug434.go	fail	c11: error: implicit declaration of function 'Float64bits_go_math_package' [-Wimplicit-function-declaration]
+fixedbugs/bug434.go	fail	exit: exit status 2 panic: 9223372036854775808
 fixedbugs/bug435.go	skip	todo:errorcheck
 fixedbugs/bug436.go	pass	
 fixedbugs/bug437.go	skip	todo:rundir
@@ -725,7 +725,7 @@ fixedbugs/bug470.go	fail	gd: panic: unsupported index of func() *internal/abi.Ty
 fixedbugs/bug471.go	pass	
 fixedbugs/bug472.go	skip	todo:rundir
 fixedbugs/bug473.go	pass	
-fixedbugs/bug474.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
+fixedbugs/bug474.go	pass	
 fixedbugs/bug475.go	pass	
 fixedbugs/bug476.go	pass	
 fixedbugs/bug477.go	pass	
@@ -763,7 +763,7 @@ fixedbugs/bug508.go	pass
 fixedbugs/bug509.go	pass	
 fixedbugs/bug510.go	skip	todo:rundir
 fixedbugs/bug511.go	skip	todo:compiledir
-fixedbugs/bug512.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
+fixedbugs/bug512.go	pass	
 fixedbugs/bug513.go	skip	gc:build ((linux && amd64) || (linux && ppc64le) || (darwin && amd64) || (freebsd && amd64) || (netbsd && amd64) || (windows && amd64)) && cgo
 fixedbugs/bug514.go	skip	gc:build cgo
 fixedbugs/bug515.go	skip	gc:build gccgo
@@ -809,10 +809,10 @@ fixedbugs/issue10958.go	skip	upstream:build !nacl && !js && disabled_see_issue_1
 fixedbugs/issue10975.go	skip	todo:errorcheck
 fixedbugs/issue10977.go	pass	
 fixedbugs/issue11053.go	skip	todo:rundir
-fixedbugs/issue11256.go	fail	c11: error: expected identifier or '(' before 'void'
+fixedbugs/issue11256.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
 fixedbugs/issue11286.go	pass	
 fixedbugs/issue11326.go	skip	todo:errorcheck
-fixedbugs/issue11326b.go	fail	c11: error: 'Inf' undeclared (first use in this function)
+fixedbugs/issue11326b.go	pass	
 fixedbugs/issue11354.go	pass	
 fixedbugs/issue11359.go	skip	todo:errorcheck
 fixedbugs/issue11361.go	skip	todo:errorcheck
@@ -842,9 +842,9 @@ fixedbugs/issue12411.go	pass
 fixedbugs/issue12413.go	pass	
 fixedbugs/issue12525.go	skip	todo:errorcheck
 fixedbugs/issue12536.go	pass	
-fixedbugs/issue12577.go	fail	c11: error: implicit declaration of function 'Signbit_go_math_package'; did you mean 'init_go_main_package'? [-Wimplicit-func…
+fixedbugs/issue12577.go	fail	output: mismatch
 fixedbugs/issue12588.go	skip	gc:diagnostics -m
-fixedbugs/issue12621.go	fail	c11: error: implicit declaration of function 'Signbit_go_math_package'; did you mean 'init_go_main_package'? [-Wimplicit-func…
+fixedbugs/issue12621.go	pass	
 fixedbugs/issue12677.go	skip	todo:compiledir
 fixedbugs/issue12686.go	pass	
 fixedbugs/issue12944.go	skip	todo:errorcheck
@@ -919,7 +919,7 @@ fixedbugs/issue15470.go	skip	todo:compiledir
 fixedbugs/issue15514.go	skip	todo:errorcheck
 fixedbugs/issue15528.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue15548.go	skip	todo:compiledir
-fixedbugs/issue15550.go	fail	c11: error: expected identifier or '(' before 'void'
+fixedbugs/issue15550.go	pass	
 fixedbugs/issue15572.go	skip	todo:compiledir
 fixedbugs/issue15585.go	pass	
 fixedbugs/issue15602.go	pass	
@@ -942,7 +942,7 @@ fixedbugs/issue15975.go	fail	exit: signal: trace/breakpoint trap filc safety err
 fixedbugs/issue15988.go	pass	
 fixedbugs/issue15992.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue16008.go	skip	todo:errorcheck
-fixedbugs/issue16016.go	fail	c11: error: expected identifier or '(' before 'void'
+fixedbugs/issue16016.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
 fixedbugs/issue16037_run.go	skip	gc:toolchain
 fixedbugs/issue16095.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue16130.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
@@ -964,15 +964,15 @@ fixedbugs/issue16741.go	pass
 fixedbugs/issue16760.go	fail	exit: signal: trace/breakpoint trap filc safety error: cannot read pointer with null object.
 fixedbugs/issue16804.go	pass	
 fixedbugs/issue16870.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
-fixedbugs/issue16948.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
+fixedbugs/issue16948.go	pass	
 fixedbugs/issue16949.go	skip	todo:errorcheck
-fixedbugs/issue16985.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
+fixedbugs/issue16985.go	pass	
 fixedbugs/issue17005.go	pass	
 fixedbugs/issue17038.go	skip	todo:errorcheck
 fixedbugs/issue17039.go	pass	
 fixedbugs/issue17111.go	pass	
 fixedbugs/issue17194.go	pass	
-fixedbugs/issue17270.go	fail	c11: error: expected identifier or '(' before 'void'
+fixedbugs/issue17270.go	pass	
 fixedbugs/issue17318.go	skip	gc:diagnostics -m
 fixedbugs/issue17328.go	skip	todo:errorcheck
 fixedbugs/issue17381.go	skip	gc:stack-introspection runtime.Callers
@@ -1099,7 +1099,7 @@ fixedbugs/issue21770.go	skip	todo:errorcheck
 fixedbugs/issue21808.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue21879.go	skip	gc:stack-introspection runtime.Callers
 fixedbugs/issue21882.go	skip	todo:errorcheck
-fixedbugs/issue21887.go	fail	c11: error: expected identifier or '(' before 'void'
+fixedbugs/issue21887.go	pass	
 fixedbugs/issue21934.go	skip	todo:errorcheck
 fixedbugs/issue21963.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue21979.go	skip	todo:errorcheck
@@ -1114,7 +1114,7 @@ fixedbugs/issue22200b.go	skip	todo:errorcheck
 fixedbugs/issue22305.go	pass	
 fixedbugs/issue22326.go	pass	
 fixedbugs/issue22327.go	fail	gd: panic: interface conversion: types.Type is *types.Tuple, not *types.Slice
-fixedbugs/issue22344.go	fail	c11: error: expected identifier or '(' before 'void'
+fixedbugs/issue22344.go	pass	
 fixedbugs/issue22351.go	skip	todo:errorcheck
 fixedbugs/issue22389.go	skip	gc:diagnostics -d=panic
 fixedbugs/issue22429.go	pass	
@@ -1147,7 +1147,7 @@ fixedbugs/issue23414.go	pass
 fixedbugs/issue23489.go	pass	
 fixedbugs/issue23504.go	pass	
 fixedbugs/issue23521.go	skip	gc:diagnostics -m
-fixedbugs/issue23522.go	fail	c11: error: implicit declaration of function 'Copysign_go_math_package'; did you mean 'Sqrt_go_math_package'? [-Wimplicit-fun…
+fixedbugs/issue23522.go	pass	
 fixedbugs/issue23536.go	pass	
 fixedbugs/issue23545.go	pass	
 fixedbugs/issue23546.go	pass	
@@ -1173,7 +1173,7 @@ fixedbugs/issue24173.go	pass
 fixedbugs/issue24187.go	skip	upstream:build amd64p32
 fixedbugs/issue24339.go	skip	todo:errorcheck
 fixedbugs/issue24419.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
-fixedbugs/issue24449.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
+fixedbugs/issue24449.go	pass	
 fixedbugs/issue24470.go	skip	gc:diagnostics -d=panic
 fixedbugs/issue24488.go	skip	gc:stack-introspection runtime.Stack
 fixedbugs/issue24491a.go	skip	gc:finalizers runtime.SetFinalizer
@@ -1209,12 +1209,12 @@ fixedbugs/issue25984.go	skip	todo:compiledir
 fixedbugs/issue25993.go	skip	gc:flags -d=ssa/check/on
 fixedbugs/issue26024.go	pass	
 fixedbugs/issue26043.go	pass	
-fixedbugs/issue26094.go	fail	cc: timeout
+fixedbugs/issue26094.go	fail	exit: exit status 2 panic: nil
 fixedbugs/issue26097.go	pass	
 fixedbugs/issue26105.go	pass	
 fixedbugs/issue26116.go	pass	
 fixedbugs/issue26120.go	pass	
-fixedbugs/issue2615.go	fail	exit: exit status 2 panic: failed
+fixedbugs/issue2615.go	pass	
 fixedbugs/issue26153.go	pass	
 fixedbugs/issue26163.go	skip	gc:flags -N -d=softfloat
 fixedbugs/issue26248.go	pass	
@@ -1225,7 +1225,7 @@ fixedbugs/issue26407.go	pass
 fixedbugs/issue26411.go	skip	gc:toolchain
 fixedbugs/issue26416.go	skip	todo:errorcheck
 fixedbugs/issue26426.go	pass	
-fixedbugs/issue26438.go	fail	exit: exit status 2 panic: impossible
+fixedbugs/issue26438.go	pass	
 fixedbugs/issue26495.go	pass	
 fixedbugs/issue26616.go	skip	todo:errorcheck
 fixedbugs/issue26855.go	skip	todo:errorcheck
@@ -1248,7 +1248,7 @@ fixedbugs/issue27732a.go	skip	gc:diagnostics -m
 fixedbugs/issue27829.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue27836.go	skip	todo:compiledir
 fixedbugs/issue27938.go	skip	gc:diagnostics -d=panic
-fixedbugs/issue27961.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
+fixedbugs/issue27961.go	pass	
 fixedbugs/issue28053.go	skip	todo:errorcheck
 fixedbugs/issue28055.go	pass	
 fixedbugs/issue28058.go	skip	todo:errorcheck
@@ -1270,7 +1270,7 @@ fixedbugs/issue28797.go	fail	gd: panic: unsupported index of func() *internal/ab
 fixedbugs/issue28926.go	skip	todo:errorcheck
 fixedbugs/issue29013a.go	pass	
 fixedbugs/issue29013b.go	pass	
-fixedbugs/issue29190.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
+fixedbugs/issue29190.go	fail	cc: timeout
 fixedbugs/issue29215.go	pass	
 fixedbugs/issue29218.go	pass	
 fixedbugs/issue29220.go	pass	
@@ -1418,7 +1418,7 @@ fixedbugs/issue39292.go	skip	gc:diagnostics -m
 fixedbugs/issue39459.go	pass	
 fixedbugs/issue39472.go	skip	gc:flags -N
 fixedbugs/issue39505.go	pass	
-fixedbugs/issue39505b.go	fail	exit: exit status 2 panic: bad
+fixedbugs/issue39505b.go	pass	
 fixedbugs/issue39541.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue39651.go	pass	
 fixedbugs/issue40152.go	pass	
@@ -1464,7 +1464,7 @@ fixedbugs/issue42703.go	pass
 fixedbugs/issue42727.go	pass	
 fixedbugs/issue42753.go	skip	gc:flags -d=ssa/check/on
 fixedbugs/issue42784.go	pass	
-fixedbugs/issue42790.go	fail	c11: error: expected identifier or '(' before 'void'
+fixedbugs/issue42790.go	pass	
 fixedbugs/issue4283.go	skip	todo:errorcheck
 fixedbugs/issue42876.go	pass	
 fixedbugs/issue42944.go	skip	gc:diagnostics -live
@@ -1679,7 +1679,7 @@ fixedbugs/issue52535.go	pass
 fixedbugs/issue5259.go	skip	todo:compiledir
 fixedbugs/issue52590.go	skip	todo:compiledir
 fixedbugs/issue5260.go	skip	todo:rundir
-fixedbugs/issue52612.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
+fixedbugs/issue52612.go	pass	
 fixedbugs/issue52673.go	pass	
 fixedbugs/issue52697.go	skip	todo:errorcheck
 fixedbugs/issue52701.go	pass	
@@ -1701,15 +1701,15 @@ fixedbugs/issue53309.go	fail	gd: unsupported call for function of type xyz.Case
 fixedbugs/issue53439.go	pass	
 fixedbugs/issue53454.go	pass	
 fixedbugs/issue5358.go	skip	todo:errorcheck
-fixedbugs/issue53600.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
+fixedbugs/issue53600.go	pass	
 fixedbugs/issue53619.go	pass	
 fixedbugs/issue53635.go	pass	
-fixedbugs/issue53653.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
+fixedbugs/issue53653.go	pass	
 fixedbugs/issue53702.go	pass	
 fixedbugs/issue5373.go	fail	gd: panic: interface conversion: ast.Expr is *ast.IndexExpr, not *ast.Ident
 fixedbugs/issue53982.go	pass	
 fixedbugs/issue54159.go	skip	gc:diagnostics -m=2
-fixedbugs/issue54220.go	fail	c11: error: expected identifier or '(' before 'void'
+fixedbugs/issue54220.go	pass	
 fixedbugs/issue54280.go	skip	todo:errorcheck
 fixedbugs/issue54307.go	pass	
 fixedbugs/issue54343.go	skip	gc:finalizers runtime.SetFinalizer
@@ -1791,7 +1791,7 @@ fixedbugs/issue5957.go	skip	todo:errorcheck
 fixedbugs/issue59572.go	pass	
 fixedbugs/issue5963.go	fail	gd: unsupported instance of AddCleanup (from another package)
 fixedbugs/issue59638.go	skip	gc:flags -gcflags=-l=4
-fixedbugs/issue59680.go	fail	c11: error: expected identifier or '(' before 'void'
+fixedbugs/issue59680.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
 fixedbugs/issue59709.go	skip	todo:rundir
 fixedbugs/issue6004.go	skip	todo:errorcheck
 fixedbugs/issue6036.go	pass	
@@ -1897,7 +1897,7 @@ fixedbugs/issue68054.go	fail	gd: unsupported index of test.Seq
 fixedbugs/issue68227.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue68264.go	pass	
 fixedbugs/issue68292.go	skip	todo:errorcheck
-fixedbugs/issue68322.go	fail	c11: error: implicit declaration of function 'Trunc_go_math_package'; did you mean 'Sqrt_go_math_package'? [-Wimplicit-functi…
+fixedbugs/issue68322.go	pass	
 fixedbugs/issue68415.go	skip	gc:flags -gcflags=all=-d=checkptr
 fixedbugs/issue6847.go	pass	
 fixedbugs/issue68525.go	skip	gc:flags -gcflags='all=-N -l'
@@ -1908,7 +1908,7 @@ fixedbugs/issue68734.go	pass
 fixedbugs/issue68809.go	pass	
 fixedbugs/issue68816.go	fail	exit: signal: trace/breakpoint trap filc safety error: attempt to allocate object that is too bi…
 fixedbugs/issue6889.go	skip	todo:errorcheck
-fixedbugs/issue6899.go	fail	c11: error: implicit declaration of function 'Copysign_go_math_package'; did you mean 'Sqrt_go_math_package'? [-Wimplicit-fun…
+fixedbugs/issue6899.go	pass	
 fixedbugs/issue6902.go	fail	gd: unsupported instance of AddCleanup (from another package)
 fixedbugs/issue69434.go	fail	gd: range over unsupported type *types.Named
 fixedbugs/issue69507.go	fail	gd: range over unsupported type *types.Named
@@ -1932,8 +1932,8 @@ fixedbugs/issue7153.go	skip	todo:errorcheck
 fixedbugs/issue71675.go	fail	gd: range over unsupported type *types.Signature
 fixedbugs/issue71680.go	pass	
 fixedbugs/issue71759.go	pass	
-fixedbugs/issue71852.go	fail	c11: error: implicit declaration of function 'Pow10_go_math_package'; did you mean 'Sqrt_go_math_package'? [-Wimplicit-functi…
-fixedbugs/issue71857.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
+fixedbugs/issue71852.go	pass	
+fixedbugs/issue71857.go	pass	
 fixedbugs/issue71932.go	pass	
 fixedbugs/issue72063.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue72090.go	fail	gd: range over unsupported type *types.Named
@@ -2034,7 +2034,7 @@ fixedbugs/issue7867.go	skip	todo:runoutput
 fixedbugs/issue7884.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue78892.go	pass	
 fixedbugs/issue79182.go	pass	
-fixedbugs/issue79186.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
+fixedbugs/issue79186.go	fail	exit: timeout
 fixedbugs/issue79197.go	pass	
 fixedbugs/issue7921.go	skip	gc:diagnostics -m
 fixedbugs/issue79236.go	pass	
@@ -2048,7 +2048,7 @@ fixedbugs/issue79812.go	fail	gd: unsupported conversion to float64
 fixedbugs/issue79874.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue79886.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue79887.go	pass	
-fixedbugs/issue79909.go	fail	c11: error: expected identifier or '(' before 'void'
+fixedbugs/issue79909.go	fail	exit: exit status 2 panic: unexpected result: 19
 fixedbugs/issue7995.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue7995b.go	skip	todo:rundir
 fixedbugs/issue7996.go	pass	
@@ -2086,7 +2086,7 @@ fixedbugs/issue8132.go	pass
 fixedbugs/issue8139.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue8154.go	pass	
 fixedbugs/issue8155.go	pass	
-fixedbugs/issue8158.go	fail	c11: error: expected identifier or '(' before 'void'
+fixedbugs/issue8158.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
 fixedbugs/issue8183.go	skip	todo:errorcheck
 fixedbugs/issue8280.go	skip	todo:compiledir
 fixedbugs/issue8311.go	skip	todo:errorcheck
@@ -2227,9 +2227,9 @@ ken/chan.go	fail	gd: unsupported instance of AddCleanup (from another package)
 ken/chan1.go	pass	
 ken/complit.go	pass	
 ken/convert.go	pass	
-ken/cplx0.go	fail	c11: error: initializer element is not constant
-ken/cplx1.go	fail	c11: error: initializer element is not constant
-ken/cplx2.go	fail	c11: error: initializer element is not constant
+ken/cplx0.go	pass	
+ken/cplx1.go	pass	
+ken/cplx2.go	pass	
 ken/cplx3.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 ken/cplx4.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 ken/cplx5.go	pass	
@@ -2285,7 +2285,7 @@ mainsig.go	skip	todo:errorcheck
 makechan.go	skip	todo:errorcheck
 makemap.go	skip	todo:errorcheck
 makenew.go	skip	todo:errorcheck
-makeslice.go	fail	cc: timeout
+makeslice.go	fail	exit: signal: trace/breakpoint trap filc safety error: attempt to allocate object that is too bi…
 mallocfin.go	skip	gc:finalizers runtime.SetFinalizer
 map.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 map1.go	skip	todo:errorcheck
@@ -2336,7 +2336,7 @@ range4.go	fail	gd: panic: interface conversion: ast.Expr is *ast.StarExpr, not *
 rangegen.go	skip	todo:runoutput
 recover.go	fail	gd: unsupported instance of AddCleanup (from another package)
 recover1.go	fail	exit: exit status 2 panic: nil
-recover2.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
+recover2.go	pass	
 recover3.go	fail	c11: error: 'Error_go_runtime_package' has no member named 'Error'; did you mean 'error'?
 recover4.go	skip	gc:import runtime/debug
 recover5.go	skip	todo:errorcheck
@@ -2365,7 +2365,7 @@ shift1.go	skip	todo:errorcheck
 shift2.go	fail	c11: error: invalid operands to binary << (have 'double' and 'go_uu' {aka 'long int'})
 shift3.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 sieve.go	pass	
-sigchld.go	fail	c11: error: expected identifier or '(' before 'void'
+sigchld.go	fail	c11: error: unknown type name '_C_int_go_syscall_package'; did you mean 'Conn_go_syscall_package'?
 simassign.go	fail	c11: error: incompatible type for argument 1 of 'swap_go_main_package'
 simd.go	skip	gc:build goexperiment.simd && amd64
 simd/bug1.go	skip	gc:build amd64 && goexperiment.simd
@@ -2640,7 +2640,7 @@ typeparam/list.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 typeparam/list2.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 typeparam/listimp.go	skip	todo:rundir
 typeparam/listimp2.go	skip	todo:rundir
-typeparam/lockable.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
+typeparam/lockable.go	pass	
 typeparam/map.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 typeparam/mapimp.go	skip	todo:rundir
 typeparam/maps.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
@@ -2719,7 +2719,7 @@ undef.go	skip	todo:errorcheck
 unsafe_slice_data.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 unsafe_string.go	pass	
 unsafe_string_data.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
-unsafebuiltins.go	fail	gd: constant 18446744073709551616 overflows 64 bits
+unsafebuiltins.go	fail	c11: error: request for member 'ptr' in something not a structure or union
 used.go	skip	todo:errorcheck
 utf.go	pass	
 varerr.go	skip	todo:errorcheck

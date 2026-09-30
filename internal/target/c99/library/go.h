@@ -208,6 +208,16 @@ _Noreturn void go_panic_any(go_vv v);
 go_tf go_type_eq(const go_type* a, const go_type* b);
 go_tf go_vv_eq(go_vv a, go_vv b); // panics if the dynamic type is not comparable.
 go_u8 go_vv_hash(go_vv v, go_u8 seed0, go_u8 seed1); // panics if the dynamic type is not hashable.
+
+// The runtime, for the hooks of packages (see library/hooks), see sema.c.
+void go_semacquire(go_pt addr);
+void go_semrelease(go_pt addr);
+go_u4 go_notify_add(go_pt wait);
+void go_notify_wait(go_pt notify, go_u4 ticket);
+void go_notify(go_pt wait, go_pt notify, go_tf all);
+go_i8 go_nanotime(void);
+go_u8 go_rand(void);
+_Noreturn void go_fatal(go_ss msg);
 static inline go_vv go_if_to_vv(go_if v) { return (go_vv){ .ptr = v.ptr, .go_type = v.go_type }; }
 _Noreturn void go_panic_assertion(const go_type* want, go_vv have);
 // go_implements reports whether t has the methods, filling table (if not NULL) with them.
