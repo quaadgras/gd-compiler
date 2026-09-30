@@ -96,8 +96,13 @@ func asEmptyInterface(value string, t types.Type) string {
 	return "go_if_to_vv(" + value + ")"
 }
 
-// methodCName returns the C name of the method of the named type.
-func (c99 Target) methodCName(named *types.Named, method string) string {
+// methodCName returns the C name of the method of the named type (or struct type, for the
+// methods promoted from its embedded fields).
+func (c99 Target) methodCName(t types.Type, method string) string {
+	named, ok := t.(*types.Named)
+	if !ok {
+		return identifier.ReplaceAllString(c99.TypeOf(t), "_") + "_" + source.CIdent(method)
+	}
 	return fmt.Sprintf("%s_%s_go_%s_package", c99.typeCName(named), source.CIdent(method), source.PackageIdent(named.Obj().Pkg()))
 }
 
@@ -116,7 +121,7 @@ func pointerReceiver(t types.Type, fn *types.Func) bool {
 // promotedMethod emits (if it hasn't been, and if the method is promoted from an embedded
 // field of the named type) a function, static in each file, with the C name of the method
 // of the named type, that calls the method of the embedded field, and its interface wrappers.
-func (c99 Target) promotedMethod(named *types.Named, pkg *types.Package, method string) error {
+func (c99 Target) promotedMethod(named types.Type, pkg *types.Package, method string) error {
 	obj, index, _ := types.LookupFieldOrMethod(named, true, pkg, method)
 	fn, ok := obj.(*types.Func)
 	if !ok || len(index) < 2 {
@@ -213,16 +218,11 @@ func (c99 Target) methodValue(sel source.Selection, fn source.DefinedFunction) e
 	}
 	name := source.CIdent(obj.Name())
 	iface, isInterface := xtype.Underlying().(*types.Interface)
-	var named *types.Named
+	var named types.Type
 	if !isInterface {
-		if named, ok = types.Unalias(derefType(xtype)).(*types.Named); !ok {
-			return sel.Errorf("unsupported method value of %s", xtype)
-		}
-		if err := c99.MethodInstance(named, obj.Name()); err != nil {
-			return err
-		}
-		if err := c99.promotedMethod(named, obj.Pkg(), obj.Name()); err != nil {
-			return err
+		var err error
+		if named, err = c99.receiverType(xtype, obj.Pkg(), obj.Name()); err != nil {
+			return sel.Errorf("%w", err)
 		}
 	}
 	if sel.X.TypeAndValue().IsType() { // a method expression.
@@ -281,4 +281,21 @@ func (c99 Target) methodValue(sel source.Selection, fn source.DefinedFunction) e
 	})
 	fmt.Fprintf(c99, "go_make_closure(I_%s, %s(%s))", c99.methodCName(named, obj.Name()), box, recv)
 	return nil
+}
+
+// receiverType returns the named type (or struct type) of the receiver of the method of t
+// (that type, or a pointer to it), emitting the functions the method needs: instances of
+// methods of generic types, and wrappers of promoted methods.
+func (c99 Target) receiverType(t types.Type, pkg *types.Package, method string) (types.Type, error) {
+	recv := types.Unalias(derefType(t))
+	switch typ := recv.(type) {
+	case *types.Named:
+		if err := c99.MethodInstance(typ, method); err != nil {
+			return nil, err
+		}
+	case *types.Struct:
+	default:
+		return nil, fmt.Errorf("unsupported receiver type %s", t)
+	}
+	return recv, c99.promotedMethod(recv, pkg, method)
 }

@@ -301,7 +301,7 @@ func (c99 Target) ReflectTypeOf(t types.Type) string {
 		if typ.TypeArgs().Len() > 0 {
 			return c99.instanceDescriptor(typ)
 		}
-		return "&go_type_" + typ.Obj().Name() + "_go_" + source.PackageIdent(typ.Obj().Pkg()) + "_package"
+		return "&go_type_" + c99.typeCName(typ) + "_go_" + source.PackageIdent(typ.Obj().Pkg()) + "_package"
 	case *types.TypeParam:
 		panic("unsupported type " + reflect.TypeOf(typ).String())
 	}

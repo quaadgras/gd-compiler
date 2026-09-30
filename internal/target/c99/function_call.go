@@ -151,19 +151,15 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 						c99.InterfaceTypeOf(left.X.TypeAndValue().Type), x, defined.String)
 				} else {
 					receiver = xyz.New(left.X)
-					named, ok := types.Unalias(derefType(left.X.TypeAndValue().Type)).(*types.Named)
-					if !ok {
-						return left.Errorf("unsupported receiver type %s", left.X.TypeAndValue().Type)
-					}
-					if err := c99.MethodInstance(named, defined.String); err != nil {
-						return err
-					}
+					var pkg *types.Package
 					if fn, ok := defined.Unique.(*types.Func); ok {
-						if err := c99.promotedMethod(named, fn.Pkg(), fn.Name()); err != nil {
-							return err
-						}
+						pkg = fn.Pkg()
 					}
-					fmt.Fprint(c99, c99.methodCName(named, defined.String))
+					recv, err := c99.receiverType(left.X.TypeAndValue().Type, pkg, defined.String)
+					if err != nil {
+						return left.Errorf("%w", err)
+					}
+					fmt.Fprint(c99, c99.methodCName(recv, defined.String))
 				}
 			} else {
 				fmt.Fprint(c99, c99.FunctionName(defined))
@@ -452,27 +448,21 @@ func (c99 Target) InterfaceOf(expr source.Expression, iface types.Type) (string,
 			symbol, ctype)
 		return nil
 	})
-	named, ok := types.Unalias(derefType(dynamic)).(*types.Named)
-	if !ok {
-		return "", fmt.Errorf("unsupported conversion of %s to an interface", dynamic)
-	}
 	_, isPointer := dynamic.Underlying().(*types.Pointer)
 	var methods []string
 	for i := range typ.NumMethods() {
 		method := typ.Method(i)
+		recv, err := c99.receiverType(dynamic, method.Pkg(), method.Name())
+		if err != nil {
+			return "", fmt.Errorf("unsupported conversion of %s to an interface: %w", dynamic, err)
+		}
 		prefix := "I_"
 		if obj, _, _ := types.LookupFieldOrMethod(dynamic, true, method.Pkg(), method.Name()); isPointer && obj != nil {
-			if !pointerReceiver(named, obj.(*types.Func)) {
+			if !pointerReceiver(recv, obj.(*types.Func)) {
 				prefix = "IP_" // the receiver is the value pointed to.
 			}
 		}
-		if err := c99.MethodInstance(named, method.Name()); err != nil {
-			return "", err
-		}
-		if err := c99.promotedMethod(named, method.Pkg(), method.Name()); err != nil {
-			return "", err
-		}
-		methods = append(methods, fmt.Sprintf(".%s = %s%s", source.CIdent(method.Name()), prefix, c99.methodCName(named, method.Name())))
+		methods = append(methods, fmt.Sprintf(".%s = %s%s", source.CIdent(method.Name()), prefix, c99.methodCName(recv, method.Name())))
 	}
 	// The table of methods is static, as interface values may outlive any function.
 	hash := fnv.New64a()

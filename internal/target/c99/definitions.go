@@ -85,61 +85,52 @@ func (c99 Target) TypeDefinition(spec source.TypeDefinition) error {
 		return nil // instances are defined where they are used, see [Target.TypeOf].
 	}
 
-	header := c99.Private
-	suffix := "_go_" + c99.CurrentPackage + "_package"
+	// Local types (defined in functions) are named after their position, as they may have
+	// the same name, and defined like package-level types, so that helpers (at file scope)
+	// can use them, with type descriptors that are static in the file.
+	obj, _ := spec.Name.Unique.(*types.TypeName)
+	name := spec.Name.String + "_go_" + c99.CurrentPackage + "_package"
+	out, static := io.Writer(c99), ""
 	if !spec.Global {
-		header = c99
-		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
+		if obj == nil {
+			return spec.Location.Errorf("unsupported local type")
+		}
+		if obj.IsAlias() {
+			return nil // C uses the aliased type.
+		}
+		name = c99.typeCName(obj.Type().(*types.Named)) + "_go_" + c99.CurrentPackage + "_package"
+		out, static = c99.Generic, "static "
 	}
-	// Type descriptors are always qualified by the package, as they have external linkage.
-	rsuffix := "_go_" + c99.CurrentPackage + "_package"
 	ctype := c99.TypeOf(spec.Type.TypeAndValue().Type)
 	if iface, ok := spec.Type.TypeAndValue().Type.Underlying().(*types.Interface); ok && iface.NumMethods() > 0 {
 		ctype = c99.InterfaceTypeOf(spec.Type.TypeAndValue().Type) // the table of methods.
 	}
+	c99.defineType(name, []types.Type{spec.Type.TypeAndValue().Type}, func(w io.Writer) {
+		fmt.Fprintf(w, "\ntypedef %s %s;", ctype, name)
+	})
 	if spec.Global {
-		c99.defineType(spec.Name.String+suffix, []types.Type{spec.Type.TypeAndValue().Type}, func(w io.Writer) {
-			fmt.Fprintf(w, "\ntypedef %s %s%s;", ctype, spec.Name.String, suffix)
-		})
-		fmt.Fprintf(c99.Declarations, "\nextern const go_type go_type_%s%s;", spec.Name.String, rsuffix)
-	} else {
-		fmt.Fprintf(header, "typedef %s %s%s;", ctype, spec.Name.String, suffix)
+		fmt.Fprintf(c99.Declarations, "\nextern const go_type go_type_%s;", name)
 	}
-
-	switch rtype := spec.Type.TypeAndValue().Type.(type) {
-	case *types.Struct:
-		fmt.Fprintf(c99, "\nconst go_field go_fields_%s%s[] = {", spec.Name.String, rsuffix)
+	var fields string
+	if rtype, ok := spec.Type.TypeAndValue().Type.(*types.Struct); ok {
+		var list []string // (first, as the descriptors of the fields' types may be written to out)
 		for i := range rtype.NumFields() {
-			if i > 0 {
-				fmt.Fprintf(c99, ", ")
-			}
 			field := rtype.Field(i)
-			fmt.Fprintf(c99, "{.name=%q,.type=%s,.offset=offsetof(%s%s, %s),.exported=%v,.embedded=%v}",
-				field.Name(), c99.ReflectTypeOf(field.Type()),
-				spec.Name.String, suffix, fieldName(field, i), field.Exported(), field.Anonymous())
+			list = append(list, fmt.Sprintf("{.name=%q,.type=%s,.offset=offsetof(%s, %s),.exported=%v,.embedded=%v}",
+				field.Name(), c99.ReflectTypeOf(field.Type()), name, fieldName(field, i), field.Exported(), field.Anonymous()))
 		}
 		if rtype.NumFields() == 0 {
-			fmt.Fprintf(c99, "{0}") // C has no empty arrays.
+			list = append(list, "{0}") // C has no empty arrays.
 		}
-		fmt.Fprintf(c99, "};")
-	default:
+		fmt.Fprintf(out, "\n%sconst go_field go_fields_%s[] = {%s};", static, name, strings.Join(list, ", "))
+		fields = fmt.Sprintf(", .data={.fields={&go_fields_%s[0], %d}}", name, rtype.NumFields())
 	}
-
-	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
-	fmt.Fprintf(c99, "const go_type go_type_%s%s = {", spec.Name.String, rsuffix)
-	fmt.Fprintf(c99, ".name=%q,", c99.CurrentName+"."+spec.Name.String)
-	kind := kindOf(spec.Type.TypeAndValue().Type)
-	fmt.Fprintf(c99, ".kind=go_kind_%s", kind)
-	switch rtype := spec.Type.TypeAndValue().Type.(type) {
-	case *types.Struct:
-		fmt.Fprintf(c99, ", .data={.fields={&go_fields_%s%s[0], %d}}", spec.Name.String, rsuffix, rtype.NumFields())
+	var methods string
+	if obj != nil {
+		methods = c99.methodTable(obj.Type()) + c99.equalField(obj.Type())
 	}
-	if obj, ok := spec.Name.Unique.(*types.TypeName); ok && spec.Global {
-		fmt.Fprint(c99, c99.methodTable(obj.Type()))
-		fmt.Fprint(c99, c99.equalField(obj.Type()))
-	}
-	fmt.Fprintf(c99, "}")
-	fmt.Fprintf(c99, ";\n")
+	fmt.Fprintf(out, "\n%sconst go_type go_type_%s = {.name=%q, .kind=go_kind_%s%s%s};\n", static, name,
+		c99.CurrentName+"."+spec.Name.String, kindOf(spec.Type.TypeAndValue().Type), fields, methods)
 	return nil
 }
 

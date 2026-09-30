@@ -54,14 +54,14 @@ align.go	pass
 append.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 append1.go	skip	todo:errorcheck
 arenas/smoke.go	skip	gc:goexperiment arenas
-args.go	fail	gd: unsupported receiver type struct
+args.go	fail	gd: unsupported return of (*os.rawConn, error) results
 armimm.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 asmhdr.go	skip	todo:buildrundir
 assign.go	skip	todo:errorcheck
 assign1.go	skip	todo:errorcheck
 atomicload.go	pass	
 bigalg.go	pass	
-bigmap.go	fail	c11: error: unknown type name 'T_go_main_package'
+bigmap.go	pass	
 blank.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 blank1.go	skip	todo:errorcheck
 bloop.go	skip	gc:diagnostics -m=2
@@ -70,12 +70,12 @@ bombad.go	skip	todo:errorcheck
 bounds.go	skip	gc:diagnostics -m
 cannotassign.go	skip	todo:errorcheck
 chan/doubleselect.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
-chan/fifo.go	fail	gd: unsupported receiver type struct
-chan/goroutines.go	fail	gd: unsupported receiver type struct
+chan/fifo.go	fail	gd: unsupported return of (*os.rawConn, error) results
+chan/goroutines.go	fail	gd: unsupported return of (*os.rawConn, error) results
 chan/nonblock.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
 chan/perm.go	skip	todo:errorcheck
-chan/powser1.go	fail	gd: unsupported receiver type struct
-chan/powser2.go	fail	gd: unsupported receiver type struct
+chan/powser1.go	fail	gd: unsupported return of (*os.rawConn, error) results
+chan/powser2.go	fail	gd: unsupported return of (*os.rawConn, error) results
 chan/select.go	fail	exit: exit status 2 panic: fail
 chan/select2.go	skip	gc:memstats runtime.MemProfileRate
 chan/select3.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
@@ -90,12 +90,12 @@ chan/sieve2.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a func
 chan/zerosize.go	pass	
 chancap.go	fail	gd: unsupported type *types.Named
 chanlinear.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
-char_lit.go	fail	gd: unsupported receiver type struct
+char_lit.go	fail	gd: unsupported return of (*os.rawConn, error) results
 char_lit1.go	skip	gc:diagnostics -d=panic
 checkbce.go	skip	gc:diagnostics -d=ssa/check_bce/debug=3
 clear.go	fail	c11: error: incompatible type for argument 1 of 'go_slice_clear'
 clearfat.go	skip	todo:runoutput
-closedchan.go	fail	gd: unsupported receiver type struct
+closedchan.go	fail	gd: unsupported return of (*os.rawConn, error) results
 closure.go	skip	gc:memstats runtime.ReadMemStats
 closure1.go	pass	
 closure2.go	fail	gd: panic: interface conversion: ast.Expr is *ast.IndexExpr, not *ast.Ident
@@ -104,7 +104,7 @@ closure4.go	pass
 closure5.go	skip	todo:compiledir
 closure6.go	pass	
 closure7.go	pass	
-cmp.go	fail	gd: unsupported receiver type struct
+cmp.go	fail	gd: unsupported return of (*os.rawConn, error) results
 cmp6.go	skip	todo:errorcheck
 cmplx.go	skip	todo:errorcheck
 cmplxdivide.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
@@ -200,7 +200,7 @@ complit.go	pass
 complit1.go	skip	todo:errorcheck
 complit2.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 compos.go	pass	
-const.go	fail	gd: unsupported receiver type struct
+const.go	fail	gd: unsupported return of (*os.rawConn, error) results
 const1.go	skip	todo:errorcheck
 const2.go	skip	todo:errorcheck
 const3.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
@@ -245,7 +245,7 @@ dwarf/linedirectives.go	pass
 embedfunc.go	skip	todo:errorcheck
 embedvers.go	skip	todo:errorcheck
 empty.go	pass	
-env.go	fail	gd: unsupported receiver type struct
+env.go	fail	gd: unsupported return of (*os.rawConn, error) results
 eof.go	pass	
 eof1.go	pass	
 escape.go	fail	exit: exit status 2 panic: BUG: no escape
@@ -289,7 +289,7 @@ fixedbugs/bug002.go	pass
 fixedbugs/bug003.go	pass	
 fixedbugs/bug004.go	pass	
 fixedbugs/bug005.go	pass	
-fixedbugs/bug006.go	fail	gd: unsupported receiver type struct
+fixedbugs/bug006.go	fail	gd: unsupported return of (*os.rawConn, error) results
 fixedbugs/bug007.go	pass	
 fixedbugs/bug008.go	pass	
 fixedbugs/bug009.go	pass	
@@ -306,7 +306,7 @@ fixedbugs/bug021.go	pass
 fixedbugs/bug022.go	skip	todo:errorcheck
 fixedbugs/bug023.go	pass	
 fixedbugs/bug024.go	pass	
-fixedbugs/bug026.go	fail	c11: error: 'go_type_I_go_main_package' undeclared here (not in a function); did you mean 'go_type_Vector_go_main_package'?
+fixedbugs/bug026.go	pass	
 fixedbugs/bug027.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/bug028.go	pass	
 fixedbugs/bug030.go	skip	todo:errorcheck
@@ -329,8 +329,8 @@ fixedbugs/bug055.go	pass
 fixedbugs/bug056.go	pass	
 fixedbugs/bug057.go	pass	
 fixedbugs/bug058.go	pass	
-fixedbugs/bug059.go	fail	gd: unsupported receiver type struct
-fixedbugs/bug060.go	fail	gd: unsupported receiver type struct
+fixedbugs/bug059.go	fail	gd: unsupported return of (*os.rawConn, error) results
+fixedbugs/bug060.go	fail	gd: unsupported return of (*os.rawConn, error) results
 fixedbugs/bug061.go	pass	
 fixedbugs/bug062.go	skip	todo:errorcheck
 fixedbugs/bug063.go	pass	
@@ -386,7 +386,7 @@ fixedbugs/bug116.go	pass
 fixedbugs/bug117.go	skip	todo:errorcheck
 fixedbugs/bug118.go	pass	
 fixedbugs/bug119.go	pass	
-fixedbugs/bug120.go	fail	gd: unsupported receiver type struct
+fixedbugs/bug120.go	fail	gd: unsupported return of (*os.rawConn, error) results
 fixedbugs/bug121.go	skip	todo:errorcheck
 fixedbugs/bug122.go	skip	todo:errorcheck
 fixedbugs/bug123.go	skip	todo:errorcheck
@@ -394,7 +394,7 @@ fixedbugs/bug126.go	skip	todo:errorcheck
 fixedbugs/bug127.go	skip	todo:errorcheck
 fixedbugs/bug128.go	pass	
 fixedbugs/bug129.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
-fixedbugs/bug130.go	fail	gd: unsupported receiver type struct
+fixedbugs/bug130.go	fail	gd: unsupported return of (*os.rawConn, error) results
 fixedbugs/bug131.go	skip	todo:errorcheck
 fixedbugs/bug132.go	skip	todo:errorcheck
 fixedbugs/bug133.go	skip	todo:errorcheck
@@ -404,7 +404,7 @@ fixedbugs/bug136.go	skip	todo:errorcheck
 fixedbugs/bug137.go	pass	
 fixedbugs/bug139.go	pass	
 fixedbugs/bug140.go	fail	c11: error: implicit declaration of function 'main_go_main_package'; did you mean 'init_go_main_package'? [-Wimplicit-functio…
-fixedbugs/bug141.go	fail	gd: unsupported receiver type struct
+fixedbugs/bug141.go	fail	gd: unsupported return of (*os.rawConn, error) results
 fixedbugs/bug142.go	pass	
 fixedbugs/bug143.go	fail	gd: unsupported type *types.Named
 fixedbugs/bug144.go	pass	
@@ -422,7 +422,7 @@ fixedbugs/bug155.go	pass
 fixedbugs/bug156.go	pass	
 fixedbugs/bug157.go	pass	
 fixedbugs/bug158.go	pass	
-fixedbugs/bug159.go	fail	gd: unsupported receiver type struct
+fixedbugs/bug159.go	fail	gd: unsupported return of (*os.rawConn, error) results
 fixedbugs/bug160.go	skip	todo:rundir
 fixedbugs/bug161.go	pass	
 fixedbugs/bug163.go	skip	todo:errorcheck
@@ -448,7 +448,7 @@ fixedbugs/bug183.go	skip	todo:errorcheck
 fixedbugs/bug184.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/bug185.go	pass	
 fixedbugs/bug186.go	skip	todo:errorcheck
-fixedbugs/bug187.go	fail	gd: unsupported receiver type struct
+fixedbugs/bug187.go	fail	gd: unsupported return of (*os.rawConn, error) results
 fixedbugs/bug188.go	skip	gc:diagnostics -d=panic
 fixedbugs/bug189.go	skip	todo:errorcheck
 fixedbugs/bug190.go	pass	
@@ -524,7 +524,7 @@ fixedbugs/bug261.go	pass
 fixedbugs/bug262.go	fail	c11: error: expected identifier or '(' before 'void'
 fixedbugs/bug263.go	pass	
 fixedbugs/bug264.go	pass	
-fixedbugs/bug265.go	fail	gd: unsupported receiver type struct
+fixedbugs/bug265.go	fail	gd: unsupported return of (*os.rawConn, error) results
 fixedbugs/bug266.go	pass	
 fixedbugs/bug267.go	pass	
 fixedbugs/bug269.go	pass	
@@ -547,7 +547,7 @@ fixedbugs/bug286.go	pass
 fixedbugs/bug287.go	skip	todo:errorcheck
 fixedbugs/bug288.go	pass	
 fixedbugs/bug289.go	skip	todo:errorcheck
-fixedbugs/bug290.go	fail	c11: error: 'go_type_Y_go_main_package' undeclared here (not in a function); did you mean 'go_type_X_go_main_package'?
+fixedbugs/bug290.go	fail	c11: error: 'go_type_Y_261_go_main_package' undeclared here (not in a function); did you mean 'go_type_X_go_main_package'?
 fixedbugs/bug291.go	pass	
 fixedbugs/bug292.go	pass	
 fixedbugs/bug293.go	pass	
@@ -601,7 +601,7 @@ fixedbugs/bug342.go	skip	todo:errorcheck
 fixedbugs/bug343.go	pass	
 fixedbugs/bug344.go	skip	todo:errorcheck
 fixedbugs/bug345.go	skip	todo:errorcheck
-fixedbugs/bug346.go	fail	gd: unsupported receiver type struct
+fixedbugs/bug346.go	fail	gd: unsupported return of (*os.rawConn, error) results
 fixedbugs/bug347.go	skip	gc:stack-introspection runtime.Caller
 fixedbugs/bug348.go	skip	gc:stack-introspection runtime.Caller
 fixedbugs/bug349.go	skip	todo:errorcheck
@@ -631,7 +631,7 @@ fixedbugs/bug374.go	skip	todo:errorcheck
 fixedbugs/bug375.go	pass	
 fixedbugs/bug376.go	skip	todo:errorcheck
 fixedbugs/bug377.go	skip	todo:compiledir
-fixedbugs/bug378.go	fail	c11: error: unknown type name 'X_go_main_package'; did you mean 'Header_go_main_package'?
+fixedbugs/bug378.go	pass	
 fixedbugs/bug379.go	skip	todo:errorcheck
 fixedbugs/bug380.go	fail	c11: error: lvalue required as unary '&' operand
 fixedbugs/bug381.go	skip	todo:errorcheck
@@ -728,7 +728,7 @@ fixedbugs/bug473.go	pass
 fixedbugs/bug474.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
 fixedbugs/bug475.go	pass	
 fixedbugs/bug476.go	pass	
-fixedbugs/bug477.go	fail	gd: unsupported conversion of struct
+fixedbugs/bug477.go	pass	
 fixedbugs/bug478.go	skip	todo:compiledir
 fixedbugs/bug479.go	skip	todo:rundir
 fixedbugs/bug480.go	skip	todo:compiledir
@@ -911,7 +911,7 @@ fixedbugs/issue15175.go	fail	gd: panic: unsupported index of func() *internal/ab
 fixedbugs/issue15252.go	pass	
 fixedbugs/issue15277.go	skip	gc:memstats runtime.ReadMemStats
 fixedbugs/issue15281.go	skip	gc:memstats runtime.ReadMemStats
-fixedbugs/issue15303.go	fail	gd: unsupported receiver type struct
+fixedbugs/issue15303.go	fail	gd: unsupported return of (*os.rawConn, error) results
 fixedbugs/issue15311.go	skip	todo:errorcheck
 fixedbugs/issue15329.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue15439.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
@@ -923,7 +923,7 @@ fixedbugs/issue15550.go	fail	c11: error: expected identifier or '(' before 'void
 fixedbugs/issue15572.go	skip	todo:compiledir
 fixedbugs/issue15585.go	pass	
 fixedbugs/issue15602.go	pass	
-fixedbugs/issue15604.go	fail	gd: unsupported receiver type struct
+fixedbugs/issue15604.go	fail	gd: unsupported return of (*os.rawConn, error) results
 fixedbugs/issue15609.go	skip	todo:runindir
 fixedbugs/issue15611.go	skip	todo:errorcheck
 fixedbugs/issue15646.go	skip	todo:rundir
@@ -1002,7 +1002,7 @@ fixedbugs/issue18636.go	skip	gc:import runtime/debug
 fixedbugs/issue18640.go	pass	
 fixedbugs/issue18655.go	skip	todo:errorcheck
 fixedbugs/issue18661.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
-fixedbugs/issue18725.go	fail	gd: unsupported receiver type struct
+fixedbugs/issue18725.go	fail	gd: unsupported return of (*os.rawConn, error) results
 fixedbugs/issue18747.go	skip	todo:errorcheck
 fixedbugs/issue18808.go	pass	
 fixedbugs/issue18882.go	skip	todo:errorcheck
@@ -1023,7 +1023,7 @@ fixedbugs/issue19168.go	skip	gc:diagnostics -d=wb
 fixedbugs/issue19182.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue19201.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue19217.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
-fixedbugs/issue19246.go	fail	gd: unsupported receiver type struct
+fixedbugs/issue19246.go	fail	gd: unsupported return of (*os.rawConn, error) results
 fixedbugs/issue19261.go	skip	gc:diagnostics -m
 fixedbugs/issue19275.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue19323.go	skip	todo:errorcheck
@@ -1105,7 +1105,7 @@ fixedbugs/issue21963.go	fail	gd: panic: unsupported index of func() *internal/ab
 fixedbugs/issue21979.go	skip	todo:errorcheck
 fixedbugs/issue21988.go	skip	todo:errorcheck
 fixedbugs/issue22063.go	skip	todo:errorcheck
-fixedbugs/issue22076.go	fail	c11: error: unknown type name 'span_go_bytes_package'; did you mean 'Reader_go_bytes_package'?
+fixedbugs/issue22076.go	fail	c11: error: implicit declaration of function 'LastIndexRabinKarp_go_internal_bytealg_package'; did you mean 'LastIndexByte_go…
 fixedbugs/issue22083.go	skip	gc:import runtime/debug
 fixedbugs/issue22164.go	skip	todo:errorcheck
 fixedbugs/issue22198.go	pass	
@@ -1358,7 +1358,7 @@ fixedbugs/issue33219.go	skip	todo:compiledir
 fixedbugs/issue33275.go	skip	upstream:skip
 fixedbugs/issue33275_run.go	skip	gc:toolchain
 fixedbugs/issue33308.go	skip	todo:errorcheck
-fixedbugs/issue33355.go	fail	c11: error: unknown type name 'span_go_bytes_package'; did you mean 'Reader_go_bytes_package'?
+fixedbugs/issue33355.go	fail	c11: error: implicit declaration of function 'LastIndexRabinKarp_go_internal_bytealg_package'; did you mean 'LastIndexByte_go…
 fixedbugs/issue33386.go	skip	todo:errorcheck
 fixedbugs/issue33438.go	pass	
 fixedbugs/issue33460.go	skip	todo:errorcheck
@@ -1403,7 +1403,7 @@ fixedbugs/issue37837.go	skip	gc:diagnostics -m
 fixedbugs/issue37975.go	fail	gd: unsupported type *types.Named
 fixedbugs/issue38093.go	skip	upstream:build js
 fixedbugs/issue38117.go	skip	todo:errorcheck
-fixedbugs/issue38125.go	fail	gd: unsupported method value of test.T
+fixedbugs/issue38125.go	pass	
 fixedbugs/issue38356.go	pass	
 fixedbugs/issue38359.go	pass	
 fixedbugs/issue38496.go	pass	
@@ -1789,7 +1789,7 @@ fixedbugs/issue59404part2.go	pass
 fixedbugs/issue59411.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue5957.go	skip	todo:errorcheck
 fixedbugs/issue59572.go	pass	
-fixedbugs/issue5963.go	fail	gd: unsupported receiver type struct
+fixedbugs/issue5963.go	fail	gd: unsupported return of (*os.rawConn, error) results
 fixedbugs/issue59638.go	skip	gc:flags -gcflags=-l=4
 fixedbugs/issue59680.go	fail	c11: error: 'go_type_Pointer' undeclared here (not in a function); did you mean 'go_type_pointer'?
 fixedbugs/issue59709.go	skip	todo:rundir
@@ -1805,7 +1805,7 @@ fixedbugs/issue60991.go	pass
 fixedbugs/issue61127.go	pass	
 fixedbugs/issue61187.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue6131.go	pass	
-fixedbugs/issue6140.go	fail	gd: unsupported method value of *struct
+fixedbugs/issue6140.go	pass	
 fixedbugs/issue61778.go	pass	
 fixedbugs/issue61895.go	pass	
 fixedbugs/issue61908.go	pass	
@@ -1817,7 +1817,7 @@ fixedbugs/issue62469.go	pass
 fixedbugs/issue6247.go	pass	
 fixedbugs/issue62498.go	skip	todo:rundir
 fixedbugs/issue62515.go	pass	
-fixedbugs/issue6269.go	fail	c11: error: unknown type name 'collision_go_main_package'; did you mean 'foo_go_main_package'?
+fixedbugs/issue6269.go	pass	
 fixedbugs/issue6295.go	skip	todo:compiledir
 fixedbugs/issue6298.go	pass	
 fixedbugs/issue63333.go	skip	todo:errorcheck
@@ -1909,7 +1909,7 @@ fixedbugs/issue68809.go	pass
 fixedbugs/issue68816.go	fail	exit: signal: trace/breakpoint trap filc safety error: attempt to allocate object that is too bi…
 fixedbugs/issue6889.go	skip	todo:errorcheck
 fixedbugs/issue6899.go	fail	c11: error: implicit declaration of function 'Copysign_go_math_package'; did you mean 'Sqrt_go_math_package'? [-Wimplicit-fun…
-fixedbugs/issue6902.go	fail	gd: unsupported receiver type struct
+fixedbugs/issue6902.go	fail	gd: unsupported return of (*os.rawConn, error) results
 fixedbugs/issue69434.go	fail	gd: range over unsupported type *types.Named
 fixedbugs/issue69507.go	fail	gd: range over unsupported type *types.Named
 fixedbugs/issue6964.go	skip	todo:errorcheck
@@ -1964,7 +1964,7 @@ fixedbugs/issue73916b.go	pass
 fixedbugs/issue73917.go	pass	
 fixedbugs/issue73920.go	pass	
 fixedbugs/issue7405.go	pass	
-fixedbugs/issue7419.go	fail	gd: unsupported receiver type struct
+fixedbugs/issue7419.go	fail	gd: unsupported return of (*os.rawConn, error) results
 fixedbugs/issue74379.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue74379b.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 fixedbugs/issue74379c.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
@@ -2017,7 +2017,7 @@ fixedbugs/issue78016.go	pass
 fixedbugs/issue78028.go	pass	
 fixedbugs/issue78081.go	fail	exit: timeout
 fixedbugs/issue78262.go	fail	c11: error: macro "go_ignore" passed 2 arguments, but takes just 1
-fixedbugs/issue78295.go	fail	gd: unsupported receiver type struct
+fixedbugs/issue78295.go	pass	
 fixedbugs/issue78297.go	pass	
 fixedbugs/issue78303_1.go	pass	
 fixedbugs/issue78303_2.go	pass	
@@ -2108,7 +2108,7 @@ fixedbugs/issue8745.go	skip	todo:errorcheck
 fixedbugs/issue8761.go	pass	
 fixedbugs/issue8836.go	skip	todo:errorcheck
 fixedbugs/issue887.go	pass	
-fixedbugs/issue8947.go	fail	c11: error: 'T_go_main_package' {aka 'const go_struct_f6626ba28a2c2707'} has no member named 'a'
+fixedbugs/issue8947.go	pass	
 fixedbugs/issue8961.go	pass	
 fixedbugs/issue9006.go	pass	
 fixedbugs/issue9017.go	skip	todo:errorcheck
@@ -2167,7 +2167,7 @@ goto.go	skip	todo:errorcheck
 heapsampling.go	skip	gc:memstats runtime.MemProfileRate
 helloworld.go	pass	
 if.go	pass	
-import.go	fail	gd: unsupported receiver type struct
+import.go	fail	gd: unsupported return of (*os.rawConn, error) results
 import1.go	skip	todo:errorcheck
 import2.go	skip	todo:compiledir
 import4.go	skip	todo:errorcheck
@@ -2195,14 +2195,14 @@ inline_literal.go	skip	gc:stack-introspection runtime.FuncForPC
 inline_math_bits_rotate.go	skip	gc:diagnostics -m
 inline_sync.go	skip	gc:diagnostics -m
 inline_variadic.go	skip	gc:diagnostics -m
-int_lit.go	fail	gd: unsupported receiver type struct
+int_lit.go	fail	gd: unsupported return of (*os.rawConn, error) results
 intcvt.go	pass	
 interface/assertinline.go	skip	gc:diagnostics -d=typeassert
 interface/bigdata.go	pass	
 interface/convert.go	pass	
 interface/convert1.go	pass	
 interface/convert2.go	pass	
-interface/embed.go	fail	gd: unsupported receiver type struct
+interface/embed.go	fail	gd: unsupported return of (*os.rawConn, error) results
 interface/embed1.go	skip	todo:rundir
 interface/embed2.go	skip	todo:errorcheck
 interface/embed3.go	skip	todo:rundir
@@ -2217,13 +2217,13 @@ interface/receiver1.go	skip	todo:errorcheck
 interface/recursive.go	pass	
 interface/recursive1.go	skip	todo:compiledir
 interface/returntype.go	pass	
-interface/struct.go	fail	gd: unsupported receiver type struct
+interface/struct.go	fail	gd: unsupported return of (*os.rawConn, error) results
 internal/runtime/sys/inlinegcpc.go	skip	gc:diagnostics -m
 intrinsic.go	skip	gc:diagnostics -d=ssa/intrinsics/debug
 intrinsic_atomic.go	skip	gc:diagnostics -d=ssa/intrinsics/debug
 iota.go	pass	
 ken/array.go	pass	
-ken/chan.go	fail	gd: unsupported receiver type struct
+ken/chan.go	fail	gd: unsupported return of (*os.rawConn, error) results
 ken/chan1.go	pass	
 ken/complit.go	pass	
 ken/convert.go	pass	
@@ -2334,7 +2334,7 @@ range2.go	skip	todo:errorcheck
 range3.go	pass	
 range4.go	fail	gd: panic: interface conversion: ast.Expr is *ast.StarExpr, not *ast.Ident
 rangegen.go	skip	todo:runoutput
-recover.go	fail	gd: unsupported receiver type struct
+recover.go	fail	gd: unsupported return of (*os.rawConn, error) results
 recover1.go	fail	exit: exit status 2 panic: nil
 recover2.go	fail	gd: unsupported type *types.Named
 recover3.go	fail	gd: unsupported type *types.Named
@@ -2372,7 +2372,7 @@ simd/bug1.go	skip	gc:build amd64 && goexperiment.simd
 simd/bug2.go	skip	gc:build amd64 && goexperiment.simd
 simd/bug3.go	skip	gc:build goexperiment.simd && amd64
 simd_inline.go	skip	gc:build goexperiment.simd && amd64
-sizeof.go	fail	c11: error: unknown type name 'T1_go_main_package'; did you mean 'S1_go_main_package'?
+sizeof.go	pass	
 slice3.go	skip	todo:runoutput
 slice3err.go	skip	todo:errorcheck
 slicecap.go	fail	output: mismatch
@@ -2384,10 +2384,10 @@ stackobj2.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 stackobj3.go	skip	gc:finalizers runtime.SetFinalizer
 strcopy.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 strength.go	skip	todo:runoutput
-string_lit.go	fail	gd: unsupported receiver type struct
+string_lit.go	fail	gd: unsupported return of (*os.rawConn, error) results
 stringrange.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 struct0.go	fail	c11: error: incompatible type for argument 2 of 'go_send_vv'
-switch.go	fail	gd: unsupported receiver type struct
+switch.go	fail	gd: unsupported return of (*os.rawConn, error) results
 switch2.go	skip	todo:errorcheck
 switch3.go	skip	todo:errorcheck
 switch4.go	skip	todo:errorcheck
@@ -2442,7 +2442,7 @@ typeparam/dictionaryCapture.go	fail	gd: panic: unsupported index of func() *inte
 typeparam/dottype.go	fail	gd: illegal type for print: (int, bool)
 typeparam/double.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 typeparam/eface.go	fail	gd: panic: unsupported call for function of type xyz.Case
-typeparam/equal.go	fail	c11: error: unknown type name 'S_go_main_package'; did you mean 'C_go_main_package'?
+typeparam/equal.go	pass	
 typeparam/fact.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 typeparam/factimp.go	skip	todo:rundir
 typeparam/gencrawler.go	skip	todo:rundir
@@ -2511,7 +2511,7 @@ typeparam/issue48049.go	fail	c11: error: unknown type name 'Fooer__go_u1_go_main
 typeparam/issue48056.go	pass	
 typeparam/issue48094.go	skip	todo:rundir
 typeparam/issue48094b.go	skip	todo:compiledir
-typeparam/issue48137.go	fail	c11: error: unknown type name 'Bar_go_main_package'
+typeparam/issue48137.go	pass	
 typeparam/issue48185a.go	skip	todo:rundir
 typeparam/issue48185b.go	skip	todo:rundir
 typeparam/issue48191.go	skip	gc:flags -c=2
@@ -2706,7 +2706,7 @@ typeparam/typeswitch6.go	pass
 typeparam/typeswitch7.go	fail	output: mismatch
 typeparam/valimp.go	skip	todo:rundir
 typeparam/value.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
-typeswitch.go	fail	gd: unsupported receiver type struct
+typeswitch.go	fail	gd: unsupported return of (*os.rawConn, error) results
 typeswitch1.go	fail	gd: panic: unsupported index of func() *internal/abi.Type
 typeswitch2.go	skip	todo:errorcheck
 typeswitch2b.go	skip	todo:errorcheck

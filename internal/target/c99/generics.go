@@ -154,6 +154,9 @@ func (c99 Target) instanceSuffix(args []types.Type) string {
 // typeCName returns the C name of a named type (without its package suffix), including the
 // type arguments of instances of generic types.
 func (c99 Target) typeCName(named *types.Named) string {
+	if obj := named.Obj(); obj.Pkg() != nil && obj.Parent() != nil && obj.Parent() != obj.Pkg().Scope() {
+		return fmt.Sprintf("%s_%d", obj.Name(), obj.Pos()) // a local type, defined in a function.
+	}
 	if named.TypeArgs().Len() == 0 {
 		return named.Obj().Name()
 	}
