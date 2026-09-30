@@ -504,6 +504,21 @@ func (c99 Target) unsafeBuiltin(expr source.FunctionCall, name string) error {
 		fmt.Fprintf(c99, "((go_ss){ .ptr = (const char*)(%s).ptr, .len = (go_ii)(%s) })", arg(0), arg(1))
 	case "StringData":
 		fmt.Fprintf(c99, "((go_pt){ .ptr = (void*)(%s).ptr })", arg(0))
+	case "Sizeof": // not constant, in instances of generic functions.
+		fmt.Fprintf(c99, "((go_up)sizeof(%s))", c99.TypeOf(expr.Arguments[0].TypeAndValue().Type))
+	case "Alignof":
+		fmt.Fprintf(c99, "((go_up)_Alignof(%s))", c99.TypeOf(expr.Arguments[0].TypeAndValue().Type))
+	case "Offsetof":
+		arg := expr.Arguments[0]
+		for xyz.ValueOf(arg) == source.Expressions.Parenthesized {
+			arg = source.Expressions.Parenthesized.Get(arg).X
+		}
+		if xyz.ValueOf(arg) != source.Expressions.Selector {
+			return expr.Errorf("unsupported unsafe.Offsetof")
+		}
+		sel := source.Expressions.Selector.Get(arg)
+		fields := append(append([]string{}, sel.Path...), c99.toString(sel.Selection))
+		fmt.Fprintf(c99, "((go_up)offsetof(%s, %s))", c99.TypeOf(derefType(sel.X.TypeAndValue().Type)), strings.Join(fields, "."))
 	default:
 		return expr.Errorf("unsupported unsafe.%s", name)
 	}

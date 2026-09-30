@@ -14,8 +14,18 @@ func (c99 Target) StatementFor(stmt source.StatementFor) error {
 		fmt.Fprintf(c99, "go_label_%s:; ", stmt.Label)
 		defer fmt.Fprintf(c99, " go_break_%s:;", stmt.Label)
 	}
-	fmt.Fprintf(c99, "for (")
 	init, hasInit := stmt.Init.Get()
+	if hasInit && xyz.ValueOf(init) == source.Statements.Assignment && !c99.inlineDefinition(source.Statements.Assignment.Get(init)) {
+		// defined before the loop (in a block, for their scope).
+		fmt.Fprintf(c99, "{ ")
+		if err := c99.Statement(init); err != nil {
+			return err
+		}
+		fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
+		defer fmt.Fprintf(c99, " }")
+		hasInit = false
+	}
+	fmt.Fprintf(c99, "for (")
 	if hasInit {
 		tabs := c99.Tabs
 		c99.Tabs = -c99.Tabs

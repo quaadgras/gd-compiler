@@ -79,6 +79,27 @@ func (c99 Target) StatementAssignment(stmt source.StatementAssignment) error {
 	return nil
 }
 
+// inlineDefinition reports whether stmt, the init statement of a for statement, can be a
+// single C declaration: when it defines variables of the same type (on the stack).
+func (c99 Target) inlineDefinition(stmt source.StatementAssignment) bool {
+	if stmt.Token.Value != token.DEFINE || len(stmt.Variables) < 2 || len(stmt.Values) != len(stmt.Variables) {
+		return true
+	}
+	var ctype string
+	for i, variable := range stmt.Variables {
+		if xyz.ValueOf(variable) != source.Expressions.DefinedVariable {
+			return false
+		}
+		name := source.Expressions.DefinedVariable.Get(variable)
+		t := c99.TypeOf(types.Default(stmt.Values[i].TypeAndValue().Type))
+		if (ctype != "" && t != ctype) || !c99.StackAllocated(name) || !name.Defines() {
+			return false
+		}
+		ctype = t
+	}
+	return true
+}
+
 // defineMany defines several variables in the init statement of a for statement, which
 // can only be a single C declaration, so they must have the same type.
 func (c99 Target) defineMany(stmt source.StatementAssignment) error {
