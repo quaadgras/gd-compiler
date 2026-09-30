@@ -123,6 +123,14 @@ func (pkg *Package) typed(node ast.Expr) Typed {
 	return Typed{pkg.Types[node], pkg.Name}
 }
 
+// Substitute, when set, substitutes the type parameters in the types of nodes, while an
+// instance of a generic function or method is being compiled (monomorphization).
+var Substitute func(types.Type) types.Type
+
 func (n Typed) TypeAndValue() types.TypeAndValue {
-	return types.TypeAndValue(n.TV)
+	tv := types.TypeAndValue(n.TV)
+	if Substitute != nil && tv.Type != nil {
+		tv.Type = Substitute(tv.Type)
+	}
+	return tv
 }

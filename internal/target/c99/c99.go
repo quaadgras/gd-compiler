@@ -45,6 +45,10 @@ type Target struct {
 	// expressions for the parts of the call that were evaluated by the defer statement.
 	Deferred *DeferredCall
 
+	// Instance is the C name of the instance of a generic function (or method) being
+	// compiled, see [Generics].
+	Instance string
+
 	// Order of evaluation of the statement being compiled, see [Order].
 	Order *Order
 

@@ -22,6 +22,16 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 	if xyz.ValueOf(function) == source.Expressions.Parenthesized {
 		function = source.Expressions.Parenthesized.Get(function).X
 	}
+	switch xyz.ValueOf(function) { // f[T](...), the instance is recorded for f.
+	case source.Expressions.Index:
+		if x := source.Expressions.Index.Get(function).X; xyz.ValueOf(x) == source.Expressions.DefinedFunction {
+			function = x
+		}
+	case source.Expressions.Indices:
+		if x := source.Expressions.Indices.Get(function).X; xyz.ValueOf(x) == source.Expressions.DefinedFunction {
+			function = x
+		}
+	}
 	if expr.Go {
 		fmt.Fprintf(c99, "go_call(")
 	}
@@ -80,7 +90,11 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 		if expr.Go {
 			fmt.Fprintf(c99, "go_make_func(%s), ", c99.FunctionName(call))
 		} else {
-			fmt.Fprint(c99, c99.FunctionName(call))
+			name, err := c99.FunctionInstance(call)
+			if err != nil {
+				return err
+			}
+			fmt.Fprint(c99, name)
 		}
 		if !call.IsGlobal {
 			isVariable = true
@@ -116,7 +130,10 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 					if !ok {
 						return left.Errorf("unsupported receiver type %s", left.X.TypeAndValue().Type)
 					}
-					fmt.Fprintf(c99, `%s_%s`, named.Obj().Name(), c99.FunctionName(defined))
+					if err := c99.MethodInstance(named, defined.String); err != nil {
+						return err
+					}
+					fmt.Fprintf(c99, `%s_%s`, c99.typeCName(named), c99.FunctionName(defined))
 				}
 			} else {
 				fmt.Fprint(c99, c99.FunctionName(defined))
@@ -183,8 +200,11 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 						prefix = "IP_" // the receiver is the value pointed to.
 					}
 				}
+				if err := c99.MethodInstance(named, method.Name()); err != nil {
+					return err
+				}
 				fmt.Fprintf(c99, `.%s = %s%s_%s_go_%s_package`,
-					method.Name(), prefix, named.Obj().Name(), method.Name(), named.Obj().Pkg().Name())
+					method.Name(), prefix, c99.typeCName(named), method.Name(), named.Obj().Pkg().Name())
 			}
 			fmt.Fprintf(c99, "})")
 			return nil
@@ -387,6 +407,14 @@ func (c99 Target) receiverOf(method, x source.Expression) (string, error) {
 	obj, ok := fn.Unique.(*types.Func)
 	if !ok {
 		return value, nil
+	}
+	if _, iface := obj.Type().(*types.Signature).Recv().Type().Underlying().(*types.Interface); iface {
+		// a method of a type parameter's constraint, in an instance: the concrete method.
+		if concrete, _, _ := types.LookupFieldOrMethod(x.TypeAndValue().Type, true, obj.Pkg(), obj.Name()); concrete != nil {
+			if m, ok := concrete.(*types.Func); ok {
+				obj = m
+			}
+		}
 	}
 	_, wantPointer := obj.Type().(*types.Signature).Recv().Type().Underlying().(*types.Pointer)
 	_, isPointer := x.TypeAndValue().Type.Underlying().(*types.Pointer)

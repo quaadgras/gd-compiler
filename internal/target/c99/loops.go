@@ -48,7 +48,7 @@ func (c99 Target) StatementFor(stmt source.StatementFor) error {
 				continue
 			}
 			if name := source.Expressions.DefinedVariable.Get(v); !c99.StackAllocated(name) {
-				rebox = append(rebox, fmt.Sprintf("%s = %s(*%[1]s)", name.String, c99.BoxOf(name.Unique.Type())))
+				rebox = append(rebox, fmt.Sprintf("%s = %s(*%[1]s)", name.String, c99.BoxOf(subst(name.Unique.Type()))))
 			}
 		}
 	}
@@ -104,7 +104,7 @@ func (c99 Target) StatementRange(stmt source.StatementRange) error {
 		}
 		fmt.Fprintf(c99, "for (%s %s = 0; %[2]s < %[3]s; %[2]s++) {", rtype, iter_name, c99.toString(stmt.X))
 		if boxed { // a new variable for each iteration, captured by a closure.
-			fmt.Fprintf(c99, "\n%s%s* %s = %s(%s);", strings.Repeat("\t", c99.Tabs+1), rtype, key.String, c99.BoxOf(key.Unique.Type()), iter_name)
+			fmt.Fprintf(c99, "\n%s%s* %s = %s(%s);", strings.Repeat("\t", c99.Tabs+1), rtype, key.String, c99.BoxOf(subst(key.Unique.Type())), iter_name)
 		}
 		if err := c99.loopBody(stmt.Label, stmt.Body.Statements); err != nil {
 			return err
@@ -126,7 +126,7 @@ func (c99 Target) StatementRange(stmt source.StatementRange) error {
 		}
 		fmt.Fprintf(c99, "for (go_ii %s = 0; %[1]s < go_slice_len(%[2]s); %[1]s++) {", index, c99.toString(stmt.X))
 		if boxed { // a new variable for each iteration, captured by a closure.
-			fmt.Fprintf(c99, "%sgo_ii* %s = %s(%s);", indent, key.String, c99.BoxOf(key.Unique.Type()), index)
+			fmt.Fprintf(c99, "%sgo_ii* %s = %s(%s);", indent, key.String, c99.BoxOf(subst(key.Unique.Type())), index)
 		}
 		val, hasVal := stmt.Value.Get()
 		if hasVal {

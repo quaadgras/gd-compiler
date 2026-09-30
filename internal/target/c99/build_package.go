@@ -79,6 +79,7 @@ func Build(dir string, test bool) error {
 			syntax = append(syntax, file.Location.Node.(*ast.File))
 		}
 		closures := NewClosures(&pkg.Info, syntax)
+		closures.generics = NewGenerics(pkg.Files)
 		for _, file := range pkg.Files {
 			out, err := os.Create("./.c/go/" + pkg.Name + "/" + filepath.Base(file.FileSet.File(file.Open).Name()) + ".c")
 			if err != nil {

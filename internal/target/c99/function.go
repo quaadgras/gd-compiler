@@ -11,6 +11,11 @@ import (
 
 func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
+	instance := c99.Instance
+	c99.Instance = ""
+	if instance == "" && !decl.IsClosure && IsGeneric(decl) {
+		return nil // compiled as instances, where they are used.
+	}
 	body, ok := decl.Body.Get()
 	if !ok {
 		return decl.Errorf("function missing body")
@@ -20,7 +25,9 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 	if fnName == "init" && !isMethod && !decl.IsClosure {
 		fnName = c99.Initializers.Func("_go_" + c99.PackageOf(c99.CurrentPackage) + "_package")
 	}
-	if isMethod {
+	if instance != "" {
+		fnName = instance
+	} else if isMethod {
 		named, ok := types.Unalias(derefType(receiver.Fields[0].Type.TypeAndValue().Type)).(*types.Named)
 		if !ok {
 			return decl.Errorf("unsupported receiver type %s", receiver.Fields[0].Type.TypeAndValue().Type)
@@ -50,7 +57,7 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 	// Package-level functions have external linkage and a package qualified name, closures
 	// are only referenced from the file they are defined in.
 	var suffix string
-	if !decl.IsClosure {
+	if !decl.IsClosure && instance == "" {
 		suffix = "_go_" + c99.PackageOf(c99.CurrentPackage) + "_package"
 	}
 	closure := decl.IsClosure
@@ -58,7 +65,7 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 		fmt.Fprintf(c99, "go_main() { init_go_%s_package();", c99.CurrentPackage)
 	} else {
 		decl := func(w io.Writer) {
-			if closure {
+			if closure || instance != "" {
 				fmt.Fprintf(w, "static ")
 			}
 			return_type(w)
@@ -95,7 +102,12 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 			}
 			fmt.Fprintf(w, ")")
 		}
-		if !closure { // closures are defined before use, in the same file.
+		switch {
+		case closure: // closures are defined before use, in the same file.
+		case instance != "": // static to the file, before other instances that may use it.
+			decl(c99.Prelude)
+			fmt.Fprintf(c99.Prelude, ";\n")
+		default:
 			fmt.Fprintln(c99.Declarations)
 			decl(c99.Declarations)
 			fmt.Fprintf(c99.Declarations, ";")
@@ -111,7 +123,7 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 	indent := "\n" + strings.Repeat("\t", c99.Tabs)
 	if closure {
 		for _, v := range c99.Environment {
-			fmt.Fprintf(c99, "%s%s* %s = ((go_env_%s*)go_env)->%[3]s;", indent, c99.TypeOf(v.Type()), v.Name(), fnName)
+			fmt.Fprintf(c99, "%s%s* %s = ((go_env_%s*)go_env)->%[3]s;", indent, c99.TypeOf(subst(v.Type())), v.Name(), fnName)
 		}
 	}
 	var params []source.Field
@@ -196,9 +208,12 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 		if len(c99.Results) > 0 {
 			ret = "return "
 		}
-		header := c99.Declarations
+		header, static := c99.Declarations, ""
+		if instance != "" {
+			header, static = c99.Prelude, "static "
+		}
 		wrapper := func(prefix, recv string) {
-			sig := fmt.Sprintf("%s %s%s%s(%s)", c99.TupleOf(c99.Results), prefix, fnName, suffix,
+			sig := fmt.Sprintf("%s%s %s%s%s(%s)", static, c99.TupleOf(c99.Results), prefix, fnName, suffix,
 				strings.Join(append([]string{"void* go_recv"}, params...), ", "))
 			fmt.Fprintf(header, "\n%s;", sig)
 			fmt.Fprintf(c99, "%s { %s%s%s(%s); }\n", sig, ret, fnName, suffix, strings.Join(append([]string{recv}, args...), ", "))

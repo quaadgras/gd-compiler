@@ -19,6 +19,7 @@ type Closures struct {
 	captured map[types.Object]bool
 	count    int // closures, deferred calls and temporaries so far, for unique names.
 	info     *types.Info
+	generics *Generics
 
 	// frames are the functions (*ast.FuncDecl or *ast.FuncLit) with deferred calls, which
 	// need a frame for panics to unwind to. Their named results are boxed, as they are

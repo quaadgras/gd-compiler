@@ -2,6 +2,7 @@ package c99
 
 import (
 	"fmt"
+	"go/ast"
 	"go/constant"
 	"go/types"
 	"math"
@@ -33,11 +34,20 @@ func (c99 Target) definedVariable(decl bool, name source.DefinedVariable) error 
 // function's name directly, see [Target.FunctionName]).
 func (c99 Target) DefinedFunction(name source.DefinedFunction) error {
 	sig, ok := name.TypeAndValue().Type.(*types.Signature)
+	if id, isIdent := name.Location.Node.(*ast.Ident); isIdent && c99.Closures.info != nil {
+		if inst, isInstance := c99.Closures.info.Instances[id]; isInstance {
+			sig, ok = subst(inst.Type).(*types.Signature)
+		}
+	}
 	if name.Method || !ok {
 		fmt.Fprint(c99, c99.FunctionName(name))
 		return nil
 	}
-	value, err := c99.FunctionValue(c99.FunctionName(name), sig)
+	cname, err := c99.FunctionInstance(name)
+	if err != nil {
+		return err
+	}
+	value, err := c99.FunctionValue(cname, sig)
 	if err != nil {
 		return name.Errorf("%w", err)
 	}
@@ -66,6 +76,9 @@ func (c99 Target) SpecificationImport(spec source.Import) error {
 }
 
 func (c99 Target) TypeDefinition(spec source.TypeDefinition) error {
+	if _, generic := spec.TypeParameters.Get(); generic {
+		return nil // instances are defined where they are used, see [Target.TypeOf].
+	}
 
 	header := c99.Private
 	suffix := ""

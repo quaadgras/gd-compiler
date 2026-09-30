@@ -232,7 +232,7 @@ func (c99 Target) ExpressionFunction(e source.ExpressionFunction) error {
 		if len(captures) > 0 {
 			fmt.Fprintf(w, "typedef struct { ")
 			for _, v := range captures {
-				fmt.Fprintf(w, "%s* %s; ", c99.TypeOf(v.Type()), v.Name())
+				fmt.Fprintf(w, "%s* %s; ", c99.TypeOf(subst(v.Type())), v.Name())
 			}
 			fmt.Fprintf(w, "} go_env_%s;\n", symbol)
 		}
@@ -263,6 +263,9 @@ func (c99 Target) ExpressionFunction(e source.ExpressionFunction) error {
 }
 
 func (c99 Target) ExpressionIndex(expr source.ExpressionIndex) error {
+	if xyz.ValueOf(expr.X) == source.Expressions.DefinedFunction { // f[T], an instance.
+		return c99.DefinedFunction(source.Expressions.DefinedFunction.Get(expr.X))
+	}
 	if tv := expr.TypeAndValue(); tv.Value != nil {
 		return c99.ConstantValue(tv.Value, false)
 	}
@@ -435,4 +438,12 @@ func (c99 Target) ExpressionUnary(e source.ExpressionUnary) error {
 		return err
 	}
 	return nil
+}
+
+// ExpressionIndices is f[T1, T2], an instance of a generic function (as a value).
+func (c99 Target) ExpressionIndices(expr source.ExpressionIndices) error {
+	if xyz.ValueOf(expr.X) == source.Expressions.DefinedFunction {
+		return c99.DefinedFunction(source.Expressions.DefinedFunction.Get(expr.X))
+	}
+	return expr.Location.Errorf("unsupported index of %s", expr.X.TypeAndValue().Type)
 }

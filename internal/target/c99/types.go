@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go/ast"
 	"go/types"
+	"hash/fnv"
 	"io"
 	"reflect"
 	"regexp"
@@ -207,18 +208,23 @@ func (c99 Target) TypeOf(t types.Type) string {
 	case *types.Signature:
 		return "go_fn"
 	case *types.Named:
-		if _, ok := typ.Underlying().(*types.Interface); ok {
+		if iface, ok := typ.Underlying().(*types.Interface); ok {
+			if iface.Empty() {
+				return "go_vv"
+			}
 			return "go_if"
 		}
 		if typ.Obj().Pkg() == nil {
 			return "go_" + typ.Obj().Name()
 		}
-		if typ.Obj().Pkg().Name() == c99.CurrentPackage {
-			if !ast.IsExported(typ.Obj().Name()) {
-				return typ.Obj().Name()
-			}
+		name := c99.typeCName(typ)
+		if typ.Obj().Pkg().Name() != c99.CurrentPackage || ast.IsExported(typ.Obj().Name()) {
+			name += "_go_" + typ.Obj().Pkg().Name() + "_package"
 		}
-		return typ.Obj().Name() + "_go_" + typ.Obj().Pkg().Name() + "_package"
+		if typ.TypeArgs().Len() > 0 {
+			c99.instanceType(typ, name)
+		}
+		return name
 	case *types.Pointer:
 		return "go_pt"
 	case *types.Slice:
@@ -252,17 +258,21 @@ func (c99 Target) TypeOf(t types.Type) string {
 		if typ.NumFields() == 0 {
 			return "go_az"
 		}
-		var builder strings.Builder
-		builder.WriteString("struct { ")
-		for i := 0; i < typ.NumFields(); i++ {
-			field := typ.Field(i)
-			builder.WriteString(c99.TypeOf(field.Type()))
-			builder.WriteString(" ")
-			builder.WriteString(field.Name())
-			builder.WriteString("; ")
-		}
-		builder.WriteString("}")
-		return builder.String()
+		// Each struct type is a single C type (C struct types written out are distinct),
+		// named after (a hash of) its fields, defined in the package's private header.
+		hash := fnv.New64a()
+		hash.Write([]byte(types.TypeString(typ, func(pkg *types.Package) string { return pkg.Path() })))
+		symbol := fmt.Sprintf("go_struct_%x", hash.Sum64())
+		c99.Requires(symbol, c99.Private, func(w io.Writer) error {
+			var fields strings.Builder
+			for i := 0; i < typ.NumFields(); i++ {
+				field := typ.Field(i)
+				fmt.Fprintf(&fields, "%s %s; ", c99.TypeOf(field.Type()), field.Name())
+			}
+			fmt.Fprintf(w, "\n#ifndef %[1]s_defined\n#define %[1]s_defined\ntypedef struct { %[2]s} %[1]s;\n#endif\n", symbol, fields.String())
+			return nil
+		})
+		return symbol
 	case *types.Tuple:
 		return ".{}"
 	case nil:
@@ -270,8 +280,7 @@ func (c99 Target) TypeOf(t types.Type) string {
 	case *types.Alias:
 		return c99.TypeOf(typ.Rhs())
 	case *types.TypeParam:
-		// Type parameters in generics - treat as void* for now
-		return "void*"
+		panic("type parameter " + typ.String() + " was not substituted")
 	default:
 		panic("unsupported type " + reflect.TypeOf(typ).String())
 	}
@@ -288,6 +297,9 @@ func (c99 Target) ReflectTypeOf(t types.Type) string {
 	case *types.Named:
 		if typ.Obj().Pkg() == nil {
 			return "&go_type_" + typ.Obj().Name() // error
+		}
+		if typ.TypeArgs().Len() > 0 {
+			return c99.instanceDescriptor(typ)
 		}
 		return "&go_type_" + typ.Obj().Name() + "_go_" + typ.Obj().Pkg().Name() + "_package"
 	case *types.TypeParam:
