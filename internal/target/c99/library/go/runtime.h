@@ -3,8 +3,19 @@
 #include <go.h>
 #include <threads.h>
 
-typedef struct { go_ii f1; go_if f2; } go_aaiitfzz;
-typedef struct { go_up f1; go_ss f2; go_ii f3; go_tf f4; } go_aaupssiitfzz;
+// (the tuples of results, defined as gd defines them)
+#ifndef go_tuple_go_ii_go_tf_defined
+#define go_tuple_go_ii_go_tf_defined
+typedef struct { go_ii r0; go_tf r1; } go_tuple_go_ii_go_tf;
+#endif
+#ifndef go_tuple_go_up_go_ss_go_ii_go_tf_defined
+#define go_tuple_go_up_go_ss_go_ii_go_tf_defined
+typedef struct { go_up r0; go_ss r1; go_ii r2; go_tf r3; } go_tuple_go_up_go_ss_go_ii_go_tf;
+#endif
+#ifndef go_tuple_go_ss_go_ii_defined
+#define go_tuple_go_ss_go_ii_defined
+typedef struct { go_ss r0; go_ii r1; } go_tuple_go_ss_go_ii;
+#endif
 
 typedef struct { go_u4 f1; go_u8 f2; go_u8 f3; } go_aau4u8u8zz;
 typedef struct {
@@ -55,7 +66,7 @@ static const go_ss GOARCH_go_runtime_package = go_string_const(go_ARCH);
 static const go_ss GOOS_go_runtime_package = go_string_const(go_OS);
 extern go_ii MemProfileRate_go_runtime_package;
 
-static inline go_aaiitfzz BlockProfile_go_runtime_package(go_ll p) { return (go_aaiitfzz){0}; }
+static inline go_tuple_go_ii_go_tf BlockProfile_go_runtime_package(go_ll p) { return (go_tuple_go_ii_go_tf){0}; }
 static inline void Breakpoint_go_runtime_package(void) {
     #if defined(_MSC_VER)
         __debugbreak();
@@ -78,17 +89,17 @@ static inline void Breakpoint_go_runtime_package(void) {
         // Do nothing on unsupported platforms
     #endif
 }
-static inline go_aaupssiitfzz Caller_go_runtime_package(go_ii skip) { return (go_aaupssiitfzz){0}; }
+static inline go_tuple_go_up_go_ss_go_ii_go_tf Caller_go_runtime_package(go_ii skip) { return (go_tuple_go_up_go_ss_go_ii_go_tf){0}; }
 static inline go_ii Callers_go_runtime_package(go_ii skip, go_ll pc) { return 0; }
 static inline void GC_go_runtime_package(void) {}
 static inline go_ii GOMAXPROCS_go_runtime_package(go_ii n) { return 1; }
 static inline void Goexit_go_runtime_package(void) { thrd_exit(0); }
-static inline go_aaiitfzz GoroutineProfile_go_runtime_package(go_ll p) { return (go_aaiitfzz){0}; }
+static inline go_tuple_go_ii_go_tf GoroutineProfile_go_runtime_package(go_ll p) { return (go_tuple_go_ii_go_tf){0}; }
 static inline void Gosched_go_runtime_package(void) { thrd_yield(); }
 static inline void KeepAlive_go_runtime_package(go_vv x) { (void)x; }
 static inline void LockOSThread_go_runtime_package(void) {}
-static inline go_aaiitfzz MemProfile_go_runtime_package(go_ll p, go_tf inuseZero) { return (go_aaiitfzz){0}; }
-static inline go_aaiitfzz MutexProfile_go_runtime_package(go_ll p) { return (go_aaiitfzz){0}; }
+static inline go_tuple_go_ii_go_tf MemProfile_go_runtime_package(go_ll p, go_tf inuseZero) { return (go_tuple_go_ii_go_tf){0}; }
+static inline go_tuple_go_ii_go_tf MutexProfile_go_runtime_package(go_ll p) { return (go_tuple_go_ii_go_tf){0}; }
 static inline go_ii NumCPU_go_runtime_package(void) { return 1; }
 static inline go_ii NumCgoCall_go_runtime_package(void) { return 0; }
 static inline go_ii NumGoroutine_go_runtime_package(void) { return 1; }
@@ -109,7 +120,7 @@ static inline go_if StartTrace_go_runtime_package(void) {
     return (go_if){ (go_pt){ &data }, &go_runtime_trace_error_type, &go_runtime_trace_error_methods };
 }
 static inline void StopTrace_go_runtime_package(void) {}
-static inline go_aaiitfzz ThreadCreateProfile_go_runtime_package(go_ll p) { return (go_aaiitfzz){0}; }
+static inline go_tuple_go_ii_go_tf ThreadCreateProfile_go_runtime_package(go_ll p) { return (go_tuple_go_ii_go_tf){0}; }
 static inline void UnlockOSThread_go_runtime_package(void) {}
 static inline go_ss Version_go_runtime_package(void) { return go_string_new("go1.25.1"); }
 static inline go_ss GOROOT_go_runtime_package(void) { return go_string_new(""); }
@@ -148,14 +159,10 @@ static inline go_tuple_Frame_go_runtime_package_go_tf Frames_Next_go_runtime_pac
 
 typedef struct { char _; } Func_go_runtime_package;
 
-typedef struct {
-    go_ss f1;
-    go_ii f2;
-} go_aassiizz;
 
 static inline go_pt FuncForPC_go_runtime_package(go_up pc) { return (go_pt){0}; }
 static inline go_up Func_Entry_go_runtime_package(go_pt f) { return (go_up){0}; }
-static inline go_aassiizz Func_FileLine_go_runtime_package(go_pt f) { return (go_aassiizz){0}; }
+static inline go_tuple_go_ss_go_ii Func_FileLine_go_runtime_package(go_pt f) { return (go_tuple_go_ss_go_ii){0}; }
 static inline go_ss Func_Name_go_runtime_package(go_pt f) { return (go_ss){0}; }
 
 typedef struct {

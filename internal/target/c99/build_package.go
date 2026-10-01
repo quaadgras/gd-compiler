@@ -102,20 +102,28 @@ func Build(dir string, test bool) error {
 // standardOverlay returns the files that replace those of standard library packages (by
 // path), as their Go source is coupled to the Go runtime: library/overlay has the Go
 // source of the packages that replace them, whose files replace those of the originals,
-// which are otherwise ignored.
+// which are otherwise ignored (unless the folder has a file named partial, then only the
+// files of the same names are replaced).
 func standardOverlay() (map[string][]byte, error) {
 	overlay := make(map[string][]byte)
 	err := fs.WalkDir(library, "library/overlay", func(path string, d fs.DirEntry, err error) error {
 		if err != nil || !d.IsDir() || path == "library/overlay" {
 			return err
 		}
+		if matches, _ := fs.Glob(library, path+"/*.go"); len(matches) == 0 {
+			return nil // (a folder of packages)
+		}
 		importPath := strings.TrimPrefix(path, "library/overlay/")
 		pkg, err := build.Default.Import(importPath, "", 0)
 		if err != nil {
 			return err
 		}
-		for _, name := range pkg.GoFiles {
-			overlay[filepath.Join(pkg.Dir, name)] = []byte("//go:build ignore\n\npackage " + pkg.Name + "\n")
+		_, err = fs.Stat(library, path+"/partial")
+		partial := err == nil
+		if !partial {
+			for _, name := range pkg.GoFiles {
+				overlay[filepath.Join(pkg.Dir, name)] = []byte("//go:build ignore\n\npackage " + pkg.Name + "\n")
+			}
 		}
 		entries, err := fs.ReadDir(library, path)
 		if err != nil {
@@ -131,7 +139,11 @@ func standardOverlay() (map[string][]byte, error) {
 			}
 			// (the files are ignored by the Go toolchain when building gd)
 			src = []byte(strings.Replace(string(src), "//go:build ignore\n", "", 1))
-			overlay[filepath.Join(pkg.Dir, "gd_"+entry.Name())] = src
+			name := "gd_" + entry.Name()
+			if partial {
+				name = entry.Name() // (replacing the original)
+			}
+			overlay[filepath.Join(pkg.Dir, name)] = src
 		}
 		return nil
 	})

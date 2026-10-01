@@ -9,3 +9,4 @@ void runtime_doSpin_go_internal_sync_package(void) {}
 go_i8 runtime_nanotime_go_internal_sync_package(void) { return go_nanotime(); }
 void throw_go_internal_sync_package(go_ss msg) { go_fatal(msg); }
 void fatal_go_internal_sync_package(go_ss msg) { go_fatal(msg); }
+go_up hashOf_go_internal_sync_package(go_vv key, go_up seed) { return (go_up)go_vv_hash(key, seed, 0); }

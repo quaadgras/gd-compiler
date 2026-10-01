@@ -117,7 +117,15 @@ func (c99 Target) TypeDefinition(spec source.TypeDefinition) error {
 	if iface, ok := spec.Type.TypeAndValue().Type.Underlying().(*types.Interface); ok && iface.NumMethods() > 0 {
 		ctype = c99.InterfaceTypeOf(spec.Type.TypeAndValue().Type) // the table of methods.
 	}
-	c99.defineType(name, []types.Type{spec.Type.TypeAndValue().Type}, func(w io.Writer) {
+	deps := []types.Type{spec.Type.TypeAndValue().Type}
+	if iface, ok := spec.Type.TypeAndValue().Type.Underlying().(*types.Interface); ok { // (the types of its methods)
+		for m := range iface.Methods() {
+			sig := m.Type().(*types.Signature)
+			deps = append(deps, slicesOfTypes(sig.Params())...)
+			deps = append(deps, slicesOfTypes(sig.Results())...)
+		}
+	}
+	c99.defineType(name, deps, func(w io.Writer) {
 		fmt.Fprintf(w, "\ntypedef %s %s;", ctype, name)
 	})
 	if spec.Global {

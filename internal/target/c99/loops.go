@@ -311,7 +311,8 @@ func (c99 Target) declare(name source.DefinedVariable, t types.Type, value strin
 // contains it).
 func (c99 Target) loopBody(label string, body []source.Statement) error {
 	c99.BreakLabel = ""
-	c99.YieldLoop = false // (break and continue are this loop's)
+	c99.YieldLoop = false  // (break and continue are this loop's)
+	fmt.Fprintf(c99, " {") // (a scope of its own, which may redeclare the loop's variables)
 	for _, stmt := range body {
 		c99.Tabs++
 		if err := c99.Statement(stmt); err != nil {
@@ -319,6 +320,7 @@ func (c99 Target) loopBody(label string, body []source.Statement) error {
 		}
 		c99.Tabs--
 	}
+	fmt.Fprintf(c99, "\n%s}", strings.Repeat("\t", c99.Tabs+1))
 	if label != "" {
 		fmt.Fprintf(c99, "\n%sgo_continue_%s:;", strings.Repeat("\t", c99.Tabs+1), label)
 	}

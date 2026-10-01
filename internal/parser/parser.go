@@ -23,6 +23,8 @@ func Load(dir string, test bool, overlay map[string][]byte) ([]source.Package, e
 		Dir:     dir,
 		Tests:   test,
 		Overlay: overlay,
+		// (the Go versions of what packages implement in assembly, where they have them)
+		BuildFlags: []string{"-tags=purego,math_big_pure_go"},
 	}
 	pkgs, err := packages.Load(config, ".")
 	if err != nil {

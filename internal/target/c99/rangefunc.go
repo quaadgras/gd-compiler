@@ -129,12 +129,13 @@ func (c99 Target) rangeFunc(stmt source.StatementRange, sig *types.Signature) er
 		if val, ok := stmt.Value.Get(); ok && val.String != "_" && ysig.Params().Len() > 1 {
 			fmt.Fprintf(w, "\n\t%s", cc.bind(val, ysig.Params().At(1).Type(), "go_y1"))
 		}
+		fmt.Fprintf(w, "\n\t{") // (a scope of its own, which may redeclare the range's variables)
 		for _, s := range stmt.Body.Statements {
 			if err := cc.Statement(s); err != nil {
 				return err
 			}
 		}
-		fmt.Fprintf(w, "\n\treturn true;\n}\n")
+		fmt.Fprintf(w, "\n\t}\n\treturn true;\n}\n")
 		return nil
 	}); err != nil {
 		return err

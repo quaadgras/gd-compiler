@@ -5,9 +5,11 @@
 // standard streams, the environment, and exiting).
 // gd:import io
 // gd:import errors
+// gd:import io/fs
 #include <go.h>
 #include <stdio.h>
 #include <go/errors.h>
+#include <go/io/fs.h> // (os.FileMode and others are io/fs's)
 
 typedef struct { FILE* f; go_ss name; go_tf closed; } File_go_os_package;
 extern const go_type go_type_File_go_os_package;

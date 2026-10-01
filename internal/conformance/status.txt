@@ -69,7 +69,7 @@ bom.go	skip	todo:runoutput
 bombad.go	skip	todo:errorcheck
 bounds.go	skip	gc:diagnostics -m
 cannotassign.go	skip	todo:errorcheck
-chan/doubleselect.go	fail	c11: error: invalid initializer
+chan/doubleselect.go	pass	
 chan/fifo.go	pass	
 chan/goroutines.go	pass	
 chan/nonblock.go	pass	
@@ -468,7 +468,7 @@ fixedbugs/bug202.go	pass
 fixedbugs/bug203.go	pass	
 fixedbugs/bug204.go	pass	
 fixedbugs/bug205.go	skip	todo:errorcheck
-fixedbugs/bug206.go	fail	c11: error: expected specifier-qualifier-list before 'FileMode_go_io_fs_package'
+fixedbugs/bug206.go	fail	c11: error: incompatible type for argument 1 of 'go_if_to_vv'
 fixedbugs/bug207.go	pass	
 fixedbugs/bug208.go	skip	todo:errorcheck
 fixedbugs/bug209.go	skip	todo:errorcheck
@@ -641,7 +641,7 @@ fixedbugs/bug384.go	skip	todo:errorcheck
 fixedbugs/bug385_32.go	skip	upstream:build 386 || amd64p32 || arm
 fixedbugs/bug385_64.go	skip	todo:errorcheck
 fixedbugs/bug386.go	skip	todo:errorcheck
-fixedbugs/bug387.go	fail	c11: error: expected specifier-qualifier-list before 'FileMode_go_io_fs_package'
+fixedbugs/bug387.go	fail	c11: error: implicit declaration of function 'Lstat_go_os_package'; did you mean 'Lstat_go_io_fs_package'? [-Wimplicit-functi…
 fixedbugs/bug388.go	skip	todo:errorcheck
 fixedbugs/bug388a.go	skip	todo:errorcheck
 fixedbugs/bug389.go	skip	todo:errorcheck
@@ -923,7 +923,7 @@ fixedbugs/issue15550.go	pass
 fixedbugs/issue15572.go	skip	todo:compiledir
 fixedbugs/issue15585.go	pass	
 fixedbugs/issue15602.go	pass	
-fixedbugs/issue15604.go	fail	c11: error: 'I_PathError_Error_go_io_fs_package' undeclared here (not in a function); did you mean 'I_joinError_Error_go_erro…
+fixedbugs/issue15604.go	pass	
 fixedbugs/issue15609.go	skip	todo:runindir
 fixedbugs/issue15611.go	skip	todo:errorcheck
 fixedbugs/issue15646.go	skip	todo:rundir
@@ -963,7 +963,7 @@ fixedbugs/issue16733.go	pass
 fixedbugs/issue16741.go	pass	
 fixedbugs/issue16760.go	fail	exit: signal: trace/breakpoint trap filc safety error: cannot read pointer with null object.
 fixedbugs/issue16804.go	pass	
-fixedbugs/issue16870.go	fail	c11: error: invalid initializer
+fixedbugs/issue16870.go	pass	
 fixedbugs/issue16948.go	pass	
 fixedbugs/issue16949.go	skip	todo:errorcheck
 fixedbugs/issue16985.go	pass	
@@ -1159,7 +1159,7 @@ fixedbugs/issue23719.go	pass
 fixedbugs/issue23732.go	skip	todo:errorcheck
 fixedbugs/issue23734.go	fail	exit: exit status 2 panic: didn't panic
 fixedbugs/issue23780.go	fail	cc: timeout
-fixedbugs/issue23781.go	fail	cc: timeout
+fixedbugs/issue23781.go	fail	cc: signal: killed
 fixedbugs/issue23812.go	pass	
 fixedbugs/issue23814.go	pass	
 fixedbugs/issue23823.go	skip	todo:errorcheck
@@ -1289,7 +1289,7 @@ fixedbugs/issue29610.go	skip	todo:rundir
 fixedbugs/issue29612.go	skip	todo:runindir
 fixedbugs/issue29735.go	skip	gc:stack-introspection runtime.Callers
 fixedbugs/issue29855.go	skip	todo:errorcheck
-fixedbugs/issue29870.go	fail	c11: error: invalid initializer
+fixedbugs/issue29870.go	pass	
 fixedbugs/issue29870b.go	skip	todo:errorcheck
 fixedbugs/issue29919.go	skip	todo:rundir
 fixedbugs/issue29943.go	pass	
@@ -1335,7 +1335,7 @@ fixedbugs/issue31959.go	skip	todo:rundir
 fixedbugs/issue31987.go	pass	
 fixedbugs/issue32133.go	skip	todo:errorcheck
 fixedbugs/issue32175.go	pass	
-fixedbugs/issue32187.go	fail	c11: error: invalid initializer
+fixedbugs/issue32187.go	pass	
 fixedbugs/issue32288.go	pass	
 fixedbugs/issue32347.go	pass	
 fixedbugs/issue32454.go	pass	
@@ -1497,7 +1497,7 @@ fixedbugs/issue43701.go	pass
 fixedbugs/issue43762.go	skip	todo:errorcheck
 fixedbugs/issue43835.go	fail	exit: exit status 2 panic: FAIL
 fixedbugs/issue43908.go	pass	
-fixedbugs/issue43942.go	fail	c11: error: invalid initializer
+fixedbugs/issue43942.go	fail	exit: exit status 1 2026/10/01 13:49:16 want 5, have <nil>
 fixedbugs/issue43962.go	skip	todo:errorcheck
 fixedbugs/issue4396a.go	pass	
 fixedbugs/issue4396b.go	pass	
@@ -1747,9 +1747,9 @@ fixedbugs/issue56777.go	pass
 fixedbugs/issue56778.go	skip	todo:compiledir
 fixedbugs/issue56923.go	pass	
 fixedbugs/issue5698.go	skip	todo:errorcheck
-fixedbugs/issue56990.go	fail	c11: error: expected specifier-qualifier-list before 'FileMode_go_io_fs_package'
+fixedbugs/issue56990.go	fail	c11: error: implicit declaration of function 'Lstat_go_os_package'; did you mean 'Lstat_go_io_fs_package'? [-Wimplicit-functi…
 fixedbugs/issue5704.go	pass	
-fixedbugs/issue57184.go	fail	c11: error: invalid initializer
+fixedbugs/issue57184.go	fail	exit: exit status 2 panic: reflect.MakeFunc is not supported by gd
 fixedbugs/issue57309.go	pass	
 fixedbugs/issue5753.go	pass	
 fixedbugs/issue5755.go	skip	todo:compiledir
@@ -2162,7 +2162,7 @@ gcstring.go	skip	gc:finalizers runtime.SetFinalizer
 genmeth.go	pass	
 genmeth1.go	fail	gd: unsupported index of func
 genmeth2.go	pass	
-goprint.go	fail	c11: error: invalid initializer
+goprint.go	fail	output: mismatch
 goto.go	skip	todo:errorcheck
 heapsampling.go	skip	gc:memstats runtime.MemProfileRate
 helloworld.go	pass	
@@ -2233,7 +2233,7 @@ ken/cplx2.go	pass
 ken/cplx3.go	pass	
 ken/cplx4.go	pass	
 ken/cplx5.go	pass	
-ken/divconst.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
+ken/divconst.go	pass	
 ken/divmod.go	pass	
 ken/embed.go	pass	
 ken/for.go	pass	
@@ -2243,7 +2243,7 @@ ken/intervar.go	pass
 ken/label.go	pass	
 ken/litfun.go	pass	
 ken/mfunc.go	pass	
-ken/modconst.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
+ken/modconst.go	pass	
 ken/ptrfun.go	pass	
 ken/ptrvar.go	pass	
 ken/range.go	pass	
@@ -2461,7 +2461,7 @@ typeparam/issue39755.go	pass
 typeparam/issue42758.go	pass	
 typeparam/issue44688.go	pass	
 typeparam/issue45547.go	pass	
-typeparam/issue45722.go	fail	c11: error: invalid initializer
+typeparam/issue45722.go	pass	
 typeparam/issue45738.go	pass	
 typeparam/issue45817.go	pass	
 typeparam/issue46461.go	pass	
@@ -2601,7 +2601,7 @@ typeparam/issue51236.go	pass
 typeparam/issue51245.go	pass	
 typeparam/issue51250a.go	skip	todo:rundir
 typeparam/issue51303.go	pass	
-typeparam/issue51355.go	fail	c11: error: conflicting types for 'value'; have 'go_ss *'
+typeparam/issue51355.go	fail	c11: error: incompatible types when assigning to type 'go_ss' from type 'go_ss *'
 typeparam/issue51367.go	skip	todo:rundir
 typeparam/issue51423.go	skip	todo:compiledir
 typeparam/issue51521.go	fail	gd: panic: type parameter T was not substituted
@@ -2670,7 +2670,7 @@ typeparam/min.go	pass
 typeparam/mincheck.go	skip	todo:errorcheck
 typeparam/minimp.go	skip	todo:rundir
 typeparam/mutualimp.go	skip	todo:compiledir
-typeparam/nested.go	fail	c11: error: redefinition of 'go_type_Int_4180790_go_main_package'
+typeparam/nested.go	fail	c11: error: redefinition of 'go_type_Int_4181265_go_main_package'
 typeparam/ordered.go	pass	
 typeparam/orderedmap.go	skip	gc:finalizers runtime.SetFinalizer
 typeparam/orderedmapsimp.go	skip	todo:rundir
@@ -2728,7 +2728,7 @@ wasmexport.go	skip	upstream:build wasm
 wasmexport2.go	skip	upstream:build wasm
 wasmmemsize.go	skip	upstream:build wasm
 weak.go	skip	todo:errorcheck
-winbatch.go	fail	c11: error: expected specifier-qualifier-list before 'FileMode_go_io_fs_package'
+winbatch.go	fail	c11: error: implicit declaration of function 'File_Readdir_go_os_package'; did you mean 'File_Read_go_os_package'? [-Wimplici…
 writebarrier.go	skip	gc:diagnostics -d=wb
 zerodivide.go	pass	
 zerosize.go	fail	exit: exit status 2 panic: FAIL
