@@ -126,6 +126,7 @@ func TestGoRepo(t *testing.T) {
 		results = make(map[string]Status)
 	)
 	evictCache(t)
+	evictGDCache()
 	jobs := make(chan struct{}, parallelism()) // (each case runs compilers, and a program)
 	t.Cleanup(func() {
 		evictCache(t)
@@ -355,7 +356,7 @@ func command(t *testing.T, dir string, timeout time.Duration, name string, args 
 	defer cancel()
 	cmd := exec.CommandContext(ctx, name, args...)
 	cmd.Dir = dir
-	cmd.Env = append(os.Environ(), "GOFLAGS=", "GOWORK=off", "GOTOOLCHAIN=local", "PWD="+dir)
+	cmd.Env = append(os.Environ(), "GOFLAGS=", "GOWORK=off", "GOTOOLCHAIN=local", "PWD="+dir, "GD_CACHE="+gdCache)
 	cmd.WaitDelay = time.Second
 	var buf bytes.Buffer
 	cmd.Stdout = &buf

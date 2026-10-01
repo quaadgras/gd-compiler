@@ -88,12 +88,32 @@ func Build(dir string, test bool) error {
 			}
 		}
 	}
+	cache := cacheDir()
+	if cache != "" {
+		trimCache(cache)
+	}
+	keys := make(map[string]string) // of the packages' C code, see packageKey.
 	for _, pkg := range packages {
 		if !compile[pkg.Path] {
 			continue
 		}
-		if err := compilePackage(escape.Analysis(pkg), compile, byPath); err != nil {
+		pkg = escape.Analysis(pkg)
+		key := ""
+		if cache != "" && pkg.Path != packages[len(packages)-1].Path { // (not the package being built)
+			key = packageKey(pkg, keys)
+			keys[pkg.Path] = key
+		}
+		if key != "" && restorePackage(cache, key, pkg.Path) {
+			registerPackage(pkg) // (for the instances of its generics, in the packages that import it)
+			continue
+		}
+		if err := compilePackage(pkg, compile, byPath); err != nil {
 			return err
+		}
+		if key != "" {
+			if err := storePackage(cache, key, pkg.Path); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -173,6 +193,19 @@ func nativeImports(path string) []string {
 	return imports
 }
 
+// registerPackage returns the closures (and generics) of pkg, as it's compiled, see
+// compiledPackages.
+func registerPackage(pkg source.Package) *Closures {
+	var syntax []*ast.File
+	for _, file := range pkg.Files {
+		syntax = append(syntax, file.Location.Node.(*ast.File))
+	}
+	closures := NewClosures(&pkg.Info, syntax)
+	closures.generics = NewGenerics(pkg.Files)
+	compiledPackages[pkg.Path] = closures
+	return closures
+}
+
 // IsNative reports whether the package with the import path is implemented in C11, by a
 // header in library/go.
 func IsNative(path string) bool {
@@ -230,9 +263,7 @@ func compilePackage(pkg source.Package, compiled map[string]bool, byPath map[str
 		syntax = append(syntax, file.Location.Node.(*ast.File))
 	}
 	typeDefinitions := NewTypeDefs()
-	closures := NewClosures(&pkg.Info, syntax)
-	closures.generics = NewGenerics(pkg.Files)
-	compiledPackages[pkg.Path] = closures
+	closures := registerPackage(pkg)
 	for _, file := range pkg.Files {
 		out, err := os.Create(dir + "/" + filepath.Base(file.FileSet.File(file.Open).Name()) + ".c")
 		if err != nil {

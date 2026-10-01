@@ -26,6 +26,28 @@ import (
 // that it is complete when it exists.
 var folderCache = filepath.Join(os.TempDir(), "gd-conformance-cache")
 
+// gdCache is gd's cache of the C code of packages, in a tmpfs (rather than the user's cache
+// folder), as every version of gd (they change often, when developing it) has its own
+// entries, which are removed when unused for an hour, see [evictGDCache].
+var gdCache = filepath.Join(os.TempDir(), "gd-conformance-gd-cache")
+
+// evictGDCache removes the entries of gd's cache (folders $GD_CACHE/xx/key) unused for an hour.
+func evictGDCache() {
+	recent := time.Now().Add(-time.Hour)
+	prefixes, _ := os.ReadDir(gdCache)
+	for _, prefix := range prefixes {
+		if !prefix.IsDir() {
+			continue
+		}
+		entries, _ := os.ReadDir(filepath.Join(gdCache, prefix.Name()))
+		for _, e := range entries {
+			if info, err := e.Info(); err == nil && info.ModTime().Before(recent) {
+				os.RemoveAll(filepath.Join(gdCache, prefix.Name(), e.Name()))
+			}
+		}
+	}
+}
+
 // cFolders returns the folders (below root) with C files, in a fixed order.
 func cFolders(root string) ([]string, error) {
 	var folders []string
