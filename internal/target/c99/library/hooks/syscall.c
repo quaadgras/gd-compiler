@@ -1,4 +1,13 @@
-// Hooks of package syscall (see library/overlay/syscall), with C11's streams.
+// Hooks of package syscall (see library/overlay/syscall), with C11's streams, and POSIX's
+// memory mappings where there are (whose declarations strict C11 otherwise hides).
+#if defined(__unix__) || defined(__APPLE__)
+#ifndef _DEFAULT_SOURCE
+#define _DEFAULT_SOURCE // (MAP_ANONYMOUS)
+#endif
+#ifndef _DARWIN_C_SOURCE
+#define _DARWIN_C_SOURCE
+#endif
+#endif
 #include <go/syscall.h>
 #include <errno.h>
 #include <stdio.h>
@@ -94,3 +103,28 @@ go_ss S(getenv)(go_ss key) {
     return v ? go_string_new(v) : go_string_new("");
 }
 go_tf S(hasenv)(go_ss key) { return getenv(go_cstring(key)) != NULL; }
+
+#if defined(__unix__) || defined(__APPLE__)
+#include <sys/mman.h>
+#include <unistd.h>
+
+go_ii S(getpagesize)(void) { return (go_ii)sysconf(_SC_PAGESIZE); }
+
+static int go_prot(go_ii prot) { // (as numbered on Linux)
+    return (prot & 1 ? PROT_READ : 0) | (prot & 2 ? PROT_WRITE : 0) | (prot & 4 ? PROT_EXEC : 0);
+}
+
+go_tuple_go_ll_go_ii S(mmap)(go_ii fd, go_i8 offset, go_ii length, go_ii prot, go_ii flags) {
+    int f = (flags & 1 ? MAP_SHARED : 0) | (flags & 2 ? MAP_PRIVATE : 0) | (flags & 0x20 ? MAP_ANONYMOUS : 0);
+    void* p = mmap(NULL, (size_t)length, go_prot(prot), f, (int)fd, (off_t)offset);
+    if (p == MAP_FAILED) return (go_tuple_go_ll_go_ii){ {0}, errno };
+    return (go_tuple_go_ll_go_ii){ { { p }, length, length }, 0 };
+}
+go_ii S(munmap)(go_ll b) { return munmap(b.ptr.ptr, (size_t)b.cap) == 0 ? 0 : errno; }
+go_ii S(mprotect)(go_ll b, go_ii prot) { return mprotect(b.ptr.ptr, (size_t)b.len, go_prot(prot)) == 0 ? 0 : errno; }
+#else
+go_ii S(getpagesize)(void) { return 4096; }
+go_tuple_go_ll_go_ii S(mmap)(go_ii fd, go_i8 offset, go_ii length, go_ii prot, go_ii flags) { return (go_tuple_go_ll_go_ii){ {0}, ENOSYS }; }
+go_ii S(munmap)(go_ll b) { return ENOSYS; }
+go_ii S(mprotect)(go_ll b, go_ii prot) { return ENOSYS; }
+#endif

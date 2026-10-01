@@ -1,0 +1,2 @@
+Copied unmodified from $GOROOT/src/cmd/compile/internal/syntax (go1.27.1), without its tests,
+for gd to report syntax errors as gc does (see internal/parser/errors.go). See LICENSE.

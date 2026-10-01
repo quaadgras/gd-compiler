@@ -66,7 +66,7 @@ blank.go	pass
 blank1.go	fail	errorcheck: blank1.go:10: missing error "invalid package name"
 bloop.go	skip	gc:diagnostics -m=2
 bom.go	skip	todo:runoutput
-bombad.go	fail	errorcheck: bombad.go:14: no match for "BOM" in: bombad.go:14:2: expected statement, found 'ILLEGAL'; bombad.go:14:2: illegal byte o…
+bombad.go	pass	
 bounds.go	skip	gc:diagnostics -m
 cannotassign.go	pass	
 chan/doubleselect.go	pass	
@@ -91,7 +91,7 @@ chan/zerosize.go	pass
 chancap.go	pass	
 chanlinear.go	pass	
 char_lit.go	pass	
-char_lit1.go	fail	errorcheck: unmatched error: char_lit1.go:16:6: malformed constant: '\ud800'
+char_lit1.go	pass	
 checkbce.go	skip	gc:diagnostics -d=ssa/check_bce/debug=3
 clear.go	pass	
 clearfat.go	skip	todo:runoutput
@@ -297,7 +297,7 @@ fixedbugs/bug010.go	pass
 fixedbugs/bug011.go	pass	
 fixedbugs/bug012.go	pass	
 fixedbugs/bug013.go	pass	
-fixedbugs/bug014.go	fail	errorcheck: unmatched error: bug014.go:10:18: malformed constant: '\0'
+fixedbugs/bug014.go	pass	
 fixedbugs/bug015.go	pass	
 fixedbugs/bug016.go	pass	
 fixedbugs/bug017.go	pass	
@@ -320,7 +320,7 @@ fixedbugs/bug046.go	pass
 fixedbugs/bug047.go	pass	
 fixedbugs/bug048.go	pass	
 fixedbugs/bug049.go	pass	
-fixedbugs/bug050.go	fail	errorcheck: unmatched error: bug050.go:7:10: expected ';', found '('
+fixedbugs/bug050.go	pass	
 fixedbugs/bug051.go	pass	
 fixedbugs/bug052.go	pass	
 fixedbugs/bug053.go	pass	
@@ -338,7 +338,7 @@ fixedbugs/bug064.go	pass
 fixedbugs/bug065.go	pass	
 fixedbugs/bug066.go	pass	
 fixedbugs/bug067.go	pass	
-fixedbugs/bug068.go	fail	errorcheck: unmatched error: bug068.go:12:11: malformed constant: "\'"
+fixedbugs/bug068.go	pass	
 fixedbugs/bug069.go	pass	
 fixedbugs/bug070.go	pass	
 fixedbugs/bug071.go	pass	
@@ -387,7 +387,7 @@ fixedbugs/bug117.go	pass
 fixedbugs/bug118.go	pass	
 fixedbugs/bug119.go	pass	
 fixedbugs/bug120.go	pass	
-fixedbugs/bug121.go	fail	errorcheck: bug121.go:12: no match for "unexpected comma" in: bug121.go:12:3: expected ';', found ','; bug121.go:12:2: undefined: f
+fixedbugs/bug121.go	pass	
 fixedbugs/bug122.go	pass	
 fixedbugs/bug123.go	pass	
 fixedbugs/bug126.go	pass	
@@ -400,7 +400,7 @@ fixedbugs/bug132.go	pass
 fixedbugs/bug133.go	skip	todo:errorcheck
 fixedbugs/bug13343.go	pass	
 fixedbugs/bug135.go	pass	
-fixedbugs/bug136.go	fail	errorcheck: unmatched error: bug136.go:16:2: label L1 declared and not used
+fixedbugs/bug136.go	pass	
 fixedbugs/bug137.go	pass	
 fixedbugs/bug139.go	pass	
 fixedbugs/bug140.go	pass	
@@ -425,12 +425,12 @@ fixedbugs/bug158.go	pass
 fixedbugs/bug159.go	pass	
 fixedbugs/bug160.go	skip	todo:rundir
 fixedbugs/bug161.go	pass	
-fixedbugs/bug163.go	fail	errorcheck: bug163.go:9: no match for "invalid character .* in identifier" in: bug163.go:9:6: expected type, found 'ILLEGAL'; bug163…
+fixedbugs/bug163.go	pass	
 fixedbugs/bug164.go	pass	
 fixedbugs/bug165.go	pass	
 fixedbugs/bug167.go	pass	
 fixedbugs/bug168.go	pass	
-fixedbugs/bug169.go	fail	errorcheck: unmatched error: bug169.go:8:9: malformed constant: ''
+fixedbugs/bug169.go	pass	
 fixedbugs/bug170.go	pass	
 fixedbugs/bug171.go	pass	
 fixedbugs/bug172.go	pass	
@@ -440,7 +440,7 @@ fixedbugs/bug175.go	pass
 fixedbugs/bug176.go	pass	
 fixedbugs/bug177.go	pass	
 fixedbugs/bug178.go	pass	
-fixedbugs/bug179.go	fail	errorcheck: unmatched error: bug179.go:18:1: label L1 declared and not used
+fixedbugs/bug179.go	pass	
 fixedbugs/bug180.go	pass	
 fixedbugs/bug181.go	pass	
 fixedbugs/bug182.go	pass	
@@ -486,7 +486,7 @@ fixedbugs/bug223.go	pass
 fixedbugs/bug224.go	pass	
 fixedbugs/bug225.go	pass	
 fixedbugs/bug227.go	pass	
-fixedbugs/bug228.go	fail	errorcheck: unmatched error: bug228.go:11:30: expected type, found ')'
+fixedbugs/bug228.go	pass	
 fixedbugs/bug228a.go	pass	
 fixedbugs/bug229.go	pass	
 fixedbugs/bug230.go	pass	
@@ -531,7 +531,7 @@ fixedbugs/bug269.go	pass
 fixedbugs/bug271.go	pass	
 fixedbugs/bug272.go	pass	
 fixedbugs/bug273.go	pass	
-fixedbugs/bug274.go	fail	errorcheck: bug274.go:23: no match for "statement" in: bug274.go:23:3: label L0 declared and not used
+fixedbugs/bug274.go	pass	
 fixedbugs/bug275.go	pass	
 fixedbugs/bug276.go	pass	
 fixedbugs/bug277.go	pass	
@@ -557,7 +557,7 @@ fixedbugs/bug296.go	pass
 fixedbugs/bug297.go	pass	
 fixedbugs/bug298.go	pass	
 fixedbugs/bug299.go	pass	
-fixedbugs/bug300.go	fail	errorcheck: unmatched error: bug300.go:25:8: invalid use of [...] array (outside a composite literal)
+fixedbugs/bug300.go	pass	
 fixedbugs/bug301.go	pass	
 fixedbugs/bug303.go	pass	
 fixedbugs/bug304.go	pass	
@@ -604,7 +604,7 @@ fixedbugs/bug345.go	skip	todo:errorcheck
 fixedbugs/bug346.go	pass	
 fixedbugs/bug347.go	skip	gc:stack-introspection runtime.Caller
 fixedbugs/bug348.go	skip	gc:stack-introspection runtime.Caller
-fixedbugs/bug349.go	fail	errorcheck: bug349.go:12: no match for "unexpected literal 2.01|expected ';' or '}' or newline|not enough arguments to return" in: b…
+fixedbugs/bug349.go	pass	
 fixedbugs/bug350.go	pass	
 fixedbugs/bug351.go	pass	
 fixedbugs/bug352.go	pass	
@@ -642,7 +642,7 @@ fixedbugs/bug385_32.go	skip	upstream:build 386 || amd64p32 || arm
 fixedbugs/bug385_64.go	fail	errorcheck: bug385_64.go:16496: missing error "stack frame too large"
 fixedbugs/bug386.go	pass	
 fixedbugs/bug387.go	pass	
-fixedbugs/bug388.go	fail	errorcheck: unmatched error: bug388.go:13:21: undefined: runtime.UintType
+fixedbugs/bug388.go	pass	
 fixedbugs/bug388a.go	pass	
 fixedbugs/bug389.go	pass	
 fixedbugs/bug390.go	pass	
@@ -686,7 +686,7 @@ fixedbugs/bug431.go	pass
 fixedbugs/bug432.go	pass	
 fixedbugs/bug433.go	pass	
 fixedbugs/bug434.go	pass	
-fixedbugs/bug435.go	fail	errorcheck: unmatched error: bug435.go:15:48: expected ')', found 'EOF'
+fixedbugs/bug435.go	pass	
 fixedbugs/bug436.go	pass	
 fixedbugs/bug437.go	skip	todo:rundir
 fixedbugs/bug438.go	pass	
@@ -814,15 +814,15 @@ fixedbugs/issue11286.go	pass
 fixedbugs/issue11326.go	pass	
 fixedbugs/issue11326b.go	pass	
 fixedbugs/issue11354.go	pass	
-fixedbugs/issue11359.go	fail	errorcheck: issue11359.go:11: no match for "identifier cannot begin with digit" in: issue11359.go:11:5: expected 'IDENT', found 'ILL…
+fixedbugs/issue11359.go	pass	
 fixedbugs/issue11361.go	pass	
 fixedbugs/issue11362.go	fail	errorcheck: issue11362.go:11: no match for "non-canonical import path .unicode//utf8. \\(should be .unicode/utf8.\\)" in: issue11362…
 fixedbugs/issue11369.go	pass	
 fixedbugs/issue11370.go	pass	
 fixedbugs/issue11371.go	pass	
 fixedbugs/issue11590.go	pass	
-fixedbugs/issue11610.go	fail	errorcheck: issue11610.go:11: no match for "invalid character U\\+003F '\\?'|invalid character 0x? in input file" in: issue11610.go:…
-fixedbugs/issue11610a.go	fail	errorcheck: unmatched error: -: issue11610a.go:11:7: invalid import path:
+fixedbugs/issue11610.go	pass	
+fixedbugs/issue11610a.go	fail	errorcheck: unmatched error: issue11610a.go:11:7: invalid import path:
 fixedbugs/issue11614.go	pass	
 fixedbugs/issue11656.go	skip	todo:runindir
 fixedbugs/issue11674.go	pass	
@@ -853,16 +853,16 @@ fixedbugs/issue13160.go	fail	exit: exit status 2 panic: bad pointer read 0x?!
 fixedbugs/issue13162.go	pass	
 fixedbugs/issue13169.go	pass	
 fixedbugs/issue13171.go	pass	
-fixedbugs/issue13248.go	fail	errorcheck: unmatched error: issue13248.go:12:5: undefined: foo
+fixedbugs/issue13248.go	pass	
 fixedbugs/issue13261.go	pass	
 fixedbugs/issue13262.go	pass	
 fixedbugs/issue13263.go	pass	
 fixedbugs/issue13265.go	skip	gc:flags -race
-fixedbugs/issue13266.go	fail	errorcheck: issue13266.go:10: no match for "unexpected %|package name must be an identifier|after package clause|expected declaratio…
+fixedbugs/issue13266.go	pass	
 fixedbugs/issue13268.go	skip	gc:build gc
-fixedbugs/issue13273.go	fail	errorcheck: issue13273.go:51: no match for "unexpected <-, expected chan|expecting {" in: issue13273.go:51:4: expected 'chan'; issue…
-fixedbugs/issue13274.go	fail	errorcheck: unmatched error: issue13274.go:11:58: expected ';', found 'EOF'
-fixedbugs/issue13319.go	fail	errorcheck: issue13319.go:12: no match for "expecting \\)|possibly missing comma or \\)" in: issue13319.go:12:72: missing ',' before…
+fixedbugs/issue13273.go	pass	
+fixedbugs/issue13274.go	pass	
+fixedbugs/issue13319.go	pass	
 fixedbugs/issue13337.go	pass	
 fixedbugs/issue13365.go	pass	
 fixedbugs/issue13415.go	pass	
@@ -878,15 +878,15 @@ fixedbugs/issue13779.go	pass
 fixedbugs/issue13799.go	skip	gc:diagnostics -m
 fixedbugs/issue13821.go	pass	
 fixedbugs/issue13821b.go	pass	
-fixedbugs/issue14006.go	fail	errorcheck: issue14006.go:24: no match for "unexpected :|expected .*;.* or .*}.* or newline|value computed is not used" in: issue140…
+fixedbugs/issue14006.go	pass	
 fixedbugs/issue14010.go	pass	
 fixedbugs/issue14136.go	pass	
 fixedbugs/issue14164.go	skip	todo:compiledir
 fixedbugs/issue14321.go	pass	
 fixedbugs/issue14331.go	skip	todo:compiledir
 fixedbugs/issue14405.go	pass	
-fixedbugs/issue14520.go	fail	errorcheck: issue14520.go:9: no match for "unexpected newline" in: issue14520.go:9:49: missing ',' before newline in parameter list
-fixedbugs/issue14520a.go	fail	errorcheck: unmatched error: -: issue14520a.go:9:37: invalid import path:
+fixedbugs/issue14520.go	pass	
+fixedbugs/issue14520a.go	fail	errorcheck: unmatched error: bogus
 fixedbugs/issue14540.go	pass	
 fixedbugs/issue14553.go	pass	
 fixedbugs/issue14591.go	pass	
@@ -898,7 +898,7 @@ fixedbugs/issue14725.go	pass
 fixedbugs/issue14729.go	pass	
 fixedbugs/issue14988.go	pass	
 fixedbugs/issue14999.go	skip	gc:flags -+
-fixedbugs/issue15002.go	fail	exit: exit status 2 panic: 38
+fixedbugs/issue15002.go	pass	
 fixedbugs/issue15013.go	pass	
 fixedbugs/issue15039.go	pass	
 fixedbugs/issue15042.go	pass	
@@ -925,7 +925,7 @@ fixedbugs/issue15585.go	pass
 fixedbugs/issue15602.go	pass	
 fixedbugs/issue15604.go	pass	
 fixedbugs/issue15609.go	skip	todo:runindir
-fixedbugs/issue15611.go	fail	errorcheck: issue15611.go:11: no match for "newline in character literal|newline in rune literal" in: issue15611.go:11: rune literal…
+fixedbugs/issue15611.go	fail	errorcheck: unmatched error: issue15611.go:11: malformed constant: '
 fixedbugs/issue15646.go	skip	todo:rundir
 fixedbugs/issue15722.go	pass	
 fixedbugs/issue15733.go	pass	
@@ -974,7 +974,7 @@ fixedbugs/issue17111.go	pass
 fixedbugs/issue17194.go	pass	
 fixedbugs/issue17270.go	pass	
 fixedbugs/issue17318.go	skip	gc:diagnostics -m
-fixedbugs/issue17328.go	fail	errorcheck: unmatched error: issue17328.go:13:41: expected ';', found 'EOF'
+fixedbugs/issue17328.go	pass	
 fixedbugs/issue17381.go	skip	gc:stack-introspection runtime.Callers
 fixedbugs/issue17449.go	skip	gc:flags -race
 fixedbugs/issue17551.go	pass	
@@ -988,7 +988,7 @@ fixedbugs/issue17752.go	pass
 fixedbugs/issue17758.go	pass	
 fixedbugs/issue17918.go	pass	
 fixedbugs/issue18089.go	pass	
-fixedbugs/issue18092.go	fail	errorcheck: issue18092.go:14: no match for "expected :" in: issue18092.go:14:38: expected ':', found newline
+fixedbugs/issue18092.go	pass	
 fixedbugs/issue18149.go	skip	gc:stack-introspection runtime.Caller
 fixedbugs/issue18231.go	pass	
 fixedbugs/issue18331.go	skip	gc:flags -std
@@ -1003,13 +1003,13 @@ fixedbugs/issue18640.go	pass
 fixedbugs/issue18655.go	pass	
 fixedbugs/issue18661.go	pass	
 fixedbugs/issue18725.go	pass	
-fixedbugs/issue18747.go	fail	errorcheck: issue18747.go:26: no match for "unexpected newline, expected { after if clause" in: issue18747.go:26:66: unexpected newl…
+fixedbugs/issue18747.go	pass	
 fixedbugs/issue18808.go	pass	
 fixedbugs/issue18882.go	fail	errorcheck: issue18882.go:11: missing error "usage: //go:cgo_ldflag"
 fixedbugs/issue18895.go	skip	gc:diagnostics -m
 fixedbugs/issue18906.go	pass	
 fixedbugs/issue18911.go	skip	todo:rundir
-fixedbugs/issue18915.go	fail	errorcheck: issue18915.go:13: no match for "cannot use a := 10 as value|expected .*;|declared and not used" in: issue18915.go:13:5: …
+fixedbugs/issue18915.go	pass	
 fixedbugs/issue18994.go	pass	
 fixedbugs/issue19012.go	pass	
 fixedbugs/issue19028.go	skip	todo:rundir
@@ -1037,7 +1037,7 @@ fixedbugs/issue19555.go	pass
 fixedbugs/issue19610.go	pass	
 fixedbugs/issue19632.go	pass	
 fixedbugs/issue19658.go	skip	gc:toolchain
-fixedbugs/issue19667.go	fail	errorcheck: unmatched error: issue19667.go:12:12: undefined: http
+fixedbugs/issue19667.go	pass	
 fixedbugs/issue19671.go	pass	
 fixedbugs/issue19678.go	pass	
 fixedbugs/issue19679.go	pass	
@@ -1079,7 +1079,7 @@ fixedbugs/issue20739.go	fail	c11: error: size of array 'a' exceeds maximum objec
 fixedbugs/issue20749.go	pass	
 fixedbugs/issue20780.go	fail	errorcheck: issue20780.go:14: missing error "stack frame too large"
 fixedbugs/issue20780b.go	skip	gc:build cgo && linux && amd64
-fixedbugs/issue20789.go	fail	errorcheck: issue20789.go:13: no match for "unexpected name u" in: issue20789.go:13:13: expected channel type; issue20789.go:13:21: …
+fixedbugs/issue20789.go	pass	
 fixedbugs/issue20811.go	pass	
 fixedbugs/issue20812.go	pass	
 fixedbugs/issue20813.go	pass	
@@ -1107,7 +1107,7 @@ fixedbugs/issue21988.go	pass
 fixedbugs/issue22063.go	pass	
 fixedbugs/issue22076.go	pass	
 fixedbugs/issue22083.go	skip	gc:import runtime/debug
-fixedbugs/issue22164.go	fail	errorcheck: issue22164.go:12: no match for "unexpected newline" in: issue22164.go:12:42: missing ',' before newline in argument list…
+fixedbugs/issue22164.go	pass	
 fixedbugs/issue22198.go	pass	
 fixedbugs/issue22200.go	fail	errorcheck: issue22200.go:16: missing error "stack frame too large"
 fixedbugs/issue22200b.go	fail	errorcheck: issue22200b.go:11: missing error "stack frame too large"
@@ -1119,7 +1119,7 @@ fixedbugs/issue22351.go	pass
 fixedbugs/issue22389.go	pass	
 fixedbugs/issue22429.go	pass	
 fixedbugs/issue22458.go	pass	
-fixedbugs/issue22581.go	fail	errorcheck: issue22581.go:10: no match for "unexpected \\)" in: issue22581.go:10:13: expected ';', found ')'; issue22581.go:10:14: e…
+fixedbugs/issue22581.go	pass	
 fixedbugs/issue22605.go	pass	
 fixedbugs/issue22660.go	skip	gc:build !js && !wasip1 && gc
 fixedbugs/issue22662.go	skip	gc:stack-introspection runtime.Caller
@@ -1151,10 +1151,10 @@ fixedbugs/issue23522.go	pass
 fixedbugs/issue23536.go	pass	
 fixedbugs/issue23545.go	pass	
 fixedbugs/issue23546.go	pass	
-fixedbugs/issue23586.go	fail	errorcheck: unmatched error: issue23586.go:20:6: declared and not used: i
-fixedbugs/issue23587.go	fail	errorcheck: issue23587.go:14: no match for "unexpected ~ at end of statement" in: issue23587.go:14:8: expected ';', found '~'
+fixedbugs/issue23586.go	fail	errorcheck: unmatched error: issue23586.go:15:2: "fmt" imported and not used
+fixedbugs/issue23587.go	pass	
 fixedbugs/issue23609.go	pass	
-fixedbugs/issue23664.go	fail	errorcheck: issue23664.go:12: no match for "unexpected name true, expected {" in: issue23664.go:12:9: expected ';', found true
+fixedbugs/issue23664.go	pass	
 fixedbugs/issue23719.go	pass	
 fixedbugs/issue23732.go	pass	
 fixedbugs/issue23734.go	pass	
@@ -1309,7 +1309,7 @@ fixedbugs/issue30606b.go	pass
 fixedbugs/issue30659.go	skip	todo:compiledir
 fixedbugs/issue30679.go	pass	
 fixedbugs/issue30709.go	pass	
-fixedbugs/issue30722.go	fail	errorcheck: unmatched error: issue30722.go:12:6: malformed constant: 1_
+fixedbugs/issue30722.go	pass	
 fixedbugs/issue30862.go	skip	todo:runindir
 fixedbugs/issue30898.go	skip	gc:diagnostics -m
 fixedbugs/issue30907.go	skip	todo:compiledir
@@ -1333,7 +1333,7 @@ fixedbugs/issue31782.go	pass
 fixedbugs/issue31915.go	skip	gc:flags -d=ssa/check/on
 fixedbugs/issue31959.go	skip	todo:rundir
 fixedbugs/issue31987.go	pass	
-fixedbugs/issue32133.go	fail	errorcheck: issue32133.go:10: no match for "newline in string" in: issue32133.go:10:8: string literal not terminated; issue32133.go:…
+fixedbugs/issue32133.go	fail	errorcheck: unmatched error: issue32133.go:10:8: string literal not terminated
 fixedbugs/issue32175.go	pass	
 fixedbugs/issue32187.go	pass	
 fixedbugs/issue32288.go	pass	
@@ -1359,7 +1359,7 @@ fixedbugs/issue33275.go	skip	upstream:skip
 fixedbugs/issue33275_run.go	skip	gc:toolchain
 fixedbugs/issue33308.go	pass	
 fixedbugs/issue33355.go	pass	
-fixedbugs/issue33386.go	fail	errorcheck: issue33386.go:26: missing error "expected expression|expected operand"
+fixedbugs/issue33386.go	pass	
 fixedbugs/issue33438.go	pass	
 fixedbugs/issue33460.go	pass	
 fixedbugs/issue33555.go	skip	gc:toolchain
@@ -1502,7 +1502,7 @@ fixedbugs/issue43962.go	skip	todo:errorcheck
 fixedbugs/issue4396a.go	pass	
 fixedbugs/issue4396b.go	pass	
 fixedbugs/issue4399.go	pass	
-fixedbugs/issue4405.go	fail	errorcheck: unmatched error: issue4405.go:15:3: expected ')', found 'EOF'
+fixedbugs/issue4405.go	pass	
 fixedbugs/issue44266.go	pass	
 fixedbugs/issue4429.go	pass	
 fixedbugs/issue44325.go	skip	todo:compiledir
@@ -1586,7 +1586,7 @@ fixedbugs/issue4734.go	pass
 fixedbugs/issue4748.go	pass	
 fixedbugs/issue4752.go	pass	
 fixedbugs/issue47712.go	pass	
-fixedbugs/issue4776.go	fail	errorcheck: issue4776.go:9: no match for "package statement must be first|package clause" in: issue4776.go:9:1: expected 'package', …
+fixedbugs/issue4776.go	pass	
 fixedbugs/issue47771.go	pass	
 fixedbugs/issue4785.go	pass	
 fixedbugs/issue47928.go	skip	gc:goexperiment fieldtrack
@@ -1631,7 +1631,7 @@ fixedbugs/issue49240.go	pass
 fixedbugs/issue49249.go	skip	gc:flags -l
 fixedbugs/issue49282.go	pass	
 fixedbugs/issue4932.go	skip	todo:compiledir
-fixedbugs/issue49368.go	fail	errorcheck: issue49368.go:10: no match for "embedding non-interface type int requires go1\\.18 or later \\(-lang was set to go1\\.17…
+fixedbugs/issue49368.go	pass	
 fixedbugs/issue49378.go	pass	
 fixedbugs/issue49512.go	pass	
 fixedbugs/issue49592.go	pass	
@@ -1659,7 +1659,7 @@ fixedbugs/issue51291.go	skip	todo:compiledir
 fixedbugs/issue51401.go	skip	gc:stack-introspection runtime.Callers
 fixedbugs/issue51437.go	pass	
 fixedbugs/issue51475.go	pass	
-fixedbugs/issue51531.go	fail	errorcheck: issue51531.go:11: no match for "type parameter requires go1\\.18 or later \\(-lang was set to go1\\.17; check go.mod\\)"…
+fixedbugs/issue51531.go	pass	
 fixedbugs/issue5162.go	skip	todo:runoutput
 fixedbugs/issue5172.go	pass	
 fixedbugs/issue51733.go	skip	gc:build cgo
@@ -1823,8 +1823,8 @@ fixedbugs/issue6298.go	pass
 fixedbugs/issue63333.go	skip	gc:goexperiment fieldtrack
 fixedbugs/issue63436.go	pass	
 fixedbugs/issue63462.go	pass	
-fixedbugs/issue63489a.go	fail	errorcheck: issue63489a.go:18: no match for "file declares //go:build go1.21" in: issue63489a.go:18:16: cannot range over 10 (untype…
-fixedbugs/issue63489b.go	fail	errorcheck: issue63489b.go:18: no match for "file declares //go:build go1.21" in: issue63489b.go:18:16: cannot range over 10 (untype…
+fixedbugs/issue63489a.go	pass	
+fixedbugs/issue63489b.go	pass	
 fixedbugs/issue63490.go	pass	
 fixedbugs/issue63505.go	pass	
 fixedbugs/issue63657.go	pass	
@@ -1984,7 +1984,7 @@ fixedbugs/issue7525e.go	pass
 fixedbugs/issue75278.go	skip	gc:diagnostics -m=2
 fixedbugs/issue75327.go	pass	
 fixedbugs/issue75365.go	pass	
-fixedbugs/issue7538a.go	fail	errorcheck: issue7538a.go:14: no match for "not defined|undefined label" in: issue7538a.go:14:7: label _ not declared
+fixedbugs/issue7538a.go	pass	
 fixedbugs/issue7538b.go	pass	
 fixedbugs/issue7547.go	pass	
 fixedbugs/issue7550.go	pass	
@@ -2045,7 +2045,7 @@ fixedbugs/issue79274a.go	skip	todo:compiledir
 fixedbugs/issue7944.go	pass	
 fixedbugs/issue79762.go	skip	gc:import runtime/debug
 fixedbugs/issue79812.go	pass	
-fixedbugs/issue79874.go	fail	exit: exit status 2 panic: 38
+fixedbugs/issue79874.go	pass	
 fixedbugs/issue79886.go	pass	
 fixedbugs/issue79887.go	pass	
 fixedbugs/issue79909.go	pass	
@@ -2100,7 +2100,7 @@ fixedbugs/issue8475.go	pass
 fixedbugs/issue8501.go	pass	
 fixedbugs/issue8507.go	pass	
 fixedbugs/issue8606.go	pass	
-fixedbugs/issue8606b.go	fail	exit: exit status 2 panic: 38
+fixedbugs/issue8606b.go	pass	
 fixedbugs/issue8612.go	pass	
 fixedbugs/issue8613.go	pass	
 fixedbugs/issue8620.go	pass	
@@ -2163,7 +2163,7 @@ genmeth.go	pass
 genmeth1.go	pass	
 genmeth2.go	pass	
 goprint.go	pass	
-goto.go	fail	errorcheck: goto.go:42: no match for "goto L jumps over declaration of x at goto.go:43|goto jumps over declaration" in: goto.go:42:7…
+goto.go	pass	
 heapsampling.go	skip	gc:memstats runtime.MemProfileRate
 helloworld.go	pass	
 if.go	pass	
@@ -2171,7 +2171,7 @@ import.go	pass
 import1.go	pass	
 import2.go	skip	todo:compiledir
 import4.go	skip	todo:errorcheck
-import5.go	fail	errorcheck: unmatched error: import5.go:13:10: could not import fmt (no metadata for fmt)
+import5.go	pass	
 import6.go	fail	errorcheck: import6.go:38: no match for "import path cannot be absolute path|not used" in: import6.go:38:8: could not import /foo (n…
 index.go	skip	upstream:skip
 index0.go	skip	todo:runoutput
@@ -2263,8 +2263,8 @@ ken/sliceslice.go	pass
 ken/string.go	pass	
 ken/strvar.go	pass	
 known_bits.go	skip	gc:diagnostics -d=ssa/known_bits/debug=1
-label.go	fail	errorcheck: label.go:16: no match for "label .*L1.* defined and not used" in: label.go:16:1: label L1 declared and not used
-label1.go	fail	errorcheck: label1.go:18: no match for "continue is not in a loop$|continue statement not within for" in: label1.go:18:3: continue n…
+label.go	pass	
+label1.go	pass	
 linkmain.go	skip	upstream:build ignore
 linkmain_run.go	skip	gc:toolchain
 linkname.go	skip	gc:diagnostics -m
@@ -2361,7 +2361,7 @@ rotate2.go	skip	todo:runoutput
 rotate3.go	skip	todo:runoutput
 rune.go	pass	
 runtime.go	fail	errorcheck: runtime.go:20: no match for "unexported|undefined" in: runtime.go:20:10: name printbool not exported by package runtime
-shift1.go	fail	errorcheck: shift1.go:47: no match for "non-integer|cannot use.*as type int" in: shift1.go:47:19: invalid operation: shifted operand…
+shift1.go	fail	errorcheck: shift1.go:47: no match for "non-integer|cannot use.*as type int" in: shift1.go:47:11: cannot use complex(1 << s, 3) (val…
 shift2.go	pass	
 shift3.go	pass	
 sieve.go	pass	
@@ -2388,31 +2388,31 @@ string_lit.go	pass
 stringrange.go	pass	
 struct0.go	pass	
 switch.go	pass	
-switch2.go	fail	errorcheck: switch2.go:14: no match for "expecting := or = or : or comma|expected :" in: switch2.go:14:8: expected ':', found ';'; s…
+switch2.go	pass	
 switch3.go	pass	
 switch4.go	pass	
 switch5.go	pass	
 switch6.go	pass	
 switch7.go	pass	
-syntax/chan.go	fail	errorcheck: chan.go:11: no match for "unexpected .*}.* in channel type|missing channel element type" in: chan.go:11:1: expected type…
-syntax/chan1.go	fail	errorcheck: chan1.go:13: no match for "cannot use c <- v as value|send statement used as value" in: chan1.go:13:5: expected boolean …
-syntax/composite.go	fail	errorcheck: composite.go:10: no match for "need trailing comma before newline in composite literal|possibly missing comma or }" in: …
-syntax/ddd.go	fail	errorcheck: ddd.go:10: no match for "unexpected literal \\.3, expected name or \\(" in: ddd.go:10:6: expected selector or type asser…
-syntax/else.go	fail	errorcheck: else.go:11: no match for "else must be followed by if or statement block|expected .if. or .{." in: else.go:11:9: expecte…
+syntax/chan.go	pass	
+syntax/chan1.go	pass	
+syntax/composite.go	pass	
+syntax/ddd.go	pass	
+syntax/else.go	pass	
 syntax/if.go	pass	
-syntax/import.go	fail	errorcheck: import.go:10: no match for "unexpected comma" in: import.go:10:6: expected ';', found ','; import.go:10:6: expected ';',…
-syntax/initvar.go	fail	errorcheck: initvar.go:12: no match for "var declaration not allowed in switch initializer" in: initvar.go:12:9: expected '{', found…
-syntax/semi1.go	fail	errorcheck: unmatched error: semi1.go:14:2: expected ';', found 'EOF'
-syntax/semi2.go	fail	errorcheck: unmatched error: semi2.go:11:2: expected '}', found '{'
-syntax/semi3.go	fail	errorcheck: unmatched error: semi3.go:14:2: expected ';', found 'EOF'
-syntax/semi4.go	fail	errorcheck: semi4.go:11: no match for "unexpected {, expected for loop condition|expecting .*{.* after for clause" in: semi4.go:11:2…
-syntax/semi5.go	fail	errorcheck: unmatched error: semi5.go:13:2: expected ';', found 'EOF'
-syntax/semi6.go	fail	errorcheck: semi6.go:9: no match for "newline in type declaration" in: semi6.go:9:47: expected type, found newline
-syntax/semi7.go	fail	errorcheck: semi7.go:11: no match for "unexpected semicolon or newline before .?else.?|unexpected keyword else" in: semi7.go:11:2: e…
-syntax/topexpr.go	fail	errorcheck: topexpr.go:14: missing error "non-declaration statement outside function body|expected declaration"
-syntax/typesw.go	fail	errorcheck: typesw.go:10: no match for "invalid variable name|cannot use .* as value" in: typesw.go:10:2: invalid syntax tree: incor…
-syntax/vareq.go	fail	errorcheck: vareq.go:10: no match for "unexpected { at end of statement|expected ';' or '}' or newline" in: vareq.go:10:25: expected…
-syntax/vareq1.go	fail	errorcheck: vareq1.go:9: no match for "unexpected { at end of statement|unexpected { after top level declaration|expected ';' or new…
+syntax/import.go	pass	
+syntax/initvar.go	pass	
+syntax/semi1.go	pass	
+syntax/semi2.go	pass	
+syntax/semi3.go	pass	
+syntax/semi4.go	pass	
+syntax/semi5.go	pass	
+syntax/semi6.go	pass	
+syntax/semi7.go	pass	
+syntax/topexpr.go	pass	
+syntax/typesw.go	pass	
+syntax/vareq.go	pass	
+syntax/vareq1.go	pass	
 tailcall.go	skip	gc:diagnostics -d=tailcall=1
 tighten.go	skip	upstream:build arm64
 tinyfin.go	skip	gc:finalizers runtime.SetFinalizer

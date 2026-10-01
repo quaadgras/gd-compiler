@@ -172,15 +172,40 @@ func Getpid() int                    { return 1 }
 func Getppid() int                   { return 0 }
 func Getuid() int                    { return 0 }
 func Getgid() int                    { return 0 }
-func Getpagesize() int               { return 4096 }
+func Getpagesize() int               { return getpagesize() }
 func Kill(pid int, sig Signal) error { return ENOSYS }
 func Exit(code int)                  { panic("syscall.Exit is not supported by gd") }
 
+func getpagesize() int
+func mmap(fd int, offset int64, length int, prot int, flags int) (data []byte, errno int)
+func munmap(b []byte) int
+func mprotect(b []byte, prot int) int
+
+// Mmap maps memory (on POSIX systems, see library/hooks/syscall.c).
 func Mmap(fd int, offset int64, length int, prot int, flags int) (data []byte, err error) {
-	return nil, ENOSYS
+	if length <= 0 {
+		return nil, EINVAL
+	}
+	data, errno := mmap(fd, offset, length, prot, flags)
+	if errno != 0 {
+		return nil, Errno(errno)
+	}
+	return data, nil
 }
-func Munmap(b []byte) error                                        { return ENOSYS }
-func Mprotect(b []byte, prot int) error                            { return ENOSYS }
+
+func Munmap(b []byte) error {
+	if errno := munmap(b); errno != 0 {
+		return Errno(errno)
+	}
+	return nil
+}
+
+func Mprotect(b []byte, prot int) error {
+	if errno := mprotect(b, prot); errno != 0 {
+		return Errno(errno)
+	}
+	return nil
+}
 func Syscall(trap, a1, a2, a3 uintptr) (r1, r2 uintptr, err Errno) { return 0, 0, ENOSYS }
 func Syscall6(trap, a1, a2, a3, a4, a5, a6 uintptr) (r1, r2 uintptr, err Errno) {
 	return 0, 0, ENOSYS

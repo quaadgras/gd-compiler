@@ -61,15 +61,32 @@ func (c99 Target) equalPtrFunc(t types.Type) string {
 	c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
 		var terms []string
 		switch typ := t.Underlying().(type) {
-		case *types.Struct:
+		case *types.Struct: // (as gc orders them: comparisons that may panic in order, and between them cheap ones before calls)
+			var calls []string
+			flush := func() { terms, calls = append(terms, calls...), nil }
 			for i := range typ.NumFields() {
 				field := typ.Field(i)
 				if field.Name() == "_" {
 					continue // blank fields are not compared.
 				}
 				name := fieldName(field, i)
-				terms = append(terms, c99.equalityOf("x->"+name, "y->"+name, field.Type()))
+				x, y := "x->"+name, "y->"+name
+				switch {
+				case canPanicEqual(field.Type()):
+					flush()
+					terms = append(terms, c99.equalityOf(x, y, field.Type()))
+				case isString(field.Type()):
+					terms = append(terms, fmt.Sprintf("go_string_len(%s) == go_string_len(%s)", x, y))
+					calls = append(calls, c99.equalityOf(x, y, field.Type()))
+				default:
+					if _, isBasic := field.Type().Underlying().(*types.Basic); isBasic {
+						terms = append(terms, c99.equalityOf(x, y, field.Type()))
+					} else {
+						calls = append(calls, c99.equalityOf(x, y, field.Type()))
+					}
+				}
 			}
+			flush()
 		case *types.Array:
 			if typ.Len() > 0 {
 				fmt.Fprintf(w, "static go_tf %s(const void* a, const void* b) { const %s *x = a, *y = b; for (go_ii i = 0; i < %d; i++) if (!%s) return false; return true; }\n",
@@ -106,4 +123,21 @@ func (c99 Target) equalField(t types.Type) string {
 		fields += ", .hash=" + hash
 	}
 	return fields
+}
+
+// canPanicEqual reports whether comparing values of t may panic (when they hold interfaces).
+func canPanicEqual(t types.Type) bool {
+	switch typ := t.Underlying().(type) {
+	case *types.Interface:
+		return true
+	case *types.Array:
+		return canPanicEqual(typ.Elem())
+	case *types.Struct:
+		for field := range typ.Fields() {
+			if canPanicEqual(field.Type()) {
+				return true
+			}
+		}
+	}
+	return false
 }

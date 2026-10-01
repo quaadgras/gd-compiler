@@ -2,8 +2,6 @@
 package parser
 
 import (
-	"errors"
-	"fmt"
 	"go/ast"
 	"go/token"
 	"go/types"
@@ -19,7 +17,7 @@ import (
 // contents of the files in overlay (by path) replacing those on disk.
 func Load(dir string, test bool, overlay map[string][]byte) ([]source.Package, error) {
 	config := &packages.Config{
-		Mode:    packages.NeedName | packages.NeedFiles | packages.NeedCompiledGoFiles | packages.NeedImports | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedSyntax | packages.NeedDeps,
+		Mode:    packages.NeedName | packages.NeedFiles | packages.NeedCompiledGoFiles | packages.NeedImports | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedSyntax | packages.NeedDeps | packages.NeedModule,
 		Dir:     dir,
 		Tests:   test,
 		Overlay: overlay,
@@ -30,18 +28,8 @@ func Load(dir string, test bool, overlay map[string][]byte) ([]source.Package, e
 	if err != nil {
 		return nil, err
 	}
-	var errs []error // (such as type errors, which the compiler can't compile), all of them.
-	for _, pkg := range pkgs {
-		for _, err := range pkg.Errors {
-			if msg, ok := strings.CutPrefix(err.Msg, "\t"); ok { // the continuation of the previous error.
-				errs = append(errs, fmt.Errorf("\t%s: %s", err.Pos, msg))
-				continue
-			}
-			errs = append(errs, err)
-		}
-	}
-	if len(errs) > 0 {
-		return nil, errors.Join(errs...)
+	if err := check(pkgs); err != nil { // (such as type errors, which the compiler can't compile)
+		return nil, err
 	}
 	var results []source.Package
 	seen := make(map[string]bool)
