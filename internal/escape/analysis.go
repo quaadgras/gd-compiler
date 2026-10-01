@@ -173,7 +173,12 @@ func (escape graph) RoutesForStatementGo(val source.StatementGo) source.Statemen
 // RoutesForStatementReturn marks all pass-by-reference return values as escaping.
 func (escape graph) RoutesForStatementReturn(val source.StatementReturn) source.StatementReturn {
 	for i := range val.Results {
-		switch underlying := val.Results[i].TypeAndValue().Type.Underlying().(type) {
+		t := val.Results[i].TypeAndValue().Type
+		if t == nil {
+			val.Results[i] = escape.RoutesForExpression(val.Results[i])
+			continue
+		}
+		switch underlying := t.Underlying().(type) {
 		case *types.Basic:
 			if underlying.Kind() == types.String {
 				escape.Route(val.Results[i], plan{function: true})

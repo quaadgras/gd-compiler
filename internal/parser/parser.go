@@ -2,6 +2,8 @@
 package parser
 
 import (
+	"errors"
+	"fmt"
 	"go/ast"
 	"go/token"
 	"go/types"
@@ -13,8 +15,6 @@ import (
 	"runtime.link/xyz"
 )
 
-// Load loads the package in dir, and the packages it imports, in dependency order (the
-// package in dir is last).
 // Load loads the package in dir (and its dependencies, in dependency order), with the
 // contents of the files in overlay (by path) replacing those on disk.
 func Load(dir string, test bool, overlay map[string][]byte) ([]source.Package, error) {
@@ -30,10 +30,18 @@ func Load(dir string, test bool, overlay map[string][]byte) ([]source.Package, e
 	if err != nil {
 		return nil, err
 	}
-	for _, pkg := range pkgs { // (such as type errors, which the compiler can't compile)
-		if len(pkg.Errors) > 0 {
-			return nil, pkg.Errors[0]
+	var errs []error // (such as type errors, which the compiler can't compile), all of them.
+	for _, pkg := range pkgs {
+		for _, err := range pkg.Errors {
+			if msg, ok := strings.CutPrefix(err.Msg, "\t"); ok { // the continuation of the previous error.
+				errs = append(errs, fmt.Errorf("\t%s: %s", err.Pos, msg))
+				continue
+			}
+			errs = append(errs, err)
 		}
+	}
+	if len(errs) > 0 {
+		return nil, errors.Join(errs...)
 	}
 	var results []source.Package
 	seen := make(map[string]bool)
@@ -92,8 +100,8 @@ func loadSelection(pkg *source.Package, in *ast.SelectorExpr) source.Selection {
 		Selection: loadExpression(pkg, in.Sel),
 	}
 	meta, ok := pkg.Selections[in]
-	if ok && len(meta.Index()) > 1 && meta.Kind() == types.FieldVal {
-		// the embedded fields that the (promoted) field is selected through.
+	if ok && len(meta.Index()) > 1 && (meta.Kind() == types.FieldVal || meta.Kind() == types.MethodVal) {
+		// the embedded fields that the (promoted) field or method is selected through.
 		ptype := sel.X.TypeAndValue().Type.Underlying()
 		for _, index := range meta.Index()[:len(meta.Index())-1] {
 			for {

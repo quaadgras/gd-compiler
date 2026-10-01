@@ -2,6 +2,7 @@ package c99
 
 import (
 	"fmt"
+	"go/ast"
 	"go/types"
 	"io"
 	"strings"
@@ -101,7 +102,8 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 				cString(c99.CurrentName), cString(typeName), cString(decl.Name.String)))
 		}
 	}
-	if decl.Name.String == "main" {
+	isMain := decl.Name.String == "main" && !isMethod && !decl.IsClosure && c99.CurrentPackage == "main"
+	if isMain {
 		fmt.Fprintf(c99, "go_main() { init_go_%s_package();", c99.CurrentPackage)
 	} else {
 		decl := func(w io.Writer) {
@@ -188,6 +190,7 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 	// Result variables: named results are variables, and a function with a frame needs its
 	// results in (boxed) variables too, as it returns them after a recovered panic.
 	c99.Frame = c99.Closures.Frame(decl.Location.Node)
+	c99.DeferFrame, c99.Yield, c99.YieldLoop, c99.Labels = "", nil, false, nil // (of an enclosing range over a function)
 	c99.ResultVars = nil
 	if results, ok := decl.Type.Results.Get(); ok {
 		i := 0
@@ -210,15 +213,23 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 				} else if !c99.StackAllocated(name) {
 					fmt.Fprintf(c99, "%s%s* %s = go_new(sizeof(%[2]s), NULL).ptr;", indent, ctype, name.String)
 					c99.ResultVars = append(c99.ResultVars, "(*"+name.String+")")
+					if c99.shadowed(body.Location.Node, name.String) { // (return sets it, where the name is another variable)
+						fmt.Fprintf(c99, " %s* go_result_%d = %s;", ctype, i, name.String)
+						c99.ResultVars[len(c99.ResultVars)-1] = fmt.Sprintf("(*go_result_%d)", i)
+					}
 				} else {
 					fmt.Fprintf(c99, "%s%s %s = {0};", indent, ctype, name.String)
 					c99.ResultVars = append(c99.ResultVars, name.String)
+					if c99.shadowed(body.Location.Node, name.String) {
+						fmt.Fprintf(c99, " %s* go_result_%d = &%s;", ctype, i, name.String)
+						c99.ResultVars[len(c99.ResultVars)-1] = fmt.Sprintf("(*go_result_%d)", i)
+					}
 				}
 				i++
 			}
 		}
 	}
-	if decl.Name.String == "main" && !isMethod && !closure {
+	if isMain {
 		c99.ResultVars = []string{"0"} // C's main returns int.
 	}
 	if c99.Frame {
@@ -239,13 +250,17 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 	if c99.Frame && len(c99.Results) == 0 {
 		fmt.Fprintf(c99, "%sgo_frame_return(go_fr);", indent)
 	}
-	if decl.Name.String == "main" && !isMethod && !closure {
+	if isMain {
 		fmt.Fprintf(c99, "%sreturn 0;", indent) // the main goroutine's result, see go_main.
 	}
 	c99.Tabs--
 	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 	fmt.Fprintf(c99, "}")
 	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
+	if isMain { // (for calls of main)
+		fmt.Fprintf(c99.Declarations, "\nvoid main_go_main_package(void);")
+		fmt.Fprintf(c99, "void main_go_main_package(void) { go_main_goroutine(); }\n")
+	}
 	if isMethod {
 		wrappers(true)
 	}
@@ -280,4 +295,20 @@ func derefType(t types.Type) types.Type {
 		return pointer.Elem()
 	}
 	return t
+}
+
+// shadowed reports whether body declares another variable named name.
+func (c99 Target) shadowed(body ast.Node, name string) bool {
+	info := c99.Closures.info
+	if info == nil || body == nil {
+		return false
+	}
+	found := false
+	ast.Inspect(body, func(node ast.Node) bool {
+		if id, ok := node.(*ast.Ident); ok && id.Name == name && info.Defs[id] != nil {
+			found = true
+		}
+		return !found
+	})
+	return found
 }

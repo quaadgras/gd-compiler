@@ -45,6 +45,11 @@ type Target struct {
 	Frame      bool
 	ResultVars []string
 
+	// DeferFrame is the C expression of the frame that defer statements push their calls
+	// onto, when it isn't go_fr: that of the function of a range over a function, in the
+	// body of the range (see [Yield]).
+	DeferFrame string
+
 	// Deferred is set when compiling the call of a deferred function, with the C
 	// expressions for the parts of the call that were evaluated by the defer statement.
 	Deferred *DeferredCall

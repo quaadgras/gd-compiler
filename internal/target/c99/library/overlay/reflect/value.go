@@ -1016,3 +1016,11 @@ func deepValueEqual(v1, v2 Value, visited map[visit]bool) bool {
 }
 
 var _ = strconv.Itoa
+
+// TypeAssert is semantically equivalent to:
+//
+//	v2, ok := v.Interface().(T)
+func TypeAssert[T any](v Value) (T, bool) {
+	x, ok := v.Interface().(T)
+	return x, ok
+}

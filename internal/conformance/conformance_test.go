@@ -146,7 +146,16 @@ func TestGoRepo(t *testing.T) {
 			t.Error(err)
 		}
 	})
+	var only *regexp.Regexp // GD_CASES selects the cases to run by name (paths), like -run.
+	if pattern := os.Getenv("GD_CASES"); pattern != "" {
+		if only, err = regexp.Compile(pattern); err != nil {
+			t.Fatal(err)
+		}
+	}
 	for _, name := range cases {
+		if only != nil && !only.MatchString(name) {
+			continue
+		}
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			jobs <- struct{}{}
@@ -284,6 +293,34 @@ func runCase(t *testing.T, root, name string) Status {
 	}
 	if err := os.WriteFile(filepath.Join(dir, base), src, 0644); err != nil {
 		t.Fatal(err)
+	}
+	var args []string // (other Go files are compiled with it: run cmplxdivide1.go)
+	for _, arg := range recipe.Args {
+		if !strings.HasSuffix(arg, ".go") {
+			args = append(args, arg)
+			continue
+		}
+		other, err := os.ReadFile(filepath.Join(root, filepath.Dir(name), arg))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(dir, arg), other, 0644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	recipe.Args = args
+
+	if recipe.Action == "errorcheck" { // the errors gd reports, see [errorCheck].
+		out, err := command(t, dir, time.Minute, gdBinary, "build")
+		if errors.Is(err, context.DeadlineExceeded) {
+			return Status{Fail, "gd: timeout"}
+		}
+		if err := errorCheck(filepath.Join(dir, base), src, string(out)); err != nil {
+			first, _, _ := strings.Cut(err.Error(), "\n")
+			first = hexes.ReplaceAllString(strings.ReplaceAll(first, dir, ""), "0x?")
+			return Status{Fail, "errorcheck: " + truncate(strings.Join(strings.Fields(first), " "), 120)}
+		}
+		return Status{Result: Pass}
 	}
 
 	// Go -> C

@@ -48,6 +48,7 @@ func (c99 Target) orderOf(exprs []source.Expression, roots ...source.Expression)
 				// evaluated at once, if it needs to be ordered.
 				if countEvents(info, expr.Y) > 0 {
 					events = append(events, expr)
+					spread = spread || hasSpread(info, expr.Y) // (it can only be hoisted)
 				}
 				return false
 			}
@@ -120,6 +121,21 @@ func isEvent(info *types.Info, call *ast.CallExpr) bool {
 		}
 	}
 	return true
+}
+
+// hasSpread reports whether node has a call f(g()), where g has several results.
+func hasSpread(info *types.Info, node ast.Node) bool {
+	found := false
+	ast.Inspect(node, func(node ast.Node) bool {
+		if call, ok := node.(*ast.CallExpr); ok && len(call.Args) == 1 {
+			if tuple, ok := info.Types[ast.Unparen(call.Args[0])].Type.(*types.Tuple); ok && tuple.Len() > 1 {
+				found = true
+			}
+		}
+		_, isFunc := node.(*ast.FuncLit)
+		return !found && !isFunc
+	})
+	return found
 }
 
 func countEvents(info *types.Info, node ast.Node) int {

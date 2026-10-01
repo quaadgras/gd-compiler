@@ -20,6 +20,9 @@ func (c99 Target) StatementFor(stmt source.StatementFor) error {
 		defer fmt.Fprintf(c99, " go_break_%s:;", stmt.Label)
 	}
 	init, hasInit := stmt.Init.Get()
+	if condition, ok := stmt.Condition.Get(); ok && c99.orderOf([]source.Expression{condition}) != nil {
+		return c99.forLoop(stmt) // the condition needs temporaries.
+	}
 	if post, ok := stmt.Statement.Get(); ok && xyz.ValueOf(post) == source.Statements.Assignment {
 		if assign := source.Statements.Assignment.Get(post); len(assign.Variables) > 1 && len(assign.Values) == 1 {
 			return c99.forLoop(stmt) // the post statement is not a C expression.
@@ -121,13 +124,14 @@ func (c99 Target) forLoop(stmt source.StatementFor) error {
 			}
 		}
 	}
-	post, _ := stmt.Statement.Get()
-	c99.Tabs += 2
-	fmt.Fprintf(c99, "\n%s\t\t", indent)
-	if err := c99.Statement(post); err != nil {
-		return err
+	if post, ok := stmt.Statement.Get(); ok {
+		c99.Tabs += 2
+		fmt.Fprintf(c99, "\n%s\t\t", indent)
+		if err := c99.Statement(post); err != nil {
+			return err
+		}
+		c99.Tabs -= 2
 	}
-	c99.Tabs -= 2
 	fmt.Fprintf(c99, "\n%s\t} %s = false;", indent, first)
 	if condition, ok := stmt.Condition.Get(); ok {
 		fmt.Fprintf(c99, "\n%s\t", indent)
@@ -270,7 +274,7 @@ func (c99 Target) StatementContinue(stmt source.StatementContinue) error {
 		return nil
 	}
 	if y := c99.Yield; y != nil && hasLabel && !c99.Labels[label.String] { // of a statement outside of the body.
-		fmt.Fprintf(c99, "{ %s = %d; return false; }", y.state, c99.jumpCode(label.String, true))
+		fmt.Fprintf(c99, "{ %s = %d; return false; }", y.state, c99.jumpCode(label.String, token.CONTINUE))
 		return nil
 	}
 	if hasLabel {
@@ -380,6 +384,10 @@ func (c99 Target) StatementGoto(stmt source.StatementGoto) error {
 	if !ok {
 		return stmt.Location.Errorf("goto without a label")
 	}
+	if y := c99.Yield; y != nil && !c99.Labels[label.String] { // of a statement outside of the body.
+		fmt.Fprintf(c99, "{ %s = %d; return false; }", y.state, c99.jumpCode(label.String, token.GOTO))
+		return nil
+	}
 	fmt.Fprintf(c99, "goto go_label_%s", label.String)
 	return nil
 }
@@ -392,7 +400,11 @@ func (c99 Target) rangeArray(stmt source.StatementRange, array *types.Array, poi
 	x, index := fmt.Sprintf("go_ra_%d", n), fmt.Sprintf("go_ri_%d", n)
 	indent := "\n" + strings.Repeat("\t", c99.Tabs+1)
 	elem := x + ".a[" + index + "]"
-	if pointer {
+	value, hasValue := stmt.Value.Get()
+	hasValue = hasValue && value.String != "_"
+	if info := c99.Closures.info; !hasValue && info != nil && countEvents(info, source.LocationOf(stmt.X).Node) == 0 {
+		fmt.Fprintf(c99, "{") // (the length is constant, so the array is not evaluated)
+	} else if pointer {
 		fmt.Fprintf(c99, "{ go_pt %s = %s;", x, c99.toString(stmt.X))
 		elem = fmt.Sprintf("go_pointer_get(%s, %s).a[%s]", x, c99.ArrayTypeOf(array), index)
 	} else {
@@ -402,7 +414,7 @@ func (c99 Target) rangeArray(stmt source.StatementRange, array *types.Array, poi
 	if key, ok := stmt.Key.Get(); ok && key.String != "_" {
 		fmt.Fprintf(c99, "%s%s", indent, c99.declare(key, types.Typ[types.Int], index))
 	}
-	if value, ok := stmt.Value.Get(); ok && value.String != "_" {
+	if hasValue {
 		fmt.Fprintf(c99, "%s%s", indent, c99.declare(value, array.Elem(), elem))
 	}
 	if err := c99.loopBody(stmt.Label, stmt.Body.Statements); err != nil {
@@ -434,10 +446,13 @@ func (c99 Target) rangeChan(stmt source.StatementRange, typ *types.Chan) error {
 // defines variables, and assigns them first in its body.
 func (c99 Target) rangeTargets(stmt *source.StatementRange) error {
 	var targets, values []source.Expression
-	temp := func(target source.Expression) source.DefinedVariable {
+	keyType, valueType := rangeTypes(stmt.X.TypeAndValue().Type)
+	temp := func(target source.Expression, t types.Type) source.DefinedVariable {
 		name := fmt.Sprintf("go_rt_%d", c99.Closures.count)
 		c99.Closures.count++
-		t := target.TypeAndValue().Type
+		if t == nil {
+			t = target.TypeAndValue().Type
+		}
 		loc := stmt.Location
 		loc.Node = &ast.Ident{Name: name, NamePos: loc.Open} // (a node of its own, see [Target.Substitutes])
 		v := source.DefinedVariable{
@@ -457,11 +472,11 @@ func (c99 Target) rangeTargets(stmt *source.StatementRange) error {
 		stmt.ValueTarget, stmt.Value = xyz.New(source.Expressions.DefinedVariable.New(val)), xyz.Maybe[source.DefinedVariable]{}
 	}
 	if target, ok := stmt.KeyTarget.Get(); ok {
-		stmt.Key = xyz.New(temp(target))
+		stmt.Key = xyz.New(temp(target, keyType))
 		stmt.KeyTarget = xyz.Maybe[source.Expression]{}
 	}
 	if target, ok := stmt.ValueTarget.Get(); ok {
-		stmt.Value = xyz.New(temp(target))
+		stmt.Value = xyz.New(temp(target, valueType))
 		stmt.ValueTarget = xyz.Maybe[source.Expression]{}
 	}
 	if len(targets) == 0 {
@@ -475,4 +490,43 @@ func (c99 Target) rangeTargets(stmt *source.StatementRange) error {
 	})
 	stmt.Body.Statements = append([]source.Statement{assign}, stmt.Body.Statements...)
 	return nil
+}
+
+// rangeTypes returns the types of the iteration values of a range over a value of type t.
+func rangeTypes(t types.Type) (key, value types.Type) {
+	if t == nil {
+		return nil, nil
+	}
+	if p, ok := t.Underlying().(*types.Pointer); ok {
+		t = p.Elem()
+	}
+	switch typ := t.Underlying().(type) {
+	case *types.Basic:
+		if typ.Info()&types.IsString != 0 {
+			return types.Typ[types.Int], types.Universe.Lookup("rune").Type()
+		}
+		return types.Default(t), nil
+	case *types.Array:
+		return types.Typ[types.Int], typ.Elem()
+	case *types.Slice:
+		return types.Typ[types.Int], typ.Elem()
+	case *types.Map:
+		return typ.Key(), typ.Elem()
+	case *types.Chan:
+		return typ.Elem(), nil
+	case *types.Signature:
+		if typ.Params().Len() == 1 {
+			if yield, ok := typ.Params().At(0).Type().Underlying().(*types.Signature); ok {
+				params := yield.Params()
+				if params.Len() > 0 {
+					key = params.At(0).Type()
+				}
+				if params.Len() > 1 {
+					value = params.At(1).Type()
+				}
+			}
+		}
+		return key, value
+	}
+	return nil, nil
 }

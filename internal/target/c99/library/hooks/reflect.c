@@ -92,6 +92,9 @@ go_pt S(fieldType)(go_pt t, go_ii i) { return (go_pt){ (void*)go_rfield(t, i)->t
 go_up S(fieldOffset)(go_pt t, go_ii i) { return (go_up)go_rfield(t, i)->offset; }
 go_tf S(fieldExported)(go_pt t, go_ii i) { return go_rfield(t, i)->exported; }
 go_tf S(fieldEmbedded)(go_pt t, go_ii i) { return go_rfield(t, i)->embedded; }
+go_ss S(fieldPkgPath)(go_pt t, go_ii i) { const char* pkg = go_rfield(t, i)->pkg; return pkg ? go_string_new(pkg) : (go_ss){0}; }
+go_ss S(typePkgPath)(go_pt t) { const char* pkg = T(t)->pkg; return pkg ? go_string_new(pkg) : (go_ss){0}; }
+go_ss S(fieldTag)(go_pt t, go_ii i) { const char* tag = go_rfield(t, i)->tag; return tag ? go_string_new(tag) : (go_ss){0}; }
 
 // The methods of types (other than interfaces) are their exported methods.
 static go_tf go_rexported(const char* name) { return name[0] >= 'A' && name[0] <= 'Z'; }

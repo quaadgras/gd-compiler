@@ -2,12 +2,14 @@ package c99
 
 import (
 	"fmt"
+	"go/ast"
 	"go/types"
 	"hash/fnv"
 	"io"
 	"strings"
 
 	"github.com/quaadgras/gd-compiler/internal/source"
+	"runtime.link/xyz"
 )
 
 // methodTable returns the fields of a type descriptor for the method set of t (a named
@@ -265,6 +267,34 @@ func (c99 Target) methodValue(sel source.Selection, fn source.DefinedFunction) e
 		fmt.Fprintf(c99, "go_make_func(%s)", symbol)
 		return nil
 	}
+	if len(sel.Path) > 0 { // x.M, promoted from x.E (which is evaluated now, through pointers)
+		expr, typ := c99.toString(sel.X), xtype
+		for _, elem := range sel.Path {
+			if pointer, ok := typ.Underlying().(*types.Pointer); ok {
+				expr = fmt.Sprintf("go_pointer_get(%s, %s)", expr, c99.TypeOf(pointer.Elem()))
+				typ = pointer.Elem()
+			}
+			st, ok := typ.Underlying().(*types.Struct)
+			if !ok {
+				return sel.Errorf("unsupported method value of %s", xtype)
+			}
+			for i := range st.NumFields() {
+				if st.Field(i).Name() == elem {
+					expr += "." + fieldName(st.Field(i), i)
+					typ = st.Field(i).Type()
+					break
+				}
+			}
+		}
+		embedded := sel
+		embedded.Path = nil
+		embedded.X = source.Expressions.DefinedVariable.New(source.DefinedVariable{
+			Typed:    source.Typed{TV: types.TypeAndValue{Type: typ}},
+			Location: source.Location{Node: &ast.Ident{Name: "go_embedded"}},
+			String:   expr,
+		})
+		return c99.methodValue(embedded, fn)
+	}
 	if isInterface {
 		ctype := c99.InterfaceTypeOf(iface)
 		symbol := "go_method_value_" + mangle(typeName(xtype)+"."+name)
@@ -308,4 +338,79 @@ func (c99 Target) receiverType(t types.Type, pkg *types.Package, method string) 
 		return nil, fmt.Errorf("unsupported receiver type %s", t)
 	}
 	return recv, c99.promotedMethod(recv, pkg, method)
+}
+
+// genericMethodValue writes x[T1, T2], when x is the method value of a generic method (of
+// a named type), reporting whether it is.
+func (c99 Target) genericMethodValue(x source.Expression) (bool, error) {
+	if xyz.ValueOf(x) != source.Expressions.Selector {
+		return false, nil
+	}
+	sel := source.Expressions.Selector.Get(x)
+	if xyz.ValueOf(sel.Selection) != source.Expressions.DefinedFunction {
+		return false, nil
+	}
+	fn := source.Expressions.DefinedFunction.Get(sel.Selection)
+	obj, ok := fn.Unique.(*types.Func)
+	if !ok || !fn.Method || obj.Type().(*types.Signature).TypeParams().Len() == 0 {
+		return false, nil
+	}
+	xtype := sel.X.TypeAndValue().Type
+	expression := sel.X.TypeAndValue().IsType() // T.m[A, B]
+	recvType, err := c99.receiverType(xtype, obj.Pkg(), obj.Name())
+	if err != nil {
+		return true, sel.Errorf("%w", err)
+	}
+	named, _ := recvType.(*types.Named)
+	id, _ := fn.Location.Node.(*ast.Ident)
+	if named == nil || id == nil {
+		return true, sel.Errorf("unsupported method value of generic method %s", obj.Name())
+	}
+	name, err := c99.GenericMethod(named, obj, id)
+	if err != nil {
+		return true, sel.Errorf("%w", err)
+	}
+	if expression { // a function of the receiver and the method's parameters.
+		inst, ok := c99.Closures.info.Instances[id]
+		if !ok {
+			return true, sel.Errorf("unsupported method expression of generic method %s", obj.Name())
+		}
+		sig := inst.Type.(*types.Signature)
+		recv := "go_recv"
+		if _, isPointer := xtype.Underlying().(*types.Pointer); isPointer && !pointerReceiver(xtype, obj) {
+			recv = fmt.Sprintf("go_pointer_get(go_recv, %s)", c99.TypeOf(named))
+		}
+		call := name + "(" + recv
+		params := []string{"void* go_env", c99.TypeOf(xtype) + " go_recv"}
+		for i, v := range slicesOfVars(sig.Params()) {
+			params = append(params, fmt.Sprintf("%s p%d", c99.TypeOf(v.Type()), i))
+			call += fmt.Sprintf(", p%d", i)
+		}
+		ret := ""
+		if sig.Results().Len() > 0 {
+			ret = "return "
+		}
+		symbol := "go_method_expr_" + mangle(typeName(xtype)+"."+name)
+		c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
+			fmt.Fprintf(w, "static %s %s(%s) { (void)go_env; %s%s); }\n", c99.TupleOfResults(sig), symbol, strings.Join(params, ", "), ret, call)
+			return nil
+		})
+		fmt.Fprintf(c99, "go_make_func(%s)", symbol)
+		return true, nil
+	}
+	recv, err := c99.methodReceiver(fn, sel.X)
+	if err != nil {
+		return true, err
+	}
+	ctype := c99.TypeOf(named)
+	if pointerReceiver(xtype, obj) {
+		ctype = "go_pt"
+	}
+	box := "go_boxed_" + identifier.ReplaceAllString(ctype, "_")
+	c99.Requires(box, c99.Generic, func(w io.Writer) error {
+		fmt.Fprintf(w, "static inline void* %s(%s v) { return go_new(sizeof v, &v).ptr; }\n", box, ctype)
+		return nil
+	})
+	fmt.Fprintf(c99, "go_make_closure(I_%s, %s(%s))", name, box, recv)
+	return true, nil
 }

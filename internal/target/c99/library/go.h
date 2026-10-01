@@ -94,11 +94,21 @@ typedef struct {
     go_ii offset;
     go_tf exported;
     go_tf embedded;
+    char *tag; // (NULL when empty)
+    const char* pkg; // the path of the package of an unexported field.
 } go_field;
 
 typedef struct { const struct go_type* elem; go_ii len; } go_type_array;
 typedef struct { const struct go_type* elem; go_ii dir; } go_type_chan;
-typedef struct { go_ll ins; go_ll outs; } go_type_func;
+// The parameters and results of a function type, with the functions that reflection
+// calls functions of the type with (call, see go_call) and makes them with (makefunc).
+typedef struct {
+    const struct go_type* const* in; go_ii nin;
+    const struct go_type* const* out; go_ii nout;
+    go_tf variadic;
+    void (*call)(go_fn f, void** args, void** results);
+    void (*makefunc)(void);
+} go_type_func;
 typedef struct { const struct go_imethod* methods; go_ii count; } go_type_interface;
 typedef struct { const struct go_type* key; const struct go_type* elem; } go_type_map;
 typedef struct { const struct go_type* elem; } go_type_pointer;
@@ -118,7 +128,12 @@ typedef union {
 
 // A method of a type (its method set): name, signature (like func(int) string) and the
 // function that calls it with the data of an interface value (the I_ and IP_ wrappers).
-typedef struct go_method { const char* name; const char* type; void (*fn)(void); } go_method;
+typedef struct go_method { const char* name; const char* type; void (*fn)(void); const struct go_type* mtype; } go_method;
+
+// go_makefunc_call is called by the functions that reflect.MakeFunc makes (see the
+// makefunc of go_type_func), with their environment, and pointers to their arguments
+// and results (set by the reflect package).
+extern void (*go_makefunc_call)(void* env, void** args, void** results);
 
 typedef struct go_type {
     char *name;
@@ -130,6 +145,7 @@ typedef struct go_type {
     go_u8 (*hash)(const void*, go_u8, go_u8); // of structs and arrays, for map keys.
     go_ii size; // of values.
     go_tf local; // a type defined in a function, which is different from others of the same name.
+    const char* pkg; // the path of the package of a named type.
 } go_type;
 
 // The methods an interface requires, in the order of its table of methods.
@@ -223,7 +239,7 @@ go_i8 go_nanotime(void);
 go_u8 go_rand(void);
 _Noreturn void go_fatal(go_ss msg);
 static inline go_vv go_if_to_vv(go_if v) { return (go_vv){ .ptr = v.ptr, .go_type = v.go_type }; }
-_Noreturn void go_panic_assertion(const go_type* want, go_vv have);
+_Noreturn void go_panic_assertion(const go_type* want, go_vv have, const char* from); // (from the static type from)
 // go_implements reports whether t has the methods, filling table (if not NULL) with them.
 go_tf go_implements(const go_type* t, const go_imethod* methods, go_ii n, void (**table)(void));
 // go_to_iface converts v to an interface with the methods (a type assertion when assert,
@@ -246,12 +262,19 @@ go_ll go_append(go_ll s, go_ii elem_size, const void* elem);
 go_ll go_append_slice(go_ll s, go_ii elem_size, go_ll t);
 go_ll go_append_string(go_ll s, go_ss t);
 go_ll go_slice(go_ll s, go_ii elem_size, go_i8 low, go_i8 high, go_i8 max);
+// The variants ending in u have bounds that are uint64s, as flagged in uns.
+enum { go_slice_ulow = 1, go_slice_uhigh = 2, go_slice_umax = 4 };
+go_ll go_sliceu(go_ll s, go_ii elem_size, go_i8 low, go_i8 high, go_i8 max, int uns);
+go_ll go_slice_ofu(go_ll s, go_ii elem_size, go_i8 low, go_i8 high, go_i8 max, go_tf array, int uns);
+go_ss go_string_sliceu(go_ss s, go_i8 low, go_i8 high, int uns);
+#define go_pointer_sliceu(p, S, T, lo, hi, max, uns) go_slice_ofu((go_ll){ (go_pt){ go_nil_check((p).ptr) }, S, S }, sizeof(T), lo, hi, max, true, uns)
 go_ll go_slice_of(go_ll s, go_ii elem_size, go_i8 low, go_i8 high, go_i8 max, go_tf array);
 void* go_index(go_ll s, go_ii elem_size, go_ii i);
 
 #define go_slice_make(T, length, capacity) (go_ll){ .ptr = go_new(sizeof(T)*go_make_cap(length, capacity, sizeof(T)), nil), .len = length, .cap = capacity }
 #define go_slice_index(s, T, i) (*(T*)go_index(s, sizeof(T), i))
 #define go_slice_copy(T, dst, src) go_copy(sizeof(T), dst, src)
+go_ll go_slice_sparse(go_ii length, size_t size, go_ii n, const go_ii* indexes, const void* values); // (of literals with large indexes)
 #define go_slice_literal(length, T, ...) (go_ll){ .ptr = go_new(sizeof(T)*length, &(T[]){__VA_ARGS__}), .len = length, .cap = length }
 #define go_variadic(length, T, ...) go_slice_literal(length, T, __VA_ARGS__) // may be kept by the callee.
 static inline go_ii go_slice_len(go_ll s) { return s.len; }
@@ -270,6 +293,7 @@ go_tf go_map_get(go_kv m, const void* key, void* val);
 // random one, as Go does), skipping those deleted since.
 typedef struct { go_kv m; char* entries; go_ii n, i, start, clears; } go_map_iter;
 go_map_iter go_map_range(go_kv m);
+go_kv go_map_clone(go_kv m); // (of maps.Clone)
 go_tf go_map_next(go_map_iter* it, void* key, void* val); // val may be NULL.
 
 #define go_string_new(str) (go_ss){ .ptr = str, .len = -1 }
@@ -280,6 +304,8 @@ static inline go_ll go_bytes_of_string(go_ss s) {
     go_ii n = go_string_len(s);
     return (go_ll){ .ptr = { .ptr = (void*)s.ptr }, .len = n, .cap = n };
 }
+// go_string_data is unsafe.StringData: nil for empty strings, as with gc.
+static inline go_pt go_string_data(go_ss s) { return (go_pt){ .ptr = go_string_len(s) ? (void*)s.ptr : NULL }; }
 go_tf go_string_eq(go_ss a, go_ss b);
 go_ii go_string_cmp(go_ss a, go_ss b);
 go_ss go_string_concat(go_ss a, go_ss b);
@@ -334,6 +360,28 @@ static inline go_ii go_make_cap(go_ii len, go_ii cap, size_t size) { // (of make
     if (cap < len || (size > 0 && cap > max / (go_ii)size)) go_panic_error("runtime error: makeslice: cap out of range");
     return cap;
 }
+// go_unsafe_len checks the length n of unsafe.Slice or unsafe.String (fn) of elements of
+// size at p, as Go's runtime.unsafeslice.
+static inline go_ii go_unsafe_len(const char* fn, go_pt p, go_i8 n, size_t size) {
+    if (n < 0) go_panic_error("runtime error: %s: len out of range", fn);
+    if (size == 0) {
+        if (!p.ptr && n > 0) go_panic_error("runtime error: %s: ptr is nil and len is not zero", fn);
+        return (go_ii)n;
+    }
+    if ((go_u8)n > (go_u8)UINTPTR_MAX / size || (uintptr_t)n * size > -(uintptr_t)p.ptr) {
+        if (!p.ptr) go_panic_error("runtime error: %s: ptr is nil and len is not zero", fn);
+        go_panic_error("runtime error: %s: len out of range", fn);
+    }
+    return (go_ii)n;
+}
+static inline go_ll go_unsafe_slice(go_pt p, go_i8 n, size_t size) {
+    go_ii len = go_unsafe_len("unsafe.Slice", p, n, size);
+    return p.ptr ? (go_ll){ .ptr = p, .len = len, .cap = len } : (go_ll){0};
+}
+static inline go_ss go_unsafe_string(go_pt p, go_i8 n) {
+    go_ii len = go_unsafe_len("unsafe.String", p, n, 1);
+    return (go_ss){ .ptr = len ? (const char*)p.ptr : "", .len = len };
+}
 static inline go_u8 go_shift_count(go_i8 n) { if (n < 0) go_panic_error("runtime error: negative shift amount"); return (go_u8)n; }
 static inline void go_panic(const char* msg) { go_panic_error("%s", msg); }
 static inline void* go_nil_check(void* p) {
@@ -376,7 +424,7 @@ static const go_type go_type_complex128 = {.name="complex128", .kind=go_kind_com
 static const go_type go_type_byte = go_type_uint8;
 static const go_type go_type_rune = go_type_int32;
 static const go_type go_type_string = {.name="string", .kind=go_kind_string, .size=sizeof(go_ss)};
-static const go_type go_type_unsafe_pointer = {.name="unsafe.Pointer", .kind=go_kind_unsafe_pointer, .size=sizeof(go_pt)};
+static const go_type go_type_unsafe_pointer = {.name="unsafe.Pointer", .kind=go_kind_unsafe_pointer, .size=sizeof(go_pt), .pkg="unsafe"};
 static const go_imethod go_imethods_error[] = {{"Error", "func() string"}};
 static const go_type go_type_error = {.name="error", .kind=go_kind_interface, .size=sizeof(go_if), .data={.interface={go_imethods_error, 1}}};
 

@@ -5,6 +5,7 @@ import (
 	"go/constant"
 	"go/types"
 	"io"
+	"strconv"
 	"strings"
 
 	"github.com/quaadgras/gd-compiler/internal/source"
@@ -59,6 +60,30 @@ func (c99 Target) DataComposite(data source.DataComposite) error {
 			}
 			index++
 			length = max(length, index)
+		}
+		if length > 2*len(data.Elements)+64 { // sparse: []T{1 << 30: x}, without a C literal of every element.
+			var indexes, values []string
+			index := 0
+			for _, elem := range data.Elements {
+				if xyz.ValueOf(elem) == source.Expressions.KeyValue {
+					pair := source.Expressions.KeyValue.Get(elem)
+					v, _ := constant.Int64Val(constant.ToInt(pair.Key.TypeAndValue().Value))
+					index = int(v)
+					elem = pair.Value
+				}
+				var buf strings.Builder
+				cc := c99
+				cc.Writer = &buf
+				if err := cc.ExpressionAs(elem, typ.Elem()); err != nil {
+					return err
+				}
+				indexes = append(indexes, strconv.Itoa(index))
+				values = append(values, buf.String())
+				index++
+			}
+			fmt.Fprintf(c99, "go_slice_sparse(%[1]d, sizeof(%[2]s), %[3]d, (go_ii[]){%[4]s}, (%[2]s[]){%[5]s})", length, c99.TypeOf(typ.Elem()),
+				len(indexes), strings.Join(indexes, ", "), strings.Join(values, ", "))
+			return nil
 		}
 		fmt.Fprintf(c99, "go_slice_literal(%d, %s, ", length, c99.TypeOf(typ.Elem()))
 		for i, elem := range data.Elements {

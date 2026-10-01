@@ -26,14 +26,17 @@ type DeferredCall struct {
 // into an environment, and pushes a closure that makes the call onto the function's frame,
 // see [Closures].
 func (c99 Target) StatementDefer(stmt source.StatementDefer) error {
-	if !c99.Frame {
+	frame := "go_fr"
+	if c99.DeferFrame != "" {
+		frame = c99.DeferFrame
+	} else if !c99.Frame {
 		return stmt.Location.Errorf("defer in a function without a frame")
 	}
 	closure, err := c99.callClosure(stmt.Call, "deferred")
 	if err != nil {
 		return stmt.Location.Errorf("%w", err)
 	}
-	fmt.Fprintf(c99, "go_defer_push(go_fr, %s)", closure)
+	fmt.Fprintf(c99, "go_defer_push(%s, %s)", frame, closure)
 	return nil
 }
 
@@ -139,8 +142,24 @@ func (c99 Target) callClosure(call source.FunctionCall, kind string) (string, er
 			deferred.Callee = store("go_fn", c99.toString(function))
 		}
 		params := sig.Params()
+		spread := false
+		if len(call.Arguments) == 1 {
+			if tuple, ok := call.Arguments[0].TypeAndValue().Type.(*types.Tuple); ok && tuple.Len() > 1 { // f(g())
+				results := store(c99.TupleOf(slicesOfTypes(tuple)), c99.toString(call.Arguments[0]))
+				call.Arguments = nil
+				for i, t := range slicesOfTypes(tuple) {
+					call.Arguments = append(call.Arguments, source.Expressions.DefinedVariable.New(source.DefinedVariable{
+						Typed:    source.Typed{TV: types.TypeAndValue{Type: t}},
+						Location: source.Location{Node: &ast.Ident{Name: "go_e"}},
+						String:   fmt.Sprintf("%s.r%d", results, i),
+					}))
+				}
+				deferred.Args = make([]string, len(call.Arguments))
+				spread = true
+			}
+		}
 		for i, arg := range call.Arguments {
-			if reevaluate(arg) {
+			if reevaluate(arg) || spread {
 				continue
 			}
 			target := arg.TypeAndValue().Type
@@ -215,8 +234,20 @@ func (c99 Target) StatementReturn(stmt source.StatementReturn) error {
 		if err != nil {
 			return stmt.Location.Errorf("%w", err)
 		}
-		if c99.TupleOf(ts) != c99.TupleOf(c99.Results) {
-			return stmt.Location.Errorf("unsupported return of %s results", results[0].TypeAndValue().Type)
+		if c99.TupleOf(ts) != c99.TupleOf(c99.Results) { // (converted, such as to interfaces)
+			temp := fmt.Sprintf("go_results_%d", c99.Closures.count)
+			c99.Closures.count++
+			fmt.Fprintf(c99, "{ %s %s = %s; ", c99.TupleOf(ts), temp, value)
+			defer fmt.Fprintf(c99, "; }")
+			stmt.Results = nil
+			for i, t := range ts {
+				stmt.Results = append(stmt.Results, source.Expressions.DefinedVariable.New(source.DefinedVariable{
+					Typed:    source.Typed{TV: types.TypeAndValue{Type: t}},
+					Location: source.Location{Node: &ast.Ident{Name: temp}},
+					String:   fmt.Sprintf("%s.r%d", temp, i),
+				}))
+			}
+			return c99.StatementReturn(stmt)
 		}
 		tuple = value
 	}
@@ -357,9 +388,9 @@ func (c99 Target) ExpressionTypeAssertion(e source.ExpressionTypeAssertion) erro
 	ctype := c99.TypeOf(target)
 	symbol := "go_assert_" + identifier.ReplaceAllString(ctype, "_")
 	c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
-		fmt.Fprintf(w, "static inline %s %s(go_vv v, const go_type* t) { if (!go_type_eq(v.go_type, t)) go_panic_assertion(t, v); return *(%[1]s*)v.ptr.ptr; }\n", ctype, symbol)
+		fmt.Fprintf(w, "static inline %s %s(go_vv v, const go_type* t, const char* from) { if (!go_type_eq(v.go_type, t)) go_panic_assertion(t, v, from); return *(%[1]s*)v.ptr.ptr; }\n", ctype, symbol)
 		return nil
 	})
-	fmt.Fprintf(c99, "%s(%s, %s)", symbol, value, rtype)
+	fmt.Fprintf(c99, "%s(%s, %s, %s)", symbol, value, rtype, cString(typeName(subst(e.X.TypeAndValue().Type))))
 	return nil
 }

@@ -3,6 +3,7 @@ package c99
 import (
 	"fmt"
 	"go/ast"
+	"go/token"
 	"go/types"
 	"io"
 	"strings"
@@ -24,12 +25,10 @@ type Yield struct {
 	results string
 }
 
-// jumpCode returns the code of break (or continue) label, for the state of [Yield].
-func (c99 Target) jumpCode(label string, isContinue bool) int {
-	key := label + "/break"
-	if isContinue {
-		key = label + "/continue"
-	}
+// jumpCode returns the code of the jump (break, continue or goto) to label, for the state
+// of [Yield].
+func (c99 Target) jumpCode(label string, jump token.Token) int {
+	key := label + "/" + jump.String()
 	code, ok := c99.Closures.jumps[key]
 	if !ok {
 		code = 2 + len(c99.Closures.jumps)
@@ -38,16 +37,26 @@ func (c99 Target) jumpCode(label string, isContinue bool) int {
 	return code
 }
 
-// outerJumps returns the labels of the break and continue statements of body (outside of
-// function literals) to statements outside of it.
-func outerJumps(body *ast.BlockStmt) (breaks, continues []string) {
+// innerLabels returns the labels of the statements of body (outside of function literals).
+func innerLabels(body *ast.BlockStmt) map[string]bool {
 	inner := make(map[string]bool)
 	ast.Inspect(body, func(node ast.Node) bool {
-		if l, ok := node.(*ast.LabeledStmt); ok {
-			inner[l.Label.Name] = true
+		switch n := node.(type) {
+		case *ast.FuncLit:
+			return false
+		case *ast.LabeledStmt:
+			inner[n.Label.Name] = true
 		}
 		return true
 	})
+	return inner
+}
+
+// outerJumps returns the break, continue and goto statements of body (outside of function
+// literals) to statements outside of it, once per label and kind.
+func outerJumps(body *ast.BlockStmt) []*ast.BranchStmt {
+	inner := innerLabels(body)
+	var jumps []*ast.BranchStmt
 	seen := make(map[string]bool)
 	ast.Inspect(body, func(node ast.Node) bool {
 		switch n := node.(type) {
@@ -58,16 +67,11 @@ func outerJumps(body *ast.BlockStmt) (breaks, continues []string) {
 				return true
 			}
 			seen[n.Tok.String()+n.Label.Name] = true
-			switch n.Tok.String() {
-			case "break":
-				breaks = append(breaks, n.Label.Name)
-			case "continue":
-				continues = append(continues, n.Label.Name)
-			}
+			jumps = append(jumps, n)
 		}
 		return true
 	})
-	return breaks, continues
+	return jumps
 }
 
 // rangeFunc writes a range over a function (of type sig).
@@ -79,8 +83,11 @@ func (c99 Target) rangeFunc(stmt source.StatementRange, sig *types.Signature) er
 	if !ok {
 		return stmt.Errorf("unsupported range over %s", stmt.X.TypeAndValue().Type)
 	}
-	if hasDefer(stmt.Location.Node.(*ast.RangeStmt).Body) {
-		return stmt.Errorf("unsupported defer in the body of a range over a function")
+	// Calls deferred in the body are deferred by the function with the range statement.
+	defers := hasDefer(stmt.Location.Node.(*ast.RangeStmt).Body)
+	frame := c99.DeferFrame
+	if frame == "" {
+		frame = "go_fr"
 	}
 	n := c99.Closures.count
 	c99.Closures.count++
@@ -94,6 +101,9 @@ func (c99 Target) rangeFunc(stmt source.StatementRange, sig *types.Signature) er
 			fmt.Fprintf(w, "%s* %s; ", c99.TypeOf(subst(v.Type())), source.CIdent(v.Name()))
 		}
 		fmt.Fprintf(w, "go_ii* go_state; ")
+		if defers {
+			fmt.Fprintf(w, "go_frame* go_fr; ")
+		}
 		if result != "void" {
 			fmt.Fprintf(w, "%s* go_results; ", result)
 		}
@@ -116,13 +126,11 @@ func (c99 Target) rangeFunc(stmt source.StatementRange, sig *types.Signature) er
 			cc.Yield.results = fmt.Sprintf("(*((go_env_%s*)go_env)->go_results)", symbol)
 		}
 		cc.YieldLoop = true
-		cc.Labels = make(map[string]bool)
-		ast.Inspect(stmt.Location.Node.(*ast.RangeStmt).Body, func(node ast.Node) bool {
-			if l, ok := node.(*ast.LabeledStmt); ok {
-				cc.Labels[l.Label.Name] = true
-			}
-			return true
-		})
+		cc.DeferFrame = ""
+		if defers {
+			cc.DeferFrame = fmt.Sprintf("((go_env_%s*)go_env)->go_fr", symbol)
+		}
+		cc.Labels = innerLabels(stmt.Location.Node.(*ast.RangeStmt).Body)
 		if key, ok := stmt.Key.Get(); ok && key.String != "_" && ysig.Params().Len() > 0 {
 			fmt.Fprintf(w, "\n\t%s", cc.bind(key, ysig.Params().At(0).Type(), "go_y0"))
 		}
@@ -149,6 +157,9 @@ func (c99 Target) rangeFunc(stmt source.StatementRange, sig *types.Signature) er
 		env = append(env, source.CIdent(v.Name()))
 	}
 	env = append(env, "&"+state)
+	if defers {
+		env = append(env, frame)
+	}
 	fmt.Fprintf(c99, "{ go_ii %s = 0; ", state)
 	if result != "void" {
 		fmt.Fprintf(c99, "%s %s; ", result, results)
@@ -172,21 +183,23 @@ func (c99 Target) rangeFunc(stmt source.StatementRange, sig *types.Signature) er
 	if err := c99.StatementReturn(ret); err != nil {
 		return err
 	}
-	breaks, continues := outerJumps(stmt.Location.Node.(*ast.RangeStmt).Body)
-	for _, label := range breaks {
-		if label != stmt.Label {
-			fmt.Fprintf(c99, "; } else if (%s == %d) { ", state, c99.jumpCode(label, false))
-			if err := c99.StatementBreak(source.StatementBreak{Location: stmt.Location, Label: xyz.New(source.Identifier{String: label})}); err != nil {
-				return err
-			}
+	for _, jump := range outerJumps(stmt.Location.Node.(*ast.RangeStmt).Body) {
+		label := jump.Label.Name
+		if label == stmt.Label && jump.Tok != token.GOTO {
+			continue
 		}
-	}
-	for _, label := range continues {
-		if label != stmt.Label {
-			fmt.Fprintf(c99, "; } else if (%s == %d) { ", state, c99.jumpCode(label, true))
-			if err := c99.StatementContinue(source.StatementContinue{Location: stmt.Location, Label: xyz.New(source.Identifier{String: label})}); err != nil {
-				return err
-			}
+		fmt.Fprintf(c99, "; } else if (%s == %d) { ", state, c99.jumpCode(label, jump.Tok))
+		var err error
+		switch jump.Tok {
+		case token.BREAK:
+			err = c99.StatementBreak(source.StatementBreak{Location: stmt.Location, Label: xyz.New(source.Identifier{String: label})})
+		case token.CONTINUE:
+			err = c99.StatementContinue(source.StatementContinue{Location: stmt.Location, Label: xyz.New(source.Identifier{String: label})})
+		case token.GOTO:
+			err = c99.StatementGoto(source.StatementGoto{Location: stmt.Location, Label: xyz.New(source.Identifier{String: label})})
+		}
+		if err != nil {
+			return err
 		}
 	}
 	fmt.Fprintf(c99, "; } }")

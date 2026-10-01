@@ -112,12 +112,19 @@ func (r *Recipe) classify(dir, file string, src []byte) string {
 	case "asmcheck":
 		return skipGC + "asmcheck"
 	case "errorcheck", "errorcheckdir", "errorcheckoutput", "errorcheckwithauto", "errorcheckandrundir":
+		var flags []string
 		for _, flag := range r.Flags {
-			if flag == "-m" || strings.HasPrefix(flag, "-m=") || strings.HasPrefix(flag, "-d=") || flag == "-live" {
+			if flag == "-m" || strings.HasPrefix(flag, "-m=") || (strings.HasPrefix(flag, "-d=") && flag != "-d=panic") || flag == "-live" {
 				return skipGC + "diagnostics " + flag // escape analysis, liveness, ssa checks.
 			}
+			if flag != "-d=panic" { // (crashing on errors, which gd reports all of)
+				flags = append(flags, flag)
+			}
 		}
-		return skipTodo + "errorcheck"
+		r.Flags = flags
+		if r.Action != "errorcheck" {
+			return skipTodo + "errorcheck"
+		}
 	case "compiledir", "builddir", "rundir", "runindir", "buildrundir", "buildrun", "runoutput":
 		return skipTodo + r.Action
 	default:

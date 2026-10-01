@@ -15,15 +15,17 @@ go_if S(ErrNotExist), S(ErrExist), S(ErrPermission), S(ErrClosed), S(ErrInvalid)
 const go_method go_os_file_methods[] = {
     {"Close", "func() error", (void(*)(void))I_File_Close_go_os_package},
     {"Name", "func() string", (void(*)(void))I_File_Name_go_os_package},
-    {"Read", "func([]byte) (int, error)", (void(*)(void))I_File_Read_go_os_package},
+    {"Read", "func([]uint8) (int, error)", (void(*)(void))I_File_Read_go_os_package},
+    {"Readdir", "func(int) ([]fs.FileInfo, error)", (void(*)(void))I_File_Readdir_go_os_package},
+    {"Readdirnames", "func(int) ([]string, error)", (void(*)(void))I_File_Readdirnames_go_os_package},
     {"Sync", "func() error", (void(*)(void))I_File_Sync_go_os_package},
-    {"Write", "func([]byte) (int, error)", (void(*)(void))I_File_Write_go_os_package},
+    {"Write", "func([]uint8) (int, error)", (void(*)(void))I_File_Write_go_os_package},
     {"WriteString", "func(string) (int, error)", (void(*)(void))I_File_WriteString_go_os_package},
 };
 const go_type go_type_File_go_os_package = {.name="os.File", .kind=go_kind_struct, .size=sizeof(File_go_os_package)};
 
 static go_pt go_os_file(FILE* f, const char* name) {
-    File_go_os_package file = { f, go_string_new(name), false };
+    File_go_os_package file = { f, go_string_new(name), false, false };
     return go_new(sizeof file, &file);
 }
 
@@ -88,7 +90,7 @@ go_ii S(Getpid)(void) { return 0; }
 static go_tuple_go_pt_go_if go_os_open(go_ss name, const char* mode) {
     FILE* f = fopen(go_os_cstring(name), mode);
     if (!f) return (go_tuple_go_pt_go_if){ {0}, go_os_error("open", name, errno) };
-    File_go_os_package file = { f, name, false };
+    File_go_os_package file = { f, name, false, false };
     return (go_tuple_go_pt_go_if){ go_new(sizeof file, &file), {0} };
 }
 go_tuple_go_pt_go_if S(Open)(go_ss name) { return go_os_open(name, "rb"); }
@@ -123,6 +125,152 @@ go_if S(WriteFile)(go_ss name, go_ll data, go_u4 perm) {
     if (fclose(f) != 0 && !err) err = errno;
     return err ? go_os_error("write", name, err) : (go_if){0};
 }
+
+static File_go_os_package* go_os_check(go_pt f);
+
+// A fileStat is the information about a file, of a *os.fileStat (an fs.FileInfo).
+typedef struct { go_ss name; go_i8 size; go_u4 mode; go_i8 sec, nsec; } go_os_stat;
+static go_os_stat* go_os_stat_of(void* recv) { return go_nil_check(((go_pt*)recv)->ptr); }
+static go_tf go_os_stat_IsDir(void* r) { return (go_os_stat_of(r)->mode & (1u << 31)) != 0; }
+static Time_go_time_package go_os_stat_ModTime(void* r) { return Unix_go_time_package(go_os_stat_of(r)->sec, go_os_stat_of(r)->nsec); }
+static FileMode_go_io_fs_package go_os_stat_Mode(void* r) { return go_os_stat_of(r)->mode; }
+static go_ss go_os_stat_Name(void* r) { return go_os_stat_of(r)->name; }
+static go_i8 go_os_stat_Size(void* r) { return go_os_stat_of(r)->size; }
+static go_vv go_os_stat_Sys(void* r) { (void)r; return (go_vv){0}; }
+static const go_method go_os_stat_methods[] = {
+    {"IsDir", "func() bool", (void(*)(void))go_os_stat_IsDir},
+    {"ModTime", "func() time.Time", (void(*)(void))go_os_stat_ModTime},
+    {"Mode", "func() fs.FileMode", (void(*)(void))go_os_stat_Mode},
+    {"Name", "func() string", (void(*)(void))go_os_stat_Name},
+    {"Size", "func() int64", (void(*)(void))go_os_stat_Size},
+    {"Sys", "func() interface {}", (void(*)(void))go_os_stat_Sys},
+};
+static const go_type go_os_stat_type = {.name="os.fileStat", .kind=go_kind_struct, .size=sizeof(go_os_stat), .pkg="os"};
+static const go_type go_os_stat_ptr_type = {.name="*os.fileStat", .kind=go_kind_pointer, .size=sizeof(go_pt),
+    .data={.pointer={.elem=&go_os_stat_type}}, .methods=go_os_stat_methods, .nmethods=6};
+static FileInfo_go_io_fs_package go_os_stat_vtable = {
+    go_os_stat_IsDir, go_os_stat_ModTime, go_os_stat_Mode, go_os_stat_Name, go_os_stat_Size, go_os_stat_Sys,
+};
+
+#if defined(__unix__) || defined(__APPLE__)
+#include <sys/stat.h>
+
+static go_tuple_go_if_go_if go_os_stat_file(const char* op, go_ss name, go_tf follow) {
+    struct stat st;
+    const char* path = go_os_cstring(name);
+    if ((follow ? stat(path, &st) : lstat(path, &st)) != 0) return (go_tuple_go_if_go_if){ {0}, go_os_error(op, name, errno) };
+    go_os_stat info = { .size = (go_i8)st.st_size, .sec = (go_i8)st.st_mtime };
+    go_ii n = go_string_len(name), i = n;
+    while (i > 0 && name.ptr[i - 1] != '/') i--;
+    while (n > 1 && i == n && name.ptr[n - 1] == '/') { n--; i = n; while (i > 0 && name.ptr[i - 1] != '/') i--; } // (of "dir/")
+    info.name = go_string_slice(name, i, n);
+    go_u4 mode = (go_u4)(st.st_mode & 0777);
+    if (S_ISDIR(st.st_mode)) mode |= 1u << 31;
+    if (S_ISLNK(st.st_mode)) mode |= 1u << 27;
+    if (S_ISFIFO(st.st_mode)) mode |= 1u << 25;
+    if (S_ISSOCK(st.st_mode)) mode |= 1u << 24;
+    if (S_ISCHR(st.st_mode)) mode |= (1u << 26) | (1u << 21);
+    if (S_ISBLK(st.st_mode)) mode |= 1u << 26;
+    if (st.st_mode & S_ISUID) mode |= 1u << 23;
+    if (st.st_mode & S_ISGID) mode |= 1u << 22;
+    if (st.st_mode & S_ISVTX) mode |= 1u << 20;
+    info.mode = mode;
+    go_pt* box = go_new(sizeof(go_pt), NULL).ptr;
+    *box = go_new(sizeof info, &info);
+    return (go_tuple_go_if_go_if){ { (go_pt){ box }, &go_os_stat_ptr_type, &go_os_stat_vtable }, {0} };
+}
+#include <dirent.h>
+#include <unistd.h>
+
+static int go_os_compare_names(const void* a, const void* b) { return go_string_cmp(*(const go_ss*)a, *(const go_ss*)b); }
+
+// go_os_list returns the names of the files in the directory name, sorted.
+static go_tuple_go_ll_go_if go_os_list(const char* op, go_ss name) {
+    DIR* dir = opendir(go_os_cstring(name));
+    if (!dir) return (go_tuple_go_ll_go_if){ {0}, go_os_error(op, name, errno) };
+    go_ll names = go_slice_make(go_ss, 0, 0);
+    struct dirent* entry;
+    while ((entry = readdir(dir))) {
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) continue;
+        size_t n = strlen(entry->d_name);
+        char* copy = go_new((go_ii)n + 1, entry->d_name).ptr;
+        go_ss s = { copy, (go_ii)n };
+        names = go_append(names, sizeof(go_ss), &s);
+    }
+    closedir(dir);
+    if (names.len > 1) qsort(names.ptr.ptr, (size_t)names.len, sizeof(go_ss), go_os_compare_names);
+    return (go_tuple_go_ll_go_if){ names, {0} };
+}
+
+go_tuple_go_ll_go_if S(ReadDir)(go_ss name) {
+    go_tuple_go_ll_go_if names = go_os_list("open", name);
+    if (names.r1.go_type) return names;
+    go_ll entries = go_slice_make(go_if, 0, names.r0.len);
+    go_ss dir = go_string_concat(name, go_string_new("/"));
+    for (go_ii i = 0; i < names.r0.len; i++) {
+        go_tuple_go_if_go_if info = S(Lstat)(go_string_concat(dir, ((go_ss*)names.r0.ptr.ptr)[i]));
+        if (info.r1.go_type) continue; // (removed since)
+        go_if entry = FileInfoToDirEntry_go_io_fs_package(info.r0);
+        entries = go_append(entries, sizeof(go_if), &entry);
+    }
+    return (go_tuple_go_ll_go_if){ entries, {0} };
+}
+
+go_tuple_go_ll_go_if S(File_Readdirnames)(go_pt f, go_ii n) {
+    File_go_os_package* file = go_os_check(f);
+    if (!file) return (go_tuple_go_ll_go_if){ {0}, S(ErrInvalid) };
+    if (file->listed) return (go_tuple_go_ll_go_if){ {0}, n > 0 ? EOF__go_io_package : (go_if){0} };
+    file->listed = true; // (all of the names, at once)
+    go_tuple_go_ll_go_if names = go_os_list("readdirent", file->name);
+    if (!names.r1.go_type && names.r0.len == 0 && n > 0) names.r1 = EOF__go_io_package;
+    return names;
+}
+
+go_tuple_go_ll_go_if S(File_Readdir)(go_pt f, go_ii n) {
+    go_tuple_go_ll_go_if names = S(File_Readdirnames)(f, n);
+    if (names.r1.go_type) return names;
+    File_go_os_package* file = f.ptr;
+    go_ll infos = go_slice_make(go_if, 0, names.r0.len);
+    go_ss dir = go_string_concat(file->name, go_string_new("/"));
+    for (go_ii i = 0; i < names.r0.len; i++) {
+        go_tuple_go_if_go_if info = S(Lstat)(go_string_concat(dir, ((go_ss*)names.r0.ptr.ptr)[i]));
+        if (info.r1.go_type) continue; // (removed since)
+        infos = go_append(infos, sizeof(go_if), &info.r0);
+    }
+    return (go_tuple_go_ll_go_if){ infos, {0} };
+}
+
+go_tuple_go_ss_go_if S(Readlink)(go_ss name) {
+    for (size_t size = 128;; size *= 2) {
+        char* buf = go_new((go_ii)size, NULL).ptr;
+        ssize_t n = readlink(go_os_cstring(name), buf, size);
+        if (n < 0) return (go_tuple_go_ss_go_if){ {0}, go_os_error("readlink", name, errno) };
+        if ((size_t)n < size) return (go_tuple_go_ss_go_if){ { buf, (go_ii)n }, {0} };
+    }
+}
+
+go_tuple_go_ss_go_if S(Getwd)(void) {
+    for (size_t size = 256;; size *= 2) {
+        char* buf = go_new((go_ii)size, NULL).ptr;
+        if (getcwd(buf, size)) return (go_tuple_go_ss_go_if){ go_string_new(buf), {0} };
+        if (errno != ERANGE) return (go_tuple_go_ss_go_if){ {0}, go_os_error("getwd", go_string_new(""), errno) };
+    }
+}
+#else
+go_tuple_go_ll_go_if S(ReadDir)(go_ss name) { return (go_tuple_go_ll_go_if){ {0}, go_os_error("open", name, ENOSYS) }; }
+go_tuple_go_ll_go_if S(File_Readdirnames)(go_pt f, go_ii n) { return (go_tuple_go_ll_go_if){ {0}, go_os_error("readdirent", go_string_new(""), ENOSYS) }; }
+go_tuple_go_ll_go_if S(File_Readdir)(go_pt f, go_ii n) { return S(File_Readdirnames)(f, n); }
+go_tuple_go_ss_go_if S(Readlink)(go_ss name) { return (go_tuple_go_ss_go_if){ {0}, go_os_error("readlink", name, ENOSYS) }; }
+go_tuple_go_ss_go_if S(Getwd)(void) { return (go_tuple_go_ss_go_if){ {0}, go_os_error("getwd", go_string_new(""), ENOSYS) }; }
+
+static go_tuple_go_if_go_if go_os_stat_file(const char* op, go_ss name, go_tf follow) {
+    (void)follow;
+    return (go_tuple_go_if_go_if){ {0}, go_os_error(op, name, ENOSYS) };
+}
+#endif
+
+go_tuple_go_if_go_if S(Stat)(go_ss name) { return go_os_stat_file("stat", name, true); }
+go_tuple_go_if_go_if S(Lstat)(go_ss name) { return go_os_stat_file("lstat", name, false); }
 
 go_if S(Remove)(go_ss name) {
     return remove(go_os_cstring(name)) == 0 ? (go_if){0} : go_os_error("remove", name, errno);
@@ -180,3 +328,5 @@ go_tuple_go_ii_go_if I_File_Read_go_os_package(void* f, go_ll b) { return S(File
 go_if I_File_Close_go_os_package(void* f) { return S(File_Close)(*(go_pt*)f); }
 go_ss I_File_Name_go_os_package(void* f) { return S(File_Name)(*(go_pt*)f); }
 go_if I_File_Sync_go_os_package(void* f) { return S(File_Sync)(*(go_pt*)f); }
+go_tuple_go_ll_go_if I_File_Readdirnames_go_os_package(void* f, go_ii n) { return S(File_Readdirnames)(*(go_pt*)f, n); }
+go_tuple_go_ll_go_if I_File_Readdir_go_os_package(void* f, go_ii n) { return S(File_Readdir)(*(go_pt*)f, n); }

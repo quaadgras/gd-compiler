@@ -26,6 +26,9 @@ func fieldType(t unsafe.Pointer, i int) unsafe.Pointer
 func fieldOffset(t unsafe.Pointer, i int) uintptr
 func fieldExported(t unsafe.Pointer, i int) bool
 func fieldEmbedded(t unsafe.Pointer, i int) bool
+func fieldTag(t unsafe.Pointer, i int) string
+func fieldPkgPath(t unsafe.Pointer, i int) string
+func typePkgPath(t unsafe.Pointer) string
 func typeNumMethod(t unsafe.Pointer) int
 func methodName(t unsafe.Pointer, i int) string
 func typeImplements(t, iface unsafe.Pointer) bool
@@ -180,7 +183,7 @@ func (t *rtype) Kind() Kind       { return typeKind(t.ptr()) }
 func (t *rtype) Size() uintptr    { return typeSize(t.ptr()) }
 func (t *rtype) Align() int       { return t.FieldAlign() }
 func (t *rtype) NumMethod() int   { return typeNumMethod(t.ptr()) }
-func (t *rtype) PkgPath() string  { return "" }
+func (t *rtype) PkgPath() string  { return typePkgPath(t.ptr()) }
 func (t *rtype) IsVariadic() bool { panic("reflect: IsVariadic is not supported by gd") }
 func (t *rtype) CanSeq() bool     { return false }
 func (t *rtype) CanSeq2() bool    { return false }
@@ -299,9 +302,10 @@ func (t *rtype) Field(i int) StructField {
 		Offset:    fieldOffset(t.ptr(), i),
 		Index:     []int{i},
 		Anonymous: fieldEmbedded(t.ptr(), i),
+		Tag:       StructTag(fieldTag(t.ptr(), i)),
 	}
 	if !fieldExported(t.ptr(), i) {
-		f.PkgPath = "?" // (not recorded by gd)
+		f.PkgPath = fieldPkgPath(t.ptr(), i)
 	}
 	return f
 }

@@ -145,6 +145,9 @@ func (c99 Target) TypeDefinition(spec source.TypeDefinition) error {
 	if source.Substitute != nil { // a local type of an instance: its underlying type, with the type arguments.
 		described = spec.Type.TypeAndValue().Type
 	}
+	if !spec.Global {
+		c99.declareLocalDescriptor("go_type_" + name)
+	}
 	fields := c99.descriptorFields(described)
 	if !spec.Global {
 		fields += ", .local=true"
@@ -319,7 +322,7 @@ func (c99 Target) VariableDefinition(spec source.VariableDefinition) error {
 			} else if !c99.StackAllocated(name) { // boxed, see [Closures].
 				fmt.Fprintf(c99, "%s* %s = ", c99.TypeOf(rtype), name.String)
 				zero := !hasValue || (xyz.ValueOf(assignValue) == source.Expressions.Composite &&
-					len(source.Expressions.Composite.Get(assignValue).Elements) == 0)
+					len(source.Expressions.Composite.Get(assignValue).Elements) == 0 && isZeroLiteral(rtype))
 				switch {
 				case zero:
 					fmt.Fprintf(c99, "go_new(sizeof(%s), NULL).ptr", c99.TypeOf(rtype))
@@ -376,8 +379,8 @@ func (c99 Target) StaticInitializer(expr source.Expression, t types.Type) (strin
 		}
 		return buf.String(), true
 	}
-	if xyz.ValueOf(expr) != source.Expressions.Composite {
-		return "", false
+	if xyz.ValueOf(expr) != source.Expressions.Composite || !types.Identical(expr.TypeAndValue().Type, t) {
+		return "", false // (such as converted to an interface)
 	}
 	data := source.Expressions.Composite.Get(expr)
 	var elems []string
@@ -438,6 +441,9 @@ func isBasic(t types.Type) bool {
 // Constant writes a constant (of type tv.Type), in an expression. Constants of complex
 // types are complex values, whatever the kind of the constant (1 and 1.5 may be complex).
 func (c99 Target) Constant(tv types.TypeAndValue) error {
+	if tv.Value.Kind() == constant.Complex && tv.Type != nil && !isComplex(tv.Type) {
+		tv.Value = constant.Real(tv.Value) // (an untyped complex constant, of a type that's not: x << (1+0i))
+	}
 	if basic, ok := tv.Type.Underlying().(*types.Basic); ok && basic.Info()&types.IsComplex != 0 {
 		value := constant.ToComplex(tv.Value)
 		ctor := "go_complex128"
@@ -468,6 +474,10 @@ func (c99 Target) ConstantValue(value constant.Value, global bool) error {
 		str := constant.StringVal(value)
 		if !global {
 			fmt.Fprintf(c99, "(go_ss)")
+		}
+		if str == "" { // (with no data, as in Go)
+			fmt.Fprintf(c99, "{ .ptr = NULL, .len = 0 }")
+			break
 		}
 		fmt.Fprintf(c99, "{ .ptr = %s, .len = %d }", cString(str), len(str))
 	case constant.Int:
@@ -534,4 +544,14 @@ func (c99 Target) ConstantDefinition(def source.ConstantDefinition) error {
 		fmt.Fprintf(c99, ";")
 	}
 	return nil
+}
+
+// isZeroLiteral reports whether the empty composite literal of type t is its zero value
+// (unlike those of slices and maps, which are not nil).
+func isZeroLiteral(t types.Type) bool {
+	switch t.Underlying().(type) {
+	case *types.Struct, *types.Array:
+		return true
+	}
+	return false
 }

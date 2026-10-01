@@ -6,16 +6,18 @@
 // gd:import io
 // gd:import errors
 // gd:import io/fs
+// gd:import time
 #include <go.h>
 #include <stdio.h>
 #include <go/errors.h>
 #include <go/io/fs.h> // (os.FileMode and others are io/fs's)
+#include <go/time.h>
 
-typedef struct { FILE* f; go_ss name; go_tf closed; } File_go_os_package;
+typedef struct { FILE* f; go_ss name; go_tf closed; go_tf listed; } File_go_os_package;
 extern const go_type go_type_File_go_os_package;
 extern const go_method go_os_file_methods[]; // of *os.File
 #define go_methods_ptr_File_go_os_package go_os_file_methods
-#define go_nmethods_ptr_File_go_os_package 6
+#define go_nmethods_ptr_File_go_os_package 8
 
 #ifndef go_tuple_go_ii_go_if_defined
 #define go_tuple_go_ii_go_if_defined
@@ -52,6 +54,22 @@ go_tuple_go_pt_go_if Create_go_os_package(go_ss name);
 go_tuple_go_ll_go_if ReadFile_go_os_package(go_ss name);
 go_if WriteFile_go_os_package(go_ss name, go_ll data, go_u4 perm);
 go_if Remove_go_os_package(go_ss name);
+
+#ifndef go_tuple_go_if_go_if_defined
+#define go_tuple_go_if_go_if_defined
+typedef struct { go_if r0; go_if r1; } go_tuple_go_if_go_if;
+#endif
+// The fs.FileInfo of a file (on POSIX systems: C11 has no file information).
+go_tuple_go_if_go_if Stat_go_os_package(go_ss name);
+go_tuple_go_if_go_if Lstat_go_os_package(go_ss name);
+go_tuple_go_ll_go_if ReadDir_go_os_package(go_ss name);
+#ifndef go_tuple_go_ss_go_if_defined
+#define go_tuple_go_ss_go_if_defined
+typedef struct { go_ss r0; go_if r1; } go_tuple_go_ss_go_if;
+#endif
+go_tuple_go_ss_go_if Readlink_go_os_package(go_ss name);
+go_tuple_go_ss_go_if Getwd_go_os_package(void);
+static inline go_tf IsPathSeparator_go_os_package(go_u1 c) { return c == '/'; }
 go_if RemoveAll_go_os_package(go_ss path);
 
 go_tuple_go_ii_go_if File_Write_go_os_package(go_pt f, go_ll b);
@@ -60,6 +78,8 @@ go_tuple_go_ii_go_if File_Read_go_os_package(go_pt f, go_ll b);
 go_if File_Close_go_os_package(go_pt f);
 go_ss File_Name_go_os_package(go_pt f);
 go_if File_Sync_go_os_package(go_pt f);
+go_tuple_go_ll_go_if File_Readdirnames_go_os_package(go_pt f, go_ii n);
+go_tuple_go_ll_go_if File_Readdir_go_os_package(go_pt f, go_ii n);
 
 // for interface values of *os.File (see I_ wrappers)
 go_tuple_go_ii_go_if I_File_Write_go_os_package(void* f, go_ll b);
@@ -68,5 +88,7 @@ go_tuple_go_ii_go_if I_File_Read_go_os_package(void* f, go_ll b);
 go_if I_File_Close_go_os_package(void* f);
 go_ss I_File_Name_go_os_package(void* f);
 go_if I_File_Sync_go_os_package(void* f);
+go_tuple_go_ll_go_if I_File_Readdirnames_go_os_package(void* f, go_ii n);
+go_tuple_go_ll_go_if I_File_Readdir_go_os_package(void* f, go_ii n);
 
 #endif // go_os_package_imported

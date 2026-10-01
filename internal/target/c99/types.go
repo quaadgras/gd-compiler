@@ -2,6 +2,7 @@ package c99
 
 import (
 	"fmt"
+	"go/token"
 	"go/types"
 	"hash/fnv"
 	"io"
@@ -317,7 +318,11 @@ func (c99 Target) ReflectTypeOf(t types.Type) string {
 		if typ.TypeArgs().Len() > 0 {
 			return c99.instanceDescriptor(typ)
 		}
-		return "&go_type_" + c99.typeCName(typ) + "_go_" + source.PackageIdent(typ.Obj().Pkg()) + "_package"
+		symbol := "go_type_" + c99.typeCName(typ) + "_go_" + source.PackageIdent(typ.Obj().Pkg()) + "_package"
+		if isLocal(typ.Obj()) { // (static in the file, maybe defined after its uses)
+			c99.declareLocalDescriptor(symbol)
+		}
+		return "&" + symbol
 	case *types.TypeParam:
 		panic("unsupported type " + reflect.TypeOf(typ).String())
 	}
@@ -333,6 +338,9 @@ func (c99 Target) ReflectTypeOf(t types.Type) string {
 func (c99 Target) descriptorFields(t types.Type) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, ", .kind=go_kind_%s", kindOf(t))
+	if named, ok := types.Unalias(t).(*types.Named); ok && named.Obj().Pkg() != nil {
+		fmt.Fprintf(&b, ", .pkg=%s", cString(pkgPath(named.Obj().Pkg())))
+	}
 	if zeroSize(t) {
 		fmt.Fprintf(&b, ", .size=0") // C has no empty types.
 	} else {
@@ -359,8 +367,15 @@ func (c99 Target) descriptorFields(t types.Type) string {
 			var fields []string
 			for i := range typ.NumFields() {
 				field := typ.Field(i)
-				fields = append(fields, fmt.Sprintf("{.name=%s, .type=%s, .offset=offsetof(%s, %s), .exported=%t, .embedded=%t}",
-					cString(field.Name()), c99.ReflectTypeOf(field.Type()), ctype, fieldName(field, i), field.Exported(), field.Anonymous()))
+				tag := ""
+				if typ.Tag(i) != "" {
+					tag = ", .tag=" + cString(typ.Tag(i))
+				}
+				if !field.Exported() && field.Pkg() != nil {
+					tag += ", .pkg=" + cString(pkgPath(field.Pkg()))
+				}
+				fields = append(fields, fmt.Sprintf("{.name=%s, .type=%s, .offset=offsetof(%s, %s), .exported=%t, .embedded=%t%s}",
+					cString(field.Name()), c99.ReflectTypeOf(field.Type()), ctype, fieldName(field, i), field.Exported(), field.Anonymous(), tag))
 			}
 			symbol := "go_fields_" + c99.symbolName(t)
 			c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
@@ -400,6 +415,9 @@ func (c99 Target) staticDescriptor(symbol, name string, t types.Type) {
 	})
 	c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
 		fields := c99.descriptorFields(t) // first, as it may write the descriptors it uses.
+		if named, ok := t.(*types.Named); ok && isLocal(named.Obj()) {
+			fields += ", .local=true" // (an instance of a local generic type)
+		}
 		fmt.Fprintf(w, "static const go_type %s = {.name=%s%s};\n", symbol, cString(name), fields)
 		return nil
 	})
@@ -411,6 +429,11 @@ func typeName(t types.Type) string {
 	t = types.Unalias(t) // (aliases are the same type)
 	qualifier := func(pkg *types.Package) string { return pkg.Name() }
 	switch typ := types.Unalias(t).(type) {
+	case *types.Basic: // (byte is uint8, and rune is int32)
+		if typ.Kind() == types.UnsafePointer {
+			return "unsafe.Pointer"
+		}
+		return types.Typ[typ.Kind()].Name()
 	case *types.Pointer:
 		return "*" + typeName(typ.Elem())
 	case *types.Slice:
@@ -467,8 +490,8 @@ func typeName(t types.Type) string {
 		for i := range typ.NumFields() {
 			f := typ.Field(i)
 			field := typeName(f.Type())
-			if !f.Embedded() {
-				field = f.Name() + " " + field
+			if name := strings.TrimPrefix(field, "*"); !f.Embedded() || embeddedName(name) != f.Name() {
+				field = f.Name() + " " + field // (or embedded through an alias: struct { Int int })
 			}
 			if tag := typ.Tag(i); tag != "" { // (tags are part of the type)
 				field += " " + strconv.Quote(tag)
@@ -478,6 +501,14 @@ func typeName(t types.Type) string {
 		return "struct { " + strings.Join(fields, "; ") + " }"
 	}
 	return types.TypeString(t, qualifier)
+}
+
+// embeddedName returns the name of a field that embeds the type named name.
+func embeddedName(name string) string {
+	if i := strings.IndexByte(name, '['); i >= 0 {
+		name = name[:i] // (of a generic type)
+	}
+	return name[strings.LastIndexByte(name, '.')+1:]
 }
 
 // fieldName returns the C name of the i'th field of a struct (blank fields, which may be
@@ -519,10 +550,65 @@ func mangle(s string) string {
 // types, and pointers to them, have their position, as they may have the same names).
 func (c99 Target) symbolName(t types.Type) string {
 	name := typeName(t)
-	if named, ok := types.Unalias(derefType(t)).(*types.Named); ok {
-		if obj := named.Obj(); obj.Pkg() != nil && obj.Parent() != nil && obj.Parent() != obj.Pkg().Scope() {
-			name += fmt.Sprintf(" %d", obj.Pos())
-		}
+	for _, pos := range localPositions(t, nil) {
+		name += fmt.Sprintf(" %d", pos)
 	}
 	return mangle(name)
+}
+
+// isLocal reports whether obj is declared in a function.
+func isLocal(obj types.Object) bool {
+	return obj.Pkg() != nil && obj.Parent() != nil && obj.Parent() != obj.Pkg().Scope()
+}
+
+// localPositions appends the positions of the local types that t is made of, as their
+// names don't identify them.
+func localPositions(t types.Type, positions []token.Pos) []token.Pos {
+	switch typ := types.Unalias(t).(type) {
+	case *types.Named:
+		if isLocal(typ.Obj()) {
+			positions = append(positions, typ.Obj().Pos())
+		}
+		for arg := range typ.TypeArgs().Types() {
+			positions = localPositions(arg, positions)
+		}
+	case *types.Pointer:
+		positions = localPositions(typ.Elem(), positions)
+	case *types.Slice:
+		positions = localPositions(typ.Elem(), positions)
+	case *types.Array:
+		positions = localPositions(typ.Elem(), positions)
+	case *types.Chan:
+		positions = localPositions(typ.Elem(), positions)
+	case *types.Map:
+		positions = localPositions(typ.Elem(), localPositions(typ.Key(), positions))
+	case *types.Struct:
+		for field := range typ.Fields() {
+			positions = localPositions(field.Type(), positions)
+		}
+	case *types.Signature:
+		for v := range typ.Params().Variables() {
+			positions = localPositions(v.Type(), positions)
+		}
+		for v := range typ.Results().Variables() {
+			positions = localPositions(v.Type(), positions)
+		}
+	}
+	return positions
+}
+
+// declareLocalDescriptor forward declares the descriptor of a local type.
+func (c99 Target) declareLocalDescriptor(symbol string) {
+	c99.Requires("declare "+symbol, c99.Generic, func(w io.Writer) error {
+		fmt.Fprintf(w, "static const go_type %s;\n", symbol)
+		return nil
+	})
+}
+
+// pkgPath returns the path of pkg, as the Go runtime has it (main for main packages).
+func pkgPath(pkg *types.Package) string {
+	if pkg.Name() == "main" {
+		return "main"
+	}
+	return pkg.Path()
 }

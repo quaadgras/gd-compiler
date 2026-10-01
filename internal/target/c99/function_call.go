@@ -351,6 +351,9 @@ func (c99 Target) conversion(expr source.FunctionCall, t types.Type) (bool, erro
 		fmt.Fprint(c99, value)
 		return true, nil
 	}
+	if tv := arg.TypeAndValue(); tv.Value != nil && isBasic(t) && !isUnsafePointer(t) { // (in generic code: T(0 + 0i))
+		return true, c99.Constant(types.TypeAndValue{Type: t, Value: tv.Value})
+	}
 	if c99.TypeOf(t) == c99.TypeOf(from) { // the same C type.
 		return true, c99.Expression(arg)
 	}
@@ -548,19 +551,33 @@ func isUnsafePointer(t types.Type) bool {
 
 // unsafeBuiltin writes a call of a function of package unsafe (which are builtins).
 func (c99 Target) unsafeBuiltin(expr source.FunctionCall, name string) error {
-	arg := func(i int) string { return c99.toString(expr.Arguments[i]) }
+	arg := func(i int) string {
+		if isNil(expr.Arguments[i]) { // (a nil pointer)
+			return "((go_pt){0})"
+		}
+		return c99.toString(expr.Arguments[i])
+	}
 	switch name {
 	case "Add":
 		fmt.Fprintf(c99, "((go_pt){ .ptr = (char*)(%s).ptr + (go_ii)(%s) })", arg(0), arg(1))
 	case "Slice":
-		fmt.Fprintf(c99, "((go_ll){ .ptr = %s, .len = (go_ii)(%s), .cap = (go_ii)(%[2]s) })", arg(0), arg(1))
+		elem := expr.Arguments[0].TypeAndValue().Type.Underlying().(*types.Pointer).Elem()
+		size := "sizeof(" + c99.TypeOf(elem) + ")"
+		if zeroSize(subst(elem)) {
+			size = "0"
+		}
+		fmt.Fprintf(c99, "go_unsafe_slice(%s, (go_i8)(%s), %s)", arg(0), arg(1), size)
 	case "SliceData":
 		fmt.Fprintf(c99, "((%s).ptr)", arg(0))
 	case "String":
-		fmt.Fprintf(c99, "((go_ss){ .ptr = (const char*)(%s).ptr, .len = (go_ii)(%s) })", arg(0), arg(1))
+		fmt.Fprintf(c99, "go_unsafe_string(%s, (go_i8)(%s))", arg(0), arg(1))
 	case "StringData":
-		fmt.Fprintf(c99, "((go_pt){ .ptr = (void*)(%s).ptr })", arg(0))
+		fmt.Fprintf(c99, "go_string_data(%s)", arg(0))
 	case "Sizeof": // not constant, in instances of generic functions.
+		if zeroSize(subst(expr.Arguments[0].TypeAndValue().Type)) { // (C types are never empty)
+			fmt.Fprintf(c99, "((go_up)0)")
+			break
+		}
 		fmt.Fprintf(c99, "((go_up)sizeof(%s))", c99.TypeOf(expr.Arguments[0].TypeAndValue().Type))
 	case "Alignof":
 		fmt.Fprintf(c99, "((go_up)_Alignof(%s))", c99.TypeOf(expr.Arguments[0].TypeAndValue().Type))

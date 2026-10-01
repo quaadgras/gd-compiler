@@ -200,9 +200,10 @@ func (c99 Target) assignment(stmt source.StatementAssignment) error {
 			variable = source.Expressions.Parenthesized.Get(variable).X
 			stmt.Variables[i] = variable
 		}
-		if op := stmt.Token.Value; op >= token.ADD_ASSIGN && op <= token.AND_NOT_ASSIGN && !isAssignable(variable) {
+		if op := stmt.Token.Value; op >= token.ADD_ASSIGN && op <= token.AND_NOT_ASSIGN && (!isAssignable(variable) ||
+			xyz.ValueOf(variable) == source.Expressions.Index && c99.hasEvents(stmt.Values[i])) {
 			// *p op= v and m[k] op= v are *p = *p op v and m[k] = m[k] op v (with p, m and k
-			// evaluated once).
+			// evaluated once, and first: before the calls of v, which may change them).
 			if !c99.Header {
 				subs := make(map[ast.Node]string)
 				for k, v := range c99.Substitutes {
@@ -366,6 +367,12 @@ func isAssignable(variable source.Expression) bool {
 	return true
 }
 
+// hasEvents reports whether expr calls functions or receives from channels.
+func (c99 Target) hasEvents(expr source.Expression) bool {
+	node := source.LocationOf(expr).Node
+	return c99.Closures.info != nil && node != nil && countEvents(c99.Closures.info, node) > 0
+}
+
 func isShift(op token.Token) bool {
 	return op == token.SHL || op == token.SHR || op == token.SHL_ASSIGN || op == token.SHR_ASSIGN
 }
@@ -402,6 +409,19 @@ func (c99 Target) captureOperands(variables []source.Expression, subs map[ast.No
 			}
 		case source.Expressions.Star:
 			if err := capture(source.Expressions.Star.Get(variable).Value); err != nil {
+				return err
+			}
+		case source.Expressions.Selector: // p.f, p.f.g, of a pointer p (or a[i].f).
+			x := source.Expressions.Selector.Get(variable).X
+			if t := x.TypeAndValue().Type; t == nil {
+				break // (a package)
+			} else if _, isPointer := t.Underlying().(*types.Pointer); isPointer {
+				if err := capture(x); err != nil {
+					return err
+				}
+				break
+			}
+			if err := c99.captureOperands([]source.Expression{x}, subs); err != nil {
 				return err
 			}
 		}

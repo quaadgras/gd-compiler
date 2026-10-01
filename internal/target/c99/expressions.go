@@ -3,6 +3,7 @@ package c99
 import (
 	"fmt"
 	"go/ast"
+	"go/constant"
 	"go/token"
 	"go/types"
 	"io"
@@ -105,7 +106,7 @@ func (c99 Target) ExpressionBinary(expr source.ExpressionBinary) error {
 	}
 	if !isIntegerOp(expr.Operation.Value, expr.TypeAndValue().Type) {
 		// (the operands are written below)
-	} else if value, ok := c99.integerOp(expr.Operation.Value, c99.toString(expr.X), c99.toString(expr.Y), expr.TypeAndValue().Type,
+	} else if value, ok := c99.integerOp(expr.Operation.Value, c99.toString(expr.X), shiftCount(c99, expr), expr.TypeAndValue().Type,
 		expr.Y.TypeAndValue().Type, expr.Y.TypeAndValue().Value != nil); ok {
 		fmt.Fprint(c99, value)
 		return nil
@@ -397,6 +398,9 @@ func (c99 Target) ExpressionIndex(expr source.ExpressionIndex) error {
 		fmt.Fprintf(c99, "]")
 		return nil
 	default:
+		if ok, err := c99.genericMethodValue(expr.X); ok {
+			return err
+		}
 		return expr.Location.Errorf("unsupported index of %s", expr.X.TypeAndValue().Type)
 	}
 }
@@ -441,22 +445,34 @@ func (c99 Target) ExpressionSlice(e source.ExpressionSlice) error {
 		return "go_slice_default"
 	}
 	low, high, max := bound(e.From), bound(e.High), bound(e.Capacity)
+	// bounds that are uint64s may not fit in the int64s of the runtime's functions, which
+	// are told which they are.
+	uns := 0
+	for i, expr := range []xyz.Maybe[source.Expression]{e.From, e.High, e.Capacity} {
+		if value, ok := expr.Get(); ok && isUnsigned64(subst(value.TypeAndValue().Type)) {
+			uns |= 1 << i
+		}
+	}
+	u, flags := "", ""
+	if uns != 0 {
+		u, flags = "u", fmt.Sprintf(", %d", uns)
+	}
 	switch typ := e.X.TypeAndValue().Type.Underlying().(type) {
 	case *types.Pointer:
 		array, ok := typ.Elem().Underlying().(*types.Array)
 		if !ok {
 			return e.Location.Errorf("unsupported slice of %s", typ)
 		}
-		fmt.Fprintf(c99, "go_pointer_slice(%s, %d, %s, %s, %s, %s)",
-			c99.toString(e.X), array.Len(), c99.TypeOf(array.Elem()), low, high, max)
+		fmt.Fprintf(c99, "go_pointer_slice%s(%s, %d, %s, %s, %s, %s%s)",
+			u, c99.toString(e.X), array.Len(), c99.TypeOf(array.Elem()), low, high, max, flags)
 	case *types.Array:
-		fmt.Fprintf(c99, "go_slice_of((go_ll){ (go_pt){ (%s).a }, %d, %[2]d }, sizeof(%s), %s, %s, %s, true)",
-			c99.toString(e.X), typ.Len(), c99.TypeOf(typ.Elem()), low, high, max)
+		fmt.Fprintf(c99, "go_slice_of%s((go_ll){ (go_pt){ (%s).a }, %d, %[3]d }, sizeof(%s), %s, %s, %s, true%s)",
+			u, c99.toString(e.X), typ.Len(), c99.TypeOf(typ.Elem()), low, high, max, flags)
 	case *types.Slice:
-		fmt.Fprintf(c99, "go_slice(%s, sizeof(%s), %s, %s, %s)",
-			c99.toString(e.X), c99.TypeOf(typ.Elem()), low, high, max)
+		fmt.Fprintf(c99, "go_slice%s(%s, sizeof(%s), %s, %s, %s%s)",
+			u, c99.toString(e.X), c99.TypeOf(typ.Elem()), low, high, max, flags)
 	case *types.Basic: // strings
-		fmt.Fprintf(c99, "go_string_slice(%s, %s, %s)", c99.toString(e.X), low, high)
+		fmt.Fprintf(c99, "go_string_slice%s(%s, %s, %s%s)", u, c99.toString(e.X), low, high, flags)
 	default:
 		return e.Location.Errorf("unsupported slice of %s", typ)
 	}
@@ -493,6 +509,10 @@ func (c99 Target) ExpressionUnary(e source.ExpressionUnary) error {
 				return err
 			}
 			fmt.Fprintf(c99, ")")
+			return nil
+		}
+		if xyz.ValueOf(e.X) == source.Expressions.Index && zeroSize(e.X.TypeAndValue().Type) { // (elements of zero size have the same address)
+			fmt.Fprintf(c99, "((void)&(%s), (go_pt){ go_zerobase })", c99.toString(e.X))
 			return nil
 		}
 		if xyz.ValueOf(e.X) != source.Expressions.DefinedVariable {
@@ -536,6 +556,9 @@ func (c99 Target) ExpressionIndices(expr source.ExpressionIndices) error {
 	if xyz.ValueOf(expr.X) == source.Expressions.DefinedFunction {
 		return c99.DefinedFunction(source.Expressions.DefinedFunction.Get(expr.X))
 	}
+	if ok, err := c99.genericMethodValue(expr.X); ok {
+		return err
+	}
 	return expr.Location.Errorf("unsupported index of %s", expr.X.TypeAndValue().Type)
 }
 
@@ -548,4 +571,29 @@ func (c99 Target) indexOf(index source.Expression, length string) string {
 		return fmt.Sprintf("go_uindex((go_u8)(%s), %s)", value, length)
 	}
 	return value
+}
+
+// shiftCount returns the C expression for the right operand of expr, which, as the count
+// of a shift, may be an untyped constant of any numeric kind (x << (1+0i)).
+func shiftCount(c99 Target, expr source.ExpressionBinary) string {
+	if tv := expr.Y.TypeAndValue(); tv.Value != nil && isShift(expr.Operation.Value) {
+		if n := constant.ToInt(tv.Value); n.Kind() == constant.Int {
+			return n.ExactString() + "ULL" // (counts are unsigned, and may need 64 bits)
+		}
+	}
+	return c99.toString(expr.Y)
+}
+
+// isUnsigned64 reports whether t is an unsigned integer type of 64 bits, whose values may
+// not fit in an int64.
+func isUnsigned64(t types.Type) bool {
+	basic, ok := t.Underlying().(*types.Basic)
+	if !ok {
+		return false
+	}
+	switch basic.Kind() {
+	case types.Uint, types.Uint64, types.Uintptr:
+		return true
+	}
+	return false
 }

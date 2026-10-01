@@ -20,6 +20,11 @@ go_pt go_new(go_ii size, const void* init) {
     }
     return p;
 }
+go_ll go_slice_sparse(go_ii length, size_t size, go_ii n, const go_ii* indexes, const void* values) {
+    go_ll s = { .ptr = go_new((go_ii)size * go_make_cap(length, length, size), NULL), .len = length, .cap = length };
+    for (go_ii i = 0; i < n; i++) memcpy((char*)s.ptr.ptr + indexes[i] * (go_ii)size, (const char*)values + i * (go_ii)size, size);
+    return s;
+}
 go_ll go_append(go_ll s, go_ii elem_size, const void* elem) {
     if (s.len >= s.cap) {
         go_ii new_cap = s.cap == 0 ? 1 : s.cap * 2;
@@ -117,6 +122,16 @@ go_kv go_make(go_ii key_size, go_ii elem_size, go_hash hash_func, go_same same_f
     return map;
 }
 
+go_kv go_map_clone(go_kv m) {
+    if (!m) return NULL;
+    map_metadata *meta = hashmap_udata(m);
+    go_kv clone = go_make(meta->key_size, meta->val_size, meta->key_hash, meta->key_same, go_map_len(m), 0, NULL, 0, 0);
+    size_t i = 0;
+    void* item;
+    while (hashmap_iter(m, &i, &item)) hashmap_set(clone, item);
+    return clone;
+}
+
 go_u8 go_hash_bytes(const void* p, size_t n, go_u8 seed0, go_u8 seed1) {
     return hashmap_xxhash3(p, n, seed0, seed1);
 }
@@ -207,26 +222,46 @@ void* go_index(go_ll s, go_ii elem_size, go_ii i) {
 }
 
 go_ll go_slice(go_ll s, go_ii elem_size, go_i8 low, go_i8 high, go_i8 max) { return go_slice_of(s, elem_size, low, high, max, false); }
+go_ll go_sliceu(go_ll s, go_ii elem_size, go_i8 low, go_i8 high, go_i8 max, int uns) { return go_slice_ofu(s, elem_size, low, high, max, false, uns); }
 
 // go_slice_of is go_slice, of an array (when array), as their messages are Go's (see
 // runtime.boundsError).
+// Slice bounds are int64s, or, when flagged in uns (go_slice_ulow and others), uint64s,
+// which may not fit in an int64.
+static go_tf go_bound_neg(go_i8 x, go_tf u) { return !u && x < 0; }
+static go_tf go_bound_gt(go_i8 a, go_tf ua, go_i8 b, go_tf ub) {
+    if (ua && a < 0) return ub && b < 0 ? (go_u8)a > (go_u8)b : true;
+    if (ub && b < 0) return false;
+    return a > b;
+}
+static const char* go_bound(char* buf, go_i8 x, go_tf u) {
+    if (u) snprintf(buf, 24, "%llu", (unsigned long long)x); else snprintf(buf, 24, "%lld", (long long)x);
+    return buf;
+}
+
 go_ll go_slice_of(go_ll s, go_ii elem_size, go_i8 low, go_i8 high, go_i8 max, go_tf array) {
+    return go_slice_ofu(s, elem_size, low, high, max, array, 0);
+}
+
+go_ll go_slice_ofu(go_ll s, go_ii elem_size, go_i8 low, go_i8 high, go_i8 max, go_tf array, int uns) {
     const char* of = array ? "length" : "capacity";
-    if (low == go_slice_default) low = 0;
-    if (high == go_slice_default) high = s.len;
+    go_tf ul = (uns & go_slice_ulow) != 0, uh = (uns & go_slice_uhigh) != 0, um = (uns & go_slice_umax) != 0;
+    char a[24], b[24];
+    if (low == go_slice_default) { low = 0; ul = false; }
+    if (high == go_slice_default) { high = s.len; uh = false; }
     if (max == go_slice_default) { // s[low:high]
         max = s.cap;
-        if (high < 0) go_panic_error("runtime error: slice bounds out of range [:%lld]", (long long)high);
-        if (high > max) go_panic_error("runtime error: slice bounds out of range [:%lld] with %s %lld", (long long)high, of, (long long)max);
-        if (low < 0) go_panic_error("runtime error: slice bounds out of range [%lld:]", (long long)low);
-        if (low > high) go_panic_error("runtime error: slice bounds out of range [%lld:%lld]", (long long)low, (long long)high);
+        if (go_bound_neg(high, uh)) go_panic_error("runtime error: slice bounds out of range [:%s]", go_bound(a, high, uh));
+        if (go_bound_gt(high, uh, max, false)) go_panic_error("runtime error: slice bounds out of range [:%s] with %s %lld", go_bound(a, high, uh), of, (long long)max);
+        if (go_bound_neg(low, ul)) go_panic_error("runtime error: slice bounds out of range [%s:]", go_bound(a, low, ul));
+        if (go_bound_gt(low, ul, high, uh)) go_panic_error("runtime error: slice bounds out of range [%s:%s]", go_bound(a, low, ul), go_bound(b, high, uh));
     } else { // s[low:high:max]
-        if (max < 0) go_panic_error("runtime error: slice bounds out of range [::%lld]", (long long)max);
-        if (max > s.cap) go_panic_error("runtime error: slice bounds out of range [::%lld] with %s %lld", (long long)max, of, (long long)s.cap);
-        if (high < 0) go_panic_error("runtime error: slice bounds out of range [:%lld:]", (long long)high);
-        if (high > max) go_panic_error("runtime error: slice bounds out of range [:%lld:%lld]", (long long)high, (long long)max);
-        if (low < 0) go_panic_error("runtime error: slice bounds out of range [%lld::]", (long long)low);
-        if (low > high) go_panic_error("runtime error: slice bounds out of range [%lld:%lld:]", (long long)low, (long long)high);
+        if (go_bound_neg(max, um)) go_panic_error("runtime error: slice bounds out of range [::%s]", go_bound(a, max, um));
+        if (go_bound_gt(max, um, s.cap, false)) go_panic_error("runtime error: slice bounds out of range [::%s] with %s %lld", go_bound(a, max, um), of, (long long)s.cap);
+        if (go_bound_neg(high, uh)) go_panic_error("runtime error: slice bounds out of range [:%s:]", go_bound(a, high, uh));
+        if (go_bound_gt(high, uh, max, um)) go_panic_error("runtime error: slice bounds out of range [:%s:%s]", go_bound(a, high, uh), go_bound(b, max, um));
+        if (go_bound_neg(low, ul)) go_panic_error("runtime error: slice bounds out of range [%s::]", go_bound(a, low, ul));
+        if (go_bound_gt(low, ul, high, uh)) go_panic_error("runtime error: slice bounds out of range [%s:%s:]", go_bound(a, low, ul), go_bound(b, high, uh));
     }
     // the result shares the backing array.
     go_pt ptr = { .ptr = s.ptr.ptr && max > low ? (char*)s.ptr.ptr + low * elem_size : s.ptr.ptr }; // (not past the end, as Go)
@@ -384,11 +419,18 @@ void go_print_iface(go_up type, go_up data) {
 
 // defer, panic and recover, see go.h.
 
+// A go_panicking is a panic in progress. Panics started by deferred calls (while another
+// is in progress) are pushed on top of it.
+typedef struct go_panicking {
+    go_vv value;
+    go_tf recovered;
+    go_frame* frame; // the innermost frame with deferred calls when it started.
+    struct go_panicking* prev;
+} go_panicking;
+
 static go_thread_local struct {
     go_frame* top;      // innermost frame with deferred calls.
-    go_vv value;        // of the current panic.
-    go_tf panicking;
-    go_tf recovered;
+    go_panicking* panic; // the current panic, if any.
     go_tf token;        // set while a deferred call is starting, see go_take_recover.
 } go_g;
 
@@ -432,9 +474,10 @@ go_tf go_take_recover(void) {
 }
 
 go_vv go_recover(go_tf can_recover) {
-    if (!can_recover || !go_g.panicking || go_g.recovered) return (go_vv){0};
-    go_g.recovered = true;
-    return go_g.value;
+    go_panicking* p = go_g.panic;
+    if (!can_recover || !p || p->recovered) return (go_vv){0};
+    p->recovered = true;
+    return p->value;
 }
 
 static void go_print_panic_value(go_vv v) {
@@ -470,18 +513,27 @@ static void go_print_panic_value(go_vv v) {
 static _Noreturn void go_panic_continue(void) {
     if (go_g.top) longjmp(go_g.top->jb, 1);
     go_print_cstring("panic: ");
-    go_print_panic_value(go_g.value);
+    go_print_panic_value(go_g.panic->value);
     go_print_cstring("\n\ngoroutine 1 [running]:\n");
     exit(2);
+}
+
+// go_started_in reports whether frame is f, or a frame that f's function called.
+static go_tf go_started_in(go_frame* frame, go_frame* f) {
+    for (; frame; frame = frame->prev) {
+        if (frame == f) return true;
+    }
+    return false;
 }
 
 void go_frame_unwind(go_frame* f) {
     go_run_defers(f);
     go_g.top = f->prev;
-    if (!go_g.recovered) go_panic_continue();
-    go_g.panicking = false;
-    go_g.recovered = false;
-    go_g.value = (go_vv){0};
+    if (!go_g.panic->recovered) go_panic_continue();
+    // f's function returns normally: the recovered panic is over, and so are those that
+    // were started (by deferred calls) in f, or in the functions it called.
+    go_g.panic = go_g.panic->prev;
+    while (go_g.panic && go_started_in(go_g.panic->frame, f)) go_g.panic = go_g.panic->prev;
 }
 
 // panic(nil) panics with a *runtime.PanicNilError (since Go 1.21).
@@ -498,9 +550,11 @@ void go_panic_any(go_vv v) {
         static go_pt nil_error;
         v = (go_vv){ (go_pt){ &nil_error }, &go_type_panic_nil };
     }
-    go_g.panicking = true;
-    go_g.recovered = false;
-    go_g.value = v;
+    go_panicking* p = go_new(sizeof(go_panicking), NULL).ptr;
+    p->value = v;
+    p->frame = go_g.top;
+    p->prev = go_g.panic;
+    go_g.panic = p;
     go_panic_continue();
 }
 
@@ -513,6 +567,7 @@ go_tf go_type_eq(const go_type* a, const go_type* b) {
 }
 
 char go_zerobase[8];
+void (*go_makefunc_call)(void* env, void** args, void** results);
 int go_argc;
 char** go_argv;
 
@@ -592,8 +647,9 @@ void go_panic_error(const char* format, ...) {
     go_panic_any(go_any_new(sizeof(go_ss), &s, &go_type_runtime_error));
 }
 
-void go_panic_assertion(const go_type* want, go_vv have) {
-    go_panic_error("interface conversion: interface {} is %s, not %s", have.go_type ? have.go_type->name : "nil", want->name);
+void go_panic_assertion(const go_type* want, go_vv have, const char* from) {
+    const char* scopes = have.go_type && strcmp(have.go_type->name, want->name) == 0 ? " (types from different scopes)" : "";
+    go_panic_error("interface conversion: %s is %s, not %s%s", from, have.go_type ? have.go_type->name : "nil", want->name, scopes);
 }
 
 // strings, see also runtime/string.go and unicode/utf8.
@@ -626,18 +682,18 @@ go_u1 go_string_index(go_ss s, go_ii i) {
     return (go_u1)s.ptr[go_index_check(i, go_string_len(s))];
 }
 
-go_ss go_string_slice(go_ss s, go_i8 low, go_i8 high) {
+go_ss go_string_slice(go_ss s, go_i8 low, go_i8 high) { return go_string_sliceu(s, low, high, 0); }
+
+go_ss go_string_sliceu(go_ss s, go_i8 low, go_i8 high, int uns) {
     go_ii n = go_string_len(s);
-    if (low == go_slice_default) low = 0;
-    if (high == go_slice_default) high = n;
-    if (high < 0) go_panic_error("runtime error: slice bounds out of range [:%lld]", (long long)high);
-    if (high > n) {
-        go_panic_error("runtime error: slice bounds out of range [:%lld] with length %lld", (long long)high, (long long)n);
-    }
-    if (low < 0) go_panic_error("runtime error: slice bounds out of range [%lld:]", (long long)low);
-    if (low > high) {
-        go_panic_error("runtime error: slice bounds out of range [%lld:%lld]", (long long)low, (long long)high);
-    }
+    go_tf ul = (uns & go_slice_ulow) != 0, uh = (uns & go_slice_uhigh) != 0;
+    char a[24], b[24];
+    if (low == go_slice_default) { low = 0; ul = false; }
+    if (high == go_slice_default) { high = n; uh = false; }
+    if (go_bound_neg(high, uh)) go_panic_error("runtime error: slice bounds out of range [:%s]", go_bound(a, high, uh));
+    if (go_bound_gt(high, uh, n, false)) go_panic_error("runtime error: slice bounds out of range [:%s] with length %lld", go_bound(a, high, uh), (long long)n);
+    if (go_bound_neg(low, ul)) go_panic_error("runtime error: slice bounds out of range [%s:]", go_bound(a, low, ul));
+    if (go_bound_gt(low, ul, high, uh)) go_panic_error("runtime error: slice bounds out of range [%s:%s]", go_bound(a, low, ul), go_bound(b, high, uh));
     if (high == low) return (go_ss){ .ptr = s.ptr, .len = 0 }; // (not past the end, as Go)
     return (go_ss){ .ptr = s.ptr ? s.ptr + low : NULL, .len = (go_ii)(high - low) };
 }

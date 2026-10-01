@@ -15,6 +15,14 @@ import (
 func (c99 Target) Statement(stmt source.Statement) error {
 	switch xyz.ValueOf(stmt) {
 	case source.Statements.Definitions:
+		if defs := source.Statements.Definitions.Get(stmt); len(defs) > 1 { // var (a = f(); b = g(a))
+			for _, def := range defs {
+				if err := c99.Statement(source.Statements.Definitions.New(source.StatementDefinitions{def})); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
 	default:
 		if c99.Tabs >= 0 {
 			fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
@@ -111,7 +119,7 @@ func (c99 Target) StatementBreak(stmt source.StatementBreak) error {
 		return nil
 	}
 	if y := c99.Yield; y != nil && hasLabel && !c99.Labels[label.String] { // of a statement outside of the body.
-		fmt.Fprintf(c99, "{ %s = %d; return false; }", y.state, c99.jumpCode(label.String, false))
+		fmt.Fprintf(c99, "{ %s = %d; return false; }", y.state, c99.jumpCode(label.String, token.BREAK))
 		return nil
 	}
 	if hasLabel {
