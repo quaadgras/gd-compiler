@@ -164,6 +164,7 @@ go_pt S(mapIndex)(go_pt m, go_pt key, go_pt t) {
 }
 void S(mapAssign)(go_pt m, go_pt key, go_pt elem) { go_map_set(*(go_kv*)m.ptr, key.ptr, elem.ptr); }
 void S(mapDelete)(go_pt m, go_pt key) { go_map_delete(*(go_kv*)m.ptr, key.ptr); }
+void S(mapClear)(go_pt m) { go_map_clear(*(go_kv*)m.ptr); }
 go_pt S(mapRange)(go_pt m) {
     go_map_iter it = go_map_range(*(go_kv*)m.ptr);
     return go_new(sizeof it, &it);

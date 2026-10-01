@@ -57,14 +57,11 @@ go_ll go_append_string(go_ll s, go_ss t) {
 
 go_ii go_copy(go_ii elem_size, go_ll dst, go_ll src) {
     go_ii n = dst.len < src.len ? dst.len : src.len;
-    memcpy(dst.ptr.ptr, src.ptr.ptr, n * elem_size);
+    memmove(dst.ptr.ptr, src.ptr.ptr, n * elem_size); // (they may overlap)
     return n;
 }
 void go_slice_clear(go_ll s, size_t elem_size) {
     if (s.len > 0) memset(s.ptr.ptr, 0, (size_t)s.len * elem_size);
-}
-void go_map_clear(go_kv m) {
-    if (m) hashmap_clear(m, false);
 }
 
 go_ii go_string_len(go_ss s) {
@@ -85,6 +82,7 @@ typedef struct {
     size_t val_offset; // aligned, so that pointers in values can be stored (Fil-C).
     go_hash key_hash;
     go_same key_same;
+    go_ii clears; // (entries that iterators have yet to produce are gone)
     char staging[];
 } map_metadata;
 
@@ -109,6 +107,7 @@ go_kv go_make(go_ii key_size, go_ii elem_size, go_hash hash_func, go_same same_f
     meta->val_offset = aligned;
     meta->key_hash = hash_func;
     meta->key_same = same_func;
+    meta->clears = 0;
     go_kv map = (go_kv)hashmap_new(aligned + elem_size, hint > 0 ? (size_t)hint : 0, 0, 0,
         map_hash, map_compare, NULL, meta);
     for (go_ii i = 0; i < argc; i++) {
@@ -152,6 +151,12 @@ go_tf go_map_get(go_kv m, const void *key, void *val) {
     return false;
 }
 
+void go_map_clear(go_kv m) {
+    if (!m) return;
+    hashmap_clear(m, false);
+    ((map_metadata*)hashmap_udata(m))->clears++;
+}
+
 go_map_iter go_map_range(go_kv m) {
     go_map_iter it = { m };
     go_ii n = go_map_len(m);
@@ -163,6 +168,7 @@ go_map_iter go_map_range(go_kv m) {
     void* item;
     while (hashmap_iter(m, &i, &item) && it.n < n) memcpy(it.entries + it.n++ * size, item, size);
     it.start = (go_ii)(go_rand() % (go_u8)it.n);
+    it.clears = meta->clears;
     return it;
 }
 
@@ -170,6 +176,7 @@ go_tf go_map_next(go_map_iter* it, void* key, void* val) {
     if (it->n == 0) return false;
     map_metadata *meta = hashmap_udata(it->m);
     size_t size = meta->val_offset + meta->val_size;
+    if (meta->clears != it->clears) return false; // cleared since the range started.
     while (it->i < it->n) {
         const char* entry = it->entries + ((it->i++ + it->start) % it->n) * size;
         const char* current = hashmap_get(it->m, entry);

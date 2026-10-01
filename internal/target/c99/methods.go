@@ -34,6 +34,9 @@ func (c99 Target) methodTable(t types.Type) string {
 	set := types.NewMethodSet(t)
 	for i := range set.Len() {
 		fn := set.At(i).Obj().(*types.Func)
+		if fn.Type().(*types.Signature).TypeParams().Len() > 0 {
+			continue // generic methods are not in method sets.
+		}
 		prefix := "I_"
 		if isPointer && !pointerReceiver(named, fn) {
 			prefix = "IP_" // the receiver is the value pointed to.

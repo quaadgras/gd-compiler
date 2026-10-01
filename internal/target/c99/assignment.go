@@ -246,11 +246,23 @@ func (c99 Target) assignment(stmt source.StatementAssignment) error {
 			if err := c99.Expression(star.Value); err != nil {
 				return err
 			}
-			fmt.Fprintf(c99, ", %s, ", c99.TypeOf(star.Value.TypeAndValue().Type.Underlying().(*types.Pointer).Elem()))
+			elem := star.Value.TypeAndValue().Type.Underlying().(*types.Pointer).Elem()
+			fmt.Fprintf(c99, ", %s, ", c99.TypeOf(elem))
+			closing := ")"
+			switch elem.Underlying().(type) {
+			case *types.Array, *types.Struct: // (copied first, as the value may overlap: *p = *q)
+				symbol := "go_copy_" + identifier.ReplaceAllString(c99.TypeOf(elem), "_")
+				c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
+					fmt.Fprintf(w, "static inline %s %s(%[1]s v) { return v; }\n", c99.TypeOf(elem), symbol)
+					return nil
+				})
+				fmt.Fprintf(c99, "%s(", symbol)
+				closing = "))"
+			}
 			if err := c99.ExpressionAs(stmt.Values[i], stmt.Variables[i].TypeAndValue().Type); err != nil {
 				return err
 			}
-			fmt.Fprintf(c99, ")")
+			fmt.Fprint(c99, closing)
 		case source.Expressions.Index:
 			expr := source.Expressions.Index.Get(variable)
 			if mtype, ok := expr.X.TypeAndValue().Type.Underlying().(*types.Map); ok {
@@ -347,22 +359,8 @@ func (c99 Target) assignment(stmt source.StatementAssignment) error {
 				}
 			}
 			fmt.Fprintf(c99, " %s ", stmt.Token.Value)
-			switch variable.TypeAndValue().Type.(type) {
-			case *types.Interface:
-				symbol := fmt.Sprintf("go_any__%s", c99.Mangle(stmt.Values[i].TypeAndValue().Type))
-				c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
-					fmt.Fprintf(w, "static inline go_vv %s(%[2]s v, const go_type* t) { return go_any_new(sizeof(%[2]s), &v, t); }\n",
-						symbol, c99.TypeOf(stmt.Values[i].TypeAndValue().Type))
-					return nil
-				})
-				fmt.Fprintf(c99, "%s(%s, %s)",
-					symbol,
-					c99.toString(stmt.Values[i]),
-					c99.ReflectTypeOf(stmt.Values[i].TypeAndValue().Type))
-			default:
-				if err := c99.ExpressionAs(stmt.Values[i], stmt.Variables[i].TypeAndValue().Type); err != nil {
-					return err
-				}
+			if err := c99.ExpressionAs(stmt.Values[i], stmt.Variables[i].TypeAndValue().Type); err != nil {
+				return err
 			}
 		}
 	}

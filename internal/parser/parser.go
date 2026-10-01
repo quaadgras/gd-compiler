@@ -28,6 +28,11 @@ func Load(dir string, test bool, overlay map[string][]byte) ([]source.Package, e
 	if err != nil {
 		return nil, err
 	}
+	for _, pkg := range pkgs { // (such as type errors, which the compiler can't compile)
+		if len(pkg.Errors) > 0 {
+			return nil, pkg.Errors[0]
+		}
+	}
 	var results []source.Package
 	seen := make(map[string]bool)
 	var visit func(pkg *packages.Package)

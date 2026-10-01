@@ -2,6 +2,7 @@ package c99
 
 import (
 	"fmt"
+	"go/ast"
 	"go/types"
 	"hash/fnv"
 	"io"
@@ -53,12 +54,13 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 		}
 	}
 	switch xyz.ValueOf(function) { // f[T](...), the instance is recorded for f.
-	case source.Expressions.Index:
-		if x := source.Expressions.Index.Get(function).X; xyz.ValueOf(x) == source.Expressions.DefinedFunction {
+	case source.Expressions.Index: // (or x.m[T](...))
+		index := source.Expressions.Index.Get(function)
+		if x := index.X; index.Index.TypeAndValue().IsType() && (xyz.ValueOf(x) == source.Expressions.DefinedFunction || xyz.ValueOf(x) == source.Expressions.Selector) {
 			function = x
 		}
 	case source.Expressions.Indices:
-		if x := source.Expressions.Indices.Get(function).X; xyz.ValueOf(x) == source.Expressions.DefinedFunction {
+		if x := source.Expressions.Indices.Get(function).X; xyz.ValueOf(x) == source.Expressions.DefinedFunction || xyz.ValueOf(x) == source.Expressions.Selector {
 			function = x
 		}
 	}
@@ -172,7 +174,18 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 					if err != nil {
 						return left.Errorf("%w", err)
 					}
-					fmt.Fprint(c99, c99.methodCName(recv, defined.String))
+					name := c99.methodCName(recv, defined.String)
+					if fn, ok := defined.Unique.(*types.Func); ok && fn.Type().(*types.Signature).TypeParams().Len() > 0 {
+						named, _ := recv.(*types.Named)
+						id, _ := defined.Location.Node.(*ast.Ident)
+						if named == nil || id == nil {
+							return left.Errorf("unsupported call of generic method %s", fn.Name())
+						}
+						if name, err = c99.GenericMethod(named, fn, id); err != nil {
+							return left.Errorf("%w", err)
+						}
+					}
+					fmt.Fprint(c99, name)
 				}
 			} else {
 				name, err := c99.FunctionInstance(defined) // pkg.F

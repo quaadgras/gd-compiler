@@ -401,6 +401,7 @@ func (c99 Target) staticDescriptor(symbol, name string, t types.Type) {
 // typeName returns the name of t for its type descriptor, which identifies the type: like
 // types.TypeString, but without the names of parameters and results.
 func typeName(t types.Type) string {
+	t = types.Unalias(t) // (aliases are the same type)
 	qualifier := func(pkg *types.Package) string { return pkg.Name() }
 	switch typ := types.Unalias(t).(type) {
 	case *types.Pointer:

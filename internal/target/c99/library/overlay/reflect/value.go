@@ -566,6 +566,37 @@ func (v Value) SetPointer(x unsafe.Pointer) {
 	*(*unsafe.Pointer)(v.ptr) = x
 }
 
+// Clear clears the contents of a map or zeros the contents of a slice.
+func (v Value) Clear() {
+	switch v.Kind() {
+	case Map:
+		mapClear(v.ptr)
+	case Slice:
+		for i := 0; i < v.Len(); i++ {
+			e := v.Index(i)
+			memmove(e.ptr, unsafeNew(e.typ.ptr()), e.typ.Size())
+		}
+	default:
+		panic(&ValueError{"reflect.Value.Clear", v.Kind()})
+	}
+}
+
+// Grow increases the slice's capacity, if necessary, to guarantee space for another n
+// elements.
+func (v Value) Grow(n int) {
+	v.mustBeAssignable()
+	v.mustBe("Grow", Slice)
+	if n < 0 {
+		panic("reflect.Value.Grow: negative len")
+	}
+	if v.Len()+n > v.Cap() {
+		g := grow(v, n)
+		h := (*[3]int)(g.ptr)
+		h[1] = v.Len()
+		memmove(v.ptr, g.ptr, unsafe.Sizeof([]byte(nil)))
+	}
+}
+
 func (v Value) SetZero() {
 	v.mustBeAssignable()
 	memmove(v.ptr, unsafeNew(v.typ.ptr()), v.typ.Size())

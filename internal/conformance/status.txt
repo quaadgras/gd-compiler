@@ -107,7 +107,7 @@ closure7.go	pass
 cmp.go	pass	
 cmp6.go	skip	todo:errorcheck
 cmplx.go	skip	todo:errorcheck
-cmplxdivide.go	fail	gd: panic: runtime error: invalid memory address or nil pointer dereference
+cmplxdivide.go	fail	gd: undefined: tests
 cmplxdivide1.go	skip	upstream:skip
 codegen/addrcalc.go	skip	gc:asmcheck
 codegen/alloc.go	skip	gc:asmcheck
@@ -222,7 +222,7 @@ convlit1.go	skip	todo:errorcheck
 copy.go	pass	
 copy1.go	skip	todo:errorcheck
 crlf.go	skip	todo:runoutput
-ddd.go	fail	c11: error: incompatible types when assigning to type 'go_if' from type 'go_vv'
+ddd.go	pass	
 ddd1.go	skip	todo:errorcheck
 ddd2.go	skip	todo:rundir
 decl.go	pass	
@@ -851,7 +851,7 @@ fixedbugs/issue12944.go	skip	todo:errorcheck
 fixedbugs/issue1304.go	pass	
 fixedbugs/issue13160.go	fail	c11: error: assignment to 'go_ii' {aka 'long int'} from 'go_ii *' {aka 'long int *'} makes integer from pointer without a cas…
 fixedbugs/issue13162.go	pass	
-fixedbugs/issue13169.go	fail	exit: timeout
+fixedbugs/issue13169.go	pass	
 fixedbugs/issue13171.go	pass	
 fixedbugs/issue13248.go	skip	todo:errorcheck
 fixedbugs/issue13261.go	pass	
@@ -997,7 +997,7 @@ fixedbugs/issue18393.go	skip	todo:errorcheck
 fixedbugs/issue18410.go	pass	
 fixedbugs/issue18419.go	skip	todo:errorcheck
 fixedbugs/issue18459.go	skip	todo:errorcheck
-fixedbugs/issue18595.go	fail	c11: error: incompatible types when assigning to type 'go_if' from type 'go_vv'
+fixedbugs/issue18595.go	pass	
 fixedbugs/issue18636.go	skip	gc:import runtime/debug
 fixedbugs/issue18640.go	pass	
 fixedbugs/issue18655.go	skip	todo:errorcheck
@@ -1236,7 +1236,7 @@ fixedbugs/issue27267.go	pass
 fixedbugs/issue27278.go	pass	
 fixedbugs/issue27289.go	pass	
 fixedbugs/issue27356.go	skip	todo:errorcheck
-fixedbugs/issue27518a.go	fail	gd: panic: unsupported basic type untyped nil
+fixedbugs/issue27518a.go	pass	
 fixedbugs/issue27518b.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue27557.go	skip	gc:diagnostics -m
 fixedbugs/issue27595.go	skip	todo:errorcheck
@@ -1456,7 +1456,7 @@ fixedbugs/issue4232.go	skip	todo:errorcheck
 fixedbugs/issue42401.go	skip	todo:rundir
 fixedbugs/issue4251.go	skip	todo:errorcheck
 fixedbugs/issue4252.go	skip	todo:rundir
-fixedbugs/issue42568.go	fail	gd: panic: unsupported basic type untyped nil
+fixedbugs/issue42568.go	pass	
 fixedbugs/issue42587.go	pass	
 fixedbugs/issue4264.go	skip	todo:errorcheck
 fixedbugs/issue42686.go	skip	gc:goexperiment fieldtrack
@@ -1786,7 +1786,7 @@ fixedbugs/issue59367.go	pass
 fixedbugs/issue59378.go	pass	
 fixedbugs/issue59404.go	skip	gc:flags -gcflags=-l=4
 fixedbugs/issue59404part2.go	pass	
-fixedbugs/issue59411.go	fail	gd: panic: runtime error: invalid memory address or nil pointer dereference
+fixedbugs/issue59411.go	pass	
 fixedbugs/issue5957.go	skip	todo:errorcheck
 fixedbugs/issue59572.go	pass	
 fixedbugs/issue5963.go	pass	
@@ -1917,7 +1917,7 @@ fixedbugs/issue6977.go	skip	todo:errorcheck
 fixedbugs/issue69825.go	skip	gc:flags -d=libfuzzer
 fixedbugs/issue70156.go	pass	
 fixedbugs/issue70175.go	fail	c11: error: duplicate label 'go_label__'
-fixedbugs/issue70189.go	fail	exit: exit status 2 panic: 0
+fixedbugs/issue70189.go	pass	
 fixedbugs/issue7023.go	skip	todo:compiledir
 fixedbugs/issue7044.go	pass	
 fixedbugs/issue70481.go	pass	
@@ -2080,8 +2080,8 @@ fixedbugs/issue8073.go	pass
 fixedbugs/issue8074.go	pass	
 fixedbugs/issue8076.go	pass	
 fixedbugs/issue8079.go	pass	
-fixedbugs/issue80976.go	fail	c11: error: implicit declaration of function 'TypeMap_Set_go_main_package'; did you mean 'go_same_res_go_main_package'? [-Wim…
-fixedbugs/issue81165.go	fail	c11: error: 'I_someType_FailedLink_go_main_package' undeclared here (not in a function); did you mean 'someTypeAlias_go_main_…
+fixedbugs/issue80976.go	pass	
+fixedbugs/issue81165.go	pass	
 fixedbugs/issue8132.go	pass	
 fixedbugs/issue8139.go	fail	exit: exit status 2 panic: interface conversion: interface {} is nil, not main.T
 fixedbugs/issue8154.go	pass	
@@ -2159,9 +2159,9 @@ gc1.go	pass
 gc2.go	skip	gc:memstats runtime.ReadMemStats
 gcgort.go	skip	gc:import runtime/debug
 gcstring.go	skip	gc:finalizers runtime.SetFinalizer
-genmeth.go	fail	gd: panic: type parameter P was not substituted
+genmeth.go	pass	
 genmeth1.go	fail	gd: unsupported index of func
-genmeth2.go	fail	gd: unsupported index of func
+genmeth2.go	pass	
 goprint.go	fail	c11: error: invalid initializer
 goto.go	skip	todo:errorcheck
 heapsampling.go	skip	gc:memstats runtime.MemProfileRate
@@ -2334,7 +2334,7 @@ range2.go	skip	todo:errorcheck
 range3.go	pass	
 range4.go	fail	gd: unsupported defer in the body of a range over a function
 rangegen.go	skip	todo:runoutput
-recover.go	fail	exit: exit status 2 panic: interface conversion: interface {} is interface{}, no…
+recover.go	fail	exit: exit status 2 panic: reflect.Value.Method is not supported by gd
 recover1.go	fail	exit: exit status 2 panic: nil
 recover2.go	pass	
 recover3.go	pass	
@@ -2648,7 +2648,7 @@ typeparam/mapsimp.go	skip	todo:rundir
 typeparam/mdempsky/1.go	skip	todo:compiledir
 typeparam/mdempsky/10.go	skip	todo:rundir
 typeparam/mdempsky/12.go	skip	todo:rundir
-typeparam/mdempsky/13.go	fail	exit: signal: trace/breakpoint trap filc safety error: cannot read 24 bytes when upper - ptr = 1…
+typeparam/mdempsky/13.go	pass	
 typeparam/mdempsky/14.go	pass	
 typeparam/mdempsky/15.go	skip	gc:goexperiment fieldtrack
 typeparam/mdempsky/16.go	fail	output: mismatch
@@ -2670,7 +2670,7 @@ typeparam/min.go	pass
 typeparam/mincheck.go	skip	todo:errorcheck
 typeparam/minimp.go	skip	todo:rundir
 typeparam/mutualimp.go	skip	todo:compiledir
-typeparam/nested.go	fail	c11: error: redefinition of 'go_type_Int_4180040_go_main_package'
+typeparam/nested.go	fail	c11: error: redefinition of 'go_type_Int_4180790_go_main_package'
 typeparam/ordered.go	pass	
 typeparam/orderedmap.go	skip	gc:finalizers runtime.SetFinalizer
 typeparam/orderedmapsimp.go	skip	todo:rundir
@@ -2682,7 +2682,7 @@ typeparam/select.go	skip	todo:rundir
 typeparam/sets.go	pass	
 typeparam/setsimp.go	skip	todo:rundir
 typeparam/settable.go	pass	
-typeparam/shape1.go	fail	output: mismatch
+typeparam/shape1.go	pass	
 typeparam/shape_assert.go	pass	
 typeparam/sliceimp.go	skip	todo:rundir
 typeparam/slices.go	pass	
@@ -2699,8 +2699,8 @@ typeparam/tparam1.go	skip	todo:errorcheck
 typeparam/typelist.go	pass	
 typeparam/typeswitch1.go	pass	
 typeparam/typeswitch2.go	pass	
-typeparam/typeswitch3.go	fail	output: mismatch
-typeparam/typeswitch4.go	fail	output: mismatch
+typeparam/typeswitch3.go	pass	
+typeparam/typeswitch4.go	pass	
 typeparam/typeswitch5.go	fail	gd: panic: type parameter T was not substituted
 typeparam/typeswitch6.go	pass	
 typeparam/typeswitch7.go	fail	output: mismatch

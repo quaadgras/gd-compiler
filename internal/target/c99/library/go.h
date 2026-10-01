@@ -266,7 +266,7 @@ void go_map_delete(go_kv m, const void* key);
 go_tf go_map_get(go_kv m, const void* key, void* val);
 // A map iterator (for range) iterates over the entries of the map when it started (from a
 // random one, as Go does), skipping those deleted since.
-typedef struct { go_kv m; char* entries; go_ii n, i, start; } go_map_iter;
+typedef struct { go_kv m; char* entries; go_ii n, i, start, clears; } go_map_iter;
 go_map_iter go_map_range(go_kv m);
 go_tf go_map_next(go_map_iter* it, void* key, void* val); // val may be NULL.
 

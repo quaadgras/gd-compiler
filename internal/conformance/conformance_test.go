@@ -326,7 +326,7 @@ func runCase(t *testing.T, root, name string) Status {
 	}
 
 	// Run it, in the test directory like upstream, as some tests read files.
-	timeout := 10 * time.Second
+	timeout := 60 * time.Second // (as upstream, see $GOROOT/test/run.go)
 	if recipe.Timeout > 0 {
 		timeout = time.Duration(recipe.Timeout) * time.Second
 	}

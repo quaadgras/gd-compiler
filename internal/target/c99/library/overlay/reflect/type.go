@@ -42,6 +42,7 @@ func mapLen(m unsafe.Pointer) int                                     // m point
 func mapIndex(m, key unsafe.Pointer, t unsafe.Pointer) unsafe.Pointer // a copy of the element, or nil.
 func mapAssign(m, key, elem unsafe.Pointer)
 func mapDelete(m, key unsafe.Pointer)
+func mapClear(m unsafe.Pointer)
 func mapRange(m unsafe.Pointer) unsafe.Pointer // an iterator.
 func mapNext(it, key, elem unsafe.Pointer) bool
 func chanLen(c unsafe.Pointer) int // c points to the channel.

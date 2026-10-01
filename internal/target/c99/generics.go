@@ -76,10 +76,10 @@ func subst(t types.Type) types.Type {
 }
 
 // substituter returns a function that substitutes the type parameters params with args.
-func (g *Generics) substituter(params *types.TypeParamList, args []types.Type) func(types.Type) types.Type {
+func (g *Generics) substituter(params []*types.TypeParam, args []types.Type) func(types.Type) types.Type {
 	m := make(map[*types.TypeParam]types.Type, len(args))
-	for i := range params.Len() {
-		m[params.At(i)] = args[i]
+	for i, param := range params {
+		m[param] = args[i]
 	}
 	var apply func(t types.Type) types.Type
 	tuple := func(t *types.Tuple) *types.Tuple {
@@ -146,7 +146,7 @@ func (g *Generics) substituter(params *types.TypeParamList, args []types.Type) f
 func (c99 Target) instanceSuffix(args []types.Type) string {
 	var names []string
 	for _, arg := range args {
-		names = append(names, identifier.ReplaceAllString(c99.TypeOf(arg), "_"))
+		names = append(names, mangle(typeName(arg))) // (by Go type: C types may be the same)
 	}
 	return "__" + strings.Join(names, "__")
 }
@@ -203,7 +203,7 @@ func (c99 Target) FunctionInstance(name source.DefinedFunction) (string, error) 
 	}
 	cname += c99.instanceSuffix(args)
 	sig := fn.Origin().Type().(*types.Signature)
-	return cname, c99.emitInstance(decl, c99.Closures.generics.substituter(sig.TypeParams(), args), cname)
+	return cname, c99.emitInstance(decl, c99.Closures.generics.substituter(typeParams(sig.TypeParams()), args), cname)
 }
 
 // MethodInstance emits (if it hasn't been) the method of an instance of a generic type.
@@ -222,8 +222,46 @@ func (c99 Target) MethodInstance(named *types.Named, method string) error {
 	}
 	fn := decl.Name.Unique.(*types.Func)
 	sig := fn.Type().(*types.Signature)
+	if sig.TypeParams().Len() > 0 {
+		return nil // a generic method, instantiated where it's called, see [Target.GenericMethod].
+	}
 	cname := c99.typeCName(named) + "_" + c99.FunctionName(decl.Name)
-	return c99.emitInstance(decl, c99.Closures.generics.substituter(sig.RecvTypeParams(), slicesOf(named.TypeArgs())), cname)
+	return c99.emitInstance(decl, c99.Closures.generics.substituter(typeParams(sig.RecvTypeParams()), slicesOf(named.TypeArgs())), cname)
+}
+
+// GenericMethod returns the C name of the instance of the generic method fn (a method with
+// type parameters of its own) of recv (a named type), with the type arguments of its call
+// at id, emitting it if it hasn't been.
+func (c99 Target) GenericMethod(recv *types.Named, fn *types.Func, id *ast.Ident) (string, error) {
+	inst, ok := c99.Closures.info.Instances[id]
+	if !ok {
+		return "", fmt.Errorf("unsupported generic method %s", fn.Name())
+	}
+	var margs []types.Type
+	for a := range inst.TypeArgs.Types() {
+		margs = append(margs, subst(a))
+	}
+	cname := c99.methodCName(recv, fn.Name()) + c99.instanceSuffix(margs)
+	c99, done := c99.inPackage(fn.Origin().Pkg())
+	defer done()
+	decl, ok := c99.Closures.generics.funcs[fn.Origin()]
+	if !ok {
+		if decl, ok = c99.Closures.generics.methods[recv.Origin().Obj()][fn.Name()]; !ok {
+			return "", fmt.Errorf("unsupported generic method %s", fn.Name())
+		}
+	}
+	sig := decl.Name.Unique.(*types.Func).Type().(*types.Signature)
+	params := append(typeParams(sig.RecvTypeParams()), typeParams(sig.TypeParams())...)
+	args := append(slicesOf(recv.TypeArgs()), margs...)
+	return cname, c99.emitInstance(decl, c99.Closures.generics.substituter(params, args), cname)
+}
+
+func typeParams(list *types.TypeParamList) []*types.TypeParam {
+	var params []*types.TypeParam
+	for p := range list.TypeParams() {
+		params = append(params, p)
+	}
+	return params
 }
 
 // compiledPackages are the closures (and generics) of the packages compiled so far, by import path,
