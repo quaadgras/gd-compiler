@@ -938,7 +938,7 @@ fixedbugs/issue15902.go	pass
 fixedbugs/issue15920.go	skip	todo:compiledir
 fixedbugs/issue15926.go	pass	
 fixedbugs/issue15961.go	pass	
-fixedbugs/issue15975.go	fail	exit: signal: trace/breakpoint trap filc safety error: cannot read pointer with null object.
+fixedbugs/issue15975.go	pass	
 fixedbugs/issue15988.go	pass	
 fixedbugs/issue15992.go	pass	
 fixedbugs/issue16008.go	skip	todo:errorcheck
@@ -961,7 +961,7 @@ fixedbugs/issue16515.go	pass
 fixedbugs/issue16616.go	skip	todo:compiledir
 fixedbugs/issue16733.go	pass	
 fixedbugs/issue16741.go	pass	
-fixedbugs/issue16760.go	fail	exit: signal: trace/breakpoint trap filc safety error: cannot read pointer with null object.
+fixedbugs/issue16760.go	pass	
 fixedbugs/issue16804.go	pass	
 fixedbugs/issue16870.go	pass	
 fixedbugs/issue16948.go	pass	
@@ -1013,7 +1013,7 @@ fixedbugs/issue18915.go	skip	todo:errorcheck
 fixedbugs/issue18994.go	pass	
 fixedbugs/issue19012.go	skip	todo:errorcheck
 fixedbugs/issue19028.go	skip	todo:rundir
-fixedbugs/issue19040.go	fail	output: mismatch
+fixedbugs/issue19040.go	pass	
 fixedbugs/issue19056.go	skip	todo:errorcheck
 fixedbugs/issue19078.go	pass	
 fixedbugs/issue19084.go	pass	
@@ -1021,7 +1021,7 @@ fixedbugs/issue19113.go	fail	exit: exit status 2 panic: reflect: In is not suppo
 fixedbugs/issue19137.go	pass	
 fixedbugs/issue19168.go	skip	gc:diagnostics -d=wb
 fixedbugs/issue19182.go	pass	
-fixedbugs/issue19201.go	fail	exit: signal: trace/breakpoint trap filc safety error: cannot read pointer with null object.
+fixedbugs/issue19201.go	fail	exit: exit status 2 panic: runtime error: invalid memory address or nil pointer …
 fixedbugs/issue19217.go	pass	
 fixedbugs/issue19246.go	pass	
 fixedbugs/issue19261.go	skip	gc:diagnostics -m
@@ -1159,7 +1159,7 @@ fixedbugs/issue23719.go	pass
 fixedbugs/issue23732.go	skip	todo:errorcheck
 fixedbugs/issue23734.go	fail	exit: exit status 2 panic: didn't panic
 fixedbugs/issue23780.go	fail	cc: timeout
-fixedbugs/issue23781.go	fail	cc: signal: killed
+fixedbugs/issue23781.go	fail	cc: timeout
 fixedbugs/issue23812.go	pass	
 fixedbugs/issue23814.go	pass	
 fixedbugs/issue23823.go	skip	todo:errorcheck
@@ -1209,7 +1209,7 @@ fixedbugs/issue25984.go	skip	todo:compiledir
 fixedbugs/issue25993.go	skip	gc:flags -d=ssa/check/on
 fixedbugs/issue26024.go	pass	
 fixedbugs/issue26043.go	pass	
-fixedbugs/issue26094.go	fail	exit: exit status 2 panic: nil
+fixedbugs/issue26094.go	fail	exit: exit status 2 panic: (*runtime.PanicNilError) 0x?
 fixedbugs/issue26097.go	pass	
 fixedbugs/issue26105.go	pass	
 fixedbugs/issue26116.go	pass	
@@ -1497,7 +1497,7 @@ fixedbugs/issue43701.go	pass
 fixedbugs/issue43762.go	skip	todo:errorcheck
 fixedbugs/issue43835.go	fail	exit: exit status 2 panic: FAIL
 fixedbugs/issue43908.go	pass	
-fixedbugs/issue43942.go	fail	exit: exit status 1 2026/10/01 14:21:39 want 5, have <nil>
+fixedbugs/issue43942.go	fail	exit: exit status 1 2026/10/01 15:21:20 want 5, have <nil>
 fixedbugs/issue43962.go	skip	todo:errorcheck
 fixedbugs/issue4396a.go	pass	
 fixedbugs/issue4396b.go	pass	
@@ -1795,7 +1795,7 @@ fixedbugs/issue59680.go	pass
 fixedbugs/issue59709.go	skip	todo:rundir
 fixedbugs/issue6004.go	skip	todo:errorcheck
 fixedbugs/issue6036.go	pass	
-fixedbugs/issue6055.go	fail	exit: signal: trace/breakpoint trap filc safety error: cannot read pointer with null object.
+fixedbugs/issue6055.go	pass	
 fixedbugs/issue60582.go	pass	
 fixedbugs/issue60601.go	fail	exit: exit status 2 panic: did not panic
 fixedbugs/issue60945.go	skip	todo:compiledir
@@ -2375,7 +2375,7 @@ simd_inline.go	skip	gc:build goexperiment.simd && amd64
 sizeof.go	pass	
 slice3.go	skip	todo:runoutput
 slice3err.go	skip	todo:errorcheck
-slicecap.go	fail	output: mismatch
+slicecap.go	pass	
 sliceopt.go	skip	gc:diagnostics -d=append,slice
 solitaire.go	pass	
 stack.go	fail	exit: signal: trace/breakpoint trap filc safety error: stack overflow.

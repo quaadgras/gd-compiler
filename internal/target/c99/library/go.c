@@ -221,7 +221,7 @@ go_ll go_slice(go_ll s, go_ii elem_size, go_i8 low, go_i8 high, go_i8 max) {
         go_panic_error("runtime error: slice bounds out of range [%lld:%lld]", (long long)low, (long long)high);
     }
     // the result shares the backing array.
-    go_pt ptr = { .ptr = s.ptr.ptr ? (char*)s.ptr.ptr + low * elem_size : NULL };
+    go_pt ptr = { .ptr = s.ptr.ptr && max > low ? (char*)s.ptr.ptr + low * elem_size : s.ptr.ptr }; // (not past the end, as Go)
     return (go_ll){ .ptr = ptr, .len = (go_ii)(high - low), .cap = (go_ii)(max - low) };
 }
 
@@ -476,7 +476,20 @@ void go_frame_unwind(go_frame* f) {
     go_g.value = (go_vv){0};
 }
 
+// panic(nil) panics with a *runtime.PanicNilError (since Go 1.21).
+static go_ss go_panic_nil_Error(void* e) { (void)e; return go_string_new("panic called with nil argument (use runtime.PanicNilError)"); }
+static void go_panic_nil_RuntimeError(void* e) { (void)e; }
+static const go_method go_panic_nil_methods[] = {
+    { "Error", "func() string", (void(*)(void))go_panic_nil_Error },
+    { "RuntimeError", "func()", (void(*)(void))go_panic_nil_RuntimeError },
+};
+static const go_type go_type_panic_nil = {.name="*runtime.PanicNilError", .kind=go_kind_pointer, .size=sizeof(go_pt), .methods=go_panic_nil_methods, .nmethods=2};
+
 void go_panic_any(go_vv v) {
+    if (!v.go_type) {
+        static go_pt nil_error;
+        v = (go_vv){ (go_pt){ &nil_error }, &go_type_panic_nil };
+    }
     go_g.panicking = true;
     go_g.recovered = false;
     go_g.value = v;
@@ -614,6 +627,7 @@ go_ss go_string_slice(go_ss s, go_i8 low, go_i8 high) {
     if (low < 0 || low > high) {
         go_panic_error("runtime error: slice bounds out of range [%lld:%lld]", (long long)low, (long long)high);
     }
+    if (high == low) return (go_ss){ .ptr = s.ptr, .len = 0 }; // (not past the end, as Go)
     return (go_ss){ .ptr = s.ptr ? s.ptr + low : NULL, .len = (go_ii)(high - low) };
 }
 

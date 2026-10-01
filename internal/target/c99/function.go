@@ -96,7 +96,9 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 		}
 		wrapper("I_", fmt.Sprintf("*(%s*)go_recv", c99.TypeOf(recvType)))
 		if _, isPointer := recvType.Underlying().(*types.Pointer); !isPointer {
-			wrapper("IP_", fmt.Sprintf("go_pointer_get(*(go_pt*)go_recv, %s)", c99.TypeOf(recvType)))
+			typeName := strings.TrimPrefix(types.TypeString(recvType, func(*types.Package) string { return "" }), ".")
+			wrapper("IP_", fmt.Sprintf("(*(%s*)go_panicwrap((*(go_pt*)go_recv).ptr, %s, %s, %s))", c99.TypeOf(recvType),
+				cString(c99.CurrentName), cString(typeName), cString(decl.Name.String)))
 		}
 	}
 	if decl.Name.String == "main" {

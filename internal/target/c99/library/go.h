@@ -309,7 +309,7 @@ static inline go_if go_interface_new(size_t size, const void* value, const go_ty
     go_pt p = go_new(size, value);
     return (go_if){ .ptr = p, .go_type = go_type, .vtable = vtable };
 }
-#define go_interface_methods(T, v) ((T*)v.vtable)
+#define go_interface_methods(T, v) ((T*)go_nil_check((v).vtable)) // (calls of methods of nil interfaces panic)
 
 go_vv go_any_new(size_t size, void* value, const go_type* go_type);
 
@@ -336,6 +336,12 @@ static inline void* go_nil_check(void* p) {
     if (!p) go_panic_error("runtime error: invalid memory address or nil pointer dereference");
     return p;
 }
+// go_panicwrap returns p, the receiver of a value method called through a pointer.
+static inline void* go_panicwrap(void* p, const char* pkg, const char* type, const char* method) {
+    if (!p) go_panic_error("value method %s.%s.%s called using nil *%s pointer", pkg, type, method, type);
+    return p;
+}
+static inline go_if go_if_check(go_if v) { go_nil_check(v.vtable); return v; } // (method values of nil interfaces panic)
 static inline go_ii go_index_check(go_ii i, go_ii length) {
     if (i < 0) go_panic_error("runtime error: index out of range [%lld]", (long long)i);
     if (i >= length) go_panic_error("runtime error: index out of range [%lld] with length %lld", (long long)i, (long long)length);

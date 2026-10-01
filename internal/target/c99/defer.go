@@ -127,6 +127,9 @@ func (c99 Target) callClosure(call source.FunctionCall, kind string) (string, er
 							return "", err
 						}
 					}
+					if _, iface := rtype.Underlying().(*types.Interface); iface && c99.TypeOf(rtype) == "go_if" {
+						value = "go_if_check(" + value + ")" // (defer x.M() evaluates x.M now)
+					}
 					deferred.Receiver = store(c99.TypeOf(rtype), value)
 				}
 			} else {
