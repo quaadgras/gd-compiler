@@ -146,6 +146,9 @@ func (c99 Target) TypeDefinition(spec source.TypeDefinition) error {
 		described = spec.Type.TypeAndValue().Type
 	}
 	fields := c99.descriptorFields(described)
+	if !spec.Global {
+		fields += ", .local=true"
+	}
 	fmt.Fprintf(out, "\n%sconst go_type go_type_%s = {.name=%q%s};\n", static, name, c99.CurrentName+"."+spec.Name.String, fields)
 	return nil
 }
@@ -409,6 +412,9 @@ func (c99 Target) StaticInitializer(expr source.Expression, t types.Type) (strin
 					return "", false
 				}
 				elem = pair.Value
+			}
+			if xyz.ValueOf(elem) != source.Expressions.KeyValue && typ.Field(i).Name() == "_" {
+				continue // (blank fields are not set)
 			}
 			value, ok := c99.StaticInitializer(elem, ftype)
 			if !ok {

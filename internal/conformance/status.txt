@@ -51,7 +51,7 @@ alias1.go	pass
 alias2.go	skip	todo:errorcheck
 alias3.go	skip	todo:rundir
 align.go	pass	
-append.go	fail	exit: signal: trace/breakpoint trap filc safety error: cannot read pointer with ptr >= upper.
+append.go	pass	
 append1.go	skip	todo:errorcheck
 arenas/smoke.go	skip	gc:goexperiment arenas
 args.go	pass	
@@ -411,7 +411,7 @@ fixedbugs/bug144.go	pass
 fixedbugs/bug145.go	pass	
 fixedbugs/bug146.go	skip	todo:errorcheck
 fixedbugs/bug147.go	pass	
-fixedbugs/bug148.go	fail	exit: exit status 2 panic: function should panic
+fixedbugs/bug148.go	pass	
 fixedbugs/bug149.go	pass	
 fixedbugs/bug150.go	pass	
 fixedbugs/bug151.go	pass	
@@ -458,7 +458,7 @@ fixedbugs/bug193.go	skip	todo:errorcheck
 fixedbugs/bug194.go	pass	
 fixedbugs/bug19403.go	pass	
 fixedbugs/bug195.go	skip	todo:errorcheck
-fixedbugs/bug196.go	fail	exit: exit status 2 panic: fail
+fixedbugs/bug196.go	pass	
 fixedbugs/bug197.go	skip	todo:errorcheck
 fixedbugs/bug198.go	skip	todo:errorcheck
 fixedbugs/bug199.go	pass	
@@ -468,7 +468,7 @@ fixedbugs/bug202.go	pass
 fixedbugs/bug203.go	pass	
 fixedbugs/bug204.go	pass	
 fixedbugs/bug205.go	skip	todo:errorcheck
-fixedbugs/bug206.go	fail	c11: error: 'go_env_go_yield_FileSet_Write_30' undeclared (first use in this function)
+fixedbugs/bug206.go	fail	c11: error: 'go_env_go_yield_FileSet_Write_36' undeclared (first use in this function)
 fixedbugs/bug207.go	pass	
 fixedbugs/bug208.go	skip	todo:errorcheck
 fixedbugs/bug209.go	skip	todo:errorcheck
@@ -501,7 +501,7 @@ fixedbugs/bug238.go	skip	todo:errorcheck
 fixedbugs/bug239.go	pass	
 fixedbugs/bug240.go	skip	todo:errorcheck
 fixedbugs/bug241.go	skip	todo:errorcheck
-fixedbugs/bug242.go	fail	exit: exit status 2 panic: fail
+fixedbugs/bug242.go	pass	
 fixedbugs/bug243.go	pass	
 fixedbugs/bug244.go	pass	
 fixedbugs/bug245.go	pass	
@@ -521,7 +521,7 @@ fixedbugs/bug258.go	pass
 fixedbugs/bug259.go	pass	
 fixedbugs/bug260.go	pass	
 fixedbugs/bug261.go	pass	
-fixedbugs/bug262.go	fail	exit: exit status 2 panic: fail
+fixedbugs/bug262.go	pass	
 fixedbugs/bug263.go	pass	
 fixedbugs/bug264.go	pass	
 fixedbugs/bug265.go	pass	
@@ -783,7 +783,7 @@ fixedbugs/gcc61258.go	pass
 fixedbugs/gcc61264.go	pass	
 fixedbugs/gcc61265.go	pass	
 fixedbugs/gcc61273.go	pass	
-fixedbugs/gcc65755.go	fail	exit: exit status 2 panic: ff
+fixedbugs/gcc65755.go	pass	
 fixedbugs/gcc67968.go	skip	todo:compiledir
 fixedbugs/gcc78763.go	pass	
 fixedbugs/gcc80226.go	pass	
@@ -1093,7 +1093,7 @@ fixedbugs/issue21273.go	skip	todo:errorcheck
 fixedbugs/issue21317.go	skip	gc:build !js && !wasip1 && gc
 fixedbugs/issue21576.go	skip	gc:toolchain
 fixedbugs/issue21655.go	pass	
-fixedbugs/issue21687.go	fail	exit: exit status 2 panic: 2
+fixedbugs/issue21687.go	fail	exit: exit status 2 panic: 1
 fixedbugs/issue21709.go	skip	gc:diagnostics -m
 fixedbugs/issue21770.go	skip	todo:errorcheck
 fixedbugs/issue21808.go	pass	
@@ -1159,7 +1159,7 @@ fixedbugs/issue23719.go	pass
 fixedbugs/issue23732.go	skip	todo:errorcheck
 fixedbugs/issue23734.go	fail	exit: exit status 2 panic: didn't panic
 fixedbugs/issue23780.go	fail	cc: timeout
-fixedbugs/issue23781.go	fail	cc: signal: killed
+fixedbugs/issue23781.go	fail	cc: timeout
 fixedbugs/issue23812.go	pass	
 fixedbugs/issue23814.go	pass	
 fixedbugs/issue23823.go	skip	todo:errorcheck
@@ -1209,7 +1209,7 @@ fixedbugs/issue25984.go	skip	todo:compiledir
 fixedbugs/issue25993.go	skip	gc:flags -d=ssa/check/on
 fixedbugs/issue26024.go	pass	
 fixedbugs/issue26043.go	pass	
-fixedbugs/issue26094.go	fail	exit: exit status 2 panic: (*runtime.PanicNilError) 0x?
+fixedbugs/issue26094.go	fail	exit: exit status 2 panic: interface conversion: interface {} is main.T, not mai…
 fixedbugs/issue26097.go	pass	
 fixedbugs/issue26105.go	pass	
 fixedbugs/issue26116.go	pass	
@@ -1323,7 +1323,7 @@ fixedbugs/issue31252.go	skip	todo:compiledir
 fixedbugs/issue31412a.go	pass	
 fixedbugs/issue31412b.go	skip	todo:errorcheck
 fixedbugs/issue31419.go	pass	
-fixedbugs/issue31546.go	fail	exit: exit status 2 panic: fail
+fixedbugs/issue31546.go	pass	
 fixedbugs/issue31573.go	skip	gc:diagnostics -m
 fixedbugs/issue31636.go	skip	todo:rundir
 fixedbugs/issue31637.go	skip	todo:compiledir
@@ -1495,9 +1495,9 @@ fixedbugs/issue43677.go	pass
 fixedbugs/issue4370.go	skip	todo:compiledir
 fixedbugs/issue43701.go	pass	
 fixedbugs/issue43762.go	skip	todo:errorcheck
-fixedbugs/issue43835.go	fail	exit: exit status 2 panic: FAIL
+fixedbugs/issue43835.go	pass	
 fixedbugs/issue43908.go	pass	
-fixedbugs/issue43942.go	fail	exit: exit status 1 2026/10/01 16:41:48 want 5, have <nil>
+fixedbugs/issue43942.go	fail	exit: exit status 1 2026/10/01 17:02:54 want 5, have <nil>
 fixedbugs/issue43962.go	skip	todo:errorcheck
 fixedbugs/issue4396a.go	pass	
 fixedbugs/issue4396b.go	pass	
@@ -2303,7 +2303,7 @@ method6.go	skip	todo:errorcheck
 method7.go	pass	
 named.go	pass	
 named1.go	skip	todo:errorcheck
-newexpr.go	fail	exit: exit status 2 panic: wrong value
+newexpr.go	pass	
 newinline.go	skip	gc:build goexperiment.newinliner
 nil.go	pass	
 nilcheck.go	skip	gc:diagnostics -d=nil
@@ -2350,7 +2350,7 @@ reflectmethod7.go	fail	exit: exit status 2 panic: FAIL
 reflectmethod8.go	pass	
 rename.go	pass	
 rename1.go	skip	todo:errorcheck
-reorder.go	fail	exit: exit status 2 panic: runtime error: invalid memory address or nil pointer …
+reorder.go	pass	
 reorder2.go	pass	
 retjmp.go	skip	todo:buildrundir
 return.go	skip	todo:errorcheck
@@ -2731,4 +2731,4 @@ weak.go	skip	todo:errorcheck
 winbatch.go	fail	c11: error: implicit declaration of function 'File_Readdir_go_os_package'; did you mean 'File_Read_go_os_package'? [-Wimplici…
 writebarrier.go	skip	gc:diagnostics -d=wb
 zerodivide.go	pass	
-zerosize.go	fail	exit: exit status 2 panic: FAIL
+zerosize.go	pass	

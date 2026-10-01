@@ -53,7 +53,7 @@ func (c99 Target) methodTable(t types.Type) string {
 	if len(entries) == 0 {
 		return ""
 	}
-	symbol := "go_methods_" + mangle(typeName(t))
+	symbol := "go_methods_" + c99.symbolName(t)
 	c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
 		fmt.Fprintf(w, "static const go_method %s[] = { %s };\n", symbol, strings.Join(entries, ", "))
 		return nil

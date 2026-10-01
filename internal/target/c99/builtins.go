@@ -103,6 +103,21 @@ func (c99 Target) new(expr source.FunctionCall) error {
 	if len(expr.Arguments) != 1 {
 		return expr.Errorf("new expects exactly one argument, got %d", len(expr.Arguments))
 	}
+	if !expr.Arguments[0].TypeAndValue().IsType() { // new(v), a copy of a value (Go 1.26)
+		elem := expr.TypeAndValue().Type.Underlying().(*types.Pointer).Elem()
+		var buf strings.Builder
+		cc := c99
+		cc.Writer = &buf
+		if err := cc.ExpressionAs(expr.Arguments[0], elem); err != nil {
+			return err
+		}
+		fmt.Fprintf(c99, "((go_pt){ %s(%s) })", c99.BoxOf(elem), buf.String())
+		return nil
+	}
+	if zeroSize(expr.Arguments[0].TypeAndValue().Type) { // (all zero-size values have the same address, as in Go)
+		fmt.Fprintf(c99, "((go_pt){ go_zerobase })")
+		return nil
+	}
 	fmt.Fprintf(c99, "go_pointer_new(%[1]s)", c99.TypeOf(expr.Arguments[0].TypeAndValue().Type))
 	return nil
 }

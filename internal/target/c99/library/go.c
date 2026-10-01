@@ -508,10 +508,11 @@ void go_panic_any(go_vv v) {
 // types are defined in each file that uses them, so they are compared by kind and name.
 go_tf go_type_eq(const go_type* a, const go_type* b) {
     if (a == b) return true;
-    if (!a || !b) return false;
+    if (!a || !b || a->local || b->local) return false; // (local types have one descriptor)
     return a->kind == b->kind && strcmp(a->name, b->name) == 0;
 }
 
+char go_zerobase[8];
 int go_argc;
 char** go_argv;
 

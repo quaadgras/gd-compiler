@@ -479,6 +479,10 @@ func (c99 Target) ExpressionUnary(e source.ExpressionUnary) error {
 	switch e.Operation.Value {
 	case token.AND:
 		if xyz.ValueOf(e.X) == source.Expressions.Composite { // &T{...} is allocated.
+			if zeroSize(e.X.TypeAndValue().Type) { // (all zero-size values have the same address, as in Go)
+				fmt.Fprintf(c99, "((void)(%s), (go_pt){ go_zerobase })", c99.toString(e.X))
+				return nil
+			}
 			switch e.X.TypeAndValue().Type.Underlying().(type) {
 			case *types.Map, *types.Slice: // (not compound literals, so boxed)
 				fmt.Fprintf(c99, "((go_pt){ %s(%s) })", c99.BoxOf(e.X.TypeAndValue().Type), c99.toString(e.X))
@@ -500,6 +504,10 @@ func (c99 Target) ExpressionUnary(e source.ExpressionUnary) error {
 			return nil
 		}
 		ident := source.Expressions.DefinedVariable.Get(e.X)
+		if zeroSize(e.X.TypeAndValue().Type) { // (all zero-size variables have the same address, as in Go)
+			fmt.Fprintf(c99, "((go_pt){ go_zerobase })")
+			return nil
+		}
 		if !c99.StackAllocated(ident) {
 			fmt.Fprintf(c99, "(%s){.ptr=%s}", c99.TypeOf(e.TypeAndValue().Type), ident.String)
 		} else {

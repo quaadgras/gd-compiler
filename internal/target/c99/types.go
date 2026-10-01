@@ -322,7 +322,7 @@ func (c99 Target) ReflectTypeOf(t types.Type) string {
 		panic("unsupported type " + reflect.TypeOf(typ).String())
 	}
 	name := typeName(t)
-	symbol := "go_rtype_" + mangle(name)
+	symbol := "go_rtype_" + c99.symbolName(t)
 	c99.staticDescriptor(symbol, name, t)
 	return "&" + symbol
 }
@@ -362,7 +362,7 @@ func (c99 Target) descriptorFields(t types.Type) string {
 				fields = append(fields, fmt.Sprintf("{.name=%s, .type=%s, .offset=offsetof(%s, %s), .exported=%t, .embedded=%t}",
 					cString(field.Name()), c99.ReflectTypeOf(field.Type()), ctype, fieldName(field, i), field.Exported(), field.Anonymous()))
 			}
-			symbol := "go_fields_" + mangle(typeName(t))
+			symbol := "go_fields_" + c99.symbolName(t)
 			c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
 				fmt.Fprintf(w, "static const go_field %s[] = {%s};\n", symbol, strings.Join(fields, ", "))
 				return nil
@@ -513,4 +513,16 @@ func mangle(s string) string {
 		}
 	}
 	return b.String()
+}
+
+// symbolName returns a C identifier for the type t, for the symbols of its descriptor (local
+// types, and pointers to them, have their position, as they may have the same names).
+func (c99 Target) symbolName(t types.Type) string {
+	name := typeName(t)
+	if named, ok := types.Unalias(derefType(t)).(*types.Named); ok {
+		if obj := named.Obj(); obj.Pkg() != nil && obj.Parent() != nil && obj.Parent() != obj.Pkg().Scope() {
+			name += fmt.Sprintf(" %d", obj.Pos())
+		}
+	}
+	return mangle(name)
 }

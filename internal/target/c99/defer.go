@@ -253,10 +253,27 @@ func (c99 Target) StatementReturn(stmt source.StatementReturn) error {
 		for i, rv := range c99.ResultVars {
 			fmt.Fprintf(c99, "%s = %s.r%d; ", rv, name, i)
 		}
-	} else {
+	} else { // (all evaluated before any is set: return true, *p may panic after true)
+		var temps []string
+		for i := range results {
+			if results[i].TypeAndValue().Value != nil {
+				temps = append(temps, "")
+				continue
+			}
+			temp := fmt.Sprintf("go_return_%d", c99.Closures.count)
+			c99.Closures.count++
+			fmt.Fprintf(c99, "%s %s = ", c99.TypeOf(c99.Results[i]), temp)
+			if err := value(i); err != nil {
+				return err
+			}
+			fmt.Fprintf(c99, "; ")
+			temps = append(temps, temp)
+		}
 		for i := range results {
 			fmt.Fprintf(c99, "%s = ", c99.ResultVars[i])
-			if err := value(i); err != nil {
+			if temps[i] != "" {
+				fmt.Fprint(c99, temps[i])
+			} else if err := value(i); err != nil {
 				return err
 			}
 			fmt.Fprintf(c99, "; ")

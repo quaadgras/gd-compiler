@@ -43,7 +43,7 @@ static const go_type* go_rtype_find(const char* name, go_kind kind, const go_typ
 }
 
 go_pt S(canonical)(go_pt t) {
-    if (!t.ptr) return t;
+    if (!t.ptr || T(t)->local) return t; // (local types are not the same as others of the same name)
     return (go_pt){ (void*)go_rtype_find(T(t)->name, T(t)->kind, T(t)) };
 }
 

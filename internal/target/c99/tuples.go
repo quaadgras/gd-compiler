@@ -201,6 +201,15 @@ func (c99 Target) assignTuple(stmt source.StatementAssignment) error {
 	if c99.Header {
 		return stmt.Location.Errorf("unsupported assignment of multiple results in for statement")
 	}
+	// The operands on the left are evaluated first (m[f()], *g() = h() calls f, g, then h).
+	subs := make(map[ast.Node]string)
+	for k, v := range c99.Substitutes {
+		subs[k] = v
+	}
+	if err := c99.captureOperands(stmt.Variables, subs); err != nil {
+		return err
+	}
+	c99.Substitutes = subs
 	value, ts, err := c99.tupleValue(stmt.Values[0], len(stmt.Variables))
 	if err != nil {
 		return stmt.Location.Errorf("%w", err)

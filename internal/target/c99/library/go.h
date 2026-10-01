@@ -129,6 +129,7 @@ typedef struct go_type {
     go_tf (*equal)(const void*, const void*); // of structs and arrays, NULL if not comparable.
     go_u8 (*hash)(const void*, go_u8, go_u8); // of structs and arrays, for map keys.
     go_ii size; // of values.
+    go_tf local; // a type defined in a function, which is different from others of the same name.
 } go_type;
 
 // The methods an interface requires, in the order of its table of methods.
@@ -301,6 +302,7 @@ go_ii go_chan_cap(go_ch c);
 typedef struct { go_ch c; go_tf send; void* elem; go_tf ok; } go_select_case;
 int go_select(go_select_case* cases, int n, go_tf block); // the case, or -1 (default).
 void go_start(go_fn fn); // a goroutine.
+extern char go_zerobase[8]; // the address of zero-size values (runtime.zerobase).
 go_ii go_num_goroutines(void);
 
 #define go_make_func(fn) ((go_fn){ .ptr = (void(*)(void))(fn), .env = NULL })

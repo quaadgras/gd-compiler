@@ -129,6 +129,10 @@ func (c99 Target) DataComposite(data source.DataComposite) error {
 				}
 			default:
 				field := typ.Field(i)
+				if field.Name() == "_" { // (blank fields are not set)
+					fmt.Fprintf(c99, ".%s = (%s){0}", fieldName(field, i), c99.TypeOf(field.Type()))
+					continue
+				}
 				fmt.Fprintf(c99, ".%s = ", fieldName(field, i))
 				if err := c99.ExpressionAs(elem, field.Type()); err != nil {
 					return err
