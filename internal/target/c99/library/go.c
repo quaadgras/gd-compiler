@@ -206,19 +206,27 @@ void* go_index(go_ll s, go_ii elem_size, go_ii i) {
     return (char*)s.ptr.ptr + i * elem_size;
 }
 
-go_ll go_slice(go_ll s, go_ii elem_size, go_i8 low, go_i8 high, go_i8 max) {
+go_ll go_slice(go_ll s, go_ii elem_size, go_i8 low, go_i8 high, go_i8 max) { return go_slice_of(s, elem_size, low, high, max, false); }
+
+// go_slice_of is go_slice, of an array (when array), as their messages are Go's (see
+// runtime.boundsError).
+go_ll go_slice_of(go_ll s, go_ii elem_size, go_i8 low, go_i8 high, go_i8 max, go_tf array) {
+    const char* of = array ? "length" : "capacity";
     if (low == go_slice_default) low = 0;
     if (high == go_slice_default) high = s.len;
-    if (max == go_slice_default) {
+    if (max == go_slice_default) { // s[low:high]
         max = s.cap;
-    } else if (max < 0 || max > s.cap) {
-        go_panic_error("runtime error: slice bounds out of range [::%lld] with capacity %lld", (long long)max, (long long)s.cap);
-    }
-    if (high < 0 || high > max) {
-        go_panic_error("runtime error: slice bounds out of range [:%lld] with capacity %lld", (long long)high, (long long)max);
-    }
-    if (low < 0 || low > high) {
-        go_panic_error("runtime error: slice bounds out of range [%lld:%lld]", (long long)low, (long long)high);
+        if (high < 0) go_panic_error("runtime error: slice bounds out of range [:%lld]", (long long)high);
+        if (high > max) go_panic_error("runtime error: slice bounds out of range [:%lld] with %s %lld", (long long)high, of, (long long)max);
+        if (low < 0) go_panic_error("runtime error: slice bounds out of range [%lld:]", (long long)low);
+        if (low > high) go_panic_error("runtime error: slice bounds out of range [%lld:%lld]", (long long)low, (long long)high);
+    } else { // s[low:high:max]
+        if (max < 0) go_panic_error("runtime error: slice bounds out of range [::%lld]", (long long)max);
+        if (max > s.cap) go_panic_error("runtime error: slice bounds out of range [::%lld] with %s %lld", (long long)max, of, (long long)s.cap);
+        if (high < 0) go_panic_error("runtime error: slice bounds out of range [:%lld:]", (long long)high);
+        if (high > max) go_panic_error("runtime error: slice bounds out of range [:%lld:%lld]", (long long)high, (long long)max);
+        if (low < 0) go_panic_error("runtime error: slice bounds out of range [%lld::]", (long long)low);
+        if (low > high) go_panic_error("runtime error: slice bounds out of range [%lld:%lld:]", (long long)low, (long long)high);
     }
     // the result shares the backing array.
     go_pt ptr = { .ptr = s.ptr.ptr && max > low ? (char*)s.ptr.ptr + low * elem_size : s.ptr.ptr }; // (not past the end, as Go)
@@ -621,10 +629,12 @@ go_ss go_string_slice(go_ss s, go_i8 low, go_i8 high) {
     go_ii n = go_string_len(s);
     if (low == go_slice_default) low = 0;
     if (high == go_slice_default) high = n;
-    if (high < 0 || high > n) {
+    if (high < 0) go_panic_error("runtime error: slice bounds out of range [:%lld]", (long long)high);
+    if (high > n) {
         go_panic_error("runtime error: slice bounds out of range [:%lld] with length %lld", (long long)high, (long long)n);
     }
-    if (low < 0 || low > high) {
+    if (low < 0) go_panic_error("runtime error: slice bounds out of range [%lld:]", (long long)low);
+    if (low > high) {
         go_panic_error("runtime error: slice bounds out of range [%lld:%lld]", (long long)low, (long long)high);
     }
     if (high == low) return (go_ss){ .ptr = s.ptr, .len = 0 }; // (not past the end, as Go)

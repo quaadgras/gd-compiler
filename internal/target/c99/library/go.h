@@ -238,13 +238,14 @@ go_pt go_new(go_ii size,  const void* init);
 #define go_pointer_get(p, t) (*(t*)go_nil_check((p).ptr))
 // go_slice slices s[low:high:max], omitted bounds are go_slice_default.
 #define go_slice_default INT64_MIN
-#define go_pointer_slice(p, S, T, lo, hi, max) go_slice((go_ll){ (go_pt){ go_nil_check((p).ptr) }, S, S }, sizeof(T), lo, hi, max)
+#define go_pointer_slice(p, S, T, lo, hi, max) go_slice_of((go_ll){ (go_pt){ go_nil_check((p).ptr) }, S, S }, sizeof(T), lo, hi, max, true)
 
 go_ii go_copy(go_ii elem_size, go_ll dst, go_ll src);
 go_ll go_append(go_ll s, go_ii elem_size, const void* elem);
 go_ll go_append_slice(go_ll s, go_ii elem_size, go_ll t);
 go_ll go_append_string(go_ll s, go_ss t);
 go_ll go_slice(go_ll s, go_ii elem_size, go_i8 low, go_i8 high, go_i8 max);
+go_ll go_slice_of(go_ll s, go_ii elem_size, go_i8 low, go_i8 high, go_i8 max, go_tf array);
 void* go_index(go_ll s, go_ii elem_size, go_ii i);
 
 #define go_slice_make(T, length, capacity) (go_ll){ .ptr = go_new(sizeof(T)*go_make_cap(length, capacity, sizeof(T)), nil), .len = length, .cap = capacity }
@@ -300,6 +301,7 @@ go_ii go_chan_cap(go_ch c);
 typedef struct { go_ch c; go_tf send; void* elem; go_tf ok; } go_select_case;
 int go_select(go_select_case* cases, int n, go_tf block); // the case, or -1 (default).
 void go_start(go_fn fn); // a goroutine.
+go_ii go_num_goroutines(void);
 
 #define go_make_func(fn) ((go_fn){ .ptr = (void(*)(void))(fn), .env = NULL })
 #define go_make_closure(fn, environment) ((go_fn){ .ptr = (void(*)(void))(fn), .env = (environment) })
@@ -340,6 +342,11 @@ static inline void* go_nil_check(void* p) {
 static inline void* go_panicwrap(void* p, const char* pkg, const char* type, const char* method) {
     if (!p) go_panic_error("value method %s.%s.%s called using nil *%s pointer", pkg, type, method, type);
     return p;
+}
+// go_uindex returns i (an unsigned index), if it's in range of length.
+static inline go_ii go_uindex(go_u8 i, go_ii length) {
+    if (i >= (go_u8)length) go_panic_error("runtime error: index out of range [%llu] with length %lld", (unsigned long long)i, (long long)length);
+    return (go_ii)i;
 }
 static inline go_if go_if_check(go_if v) { go_nil_check(v.vtable); return v; } // (method values of nil interfaces panic)
 static inline go_ii go_index_check(go_ii i, go_ii length) {

@@ -7,6 +7,7 @@ import (
 	"io"
 	"reflect"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/quaadgras/gd-compiler/internal/source"
@@ -447,6 +448,34 @@ func typeName(t types.Type) string {
 			name += " (" + strings.Join(results, ", ") + ")"
 		}
 		return name
+	case *types.Interface: // (as the Go runtime writes them: interface { M() int })
+		if typ.NumMethods() == 0 && typ.NumEmbeddeds() == 0 {
+			return "interface {}"
+		}
+		if typ.IsMethodSet() {
+			var methods []string
+			for m := range typ.Methods() {
+				methods = append(methods, m.Name()+strings.TrimPrefix(typeName(m.Type()), "func"))
+			}
+			return "interface { " + strings.Join(methods, "; ") + " }"
+		}
+	case *types.Struct: // (struct { a int; B })
+		if typ.NumFields() == 0 {
+			return "struct {}"
+		}
+		var fields []string
+		for i := range typ.NumFields() {
+			f := typ.Field(i)
+			field := typeName(f.Type())
+			if !f.Embedded() {
+				field = f.Name() + " " + field
+			}
+			if tag := typ.Tag(i); tag != "" { // (tags are part of the type)
+				field += " " + strconv.Quote(tag)
+			}
+			fields = append(fields, field)
+		}
+		return "struct { " + strings.Join(fields, "; ") + " }"
 	}
 	return types.TypeString(t, qualifier)
 }

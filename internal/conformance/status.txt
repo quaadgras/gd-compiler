@@ -552,7 +552,7 @@ fixedbugs/bug291.go	pass
 fixedbugs/bug292.go	pass	
 fixedbugs/bug293.go	pass	
 fixedbugs/bug294.go	pass	
-fixedbugs/bug295.go	fail	c11: error: unknown type name 'B_go_testing_package'
+fixedbugs/bug295.go	pass	
 fixedbugs/bug296.go	pass	
 fixedbugs/bug297.go	skip	gc:diagnostics -d=panic
 fixedbugs/bug298.go	skip	todo:errorcheck
@@ -1297,7 +1297,7 @@ fixedbugs/issue30041.go	fail	exit: exit status 2 panic: reflect.MakeFunc is not 
 fixedbugs/issue30061.go	skip	gc:linkname
 fixedbugs/issue30085.go	skip	todo:errorcheck
 fixedbugs/issue30087.go	skip	todo:errorcheck
-fixedbugs/issue30116.go	fail	output: mismatch
+fixedbugs/issue30116.go	pass	
 fixedbugs/issue30116u.go	fail	output: mismatch
 fixedbugs/issue30243.go	pass	
 fixedbugs/issue30430.go	pass	
@@ -1497,7 +1497,7 @@ fixedbugs/issue43701.go	pass
 fixedbugs/issue43762.go	skip	todo:errorcheck
 fixedbugs/issue43835.go	fail	exit: exit status 2 panic: FAIL
 fixedbugs/issue43908.go	pass	
-fixedbugs/issue43942.go	fail	exit: exit status 1 2026/10/01 15:54:17 want 5, have <nil>
+fixedbugs/issue43942.go	fail	exit: exit status 1 2026/10/01 16:41:48 want 5, have <nil>
 fixedbugs/issue43962.go	skip	todo:errorcheck
 fixedbugs/issue4396a.go	pass	
 fixedbugs/issue4396b.go	pass	
@@ -1638,7 +1638,7 @@ fixedbugs/issue49592.go	pass
 fixedbugs/issue49611.go	pass	
 fixedbugs/issue49619.go	pass	
 fixedbugs/issue4964.go	skip	todo:rundir
-fixedbugs/issue49665.go	fail	output: mismatch
+fixedbugs/issue49665.go	pass	
 fixedbugs/issue49767.go	skip	todo:errorcheck
 fixedbugs/issue49814.go	skip	todo:errorcheck
 fixedbugs/issue5002.go	pass	
@@ -2162,7 +2162,7 @@ gcstring.go	skip	gc:finalizers runtime.SetFinalizer
 genmeth.go	pass	
 genmeth1.go	fail	gd: unsupported index of func
 genmeth2.go	pass	
-goprint.go	fail	output: mismatch
+goprint.go	pass	
 goto.go	skip	todo:errorcheck
 heapsampling.go	skip	gc:memstats runtime.MemProfileRate
 helloworld.go	pass	
@@ -2687,7 +2687,7 @@ typeparam/shape_assert.go	pass
 typeparam/sliceimp.go	skip	todo:rundir
 typeparam/slices.go	pass	
 typeparam/smallest.go	pass	
-typeparam/smoketest.go	fail	c11: error: '__go_test_package' {aka 'go_az'} has no member named 'f1'
+typeparam/smoketest.go	pass	
 typeparam/stringable.go	pass	
 typeparam/stringer.go	pass	
 typeparam/stringerimp.go	skip	todo:rundir

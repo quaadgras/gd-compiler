@@ -93,6 +93,9 @@ func (c99 Target) SpecificationImport(spec source.Import) error {
 }
 
 func (c99 Target) TypeDefinition(spec source.TypeDefinition) error {
+	if spec.Name.String == "_" {
+		return nil // (blank types can't be used)
+	}
 	if _, generic := spec.TypeParameters.Get(); generic {
 		return nil // instances are defined where they are used, see [Target.TypeOf].
 	}

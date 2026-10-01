@@ -102,7 +102,7 @@ static inline go_tuple_go_ii_go_tf MemProfile_go_runtime_package(go_ll p, go_tf 
 static inline go_tuple_go_ii_go_tf MutexProfile_go_runtime_package(go_ll p) { return (go_tuple_go_ii_go_tf){0}; }
 static inline go_ii NumCPU_go_runtime_package(void) { return 1; }
 static inline go_ii NumCgoCall_go_runtime_package(void) { return 0; }
-static inline go_ii NumGoroutine_go_runtime_package(void) { return 1; }
+static inline go_ii NumGoroutine_go_runtime_package(void) { return go_num_goroutines(); }
 static inline void ReadMemStats_go_runtime_package(go_pt m) {}
 static inline go_ll ReadTrace_go_runtime_package(void) { return (go_ll){0}; }
 static inline void SetBlockProfileRate_go_runtime_package(go_ii rate) {}

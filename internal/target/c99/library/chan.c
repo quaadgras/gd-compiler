@@ -9,6 +9,7 @@
 // so that its other sudogs are skipped), or closes the channel.
 
 #include <go.h>
+#include <stdatomic.h>
 #include <stdlib.h>
 #include <string.h>
 #include <threads.h>
@@ -243,9 +244,13 @@ int go_select(go_select_case* cases, int n, go_tf block) {
     return w.index;
 }
 
+static _Atomic go_ii go_goroutines = 1; // (the main goroutine)
+go_ii go_num_goroutines(void) { return atomic_load(&go_goroutines); }
+
 static void go_run_goroutine(void* arg) {
     go_fn* fn = arg;
     ((void(*)(void*))fn->ptr)(fn->env);
+    atomic_fetch_sub(&go_goroutines, 1);
 }
 
 #if defined(__unix__) || defined(__APPLE__)
@@ -257,6 +262,7 @@ static void* go_start_goroutine(void* arg) { go_run_goroutine(arg); return NULL;
 
 void go_start(go_fn fn) {
     go_fn* arg = go_new(sizeof(go_fn), &fn).ptr;
+    atomic_fetch_add(&go_goroutines, 1);
     pthread_attr_t attr;
     pthread_t thread;
     pthread_attr_init(&attr);
@@ -293,6 +299,7 @@ static int go_start_goroutine(void* arg) { go_run_goroutine(arg); return 0; }
 
 void go_start(go_fn fn) {
     go_fn* arg = go_new(sizeof(go_fn), &fn).ptr;
+    atomic_fetch_add(&go_goroutines, 1);
     thrd_t thread;
     if (thrd_create(&thread, go_start_goroutine, arg) != thrd_success) {
         go_panic_error("runtime error: failed to start a goroutine");

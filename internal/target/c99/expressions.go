@@ -198,11 +198,7 @@ func (c99 Target) arrayIndex(index source.Expression, array *types.Array) error 
 	if index.TypeAndValue().Value != nil {
 		return c99.Expression(index)
 	}
-	fmt.Fprintf(c99, "go_index_check((go_ii)(")
-	if err := c99.Expression(index); err != nil {
-		return err
-	}
-	fmt.Fprintf(c99, "), %d)", array.Len())
+	fmt.Fprintf(c99, "go_index_check((go_ii)(%s), %d)", c99.indexOf(index, fmt.Sprint(array.Len())), array.Len())
 	return nil
 }
 
@@ -350,27 +346,12 @@ func (c99 Target) ExpressionIndex(expr source.ExpressionIndex) error {
 	}
 	switch xtype := expr.X.TypeAndValue().Type.Underlying().(type) {
 	case *types.Basic: // strings
-		fmt.Fprintf(c99, "go_string_index(")
-		if err := c99.Expression(expr.X); err != nil {
-			return err
-		}
-		fmt.Fprintf(c99, ", (go_ii)(")
-		if err := c99.Expression(expr.Index); err != nil {
-			return err
-		}
-		fmt.Fprintf(c99, "))")
+		x := c99.toString(expr.X)
+		fmt.Fprintf(c99, "go_string_index(%s, (go_ii)(%s))", x, c99.indexOf(expr.Index, "go_string_len("+x+")"))
 		return nil
 	case *types.Slice:
-		elemType := c99.TypeOf(xtype.Elem())
-		fmt.Fprintf(c99, "go_slice_index(")
-		if err := c99.Expression(expr.X); err != nil {
-			return err
-		}
-		fmt.Fprintf(c99, ", %s, ", elemType)
-		if err := c99.Expression(expr.Index); err != nil {
-			return err
-		}
-		fmt.Fprintf(c99, ")")
+		x := c99.toString(expr.X)
+		fmt.Fprintf(c99, "go_slice_index(%s, %s, %s)", x, c99.TypeOf(xtype.Elem()), c99.indexOf(expr.Index, "go_slice_len("+x+")"))
 		return nil
 	case *types.Map:
 		mtype := expr.X.TypeAndValue().Type.Underlying().(*types.Map)
@@ -469,7 +450,7 @@ func (c99 Target) ExpressionSlice(e source.ExpressionSlice) error {
 		fmt.Fprintf(c99, "go_pointer_slice(%s, %d, %s, %s, %s, %s)",
 			c99.toString(e.X), array.Len(), c99.TypeOf(array.Elem()), low, high, max)
 	case *types.Array:
-		fmt.Fprintf(c99, "go_slice((go_ll){ (go_pt){ (%s).a }, %d, %[2]d }, sizeof(%s), %s, %s, %s)",
+		fmt.Fprintf(c99, "go_slice_of((go_ll){ (go_pt){ (%s).a }, %d, %[2]d }, sizeof(%s), %s, %s, %s, true)",
 			c99.toString(e.X), typ.Len(), c99.TypeOf(typ.Elem()), low, high, max)
 	case *types.Slice:
 		fmt.Fprintf(c99, "go_slice(%s, sizeof(%s), %s, %s, %s)",
@@ -548,4 +529,15 @@ func (c99 Target) ExpressionIndices(expr source.ExpressionIndices) error {
 		return c99.DefinedFunction(source.Expressions.DefinedFunction.Get(expr.X))
 	}
 	return expr.Location.Errorf("unsupported index of %s", expr.X.TypeAndValue().Type)
+}
+
+// indexOf returns a C expression for the index (of a container of the length length, a C
+// expression), checked first when it's an unsigned integer that may not fit in an int.
+func (c99 Target) indexOf(index source.Expression, length string) string {
+	value := c99.toString(index)
+	if b, ok := index.TypeAndValue().Type.Underlying().(*types.Basic); ok && index.TypeAndValue().Value == nil &&
+		b.Info()&types.IsUnsigned != 0 && sizes.Sizeof(b) == 8 {
+		return fmt.Sprintf("go_uindex((go_u8)(%s), %s)", value, length)
+	}
+	return value
 }
