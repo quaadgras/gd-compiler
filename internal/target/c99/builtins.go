@@ -130,8 +130,7 @@ func (c99 Target) make(expr source.FunctionCall) error {
 		default:
 			return expr.Errorf("make expects two or three arguments, got %d", len(expr.Arguments))
 		}
-		fmt.Fprintf(c99, "go_slice_make(%s, ",
-			c99.TypeOf(expr.Arguments[0].TypeAndValue().Type.Underlying().(*types.Slice).Elem()))
+		fmt.Fprintf(c99, "go_slice_make_sized(%s, ", c99.elemSize(expr.Arguments[0].TypeAndValue().Type.Underlying().(*types.Slice).Elem()))
 		if err := c99.Expression(expr.Arguments[1]); err != nil {
 			return err
 		}
@@ -186,14 +185,14 @@ func (c99 Target) append(expr source.FunctionCall) error {
 		if isString(expr.Arguments[1].TypeAndValue().Type) {
 			fmt.Fprintf(c99, "go_append_string(%s, %s)", value, c99.toString(expr.Arguments[1]))
 		} else {
-			fmt.Fprintf(c99, "go_append_slice(%s, sizeof(%s), %s)", value, c99.TypeOf(slice.Elem()), c99.toString(expr.Arguments[1]))
+			fmt.Fprintf(c99, "go_append_slice(%s, %s, %s)", value, c99.elemSize(slice.Elem()), c99.toString(expr.Arguments[1]))
 		}
 		return nil
 	}
 	elemType := c99.TypeOf(slice.Elem())
 	symbol := "go_append_" + identifier.ReplaceAllString(elemType, "_")
 	c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
-		fmt.Fprintf(w, "static inline go_ll %s(go_ll s, %s v) { return go_append(s, sizeof(%[2]s), &v); }\n", symbol, elemType)
+		fmt.Fprintf(w, "static inline go_ll %s(go_ll s, %s v) { return go_append(s, %s, &v); }\n", symbol, elemType, c99.elemSize(slice.Elem()))
 		return nil
 	})
 	var values []string
@@ -212,8 +211,8 @@ func (c99 Target) append(expr source.FunctionCall) error {
 	case 1:
 		fmt.Fprintf(c99, "%s(%s, %s)", symbol, value, values[0])
 	default: // the values are all evaluated before any is appended (they may read s).
-		fmt.Fprintf(c99, "go_append_slice(%[1]s, sizeof(%[2]s), go_slice_literal(%[3]d, %[2]s, %[4]s))",
-			value, elemType, len(values), strings.Join(values, ", "))
+		fmt.Fprintf(c99, "go_append_slice(%[1]s, %[5]s, go_slice_literal(%[3]d, %[2]s, %[4]s))",
+			value, elemType, len(values), strings.Join(values, ", "), c99.elemSize(slice.Elem()))
 	}
 	return nil
 }
@@ -226,7 +225,7 @@ func (c99 Target) copy(expr source.FunctionCall) error {
 		fmt.Fprintf(c99, "go_copy(1, %s, go_bytes_of_string(%s))", c99.toString(expr.Arguments[0]), c99.toString(expr.Arguments[1]))
 		return nil
 	}
-	fmt.Fprintf(c99, "go_slice_copy(%s, ", c99.TypeOf(expr.Arguments[0].TypeAndValue().Type.Underlying().(*types.Slice).Elem()))
+	fmt.Fprintf(c99, "go_copy(%s, ", c99.elemSize(expr.Arguments[0].TypeAndValue().Type.Underlying().(*types.Slice).Elem()))
 	if err := c99.Expression(expr.Arguments[0]); err != nil {
 		return err
 	}
@@ -246,7 +245,7 @@ func (c99 Target) clear(expr source.FunctionCall) error {
 	case *types.Map:
 		fmt.Fprintf(c99, "go_map_clear(%s)", c99.toString(expr.Arguments[0]))
 	case *types.Slice:
-		fmt.Fprintf(c99, "go_slice_clear(%s, sizeof(%s))", c99.toString(expr.Arguments[0]), c99.TypeOf(typ.Elem()))
+		fmt.Fprintf(c99, "go_slice_clear(%s, %s)", c99.toString(expr.Arguments[0]), c99.elemSize(typ.Elem()))
 	default:
 		return expr.Errorf("unsupported clear of %s", expr.Arguments[0].TypeAndValue().Type)
 	}

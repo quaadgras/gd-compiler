@@ -26,6 +26,17 @@ func (c99 Target) DataComposite(data source.DataComposite) error {
 	}
 	switch typ := ctype.Underlying().(type) {
 	case *types.Array:
+		if zeroSize(subst(ctype)) { // (see [Target.ArrayTypeOf]): its elements, then the value.
+			fmt.Fprintf(c99, "(")
+			for _, elem := range data.Elements {
+				if xyz.ValueOf(elem) == source.Expressions.KeyValue {
+					elem = source.Expressions.KeyValue.Get(elem).Value
+				}
+				fmt.Fprintf(c99, "(void)(%s), ", c99.toString(elem))
+			}
+			fmt.Fprintf(c99, "(%s){{0}})", c99.TypeOf(ctype))
+			return nil
+		}
 		fmt.Fprintf(c99, "(%s){{", c99.TypeOf(ctype))
 		if len(data.Elements) == 0 {
 			fmt.Fprintf(c99, "0")
@@ -47,7 +58,7 @@ func (c99 Target) DataComposite(data source.DataComposite) error {
 		return nil
 	case *types.Slice:
 		if len(data.Elements) == 0 {
-			fmt.Fprintf(c99, "go_slice_make(%s, 0, 0)", c99.TypeOf(typ.Elem()))
+			fmt.Fprintf(c99, "go_slice_make_sized(%s, 0, 0)", c99.elemSize(typ.Elem()))
 			return nil
 		}
 		length, index := 0, 0 // elements may have (constant) indexes, as keys.
@@ -81,8 +92,8 @@ func (c99 Target) DataComposite(data source.DataComposite) error {
 				values = append(values, buf.String())
 				index++
 			}
-			fmt.Fprintf(c99, "go_slice_sparse(%[1]d, sizeof(%[2]s), %[3]d, (go_ii[]){%[4]s}, (%[2]s[]){%[5]s})", length, c99.TypeOf(typ.Elem()),
-				len(indexes), strings.Join(indexes, ", "), strings.Join(values, ", "))
+			fmt.Fprintf(c99, "go_slice_sparse(%[1]d, %[6]s, %[3]d, (go_ii[]){%[4]s}, (%[2]s[]){%[5]s})", length, c99.TypeOf(typ.Elem()),
+				len(indexes), strings.Join(indexes, ", "), strings.Join(values, ", "), c99.elemSize(typ.Elem()))
 			return nil
 		}
 		fmt.Fprintf(c99, "go_slice_literal(%d, %s, ", length, c99.TypeOf(typ.Elem()))

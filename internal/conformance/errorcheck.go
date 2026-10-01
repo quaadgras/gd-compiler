@@ -19,10 +19,10 @@ var (
 )
 
 // implementationErrors match the expected errors of gc's implementation restrictions and
-// directives, which are not in the spec, and that gd may report or not (as it compiles
-// such programs).
+// directives (but //go:embed), which are not in the spec, and that gd may report or not
+// (as it compiles such programs).
 var implementationErrors = regexp.MustCompile(`stack frame too large|(channel|map) element type too large|` +
-	`larger than address space|misplaced compiler directive|go:embed|^embed$|//go:nowritebarrier|//go:cgo_`)
+	`larger than address space|misplaced compiler directive|//go:nowritebarrier|//go:cgo_`)
 
 type wantedError struct {
 	re      *regexp.Regexp

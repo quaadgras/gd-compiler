@@ -152,9 +152,14 @@ func (c99 Target) ArrayTypeOf(typ *types.Array) string {
 	elem := c99.TypeOf(typ.Elem())
 	symbol := fmt.Sprintf("go_arr%d_%s", typ.Len(), identifier.ReplaceAllString(elem, "_"))
 	c99.defineType(symbol, []types.Type{typ.Elem()}, func(w io.Writer) {
-		// C has no zero length arrays, so [0]T has room for one element.
+		// C has no zero length arrays, so [0]T has room for one element, and as arrays of
+		// no size may be longer than C types may be, all of their elements are a[0].
+		length := max(typ.Len(), 1)
+		if zeroSize(typ) {
+			length = 1
+		}
 		fmt.Fprintf(w, "\n#ifndef %[1]s_defined\n#define %[1]s_defined\ntypedef struct { %[2]s a[%[3]d]; } %[1]s;\n#endif\n",
-			symbol, elem, max(typ.Len(), 1))
+			symbol, elem, length)
 	})
 	return symbol
 }
@@ -248,7 +253,7 @@ func (c99 Target) TypeOf(t types.Type) string {
 		}
 		// named types are always qualified by their package, as headers are shared.
 		name := c99.typeCName(typ) + "_go_" + source.PackageIdent(typ.Obj().Pkg()) + "_package"
-		if typ.TypeArgs().Len() > 0 {
+		if _, local := localNames[typ]; typ.TypeArgs().Len() > 0 || local {
 			c99.instanceType(typ, name)
 		}
 		return name
@@ -315,7 +320,7 @@ func (c99 Target) ReflectTypeOf(t types.Type) string {
 		if typ.Obj().Pkg() == nil {
 			return "&go_type_" + typ.Obj().Name() // error
 		}
-		if typ.TypeArgs().Len() > 0 {
+		if _, local := localNames[typ]; typ.TypeArgs().Len() > 0 || local {
 			return c99.instanceDescriptor(typ)
 		}
 		symbol := "go_type_" + c99.typeCName(typ) + "_go_" + source.PackageIdent(typ.Obj().Pkg()) + "_package"
@@ -420,7 +425,7 @@ func (c99 Target) staticDescriptor(symbol, name string, t types.Type) {
 	})
 	c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
 		fields := c99.descriptorFields(t) // first, as it may write the descriptors it uses.
-		if named, ok := t.(*types.Named); ok && isLocal(named.Obj()) {
+		if named, ok := t.(*types.Named); ok && isLocalType(named) {
 			fields += ", .local=true" // (an instance of a local generic type)
 		}
 		fmt.Fprintf(w, "static const go_type %s = {.name=%s%s};\n", symbol, cString(name), fields)
@@ -434,6 +439,10 @@ func typeName(t types.Type) string {
 	t = types.Unalias(t) // (aliases are the same type)
 	qualifier := func(pkg *types.Package) string { return pkg.Name() }
 	switch typ := types.Unalias(t).(type) {
+	case *types.Named:
+		if display, ok := localNames[typ]; ok {
+			return qualifier(typ.Obj().Pkg()) + "." + typ.Obj().Name() + display
+		}
 	case *types.Basic: // (byte is uint8, and rune is int32)
 		if typ.Kind() == types.UnsafePointer {
 			return "unsafe.Pointer"
@@ -571,8 +580,11 @@ func isLocal(obj types.Object) bool {
 func localPositions(t types.Type, positions []token.Pos) []token.Pos {
 	switch typ := types.Unalias(t).(type) {
 	case *types.Named:
-		if isLocal(typ.Obj()) {
+		if isLocalType(typ) {
 			positions = append(positions, typ.Obj().Pos())
+		}
+		for _, arg := range localArgs[typ] { // (of a local type of an instance of a generic function)
+			positions = localPositions(arg, positions)
 		}
 		for arg := range typ.TypeArgs().Types() {
 			positions = localPositions(arg, positions)
@@ -693,4 +705,14 @@ func (c99 Target) funcData(sig *types.Signature) string {
 		return nil
 	})
 	return fmt.Sprintf(", .data={.func={%s, %d, %s, %d, %t, %s, (void(*)(void))%s}}", in, len(params), out, len(results), sig.Variadic(), call, makefunc)
+}
+
+// elemSize returns a C expression for the size of the elements t of slices and arrays: 0
+// for types of no size (whose C types have one, see [zeroSize]), so that the elements of
+// slices of them are all at the same address, as they take no memory.
+func (c99 Target) elemSize(t types.Type) string {
+	if zeroSize(subst(t)) {
+		return "0"
+	}
+	return "sizeof(" + c99.TypeOf(t) + ")"
 }

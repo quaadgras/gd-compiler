@@ -2,9 +2,11 @@
 package parser
 
 import (
+	"fmt"
 	"go/ast"
 	"go/token"
 	"go/types"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -52,7 +54,19 @@ func Load(dir string, test bool, overlay map[string][]byte) ([]source.Package, e
 			results = append(results, loaded)
 		}
 	}
-	for _, pkg := range pkgs {
+	roots := pkgs
+	if test { // the test binary: the main package that go test generates, with the packages it imports (their test variants).
+		roots = nil
+		for _, pkg := range pkgs {
+			if strings.HasSuffix(pkg.ID, ".test") {
+				roots = append(roots, pkg)
+			}
+		}
+		if len(roots) == 0 {
+			return nil, fmt.Errorf("no test files")
+		}
+	}
+	for _, pkg := range roots {
 		visit(pkg)
 	}
 	return results, nil
@@ -253,11 +267,15 @@ func loadPackage(pkg *packages.Package, test bool) (source.Package, bool) {
 		FileSet: pkg.Fset,
 		Test:    test,
 	}
-	if strings.HasSuffix(pkg.ID, ".test") || (!test && strings.HasSuffix(pkg.ID, ".test]")) {
+	if !test && (strings.HasSuffix(pkg.ID, ".test") || strings.HasSuffix(pkg.ID, ".test]")) {
 		return loaded, false
 	}
 	for _, file := range pkg.Syntax {
 		loaded.Files = append(loaded.Files, loadFile(&loaded, file))
+	}
+	if len(pkg.GoFiles) > 0 {
+		loaded.Dir = filepath.Dir(pkg.GoFiles[0])
+		loaded.Embeds = embeds(pkg, loaded.Dir)
 	}
 	return loaded, true
 }

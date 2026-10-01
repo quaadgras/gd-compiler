@@ -93,6 +93,9 @@ func (g *Generics) substituter(params []*types.TypeParam, args []types.Type) fun
 		return types.NewTuple(vars...)
 	}
 	apply = func(t types.Type) types.Type {
+		if named, ok := t.(*types.Named); ok && isLocal(named.Obj()) && len(m) > 0 && (declaredWithin(named.Origin().Obj(), m) || mentionsParams(named, m, nil)) {
+			return g.localInstance(named, params, apply)
+		}
 		switch typ := t.(type) {
 		case *types.TypeParam:
 			if r, ok := m[typ]; ok {
@@ -151,11 +154,166 @@ func (g *Generics) substituter(params []*types.TypeParam, args []types.Type) fun
 	return apply
 }
 
+// Local types of generic functions (whose types may be made of the function's type
+// parameters) are types of their own in each instance of the function: localInstance
+// returns a new named type for the local type t (or its instance) in the instance whose
+// type arguments substitute params (with apply), the same for the same instance.
+func (g *Generics) localInstance(t *types.Named, params []*types.TypeParam, apply func(types.Type) types.Type) *types.Named {
+	var outer, inner, ids []string // (ids tell local types of the same name apart)
+	for _, param := range params {
+		arg := apply(param)
+		outer = append(outer, argName(arg))
+		ids = append(ids, typeName(arg)+fmt.Sprint(localPositions(arg, nil)))
+	}
+	var targs []types.Type
+	for a := range t.TypeArgs().Types() {
+		arg := apply(a)
+		targs = append(targs, arg)
+		inner = append(inner, argName(arg))
+		ids = append(ids, typeName(arg)+fmt.Sprint(localPositions(arg, nil)))
+	}
+	display := "[" + strings.Join(outer, ",") // (as gc names them: main.T[outer;inner])
+	if len(inner) > 0 {
+		display += ";" + strings.Join(inner, ",")
+	}
+	display += "]"
+	obj := t.Origin().Obj()
+	key := fmt.Sprintf("%p %s", obj, strings.Join(ids, ";"))
+	if fresh, ok := localInstances[key]; ok {
+		return fresh
+	}
+	fresh := types.NewNamed(types.NewTypeName(obj.Pos(), obj.Pkg(), obj.Name(), nil), nil, nil)
+	localInstances[key] = fresh
+	localNames[fresh] = display
+	localGen[fresh.Obj()] = localGen[obj]
+	localKeys[fresh] = mangle(strings.Join(ids, ";"))
+	for _, param := range params {
+		localArgs[fresh] = append(localArgs[fresh], apply(param))
+	}
+	localArgs[fresh] = append(localArgs[fresh], targs...)
+	underlying := t.Underlying()
+	if len(targs) > 0 {
+		inst, err := types.Instantiate(g.ctxt, t.Origin(), targs, false)
+		if err != nil {
+			panic(err)
+		}
+		underlying = inst.Underlying()
+	}
+	fresh.SetUnderlying(apply(underlying))
+	return fresh
+}
+
+var (
+	localInstances = make(map[string]*types.Named) // by local type and type arguments.
+	localNames     = make(map[*types.Named]string) // their type arguments, as gc names them.
+	localKeys      = make(map[*types.Named]string) // their type arguments, for C names.
+	localArgs      = make(map[*types.Named][]types.Type)
+
+	// localGen numbers the types defined in functions of each package, in the order of
+	// their declarations, as gc does: it names them Name·N in the type arguments of others.
+	localGen = make(map[*types.TypeName]int)
+)
+
+// argName returns the name of t as a type argument in the name of a local type, where gc
+// names local types Name·N (see localGen).
+func argName(t types.Type) string {
+	name := typeName(t)
+	if named, ok := types.Unalias(t).(*types.Named); ok {
+		if gen := localGen[named.Origin().Obj()]; gen > 0 {
+			name += fmt.Sprintf("·%d", gen)
+		}
+	}
+	return name
+}
+
+// isLocalType reports whether named is a local type, or one of its instances.
+func isLocalType(named *types.Named) bool {
+	_, ok := localNames[named]
+	return ok || isLocal(named.Obj())
+}
+
+// declaredWithin reports whether obj is declared in the function (or method) whose type
+// parameters m has (as its scope is in theirs).
+func declaredWithin(obj types.Object, m map[*types.TypeParam]types.Type) bool {
+	for param := range m {
+		scope := param.Obj().Parent()
+		if scope == nil {
+			continue
+		}
+		for s := obj.Parent(); s != nil; s = s.Parent() {
+			if s == scope {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// mentionsParams reports whether t is made of the type parameters of m.
+func mentionsParams(t types.Type, m map[*types.TypeParam]types.Type, seen map[types.Type]bool) bool {
+	if seen == nil {
+		seen = make(map[types.Type]bool)
+	}
+	if seen[t] {
+		return false
+	}
+	seen[t] = true
+	switch typ := t.(type) {
+	case *types.TypeParam:
+		_, ok := m[typ]
+		return ok
+	case *types.Alias:
+		return mentionsParams(types.Unalias(typ), m, seen)
+	case *types.Named:
+		for a := range typ.TypeArgs().Types() {
+			if mentionsParams(a, m, seen) {
+				return true
+			}
+		}
+		return isLocal(typ.Obj()) && mentionsParams(typ.Origin().Underlying(), m, seen)
+	case *types.Pointer:
+		return mentionsParams(typ.Elem(), m, seen)
+	case *types.Slice:
+		return mentionsParams(typ.Elem(), m, seen)
+	case *types.Array:
+		return mentionsParams(typ.Elem(), m, seen)
+	case *types.Chan:
+		return mentionsParams(typ.Elem(), m, seen)
+	case *types.Map:
+		return mentionsParams(typ.Key(), m, seen) || mentionsParams(typ.Elem(), m, seen)
+	case *types.Struct:
+		for field := range typ.Fields() {
+			if mentionsParams(field.Type(), m, seen) {
+				return true
+			}
+		}
+	case *types.Tuple:
+		for v := range typ.Variables() {
+			if mentionsParams(v.Type(), m, seen) {
+				return true
+			}
+		}
+	case *types.Signature:
+		return mentionsParams(typ.Params(), m, seen) || mentionsParams(typ.Results(), m, seen)
+	case *types.Interface:
+		for method := range typ.Methods() {
+			if mentionsParams(method.Type(), m, seen) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // instanceSuffix names the type arguments of an instance.
 func (c99 Target) instanceSuffix(args []types.Type) string {
 	var names []string
 	for _, arg := range args {
-		names = append(names, mangle(typeName(arg))) // (by Go type: C types may be the same)
+		name := typeName(arg) // (by Go type: C types may be the same, and local types by position)
+		for _, pos := range localPositions(arg, nil) {
+			name += fmt.Sprintf(" %d", pos)
+		}
+		names = append(names, mangle(name))
 	}
 	return "__" + strings.Join(names, "__")
 }
@@ -163,8 +321,15 @@ func (c99 Target) instanceSuffix(args []types.Type) string {
 // typeCName returns the C name of a named type (without its package suffix), including the
 // type arguments of instances of generic types.
 func (c99 Target) typeCName(named *types.Named) string {
+	if key, ok := localKeys[named]; ok { // (a local type of an instance of a generic function)
+		return fmt.Sprintf("%s_%d_%s", source.CIdent(named.Obj().Name()), named.Obj().Pos(), key)
+	}
 	if obj := named.Obj(); obj.Pkg() != nil && obj.Parent() != nil && obj.Parent() != obj.Pkg().Scope() {
-		return fmt.Sprintf("%s_%d", source.CIdent(obj.Name()), obj.Pos()) // a local type, defined in a function.
+		name := fmt.Sprintf("%s_%d", source.CIdent(obj.Name()), obj.Pos()) // a local type, defined in a function.
+		if named.TypeArgs().Len() > 0 {
+			name += c99.instanceSuffix(slicesOf(named.TypeArgs()))
+		}
+		return name
 	}
 	if named.TypeArgs().Len() == 0 {
 		return source.CIdent(named.Obj().Name())
@@ -322,6 +487,6 @@ func (c99 Target) instanceType(named *types.Named, cname string) {
 // generic type, static in each file.
 func (c99 Target) instanceDescriptor(named *types.Named) string {
 	symbol := "go_rtype_" + identifier.ReplaceAllString(c99.typeCName(named), "_")
-	c99.staticDescriptor(symbol, types.TypeString(named, func(pkg *types.Package) string { return pkg.Name() }), named)
+	c99.staticDescriptor(symbol, typeName(named), named)
 	return "&" + symbol
 }

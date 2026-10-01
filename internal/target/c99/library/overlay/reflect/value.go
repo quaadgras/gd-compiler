@@ -765,6 +765,7 @@ func (v Value) call(op string, in []Value, isSlice bool) []Value {
 	callFunc(t.ptr(), v.ptr, unsafe.Pointer(&args[0]), unsafe.Pointer(&results[0]))
 	return out
 }
+
 // Send sends x on the channel v.
 func (v Value) Send(x Value) { v.send("Send", x, true) }
 
@@ -816,8 +817,9 @@ func (v Value) Close() {
 	}
 	chanClose(v.ptr)
 }
-func (v Value) Convert(t Type) Value         { return convert(v, t) }
-func (v Value) CanConvert(t Type) bool       { return v.Type().ConvertibleTo(t) }
+func (v Value) Convert(t Type) Value   { return convert(v, t) }
+func (v Value) CanConvert(t Type) bool { return v.Type().ConvertibleTo(t) }
+
 // Seq returns an iter.Seq[Value] that loops over the elements of v.
 func (v Value) Seq() func(func(Value) bool) {
 	switch v.Kind() {
@@ -1152,6 +1154,7 @@ func MakeChan(typ Type, buffer int) Value {
 	*(*unsafe.Pointer)(p) = makeChan(t.ptr(), buffer)
 	return Value{t, p, 0}
 }
+
 // MakeFunc returns a new function of the given Type that wraps the function fn.
 func MakeFunc(typ Type, fn func(args []Value) (results []Value)) Value {
 	if typ.Kind() != Func {

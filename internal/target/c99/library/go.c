@@ -12,7 +12,7 @@
 
 go_pt go_new(go_ii size, const void* init) {
     go_pt p;
-    p.ptr = malloc(size);
+    p.ptr = malloc(size > 0 ? size : 1); // (values of no size are read as one byte, see go_slice_at)
     if (init) {
         memcpy(p.ptr, init, size);
     } else {
@@ -25,9 +25,11 @@ go_ll go_slice_sparse(go_ii length, size_t size, go_ii n, const go_ii* indexes, 
     for (go_ii i = 0; i < n; i++) memcpy((char*)s.ptr.ptr + indexes[i] * (go_ii)size, (const char*)values + i * (go_ii)size, size);
     return s;
 }
-go_ll go_append(go_ll s, go_ii elem_size, const void* elem) {
+go_ll go_append_grow(go_ll s, go_ii elem_size, const void* elem) {
     if (s.len >= s.cap) {
-        go_ii new_cap = s.cap == 0 ? 1 : s.cap * 2;
+        if (s.len == INT64_MAX) go_panic_error("runtime error: growslice: len out of range");
+        go_ii new_cap = s.cap == 0 ? 1 : s.cap > INT64_MAX / 2 ? INT64_MAX : s.cap * 2;
+        if (elem_size > 0 && new_cap > ((go_ii)1 << 47) / elem_size) go_panic_error("runtime error: growslice: len out of range");
         go_pt new_ptr = go_new(new_cap * elem_size, nil);
         if (s.len > 0) {
             memcpy(new_ptr.ptr, s.ptr.ptr, s.len * elem_size);
@@ -42,9 +44,11 @@ go_ll go_append(go_ll s, go_ii elem_size, const void* elem) {
 }
 go_ll go_append_slice(go_ll s, go_ii elem_size, go_ll t) {
     if (t.len == 0) return s;
+    if (s.len > INT64_MAX - t.len) go_panic_error("runtime error: growslice: len out of range");
     if (s.len + t.len > s.cap) {
-        go_ii new_cap = s.cap * 2;
+        go_ii new_cap = s.cap > INT64_MAX / 2 ? INT64_MAX : s.cap * 2;
         if (new_cap < s.len + t.len) new_cap = s.len + t.len;
+        if (elem_size > 0 && new_cap > ((go_ii)1 << 47) / elem_size) go_panic_error("runtime error: growslice: len out of range");
         go_pt new_ptr = go_new(new_cap * elem_size, nil);
         if (s.len > 0) memcpy(new_ptr.ptr, s.ptr.ptr, s.len * elem_size);
         s.ptr = new_ptr;
@@ -60,26 +64,10 @@ go_ll go_append_string(go_ll s, go_ss t) {
     return go_append_slice(s, 1, bytes);
 }
 
-go_ii go_copy(go_ii elem_size, go_ll dst, go_ll src) {
-    go_ii n = dst.len < src.len ? dst.len : src.len;
-    memmove(dst.ptr.ptr, src.ptr.ptr, n * elem_size); // (they may overlap)
-    return n;
-}
 void go_slice_clear(go_ll s, size_t elem_size) {
     if (s.len > 0) memset(s.ptr.ptr, 0, (size_t)s.len * elem_size);
 }
 
-go_ii go_string_len(go_ss s) {
-    if (s.ptr == NULL) return 0;
-    if (s.len == -1) return strlen(s.ptr);
-    return s.len;
-}
-go_tf go_string_eq(go_ss a, go_ss b) {
-    go_ii lena = go_string_len(a);
-    go_ii lenb = go_string_len(b);
-    if (lena != lenb) return false;
-    return (memcmp(a.ptr, b.ptr, lena) == 0) ? true : false;
-}
 
 typedef struct {
     size_t key_size;
@@ -227,10 +215,6 @@ go_tf go_same_ss(const void *a, const void *b) {
 }
 
 
-void* go_index(go_ll s, go_ii elem_size, go_ii i) {
-    go_index_check(i, s.len);
-    return (char*)s.ptr.ptr + i * elem_size;
-}
 
 go_ll go_slice(go_ll s, go_ii elem_size, go_i8 low, go_i8 high, go_i8 max) { return go_slice_of(s, elem_size, low, high, max, false); }
 go_ll go_sliceu(go_ll s, go_ii elem_size, go_i8 low, go_i8 high, go_i8 max, int uns) { return go_slice_ofu(s, elem_size, low, high, max, false, uns); }
@@ -442,7 +426,6 @@ typedef struct go_panicking {
 static go_thread_local struct {
     go_frame* top;      // innermost frame with deferred calls.
     go_panicking* panic; // the current panic, if any.
-    go_tf token;        // set while a deferred call is starting, see go_take_recover.
     go_tf unwinding;    // set while a deferred call is starting, when called by a panic.
 } go_g;
 
@@ -466,10 +449,10 @@ static void go_run_defers(go_frame* f) {
     while (f->defers) {
         go_deferred* d = f->defers;
         f->defers = d->next;
-        go_g.token = true;
+        go_recover_token = true;
         go_g.unwinding = false;
         ((void(*)(void*))d->fn.ptr)(d->fn.env);
-        go_g.token = false;
+        go_recover_token = false;
     }
 }
 
@@ -482,13 +465,15 @@ void go_frame_return(go_frame* f) {
 
 // go_take_recover is called on entry to every function: only a function called directly
 // as a deferred call receives the token that allows it to recover.
+go_thread_local go_tf go_recover_token; // (set while a deferred call is starting)
+
 go_tf go_take_recover(void) {
-    go_tf token = go_g.token;
-    go_g.token = false;
+    go_tf token = go_recover_token;
+    go_recover_token = false;
     return token;
 }
 
-void go_give_recover(go_tf token) { go_g.token = token; }
+void go_give_recover(go_tf token) { go_recover_token = token; }
 
 go_vv go_recover(go_tf can_recover) {
     go_panicking* p = go_g.panic;
@@ -547,10 +532,10 @@ void go_frame_unwind(go_frame* f) {
     while (f->defers) { // (as go_run_defers, until one recovers)
         go_deferred* d = f->defers;
         f->defers = d->next;
-        go_g.token = true;
+        go_recover_token = true;
         go_g.unwinding = true;
         ((void(*)(void*))d->fn.ptr)(d->fn.env);
-        go_g.token = false;
+        go_recover_token = false;
         if (go_g.panic->recovered) break;
     }
     if (!go_g.panic->recovered) {
@@ -766,9 +751,6 @@ go_ss go_string_concat(go_ss a, go_ss b) {
     return s;
 }
 
-go_u1 go_string_index(go_ss s, go_ii i) {
-    return (go_u1)s.ptr[go_index_check(i, go_string_len(s))];
-}
 
 go_ss go_string_slice(go_ss s, go_i8 low, go_i8 high) { return go_string_sliceu(s, low, high, 0); }
 
@@ -786,7 +768,7 @@ go_ss go_string_sliceu(go_ss s, go_i8 low, go_i8 high, int uns) {
     return (go_ss){ .ptr = s.ptr ? s.ptr + low : NULL, .len = (go_ii)(high - low) };
 }
 
-go_ii go_string_decode(go_ss s, go_ii i, go_i4* r) {
+go_ii go_string_decode_rune(go_ss s, go_ii i, go_i4* r) {
     const unsigned char* p = (const unsigned char*)s.ptr + i;
     go_ii n = go_string_len(s) - i;
     *r = 0xFFFD;

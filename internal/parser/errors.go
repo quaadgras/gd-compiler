@@ -71,14 +71,22 @@ func check(pkgs []*packages.Package) error {
 			if err != nil {
 				continue // (reported by go/packages)
 			}
-			file, _ := syntax.Parse(syntax.NewFileBase(name), f, func(err error) {
+			report := func(err error) {
 				if e, ok := err.(syntax.Error); ok {
 					parsed = append(parsed, diagnostic{e.Pos.RelFilename(), int(e.Pos.RelLine()), int(e.Pos.RelCol()), e.Msg, nil, false})
 				}
-			}, nil, syntax.CheckBranches)
+			}
+			before := len(parsed)
+			file, _ := syntax.Parse(syntax.NewFileBase(name), f, report, directives(report), syntax.CheckBranches)
+			for _, d := range parsed[before:] {
+				if strings.HasPrefix(d.msg, "syntax error") {
+					file = nil // (gc stops at syntax errors)
+				}
+			}
 			f.Close()
 			if file != nil {
 				fileVersions[name] = file.GoVersion
+				checkEmbeds(file, pkg.Module, report)
 			}
 		}
 		lang := ""

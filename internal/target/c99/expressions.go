@@ -196,6 +196,14 @@ func (c99 Target) ExpressionAs(expr source.Expression, target types.Type) error 
 // arrayIndex writes the index of an array, which panics when out of range (constant
 // indexes are checked by the type checker).
 func (c99 Target) arrayIndex(index source.Expression, array *types.Array) error {
+	if zeroSize(subst(array)) { // (see [Target.ArrayTypeOf])
+		if index.TypeAndValue().Value != nil {
+			fmt.Fprintf(c99, "0")
+			return nil
+		}
+		fmt.Fprintf(c99, "((void)go_index_check((go_ii)(%s), %d), 0)", c99.indexOf(index, fmt.Sprint(array.Len())), array.Len())
+		return nil
+	}
 	if index.TypeAndValue().Value != nil {
 		return c99.Expression(index)
 	}
@@ -352,7 +360,7 @@ func (c99 Target) ExpressionIndex(expr source.ExpressionIndex) error {
 		return nil
 	case *types.Slice:
 		x := c99.toString(expr.X)
-		fmt.Fprintf(c99, "go_slice_index(%s, %s, %s)", x, c99.TypeOf(xtype.Elem()), c99.indexOf(expr.Index, "go_slice_len("+x+")"))
+		fmt.Fprintf(c99, "go_slice_at(%s, %s, %s, %s)", x, c99.TypeOf(xtype.Elem()), c99.elemSize(xtype.Elem()), c99.indexOf(expr.Index, "go_slice_len("+x+")"))
 		return nil
 	case *types.Map:
 		mtype := expr.X.TypeAndValue().Type.Underlying().(*types.Map)
@@ -464,13 +472,13 @@ func (c99 Target) ExpressionSlice(e source.ExpressionSlice) error {
 			return e.Location.Errorf("unsupported slice of %s", typ)
 		}
 		fmt.Fprintf(c99, "go_pointer_slice%s(%s, %d, %s, %s, %s, %s%s)",
-			u, c99.toString(e.X), array.Len(), c99.TypeOf(array.Elem()), low, high, max, flags)
+			u, c99.toString(e.X), array.Len(), c99.elemSize(array.Elem()), low, high, max, flags)
 	case *types.Array:
-		fmt.Fprintf(c99, "go_slice_of%s((go_ll){ (go_pt){ (%s).a }, %d, %[3]d }, sizeof(%s), %s, %s, %s, true%s)",
-			u, c99.toString(e.X), typ.Len(), c99.TypeOf(typ.Elem()), low, high, max, flags)
+		fmt.Fprintf(c99, "go_slice_of%s((go_ll){ (go_pt){ (%s).a }, %d, %[3]d }, %s, %s, %s, %s, true%s)",
+			u, c99.toString(e.X), typ.Len(), c99.elemSize(typ.Elem()), low, high, max, flags)
 	case *types.Slice:
-		fmt.Fprintf(c99, "go_slice%s(%s, sizeof(%s), %s, %s, %s%s)",
-			u, c99.toString(e.X), c99.TypeOf(typ.Elem()), low, high, max, flags)
+		fmt.Fprintf(c99, "go_slice%s(%s, %s, %s, %s, %s%s)",
+			u, c99.toString(e.X), c99.elemSize(typ.Elem()), low, high, max, flags)
 	case *types.Basic: // strings
 		fmt.Fprintf(c99, "go_string_slice%s(%s, %s, %s%s)", u, c99.toString(e.X), low, high, flags)
 	default:

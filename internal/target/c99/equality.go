@@ -88,7 +88,7 @@ func (c99 Target) equalPtrFunc(t types.Type) string {
 			}
 			flush()
 		case *types.Array:
-			if typ.Len() > 0 {
+			if typ.Len() > 0 && !zeroSize(t) { // (values of no size are all equal)
 				fmt.Fprintf(w, "static go_tf %s(const void* a, const void* b) { const %s *x = a, *y = b; for (go_ii i = 0; i < %d; i++) if (!%s) return false; return true; }\n",
 					symbol, ctype, typ.Len(), c99.equalityOf("x->a[i]", "y->a[i]", typ.Elem()))
 				return nil

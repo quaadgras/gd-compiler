@@ -213,7 +213,7 @@ func (c99 Target) StatementRange(stmt source.StatementRange) error {
 			fmt.Fprintf(c99, "%s%s", indent, c99.bind(key, types.Typ[types.Int], index))
 		}
 		if val, ok := stmt.Value.Get(); ok && val.String != "_" {
-			fmt.Fprintf(c99, "%s%s", indent, c99.bind(val, typ.Elem(), fmt.Sprintf("go_slice_index(%s, %s, %s)", slice, c99.TypeOf(typ.Elem()), index)))
+			fmt.Fprintf(c99, "%s%s", indent, c99.bind(val, typ.Elem(), fmt.Sprintf("go_slice_at(%s, %s, %s, %s)", slice, c99.TypeOf(typ.Elem()), c99.elemSize(typ.Elem()), index)))
 		}
 		if err := c99.loopBody(stmt.Label, stmt.Body.Statements); err != nil {
 			return err
@@ -400,13 +400,20 @@ func (c99 Target) rangeArray(stmt source.StatementRange, array *types.Array, poi
 	x, index := fmt.Sprintf("go_ra_%d", n), fmt.Sprintf("go_ri_%d", n)
 	indent := "\n" + strings.Repeat("\t", c99.Tabs+1)
 	elem := x + ".a[" + index + "]"
+	if zeroSize(subst(array)) { // (see [Target.ArrayTypeOf])
+		elem = x + ".a[0]"
+	}
 	value, hasValue := stmt.Value.Get()
 	hasValue = hasValue && value.String != "_"
 	if info := c99.Closures.info; !hasValue && info != nil && countEvents(info, source.LocationOf(stmt.X).Node) == 0 {
 		fmt.Fprintf(c99, "{") // (the length is constant, so the array is not evaluated)
 	} else if pointer {
 		fmt.Fprintf(c99, "{ go_pt %s = %s;", x, c99.toString(stmt.X))
-		elem = fmt.Sprintf("go_pointer_get(%s, %s).a[%s]", x, c99.ArrayTypeOf(array), index)
+		at := index
+		if zeroSize(subst(array)) {
+			at = "0"
+		}
+		elem = fmt.Sprintf("go_pointer_get(%s, %s).a[%s]", x, c99.ArrayTypeOf(array), at)
 	} else {
 		fmt.Fprintf(c99, "{ %s %s = %s;", c99.ArrayTypeOf(array), x, c99.toString(stmt.X))
 	}

@@ -169,6 +169,11 @@ type Package struct {
 	Test    bool
 	Files   []File
 
+	// Embeds are the files (slash-separated paths, relative to Dir) of the variables with
+	// //go:embed directives, sorted as package embed sorts them, see [parser.Load].
+	Embeds map[*types.Var][]string
+	Dir    string
+
 	FileSet *token.FileSet
 }
 

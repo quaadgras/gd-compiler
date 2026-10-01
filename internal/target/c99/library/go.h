@@ -182,7 +182,7 @@ typedef struct { char _; } go_tuple;
 #define go_ignore(...) ((void)(__VA_ARGS__)) // (values may have commas)
 // Every function starts with go_split, which takes the token that allows recover to
 // stop a panic, see go_recover.
-#define go_split() go_tf go_can_recover = go_take_recover(); (void)go_can_recover;
+#define go_split() go_tf go_can_recover = go_recover_token; go_recover_token = false; (void)go_can_recover;
 
 
 // go_main defines C's main, that runs the Go main function as the main goroutine (with a
@@ -229,6 +229,7 @@ void go_defer_push(go_frame* f, go_fn fn);
 void go_frame_return(go_frame* f);
 void go_frame_unwind(go_frame* f);
 go_tf go_take_recover(void);
+extern go_thread_local go_tf go_recover_token; // (see go_take_recover)
 void go_give_recover(go_tf token);
 go_tf go_unwinding(void); // (whether a deferred call was called by a panic, rather than a return) // (to the next function called, as the deferred call)
 go_vv go_recover(go_tf can_recover);
@@ -263,10 +264,20 @@ go_pt go_new(go_ii size,  const void* init);
 #define go_pointer_get(p, t) (*(t*)go_nil_check((p).ptr))
 // go_slice slices s[low:high:max], omitted bounds are go_slice_default.
 #define go_slice_default INT64_MIN
-#define go_pointer_slice(p, S, T, lo, hi, max) go_slice_of((go_ll){ (go_pt){ go_nil_check((p).ptr) }, S, S }, sizeof(T), lo, hi, max, true)
+#define go_pointer_slice(p, S, size, lo, hi, max) go_slice_of((go_ll){ (go_pt){ go_nil_check((p).ptr) }, S, S }, size, lo, hi, max, true)
 
-go_ii go_copy(go_ii elem_size, go_ll dst, go_ll src);
-go_ll go_append(go_ll s, go_ii elem_size, const void* elem);
+static inline go_ii go_copy(go_ii elem_size, go_ll dst, go_ll src) {
+    go_ii n = dst.len < src.len ? dst.len : src.len;
+    if (n > 0) memmove(dst.ptr.ptr, src.ptr.ptr, (size_t)(n * elem_size)); // (they may overlap)
+    return n;
+}
+go_ll go_append_grow(go_ll s, go_ii elem_size, const void* elem);
+static inline go_ll go_append(go_ll s, go_ii elem_size, const void* elem) {
+    if (s.len >= s.cap) return go_append_grow(s, elem_size, elem);
+    memcpy((char*)s.ptr.ptr + s.len * elem_size, elem, (size_t)elem_size);
+    s.len += 1;
+    return s;
+}
 go_ll go_append_slice(go_ll s, go_ii elem_size, go_ll t);
 go_ll go_append_string(go_ll s, go_ss t);
 go_ll go_slice(go_ll s, go_ii elem_size, go_i8 low, go_i8 high, go_i8 max);
@@ -275,12 +286,15 @@ enum { go_slice_ulow = 1, go_slice_uhigh = 2, go_slice_umax = 4 };
 go_ll go_sliceu(go_ll s, go_ii elem_size, go_i8 low, go_i8 high, go_i8 max, int uns);
 go_ll go_slice_ofu(go_ll s, go_ii elem_size, go_i8 low, go_i8 high, go_i8 max, go_tf array, int uns);
 go_ss go_string_sliceu(go_ss s, go_i8 low, go_i8 high, int uns);
-#define go_pointer_sliceu(p, S, T, lo, hi, max, uns) go_slice_ofu((go_ll){ (go_pt){ go_nil_check((p).ptr) }, S, S }, sizeof(T), lo, hi, max, true, uns)
+#define go_pointer_sliceu(p, S, size, lo, hi, max, uns) go_slice_ofu((go_ll){ (go_pt){ go_nil_check((p).ptr) }, S, S }, size, lo, hi, max, true, uns)
 go_ll go_slice_of(go_ll s, go_ii elem_size, go_i8 low, go_i8 high, go_i8 max, go_tf array);
-void* go_index(go_ll s, go_ii elem_size, go_ii i);
+static inline void* go_index(go_ll s, go_ii elem_size, go_ii i);
 
 #define go_slice_make(T, length, capacity) (go_ll){ .ptr = go_new(sizeof(T)*go_make_cap(length, capacity, sizeof(T)), nil), .len = length, .cap = capacity }
 #define go_slice_index(s, T, i) (*(T*)go_index(s, sizeof(T), i))
+// (as the above, for elements of the given size, 0 for types that take no memory in Go)
+#define go_slice_make_sized(size, length, capacity) (go_ll){ .ptr = go_new((size)*go_make_cap(length, capacity, size), nil), .len = length, .cap = capacity }
+#define go_slice_at(s, T, size, i) (*(T*)go_index(s, size, i))
 #define go_slice_copy(T, dst, src) go_copy(sizeof(T), dst, src)
 go_ll go_slice_sparse(go_ii length, size_t size, go_ii n, const go_ii* indexes, const void* values); // (of literals with large indexes)
 #define go_slice_literal(length, T, ...) (go_ll){ .ptr = go_new(sizeof(T)*length, &(T[]){__VA_ARGS__}), .len = length, .cap = length }
@@ -310,7 +324,11 @@ go_tf go_map_next(go_map_iter* it, void* key, void* val); // val may be NULL.
 
 #define go_string_new(str) (go_ss){ .ptr = str, .len = -1 }
 #define go_string_const(str) { .ptr = str, .len = -1 } // for static initializers.
-go_ii go_string_len(go_ss s);
+static inline go_ii go_string_len(go_ss s) {
+    if (s.ptr == NULL) return 0;
+    if (s.len == -1) return (go_ii)strlen(s.ptr);
+    return s.len;
+}
 // go_bytes_of_string is a byte slice that shares the bytes of s (for reading them).
 static inline go_ll go_bytes_of_string(go_ss s) {
     go_ii n = go_string_len(s);
@@ -318,12 +336,19 @@ static inline go_ll go_bytes_of_string(go_ss s) {
 }
 // go_string_data is unsafe.StringData: nil for empty strings, as with gc.
 static inline go_pt go_string_data(go_ss s) { return (go_pt){ .ptr = go_string_len(s) ? (void*)s.ptr : NULL }; }
-go_tf go_string_eq(go_ss a, go_ss b);
+static inline go_tf go_string_eq(go_ss a, go_ss b) {
+    go_ii n = go_string_len(a);
+    return n == go_string_len(b) && (n == 0 || a.ptr == b.ptr || memcmp(a.ptr, b.ptr, (size_t)n) == 0);
+}
 go_ii go_string_cmp(go_ss a, go_ss b);
 go_ss go_string_concat(go_ss a, go_ss b);
-go_u1 go_string_index(go_ss s, go_ii i);
+static inline go_u1 go_string_index(go_ss s, go_ii i);
 go_ss go_string_slice(go_ss s, go_i8 low, go_i8 high);
-go_ii go_string_decode(go_ss s, go_ii i, go_i4* r); // UTF-8, returns the width.
+go_ii go_string_decode_rune(go_ss s, go_ii i, go_i4* r);
+static inline go_ii go_string_decode(go_ss s, go_ii i, go_i4* r) { // UTF-8, returns the width.
+    if (i < go_string_len(s) && (unsigned char)s.ptr[i] < 0x80) { *r = (unsigned char)s.ptr[i]; return 1; }
+    return go_string_decode_rune(s, i, r);
+}
 go_ss go_string_from_rune(go_i8 r);
 go_ss go_string_from_bytes(go_ll b);
 go_ll go_bytes_from_string(go_ss s);
@@ -415,6 +440,13 @@ static inline go_ii go_index_check(go_ii i, go_ii length) {
     if (i < 0) go_panic_error("runtime error: index out of range [%lld]", (long long)i);
     if (i >= length) go_panic_error("runtime error: index out of range [%lld] with length %lld", (long long)i, (long long)length);
     return i;
+}
+static inline void* go_index(go_ll s, go_ii elem_size, go_ii i) {
+    go_index_check(i, s.len);
+    return (char*)s.ptr.ptr + i * elem_size;
+}
+static inline go_u1 go_string_index(go_ss s, go_ii i) {
+    return (go_u1)s.ptr[go_index_check(i, go_string_len(s))];
 }
 
 static const go_type go_type_bool = {.name="bool", .kind=go_kind_bool, .size=sizeof(go_tf)};

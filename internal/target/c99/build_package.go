@@ -6,9 +6,11 @@ import (
 	"fmt"
 	"go/ast"
 	"go/build"
+	"go/types"
 	"io/fs"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"github.com/quaadgras/gd-compiler/internal/escape"
@@ -203,6 +205,16 @@ func registerPackage(pkg source.Package) *Closures {
 	closures := NewClosures(&pkg.Info, syntax)
 	closures.generics = NewGenerics(pkg.Files)
 	compiledPackages[pkg.Path] = closures
+	var locals []*types.TypeName // (numbered as gc numbers them, see localGen)
+	for _, obj := range pkg.Info.Defs {
+		if name, ok := obj.(*types.TypeName); ok && isLocal(name) && !name.IsAlias() && !isTypeParam(name.Type()) {
+			locals = append(locals, name)
+		}
+	}
+	sort.Slice(locals, func(i, j int) bool { return locals[i].Pos() < locals[j].Pos() })
+	for i, name := range locals {
+		localGen[name] = i + 1
+	}
 	return closures
 }
 
@@ -294,6 +306,18 @@ func compilePackage(pkg source.Package, compiled map[string]bool, byPath map[str
 		}
 	}
 
+	var embedded string
+	if len(pkg.Embeds) > 0 {
+		var cc Target
+		cc.CurrentPackage, cc.CurrentPath, cc.CurrentName = pkg.Ident, pkg.Path, pkg.Name
+		cc.Prelude, cc.Generic = &inits.Prelude, &inits.Prelude
+		cc.Writer = new(bytes.Buffer)
+		cc.Private, cc.TypeDefs, cc.Declarations = &typeDefs, typeDefinitions, &declarations
+		cc.Symbols, cc.Initializers, cc.Closures = inits.Symbols, inits, closures
+		if embedded, err = cc.embeds(pkg); err != nil {
+			return err
+		}
+	}
 	if _, err := init.Write(inits.Prelude.Bytes()); err != nil {
 		return err
 	}
@@ -304,6 +328,7 @@ func compilePackage(pkg source.Package, compiled map[string]bool, byPath map[str
 			fmt.Fprintf(init, "\n\tinit_go_%s_package();", byPath[imported].Ident)
 		}
 	}
+	fmt.Fprint(init, embedded) // (before the other variables, which may use them)
 	if err := inits.WriteTo(init, pkg.InitOrder); err != nil {
 		return err
 	}
@@ -327,4 +352,9 @@ func compilePackage(pkg source.Package, compiled map[string]bool, byPath map[str
 	}
 	fmt.Fprintf(private, "\n#endif // GO_%s_PRIVATE_H\n", pkg.Ident)
 	return private.Close()
+}
+
+func isTypeParam(t types.Type) bool {
+	_, ok := t.(*types.TypeParam)
+	return ok
 }

@@ -71,7 +71,7 @@ func (c99 Target) keyParts(t types.Type, k, x, y string, hashes, equals *[]strin
 		mix(k, "go_ch")
 		*equals = append(*equals, fmt.Sprintf("%s == %s", x, y))
 	case *types.Array:
-		if typ.Len() == 0 {
+		if typ.Len() == 0 || zeroSize(t) {
 			break
 		}
 		i := fmt.Sprintf("go_i%d", strings.Count(k, "go_i")) // for nested arrays.

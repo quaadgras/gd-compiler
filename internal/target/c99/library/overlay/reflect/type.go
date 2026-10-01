@@ -37,7 +37,7 @@ func typeIn(t unsafe.Pointer, i int) unsafe.Pointer
 func typeOut(t unsafe.Pointer, i int) unsafe.Pointer
 func typeVariadic(t unsafe.Pointer) bool
 func callFunc(t, fn, args, results unsafe.Pointer) // calls *fn, args and results point to pointers.
-func makeFunc(t, env, dst unsafe.Pointer)           // *dst = a function of type t, that calls makeFuncCall(env, ...).
+func makeFunc(t, env, dst unsafe.Pointer)          // *dst = a function of type t, that calls makeFuncCall(env, ...).
 func registerMakeFunc()
 func giveRecover(token bool) // lets the next function called recover, if token (see makeFuncCall)
 func fieldPkgPath(t unsafe.Pointer, i int) string

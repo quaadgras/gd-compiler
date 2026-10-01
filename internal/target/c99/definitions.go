@@ -5,6 +5,7 @@ import (
 	"go/ast"
 	"go/constant"
 	"go/types"
+	"hash/fnv"
 	"io"
 	"math"
 	"strconv"
@@ -112,6 +113,10 @@ func (c99 Target) TypeDefinition(spec source.TypeDefinition) error {
 		}
 		if obj.IsAlias() {
 			return nil // C uses the aliased type.
+		}
+		if fresh, ok := subst(obj.Type()).(*types.Named); ok && fresh != obj.Type() {
+			c99.TypeOf(fresh) // (a type of its own in the instance, defined like instances of generic types)
+			return nil
 		}
 		name = c99.typeCName(obj.Type().(*types.Named)) + "_go_" + c99.CurrentPackage + "_package"
 		out, static = c99.Generic, "static "
@@ -479,6 +484,10 @@ func (c99 Target) ConstantValue(value constant.Value, global bool) error {
 			fmt.Fprintf(c99, "{ .ptr = NULL, .len = 0 }")
 			break
 		}
+		if len(str) >= 4095 { // (longer than C requires its string literals to be)
+			fmt.Fprintf(c99, "{ .ptr = %s, .len = %d }", c99.longString(str), len(str))
+			break
+		}
 		fmt.Fprintf(c99, "{ .ptr = %s, .len = %d }", cString(str), len(str))
 	case constant.Int:
 		// C integer literals have the type of the smallest of int, long, long long that fits,
@@ -554,4 +563,30 @@ func isZeroLiteral(t types.Type) bool {
 		return true
 	}
 	return false
+}
+
+// longString returns the name of a static array (in the file) of the bytes of s, a string
+// constant that is too long for a C string literal.
+func (c99 Target) longString(s string) string {
+	h := fnv.New64a()
+	h.Write([]byte(s))
+	symbol := fmt.Sprintf("go_string_%x", h.Sum64())
+	w := c99.Generic
+	if w == nil {
+		w = c99.Prelude
+	}
+	c99.Requires(symbol, w, func(w io.Writer) error {
+		var b strings.Builder
+		fmt.Fprintf(&b, "static const char %s[%d] = {", symbol, len(s))
+		for i := 0; i < len(s); i++ {
+			if i%32 == 0 {
+				b.WriteString("\n\t")
+			}
+			fmt.Fprintf(&b, "%d,", int8(s[i]))
+		}
+		b.WriteString("\n};\n")
+		_, err := io.WriteString(w, b.String())
+		return err
+	})
+	return symbol
 }
