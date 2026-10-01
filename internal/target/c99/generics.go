@@ -114,6 +114,15 @@ func (g *Generics) substituter(params []*types.TypeParam, args []types.Type) fun
 			return tuple(typ)
 		case *types.Signature:
 			return types.NewSignatureType(nil, nil, nil, tuple(typ.Params()), tuple(typ.Results()), typ.Variadic())
+		case *types.Interface: // (with its methods, embedded interfaces are flattened)
+			if typ.NumMethods() == 0 {
+				return typ
+			}
+			var methods []*types.Func
+			for m := range typ.Methods() {
+				methods = append(methods, types.NewFunc(m.Pos(), m.Pkg(), m.Name(), apply(m.Type()).(*types.Signature)))
+			}
+			return types.NewInterfaceType(methods, nil).Complete()
 		case *types.Struct:
 			var fields []*types.Var
 			var tags []string

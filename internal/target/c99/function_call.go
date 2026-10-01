@@ -380,8 +380,12 @@ func (c99 Target) conversion(expr source.FunctionCall, t types.Type) (bool, erro
 	if c99.TypeOf(t.Underlying()) == c99.TypeOf(from.Underlying()) { // (typedefs of the same C type)
 		return true, c99.Expression(arg)
 	}
-	if basic, ok := t.Underlying().(*types.Basic); ok && basic.Info()&types.IsComplex != 0 { // complex64 <-> complex128
-		fmt.Fprintf(c99, "%s_convert(%s)", c99.TypeOf(t), c99.toString(arg))
+	if basic, ok := t.Underlying().(*types.Basic); ok && basic.Info()&types.IsComplex != 0 {
+		if !isComplex(from) { // (of a number: complex(x, 0), in generic code)
+			fmt.Fprintf(c99, "((%s){ %s, 0 })", c99.TypeOf(t), c99.toString(arg))
+			return true, nil
+		}
+		fmt.Fprintf(c99, "%s_convert(%s)", c99.TypeOf(t), c99.toString(arg)) // complex64 <-> complex128
 		return true, nil
 	}
 	if types.IdenticalIgnoreTags(t.Underlying(), from.Underlying()) { // distinct C types.

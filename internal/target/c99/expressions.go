@@ -180,6 +180,9 @@ func (c99 Target) ExpressionAs(expr source.Expression, target types.Type) error 
 			}
 		}
 	}
+	if tv := expr.TypeAndValue(); tv.Value != nil && target != nil && isComplex(target) {
+		return c99.Constant(types.TypeAndValue{Type: target, Value: tv.Value}) // (in generic code)
+	}
 	if isNil(expr) && target != nil {
 		if _, ok := target.Underlying().(*types.Basic); !ok || isUnsafePointer(target) {
 			fmt.Fprintf(c99, "((%s){0})", c99.TypeOf(target))

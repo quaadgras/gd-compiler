@@ -1159,7 +1159,7 @@ fixedbugs/issue23719.go	pass
 fixedbugs/issue23732.go	skip	todo:errorcheck
 fixedbugs/issue23734.go	fail	exit: exit status 2 panic: didn't panic
 fixedbugs/issue23780.go	fail	cc: timeout
-fixedbugs/issue23781.go	fail	cc: timeout
+fixedbugs/issue23781.go	fail	cc: signal: killed
 fixedbugs/issue23812.go	pass	
 fixedbugs/issue23814.go	pass	
 fixedbugs/issue23823.go	skip	todo:errorcheck
@@ -1497,7 +1497,7 @@ fixedbugs/issue43701.go	pass
 fixedbugs/issue43762.go	skip	todo:errorcheck
 fixedbugs/issue43835.go	fail	exit: exit status 2 panic: FAIL
 fixedbugs/issue43908.go	pass	
-fixedbugs/issue43942.go	fail	exit: exit status 1 2026/10/01 15:21:20 want 5, have <nil>
+fixedbugs/issue43942.go	fail	exit: exit status 1 2026/10/01 15:54:17 want 5, have <nil>
 fixedbugs/issue43962.go	skip	todo:errorcheck
 fixedbugs/issue4396a.go	pass	
 fixedbugs/issue4396b.go	pass	
@@ -2439,7 +2439,7 @@ typeparam/devirtualize1.go	pass
 typeparam/devirtualize2.go	pass	
 typeparam/dictionaryCapture-noinline.go	skip	gc:flags -gcflags="-l"
 typeparam/dictionaryCapture.go	fail	c11: error: 'go_if' has no member named 'a'
-typeparam/dottype.go	fail	exit: exit status 2 panic: interface conversion: main.mybar is not interface{bar…
+typeparam/dottype.go	pass	
 typeparam/double.go	pass	
 typeparam/eface.go	pass	
 typeparam/equal.go	pass	
@@ -2468,7 +2468,7 @@ typeparam/issue46461.go	pass
 typeparam/issue46461b.go	skip	todo:compiledir
 typeparam/issue46472.go	pass	
 typeparam/issue46591.go	pass	
-typeparam/issue47258.go	fail	c11: error: incompatible type for argument 2 of 'go_aaf4f4zz_add'
+typeparam/issue47258.go	pass	
 typeparam/issue47272.go	pass	
 typeparam/issue47514.go	pass	
 typeparam/issue47514b.go	pass	
@@ -2571,7 +2571,7 @@ typeparam/issue50121.go	skip	todo:rundir
 typeparam/issue50121b.go	skip	todo:rundir
 typeparam/issue50147.go	pass	
 typeparam/issue50177.go	pass	
-typeparam/issue50193.go	fail	c11: error: incompatible type for argument 1 of 'go_aaf8f8zz_convert'
+typeparam/issue50193.go	pass	
 typeparam/issue50259.go	pass	
 typeparam/issue50264.go	pass	
 typeparam/issue50317.go	skip	todo:errorcheck
@@ -2604,7 +2604,7 @@ typeparam/issue51303.go	pass
 typeparam/issue51355.go	pass	
 typeparam/issue51367.go	skip	todo:rundir
 typeparam/issue51423.go	skip	todo:compiledir
-typeparam/issue51521.go	fail	gd: panic: type parameter T was not substituted
+typeparam/issue51521.go	pass	
 typeparam/issue51522a.go	pass	
 typeparam/issue51522b.go	pass	
 typeparam/issue51700.go	pass	
@@ -2624,7 +2624,7 @@ typeparam/issue53254.go	pass
 typeparam/issue53390.go	pass	
 typeparam/issue53406.go	pass	
 typeparam/issue53419.go	pass	
-typeparam/issue53477.go	fail	c11: error: unknown type name 'X_go_main_package'
+typeparam/issue53477.go	pass	
 typeparam/issue53762.go	pass	
 typeparam/issue54135.go	pass	
 typeparam/issue54225.go	pass	
@@ -2701,9 +2701,9 @@ typeparam/typeswitch1.go	pass
 typeparam/typeswitch2.go	pass	
 typeparam/typeswitch3.go	pass	
 typeparam/typeswitch4.go	pass	
-typeparam/typeswitch5.go	fail	gd: panic: type parameter T was not substituted
+typeparam/typeswitch5.go	pass	
 typeparam/typeswitch6.go	pass	
-typeparam/typeswitch7.go	fail	output: mismatch
+typeparam/typeswitch7.go	pass	
 typeparam/valimp.go	skip	todo:rundir
 typeparam/value.go	pass	
 typeswitch.go	pass	

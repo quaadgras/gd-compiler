@@ -189,7 +189,13 @@ func (c99 Target) InterfaceTypeOf(t types.Type) string {
 	}
 	name := c99.typeCName(typ) + "_go_" + source.PackageIdent(typ.Obj().Pkg()) + "_package"
 	if typ.TypeArgs().Len() > 0 { // an instance of a generic interface, defined where it's used.
-		c99.defineType(name, nil, func(w io.Writer) {
+		var deps []types.Type // (the types of its methods)
+		for m := range typ.Underlying().(*types.Interface).Methods() {
+			sig := m.Type().(*types.Signature)
+			deps = append(deps, slicesOfTypes(sig.Params())...)
+			deps = append(deps, slicesOfTypes(sig.Results())...)
+		}
+		c99.defineType(name, deps, func(w io.Writer) {
 			fmt.Fprintf(w, "\n#ifndef %[1]s_defined\n#define %[1]s_defined\ntypedef %[2]s %[1]s;\n#endif\n", name, c99.InterfaceTypeOf(typ.Underlying()))
 		})
 	}
