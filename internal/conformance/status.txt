@@ -236,14 +236,14 @@ devirt.go	skip	gc:diagnostics -d=ssa/opt/debug=1
 devirtualization.go	skip	gc:diagnostics -m
 devirtualization_nil_panics.go	skip	gc:stack-introspection runtime.Callers
 devirtualization_with_type_assertions_interleaved.go	skip	gc:diagnostics -m
-directive.go	fail	errorcheck: directive.go:9: missing error "misplaced compiler directive"
-directive2.go	fail	errorcheck: directive2.go:14: missing error "misplaced compiler directive"
+directive.go	pass	
+directive2.go	pass	
 divide.go	pass	
 divmod.go	pass	
 dwarf/dwarf.go	skip	todo:rundir
 dwarf/linedirectives.go	pass	
-embedfunc.go	fail	errorcheck: embedfunc.go:12: missing error "go:embed cannot apply to var inside func"
-embedvers.go	fail	errorcheck: embedvers.go:11: missing error "go:embed requires go1.16 or later"
+embedfunc.go	pass	
+embedvers.go	pass	
 empty.go	pass	
 env.go	pass	
 eof.go	pass	
@@ -639,7 +639,7 @@ fixedbugs/bug382.go	skip	todo:compiledir
 fixedbugs/bug383.go	pass	
 fixedbugs/bug384.go	pass	
 fixedbugs/bug385_32.go	skip	upstream:build 386 || amd64p32 || arm
-fixedbugs/bug385_64.go	fail	errorcheck: bug385_64.go:16496: missing error "stack frame too large"
+fixedbugs/bug385_64.go	pass	
 fixedbugs/bug386.go	pass	
 fixedbugs/bug387.go	pass	
 fixedbugs/bug388.go	pass	
@@ -996,7 +996,7 @@ fixedbugs/issue18392.go	pass
 fixedbugs/issue18393.go	pass	
 fixedbugs/issue18410.go	pass	
 fixedbugs/issue18419.go	skip	todo:errorcheck
-fixedbugs/issue18459.go	fail	errorcheck: issue18459.go:11: missing error "//go:nowritebarrier only allowed in runtime"
+fixedbugs/issue18459.go	pass	
 fixedbugs/issue18595.go	pass	
 fixedbugs/issue18636.go	skip	gc:import runtime/debug
 fixedbugs/issue18640.go	pass	
@@ -1005,7 +1005,7 @@ fixedbugs/issue18661.go	pass
 fixedbugs/issue18725.go	pass	
 fixedbugs/issue18747.go	pass	
 fixedbugs/issue18808.go	pass	
-fixedbugs/issue18882.go	fail	errorcheck: issue18882.go:11: missing error "usage: //go:cgo_ldflag"
+fixedbugs/issue18882.go	pass	
 fixedbugs/issue18895.go	skip	gc:diagnostics -m
 fixedbugs/issue18906.go	pass	
 fixedbugs/issue18911.go	skip	todo:rundir
@@ -1055,7 +1055,7 @@ fixedbugs/issue19911.go	pass
 fixedbugs/issue19947.go	pass	
 fixedbugs/issue19977.go	pass	
 fixedbugs/issue20014.go	skip	todo:runindir
-fixedbugs/issue20027.go	fail	errorcheck: issue20027.go:9: missing error "channel element type too large"
+fixedbugs/issue20027.go	pass	
 fixedbugs/issue20029.go	pass	
 fixedbugs/issue20097.go	pass	
 fixedbugs/issue20145.go	pass	
@@ -1071,13 +1071,13 @@ fixedbugs/issue20298.go	skip	gc:flags -e=0
 fixedbugs/issue20333.go	pass	
 fixedbugs/issue20335.go	pass	
 fixedbugs/issue20415.go	pass	
-fixedbugs/issue20529.go	fail	errorcheck: issue20529.go:18: missing error "stack frame too large"
+fixedbugs/issue20529.go	pass	
 fixedbugs/issue20530.go	pass	
 fixedbugs/issue20602.go	pass	
 fixedbugs/issue20682.go	skip	todo:compiledir
 fixedbugs/issue20739.go	fail	c11: error: size of array 'a' exceeds maximum object size '9223372036854775807'
 fixedbugs/issue20749.go	pass	
-fixedbugs/issue20780.go	fail	errorcheck: issue20780.go:14: missing error "stack frame too large"
+fixedbugs/issue20780.go	pass	
 fixedbugs/issue20780b.go	skip	gc:build cgo && linux && amd64
 fixedbugs/issue20789.go	pass	
 fixedbugs/issue20811.go	pass	
@@ -1109,8 +1109,8 @@ fixedbugs/issue22076.go	pass
 fixedbugs/issue22083.go	skip	gc:import runtime/debug
 fixedbugs/issue22164.go	pass	
 fixedbugs/issue22198.go	pass	
-fixedbugs/issue22200.go	fail	errorcheck: issue22200.go:16: missing error "stack frame too large"
-fixedbugs/issue22200b.go	fail	errorcheck: issue22200b.go:11: missing error "stack frame too large"
+fixedbugs/issue22200.go	pass	
+fixedbugs/issue22200b.go	pass	
 fixedbugs/issue22305.go	pass	
 fixedbugs/issue22326.go	pass	
 fixedbugs/issue22327.go	pass	
@@ -1196,7 +1196,7 @@ fixedbugs/issue25006.go	pass
 fixedbugs/issue25055.go	skip	todo:compiledir
 fixedbugs/issue25101.go	pass	
 fixedbugs/issue25322.go	pass	
-fixedbugs/issue25507.go	fail	errorcheck: issue25507.go:19: missing error "stack frame too large"
+fixedbugs/issue25507.go	pass	
 fixedbugs/issue25516.go	pass	
 fixedbugs/issue25727.go	pass	
 fixedbugs/issue25741.go	pass	
@@ -1446,8 +1446,8 @@ fixedbugs/issue41736.go	pass
 fixedbugs/issue41780.go	pass	
 fixedbugs/issue41872.go	pass	
 fixedbugs/issue42032.go	skip	gc:build cgo
-fixedbugs/issue42058a.go	fail	errorcheck: issue42058a.go:9: missing error "channel element type too large"
-fixedbugs/issue42058b.go	fail	errorcheck: issue42058b.go:9: missing error "channel element type too large"
+fixedbugs/issue42058a.go	pass	
+fixedbugs/issue42058b.go	pass	
 fixedbugs/issue42075.go	pass	
 fixedbugs/issue42076.go	skip	gc:build cgo
 fixedbugs/issue4215.go	pass	
@@ -1596,7 +1596,7 @@ fixedbugs/issue48088.go	skip	todo:compiledir
 fixedbugs/issue48092.go	skip	gc:flags -B
 fixedbugs/issue48097.go	skip	gc:flags -complete
 fixedbugs/issue4813.go	pass	
-fixedbugs/issue48230.go	fail	errorcheck: issue48230.go:9: missing error "embed"
+fixedbugs/issue48230.go	pass	
 fixedbugs/issue48289.go	pass	
 fixedbugs/issue48301.go	pass	
 fixedbugs/issue48357.go	pass	
@@ -1639,8 +1639,8 @@ fixedbugs/issue49611.go	pass
 fixedbugs/issue49619.go	pass	
 fixedbugs/issue4964.go	skip	todo:rundir
 fixedbugs/issue49665.go	pass	
-fixedbugs/issue49767.go	fail	errorcheck: issue49767.go:10: missing error "channel element type too large"
-fixedbugs/issue49814.go	fail	errorcheck: issue49814.go:10: missing error "larger than address space|invalid array length"
+fixedbugs/issue49767.go	pass	
+fixedbugs/issue49814.go	pass	
 fixedbugs/issue5002.go	pass	
 fixedbugs/issue50169.go	pass	
 fixedbugs/issue50190.go	pass	
@@ -1681,7 +1681,7 @@ fixedbugs/issue52590.go	skip	todo:compiledir
 fixedbugs/issue5260.go	skip	todo:rundir
 fixedbugs/issue52612.go	pass	
 fixedbugs/issue52673.go	pass	
-fixedbugs/issue52697.go	fail	errorcheck: issue52697.go:11: missing error "stack frame too large"
+fixedbugs/issue52697.go	pass	
 fixedbugs/issue52701.go	pass	
 fixedbugs/issue52748.go	pass	
 fixedbugs/issue52788.go	pass	
@@ -2023,7 +2023,7 @@ fixedbugs/issue78303_1.go	pass
 fixedbugs/issue78303_2.go	pass	
 fixedbugs/issue78313.go	pass	
 fixedbugs/issue78314.go	pass	
-fixedbugs/issue78355.go	fail	errorcheck: issue78355.go:15: missing error "map element type too large"
+fixedbugs/issue78355.go	pass	
 fixedbugs/issue78404.go	pass	
 fixedbugs/issue78408.go	pass	
 fixedbugs/issue78410.go	pass	

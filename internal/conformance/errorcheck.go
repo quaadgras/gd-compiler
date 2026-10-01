@@ -18,6 +18,12 @@ var (
 	errorLine    = regexp.MustCompile(`LINE(([+-])(\d+))?`)
 )
 
+// implementationErrors match the expected errors of gc's implementation restrictions and
+// directives, which are not in the spec, and that gd may report or not (as it compiles
+// such programs).
+var implementationErrors = regexp.MustCompile(`stack frame too large|(channel|map) element type too large|` +
+	`larger than address space|misplaced compiler directive|go:embed|^embed$|//go:nowritebarrier|//go:cgo_`)
+
 type wantedError struct {
 	re      *regexp.Regexp
 	reStr   string
@@ -88,7 +94,9 @@ func errorCheck(path string, src []byte, output string) error {
 		var msgs []string
 		msgs, out = partition(want.prefix+":", out)
 		if len(msgs) == 0 {
-			errs = append(errs, fmt.Sprintf("%s: missing error %q", want.prefix, want.reStr))
+			if !implementationErrors.MatchString(want.reStr) {
+				errs = append(errs, fmt.Sprintf("%s: missing error %q", want.prefix, want.reStr))
+			}
 			continue
 		}
 		matched := false
