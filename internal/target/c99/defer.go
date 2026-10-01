@@ -20,6 +20,10 @@ type DeferredCall struct {
 	Callee   string
 	Receiver string
 	Args     []string
+
+	// Recover is whether the function with the defer statement can recover, for defer
+	// recover(), which recovers when that function is a deferred call.
+	Recover string
 }
 
 // StatementDefer evaluates the function value, receiver and arguments of the deferred call
@@ -64,7 +68,9 @@ func (c99 Target) callClosure(call source.FunctionCall, kind string) (string, er
 	case source.Expressions.BuiltinFunction:
 		name := source.Expressions.BuiltinFunction.Get(function).String
 		switch name {
-		case "print", "println", "panic", "recover":
+		case "recover":
+			deferred.Recover = store("go_tf", "go_can_recover")
+		case "print", "println", "panic":
 		case "close", "copy", "delete", "clear": // the arguments, evaluated now, are variables then.
 			args := make([]source.Expression, len(call.Arguments))
 			for i, arg := range call.Arguments {

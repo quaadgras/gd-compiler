@@ -128,7 +128,12 @@ typedef union {
 
 // A method of a type (its method set): name, signature (like func(int) string) and the
 // function that calls it with the data of an interface value (the I_ and IP_ wrappers).
-typedef struct go_method { const char* name; const char* type; void (*fn)(void); const struct go_type* mtype; } go_method;
+// mtype is the type of its method values (without the receiver), ftype and func those of
+// its method expression (with the receiver first).
+typedef struct go_method {
+    const char* name; const char* type; void (*fn)(void);
+    const struct go_type* mtype; const struct go_type* ftype; void (*func)(void);
+} go_method;
 
 // go_makefunc_call is called by the functions that reflect.MakeFunc makes (see the
 // makefunc of go_type_func), with their environment, and pointers to their arguments
@@ -146,6 +151,7 @@ typedef struct go_type {
     go_ii size; // of values.
     go_tf local; // a type defined in a function, which is different from others of the same name.
     const char* pkg; // the path of the package of a named type.
+    const struct go_type* ptrto; // the type of pointers to a named type with methods.
 } go_type;
 
 // The methods an interface requires, in the order of its table of methods.
@@ -223,6 +229,8 @@ void go_defer_push(go_frame* f, go_fn fn);
 void go_frame_return(go_frame* f);
 void go_frame_unwind(go_frame* f);
 go_tf go_take_recover(void);
+void go_give_recover(go_tf token);
+go_tf go_unwinding(void); // (whether a deferred call was called by a panic, rather than a return) // (to the next function called, as the deferred call)
 go_vv go_recover(go_tf can_recover);
 _Noreturn void go_panic_any(go_vv v);
 go_tf go_type_eq(const go_type* a, const go_type* b);

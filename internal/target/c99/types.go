@@ -340,6 +340,9 @@ func (c99 Target) descriptorFields(t types.Type) string {
 	fmt.Fprintf(&b, ", .kind=go_kind_%s", kindOf(t))
 	if named, ok := types.Unalias(t).(*types.Named); ok && named.Obj().Pkg() != nil {
 		fmt.Fprintf(&b, ", .pkg=%s", cString(pkgPath(named.Obj().Pkg())))
+		if _, isInterface := named.Underlying().(*types.Interface); !isInterface && named.NumMethods() > 0 && !IsNative(named.Obj().Pkg().Path()) {
+			fmt.Fprintf(&b, ", .ptrto=%s", c99.ReflectTypeOf(types.NewPointer(t))) // (for reflect.PointerTo)
+		}
 	}
 	if zeroSize(t) {
 		fmt.Fprintf(&b, ", .size=0") // C has no empty types.
@@ -384,6 +387,8 @@ func (c99 Target) descriptorFields(t types.Type) string {
 			})
 			fmt.Fprintf(&b, ", .data={.fields={%s, %d}}", symbol, typ.NumFields())
 		}
+	case *types.Signature:
+		b.WriteString(c99.funcData(typ))
 	}
 	b.WriteString(c99.methodTable(t))
 	b.WriteString(c99.equalField(t))
@@ -611,4 +616,81 @@ func pkgPath(pkg *types.Package) string {
 		return "main"
 	}
 	return pkg.Path()
+}
+
+// funcData returns the data of the descriptor of a function type (sig): its parameters and
+// results, and the functions that reflection calls them with, and makes them with (see
+// go_type_func).
+func (c99 Target) funcData(sig *types.Signature) string {
+	sig = types.NewSignatureType(nil, nil, nil, sig.Params(), sig.Results(), sig.Variadic())
+	id := c99.symbolName(sig)
+	descriptors := func(prefix string, vars []*types.Var) string {
+		if len(vars) == 0 {
+			return "NULL"
+		}
+		var rtypes []string
+		for _, v := range vars {
+			rtypes = append(rtypes, c99.ReflectTypeOf(v.Type()))
+		}
+		symbol := prefix + id
+		c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
+			fmt.Fprintf(w, "static const go_type* const %s[] = {%s};\n", symbol, strings.Join(rtypes, ", "))
+			return nil
+		})
+		return symbol
+	}
+	params, results := slicesOfVars(sig.Params()), slicesOfVars(sig.Results())
+	in, out := descriptors("go_in_", params), descriptors("go_out_", results)
+	result := c99.TupleOfResults(sig)
+	var ctypes, args, decls, pointers, resultPointers []string
+	for i, v := range params {
+		ctype := c99.TypeOf(v.Type())
+		ctypes = append(ctypes, ctype)
+		args = append(args, fmt.Sprintf("*(%s*)a[%d]", ctype, i))
+		decls = append(decls, fmt.Sprintf("%s p%d", ctype, i))
+		pointers = append(pointers, fmt.Sprintf("&p%d", i))
+	}
+	for i := range results {
+		if len(results) == 1 {
+			resultPointers = append(resultPointers, "&res")
+		} else {
+			resultPointers = append(resultPointers, fmt.Sprintf("&res.r%d", i))
+		}
+	}
+	call, makefunc := "go_call_"+id, "go_makefunc_"+id
+	c99.Requires(call, c99.Generic, func(w io.Writer) error {
+		fnType := fmt.Sprintf("%s(*)(%s)", result, strings.Join(append([]string{"void*"}, ctypes...), ", "))
+		invoke := fmt.Sprintf("((%s)f.ptr)(%s)", fnType, strings.Join(append([]string{"f.env"}, args...), ", "))
+		fmt.Fprintf(w, "static void %s(go_fn f, void** a, void** r) { (void)a; (void)r; ", call)
+		switch len(results) {
+		case 0:
+			fmt.Fprintf(w, "%s; }\n", invoke)
+		case 1:
+			fmt.Fprintf(w, "*(%s*)r[0] = %s; }\n", result, invoke)
+		default:
+			fmt.Fprintf(w, "%s res = %s;", result, invoke)
+			for i := range results {
+				fmt.Fprintf(w, " *(%s*)r[%d] = res.r%[2]d;", c99.TypeOf(results[i].Type()), i)
+			}
+			fmt.Fprintf(w, " }\n")
+		}
+		argv, resv := "NULL", "NULL"
+		if len(pointers) > 0 {
+			argv = "(void*[]){" + strings.Join(pointers, ", ") + "}"
+		}
+		if len(resultPointers) > 0 {
+			resv = "(void*[]){" + strings.Join(resultPointers, ", ") + "}"
+		}
+		fmt.Fprintf(w, "static %s %s(%s) { ", result, makefunc, strings.Join(append([]string{"void* env"}, decls...), ", "))
+		if len(results) > 0 {
+			fmt.Fprintf(w, "%s res = {0}; ", result)
+		}
+		fmt.Fprintf(w, "go_makefunc_call(env, %s, %s);", argv, resv)
+		if len(results) > 0 {
+			fmt.Fprintf(w, " return res;")
+		}
+		fmt.Fprintf(w, " }\n")
+		return nil
+	})
+	return fmt.Sprintf(", .data={.func={%s, %d, %s, %d, %t, %s, (void(*)(void))%s}}", in, len(params), out, len(results), sig.Variadic(), call, makefunc)
 }

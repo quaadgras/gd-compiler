@@ -49,8 +49,13 @@ func (c99 Target) methodTable(t types.Type) string {
 		if err := c99.promotedMethod(named, fn.Pkg(), fn.Name()); err != nil {
 			panic(err)
 		}
-		entries = append(entries, fmt.Sprintf("{ %s, %s, (void(*)(void))%s%s }",
-			cString(fn.Name()), cString(typeName(fn.Type())), prefix, c99.methodCName(named, fn.Name())))
+		sig := fn.Type().(*types.Signature)
+		mtype := c99.ReflectTypeOf(types.NewSignatureType(nil, nil, nil, sig.Params(), sig.Results(), sig.Variadic()))
+		params := append([]*types.Var{types.NewParam(0, nil, "", t)}, slicesOfVars(sig.Params())...)
+		ftype := c99.ReflectTypeOf(types.NewSignatureType(nil, nil, nil, types.NewTuple(params...), sig.Results(), sig.Variadic()))
+		wrapper := prefix + c99.methodCName(named, fn.Name())
+		entries = append(entries, fmt.Sprintf("{ %s, %s, (void(*)(void))%s, %s, %s, (void(*)(void))%s }",
+			cString(fn.Name()), cString(typeName(fn.Type())), wrapper, mtype, ftype, c99.methodExpression(t, sig, wrapper)))
 	}
 	if len(entries) == 0 {
 		return ""
@@ -413,4 +418,26 @@ func (c99 Target) genericMethodValue(x source.Expression) (bool, error) {
 	})
 	fmt.Fprintf(c99, "go_make_closure(I_%s, %s(%s))", name, box, recv)
 	return true, nil
+}
+
+// methodExpression returns the name of the function of the method expression T.M of the
+// method of t (whose interface wrapper is wrapper), for reflection: a function value,
+// that takes the receiver first.
+func (c99 Target) methodExpression(t types.Type, sig *types.Signature, wrapper string) string {
+	symbol := "go_mexpr_" + wrapper
+	c99.Requires(symbol, c99.Generic, func(w io.Writer) error {
+		params, args := []string{"void* go_env", c99.TypeOf(t) + " go_recv"}, []string{"&go_recv"}
+		for i, v := range slicesOfVars(sig.Params()) {
+			params = append(params, fmt.Sprintf("%s p%d", c99.TypeOf(v.Type()), i))
+			args = append(args, fmt.Sprintf("p%d", i))
+		}
+		ret := ""
+		if sig.Results().Len() > 0 {
+			ret = "return "
+		}
+		fmt.Fprintf(w, "static %s %s(%s) { (void)go_env; %s%s(%s); }\n", c99.TupleOfResults(sig), symbol,
+			strings.Join(params, ", "), ret, wrapper, strings.Join(args, ", "))
+		return nil
+	})
+	return symbol
 }

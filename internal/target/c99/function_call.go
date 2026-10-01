@@ -117,8 +117,12 @@ func (c99 Target) FunctionCall(expr source.FunctionCall) error {
 		case "panic":
 			return c99.panic(expr)
 		case "recover":
-			if c99.Deferred != nil { // defer recover(): not called by a deferred function.
-				fmt.Fprintf(c99, "go_recover(false)")
+			if c99.Deferred != nil { // defer recover(): as if called by the function with the defer statement.
+				recoverable := c99.Deferred.Recover
+				if recoverable == "" {
+					recoverable = "false"
+				}
+				fmt.Fprintf(c99, "go_recover(%s && !go_unwinding())", recoverable) // (not when called by a panic)
 			} else {
 				fmt.Fprintf(c99, "go_recover(go_can_recover)")
 			}

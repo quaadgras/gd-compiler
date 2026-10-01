@@ -68,26 +68,11 @@ extern go_ii MemProfileRate_go_runtime_package;
 
 static inline go_tuple_go_ii_go_tf BlockProfile_go_runtime_package(go_ll p) { return (go_tuple_go_ii_go_tf){0}; }
 static inline void Breakpoint_go_runtime_package(void) {
-    #if defined(_MSC_VER)
-        __debugbreak();
-    #elif defined(clang) && __has_builtin(__builtin_debugtrap)
-        __builtin_debugtrap();
-    #elif (defined(GNUC) || defined(clang)) && (defined(i386) || defined(x86_64))
-        asm volatile("int $3");
-    #elif (defined(GNUC) || defined(clang)) && defined(thumb)
-        asm volatile(".inst 0xde01");
-    #elif (defined(GNUC) || defined(clang)) && defined(aarch64)
-        asm volatile(".inst 0xd4200000");
-    #elif (defined(GNUC) || defined(clang)) && defined(arm) && !defined(thumb)
-        asm volatile(".inst 0xe7f001f0");
-    #elif defined(GNUC) || defined(clang)
-        __builtin_trap();
-    #elif defined(_POSIX_VERSION) && defined(SIGTRAP)
-        #include <signal.h>
-        raise(SIGTRAP);
-    #else
-        // Do nothing on unsupported platforms
-    #endif
+#if defined(__GNUC__) || defined(__clang__)
+    __builtin_trap();
+#else
+    abort();
+#endif
 }
 static inline go_tuple_go_up_go_ss_go_ii_go_tf Caller_go_runtime_package(go_ii skip) { return (go_tuple_go_up_go_ss_go_ii_go_tf){0}; }
 static inline go_ii Callers_go_runtime_package(go_ii skip, go_ll pc) { return 0; }

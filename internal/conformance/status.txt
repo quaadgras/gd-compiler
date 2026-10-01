@@ -46,34 +46,34 @@ abi/uglyfib.go	fail	exit: timeout
 abi/wrapdefer_largetmp.go	pass	
 abi/zombie_struct_select.go	pass	
 alg.go	pass	
-alias.go	skip	todo:errorcheck
+alias.go	pass	
 alias1.go	pass	
-alias2.go	skip	todo:errorcheck
+alias2.go	pass	
 alias3.go	skip	todo:rundir
 align.go	pass	
 append.go	pass	
-append1.go	skip	todo:errorcheck
+append1.go	pass	
 arenas/smoke.go	skip	gc:goexperiment arenas
 args.go	pass	
 armimm.go	pass	
 asmhdr.go	skip	todo:buildrundir
-assign.go	skip	todo:errorcheck
-assign1.go	skip	todo:errorcheck
+assign.go	pass	
+assign1.go	pass	
 atomicload.go	pass	
 bigalg.go	pass	
 bigmap.go	pass	
 blank.go	pass	
-blank1.go	skip	todo:errorcheck
+blank1.go	fail	errorcheck: blank1.go:10: missing error "invalid package name"
 bloop.go	skip	gc:diagnostics -m=2
 bom.go	skip	todo:runoutput
-bombad.go	skip	todo:errorcheck
+bombad.go	fail	errorcheck: bombad.go:14: no match for "BOM" in: bombad.go:14:2: expected statement, found 'ILLEGAL'; bombad.go:14:2: illegal byte o…
 bounds.go	skip	gc:diagnostics -m
-cannotassign.go	skip	todo:errorcheck
+cannotassign.go	pass	
 chan/doubleselect.go	pass	
 chan/fifo.go	pass	
 chan/goroutines.go	pass	
 chan/nonblock.go	pass	
-chan/perm.go	skip	todo:errorcheck
+chan/perm.go	pass	
 chan/powser1.go	pass	
 chan/powser2.go	pass	
 chan/select.go	pass	
@@ -91,7 +91,7 @@ chan/zerosize.go	pass
 chancap.go	pass	
 chanlinear.go	pass	
 char_lit.go	pass	
-char_lit1.go	skip	gc:diagnostics -d=panic
+char_lit1.go	fail	errorcheck: unmatched error: char_lit1.go:16:6: malformed constant: '\ud800'
 checkbce.go	skip	gc:diagnostics -d=ssa/check_bce/debug=3
 clear.go	pass	
 clearfat.go	skip	todo:runoutput
@@ -105,9 +105,9 @@ closure5.go	skip	todo:compiledir
 closure6.go	pass	
 closure7.go	pass	
 cmp.go	pass	
-cmp6.go	skip	todo:errorcheck
-cmplx.go	skip	todo:errorcheck
-cmplxdivide.go	fail	gd: undefined: tests
+cmp6.go	pass	
+cmplx.go	pass	
+cmplxdivide.go	fail	cc: timeout
 cmplxdivide1.go	skip	upstream:skip
 codegen/addrcalc.go	skip	gc:asmcheck
 codegen/alloc.go	skip	gc:asmcheck
@@ -197,36 +197,36 @@ codegen/unsafe.go	skip	gc:asmcheck
 codegen/writebarrier.go	skip	gc:asmcheck
 codegen/zerosize.go	skip	gc:asmcheck
 complit.go	pass	
-complit1.go	skip	todo:errorcheck
+complit1.go	pass	
 complit2.go	pass	
 compos.go	pass	
 const.go	pass	
-const1.go	skip	todo:errorcheck
-const2.go	skip	todo:errorcheck
+const1.go	pass	
+const2.go	pass	
 const3.go	pass	
 const4.go	pass	
-const5.go	skip	todo:errorcheck
-const6.go	skip	todo:errorcheck
+const5.go	pass	
+const6.go	pass	
 const7.go	skip	gc:toolchain
 const8.go	pass	
 convT2X.go	pass	
 convert.go	pass	
-convert1.go	skip	todo:errorcheck
-convert2.go	skip	todo:errorcheck
-convert3.go	skip	todo:errorcheck
+convert1.go	pass	
+convert2.go	pass	
+convert3.go	pass	
 convert4.go	pass	
 convert5.go	skip	gc:flags -gcflags=-d=converthash=qy
 convinline.go	skip	todo:runoutput
-convlit.go	skip	todo:errorcheck
-convlit1.go	skip	todo:errorcheck
+convlit.go	pass	
+convlit1.go	pass	
 copy.go	pass	
-copy1.go	skip	todo:errorcheck
+copy1.go	pass	
 crlf.go	skip	todo:runoutput
 ddd.go	pass	
-ddd1.go	skip	todo:errorcheck
+ddd1.go	pass	
 ddd2.go	skip	todo:rundir
 decl.go	pass	
-declbad.go	skip	todo:errorcheck
+declbad.go	pass	
 defer.go	pass	
 defererrcheck.go	skip	gc:diagnostics -d=defer
 deferfin.go	skip	gc:finalizers runtime.SetFinalizer
@@ -236,14 +236,14 @@ devirt.go	skip	gc:diagnostics -d=ssa/opt/debug=1
 devirtualization.go	skip	gc:diagnostics -m
 devirtualization_nil_panics.go	skip	gc:stack-introspection runtime.Callers
 devirtualization_with_type_assertions_interleaved.go	skip	gc:diagnostics -m
-directive.go	skip	todo:errorcheck
-directive2.go	skip	todo:errorcheck
+directive.go	fail	errorcheck: directive.go:9: missing error "misplaced compiler directive"
+directive2.go	fail	errorcheck: directive2.go:14: missing error "misplaced compiler directive"
 divide.go	pass	
 divmod.go	pass	
 dwarf/dwarf.go	skip	todo:rundir
 dwarf/linedirectives.go	pass	
-embedfunc.go	skip	todo:errorcheck
-embedvers.go	skip	todo:errorcheck
+embedfunc.go	fail	errorcheck: embedfunc.go:12: missing error "go:embed cannot apply to var inside func"
+embedvers.go	fail	errorcheck: embedvers.go:11: missing error "go:embed requires go1.16 or later"
 empty.go	pass	
 env.go	pass	
 eof.go	pass	
@@ -297,31 +297,31 @@ fixedbugs/bug010.go	pass
 fixedbugs/bug011.go	pass	
 fixedbugs/bug012.go	pass	
 fixedbugs/bug013.go	pass	
-fixedbugs/bug014.go	skip	todo:errorcheck
-fixedbugs/bug015.go	skip	todo:errorcheck
-fixedbugs/bug016.go	skip	todo:errorcheck
+fixedbugs/bug014.go	fail	errorcheck: unmatched error: bug014.go:10:18: malformed constant: '\0'
+fixedbugs/bug015.go	pass	
+fixedbugs/bug016.go	pass	
 fixedbugs/bug017.go	pass	
 fixedbugs/bug020.go	pass	
 fixedbugs/bug021.go	pass	
-fixedbugs/bug022.go	skip	todo:errorcheck
+fixedbugs/bug022.go	pass	
 fixedbugs/bug023.go	pass	
 fixedbugs/bug024.go	pass	
 fixedbugs/bug026.go	pass	
 fixedbugs/bug027.go	pass	
 fixedbugs/bug028.go	pass	
-fixedbugs/bug030.go	skip	todo:errorcheck
+fixedbugs/bug030.go	pass	
 fixedbugs/bug031.go	pass	
-fixedbugs/bug035.go	skip	todo:errorcheck
-fixedbugs/bug037.go	skip	todo:errorcheck
-fixedbugs/bug039.go	skip	todo:errorcheck
-fixedbugs/bug040.go	skip	todo:errorcheck
+fixedbugs/bug035.go	pass	
+fixedbugs/bug037.go	pass	
+fixedbugs/bug039.go	pass	
+fixedbugs/bug040.go	pass	
 fixedbugs/bug045.go	pass	
-fixedbugs/bug046.go	skip	todo:errorcheck
+fixedbugs/bug046.go	pass	
 fixedbugs/bug047.go	pass	
 fixedbugs/bug048.go	pass	
-fixedbugs/bug049.go	skip	todo:errorcheck
-fixedbugs/bug050.go	skip	gc:diagnostics -d=panic
-fixedbugs/bug051.go	skip	todo:errorcheck
+fixedbugs/bug049.go	pass	
+fixedbugs/bug050.go	fail	errorcheck: unmatched error: bug050.go:7:10: expected ';', found '('
+fixedbugs/bug051.go	pass	
 fixedbugs/bug052.go	pass	
 fixedbugs/bug053.go	pass	
 fixedbugs/bug054.go	pass	
@@ -332,35 +332,35 @@ fixedbugs/bug058.go	pass
 fixedbugs/bug059.go	pass	
 fixedbugs/bug060.go	pass	
 fixedbugs/bug061.go	pass	
-fixedbugs/bug062.go	skip	todo:errorcheck
+fixedbugs/bug062.go	pass	
 fixedbugs/bug063.go	pass	
 fixedbugs/bug064.go	pass	
 fixedbugs/bug065.go	pass	
 fixedbugs/bug066.go	pass	
 fixedbugs/bug067.go	pass	
-fixedbugs/bug068.go	skip	todo:errorcheck
+fixedbugs/bug068.go	fail	errorcheck: unmatched error: bug068.go:12:11: malformed constant: "\'"
 fixedbugs/bug069.go	pass	
 fixedbugs/bug070.go	pass	
 fixedbugs/bug071.go	pass	
-fixedbugs/bug072.go	skip	todo:errorcheck
+fixedbugs/bug072.go	pass	
 fixedbugs/bug073.go	pass	
-fixedbugs/bug074.go	skip	todo:errorcheck
+fixedbugs/bug074.go	pass	
 fixedbugs/bug075.go	pass	
 fixedbugs/bug076.go	pass	
 fixedbugs/bug077.go	pass	
 fixedbugs/bug078.go	pass	
 fixedbugs/bug080.go	pass	
-fixedbugs/bug081.go	skip	todo:errorcheck
+fixedbugs/bug081.go	pass	
 fixedbugs/bug082.go	pass	
 fixedbugs/bug083.go	skip	todo:errorcheck
 fixedbugs/bug084.go	pass	
-fixedbugs/bug085.go	skip	todo:errorcheck
-fixedbugs/bug086.go	skip	todo:errorcheck
+fixedbugs/bug085.go	pass	
+fixedbugs/bug086.go	pass	
 fixedbugs/bug087.go	pass	
 fixedbugs/bug088.go	skip	todo:compiledir
 fixedbugs/bug089.go	pass	
-fixedbugs/bug090.go	skip	todo:errorcheck
-fixedbugs/bug091.go	skip	todo:errorcheck
+fixedbugs/bug090.go	pass	
+fixedbugs/bug091.go	pass	
 fixedbugs/bug092.go	pass	
 fixedbugs/bug093.go	pass	
 fixedbugs/bug094.go	pass	
@@ -370,11 +370,11 @@ fixedbugs/bug098.go	pass
 fixedbugs/bug099.go	pass	
 fixedbugs/bug101.go	pass	
 fixedbugs/bug102.go	pass	
-fixedbugs/bug103.go	skip	todo:errorcheck
-fixedbugs/bug104.go	skip	todo:errorcheck
+fixedbugs/bug103.go	pass	
+fixedbugs/bug104.go	pass	
 fixedbugs/bug106.go	skip	todo:compiledir
-fixedbugs/bug107.go	skip	todo:errorcheck
-fixedbugs/bug108.go	skip	todo:errorcheck
+fixedbugs/bug107.go	pass	
+fixedbugs/bug108.go	pass	
 fixedbugs/bug109.go	pass	
 fixedbugs/bug110.go	pass	
 fixedbugs/bug111.go	pass	
@@ -383,33 +383,33 @@ fixedbugs/bug113.go	pass
 fixedbugs/bug114.go	pass	
 fixedbugs/bug115.go	pass	
 fixedbugs/bug116.go	pass	
-fixedbugs/bug117.go	skip	todo:errorcheck
+fixedbugs/bug117.go	pass	
 fixedbugs/bug118.go	pass	
 fixedbugs/bug119.go	pass	
 fixedbugs/bug120.go	pass	
-fixedbugs/bug121.go	skip	todo:errorcheck
-fixedbugs/bug122.go	skip	todo:errorcheck
-fixedbugs/bug123.go	skip	todo:errorcheck
-fixedbugs/bug126.go	skip	todo:errorcheck
-fixedbugs/bug127.go	skip	todo:errorcheck
+fixedbugs/bug121.go	fail	errorcheck: bug121.go:12: no match for "unexpected comma" in: bug121.go:12:3: expected ';', found ','; bug121.go:12:2: undefined: f
+fixedbugs/bug122.go	pass	
+fixedbugs/bug123.go	pass	
+fixedbugs/bug126.go	pass	
+fixedbugs/bug127.go	pass	
 fixedbugs/bug128.go	pass	
 fixedbugs/bug129.go	pass	
 fixedbugs/bug130.go	pass	
-fixedbugs/bug131.go	skip	todo:errorcheck
-fixedbugs/bug132.go	skip	todo:errorcheck
+fixedbugs/bug131.go	pass	
+fixedbugs/bug132.go	pass	
 fixedbugs/bug133.go	skip	todo:errorcheck
-fixedbugs/bug13343.go	skip	todo:errorcheck
+fixedbugs/bug13343.go	pass	
 fixedbugs/bug135.go	pass	
-fixedbugs/bug136.go	skip	todo:errorcheck
+fixedbugs/bug136.go	fail	errorcheck: unmatched error: bug136.go:10:2: label L declared and not used
 fixedbugs/bug137.go	pass	
 fixedbugs/bug139.go	pass	
-fixedbugs/bug140.go	fail	c11: error: implicit declaration of function 'main_go_main_package'; did you mean 'init_go_main_package'? [-Wimplicit-functio…
+fixedbugs/bug140.go	pass	
 fixedbugs/bug141.go	pass	
 fixedbugs/bug142.go	pass	
 fixedbugs/bug143.go	pass	
 fixedbugs/bug144.go	pass	
 fixedbugs/bug145.go	pass	
-fixedbugs/bug146.go	skip	todo:errorcheck
+fixedbugs/bug146.go	pass	
 fixedbugs/bug147.go	pass	
 fixedbugs/bug148.go	pass	
 fixedbugs/bug149.go	pass	
@@ -425,82 +425,82 @@ fixedbugs/bug158.go	pass
 fixedbugs/bug159.go	pass	
 fixedbugs/bug160.go	skip	todo:rundir
 fixedbugs/bug161.go	pass	
-fixedbugs/bug163.go	skip	todo:errorcheck
+fixedbugs/bug163.go	fail	errorcheck: bug163.go:9: no match for "invalid character .* in identifier" in: bug163.go:9:6: expected type, found 'ILLEGAL'; bug163…
 fixedbugs/bug164.go	pass	
-fixedbugs/bug165.go	skip	todo:errorcheck
+fixedbugs/bug165.go	pass	
 fixedbugs/bug167.go	pass	
 fixedbugs/bug168.go	pass	
-fixedbugs/bug169.go	skip	todo:errorcheck
-fixedbugs/bug170.go	skip	todo:errorcheck
-fixedbugs/bug171.go	skip	todo:errorcheck
-fixedbugs/bug172.go	skip	todo:errorcheck
+fixedbugs/bug169.go	fail	errorcheck: unmatched error: bug169.go:8:9: malformed constant: ''
+fixedbugs/bug170.go	pass	
+fixedbugs/bug171.go	pass	
+fixedbugs/bug172.go	pass	
 fixedbugs/bug173.go	pass	
 fixedbugs/bug174.go	pass	
-fixedbugs/bug175.go	skip	todo:errorcheck
-fixedbugs/bug176.go	skip	todo:errorcheck
+fixedbugs/bug175.go	pass	
+fixedbugs/bug176.go	pass	
 fixedbugs/bug177.go	pass	
 fixedbugs/bug178.go	pass	
-fixedbugs/bug179.go	skip	todo:errorcheck
+fixedbugs/bug179.go	fail	errorcheck: unmatched error: bug179.go:18:1: label L1 declared and not used
 fixedbugs/bug180.go	pass	
-fixedbugs/bug181.go	skip	todo:errorcheck
-fixedbugs/bug182.go	skip	todo:errorcheck
-fixedbugs/bug183.go	skip	todo:errorcheck
-fixedbugs/bug184.go	fail	gd: unsupported return of (b *test.Buffer, ok bool) results
+fixedbugs/bug181.go	pass	
+fixedbugs/bug182.go	pass	
+fixedbugs/bug183.go	pass	
+fixedbugs/bug184.go	pass	
 fixedbugs/bug185.go	pass	
-fixedbugs/bug186.go	skip	todo:errorcheck
+fixedbugs/bug186.go	pass	
 fixedbugs/bug187.go	pass	
-fixedbugs/bug188.go	skip	gc:diagnostics -d=panic
-fixedbugs/bug189.go	skip	todo:errorcheck
+fixedbugs/bug188.go	pass	
+fixedbugs/bug189.go	pass	
 fixedbugs/bug190.go	pass	
 fixedbugs/bug191.go	skip	todo:rundir
-fixedbugs/bug192.go	skip	todo:errorcheck
-fixedbugs/bug193.go	skip	todo:errorcheck
+fixedbugs/bug192.go	pass	
+fixedbugs/bug193.go	pass	
 fixedbugs/bug194.go	pass	
 fixedbugs/bug19403.go	pass	
-fixedbugs/bug195.go	skip	todo:errorcheck
+fixedbugs/bug195.go	pass	
 fixedbugs/bug196.go	pass	
-fixedbugs/bug197.go	skip	todo:errorcheck
-fixedbugs/bug198.go	skip	todo:errorcheck
+fixedbugs/bug197.go	pass	
+fixedbugs/bug198.go	pass	
 fixedbugs/bug199.go	pass	
-fixedbugs/bug200.go	skip	todo:errorcheck
+fixedbugs/bug200.go	pass	
 fixedbugs/bug201.go	pass	
 fixedbugs/bug202.go	pass	
 fixedbugs/bug203.go	pass	
 fixedbugs/bug204.go	pass	
-fixedbugs/bug205.go	skip	todo:errorcheck
-fixedbugs/bug206.go	fail	c11: error: 'go_env_go_yield_FileSet_Write_36' undeclared (first use in this function)
+fixedbugs/bug205.go	pass	
+fixedbugs/bug206.go	pass	
 fixedbugs/bug207.go	pass	
-fixedbugs/bug208.go	skip	todo:errorcheck
-fixedbugs/bug209.go	skip	todo:errorcheck
-fixedbugs/bug212.go	skip	todo:errorcheck
-fixedbugs/bug213.go	skip	todo:errorcheck
+fixedbugs/bug208.go	pass	
+fixedbugs/bug209.go	pass	
+fixedbugs/bug212.go	pass	
+fixedbugs/bug213.go	pass	
 fixedbugs/bug214.go	pass	
-fixedbugs/bug215.go	skip	todo:errorcheck
+fixedbugs/bug215.go	pass	
 fixedbugs/bug216.go	pass	
-fixedbugs/bug217.go	skip	todo:errorcheck
+fixedbugs/bug217.go	pass	
 fixedbugs/bug218.go	pass	
 fixedbugs/bug219.go	pass	
 fixedbugs/bug221.go	pass	
 fixedbugs/bug222.go	skip	todo:compiledir
-fixedbugs/bug223.go	skip	todo:errorcheck
-fixedbugs/bug224.go	skip	todo:errorcheck
+fixedbugs/bug223.go	pass	
+fixedbugs/bug224.go	pass	
 fixedbugs/bug225.go	pass	
 fixedbugs/bug227.go	pass	
-fixedbugs/bug228.go	skip	todo:errorcheck
-fixedbugs/bug228a.go	skip	todo:errorcheck
-fixedbugs/bug229.go	skip	todo:errorcheck
+fixedbugs/bug228.go	fail	errorcheck: unmatched error: bug228.go:11:30: expected type, found ')'
+fixedbugs/bug228a.go	pass	
+fixedbugs/bug229.go	pass	
 fixedbugs/bug230.go	pass	
-fixedbugs/bug231.go	skip	todo:errorcheck
+fixedbugs/bug231.go	pass	
 fixedbugs/bug232.go	pass	
 fixedbugs/bug233.go	pass	
 fixedbugs/bug234.go	pass	
 fixedbugs/bug235.go	pass	
 fixedbugs/bug236.go	pass	
 fixedbugs/bug237.go	pass	
-fixedbugs/bug238.go	skip	todo:errorcheck
+fixedbugs/bug238.go	pass	
 fixedbugs/bug239.go	pass	
-fixedbugs/bug240.go	skip	todo:errorcheck
-fixedbugs/bug241.go	skip	todo:errorcheck
+fixedbugs/bug240.go	pass	
+fixedbugs/bug241.go	pass	
 fixedbugs/bug242.go	pass	
 fixedbugs/bug243.go	pass	
 fixedbugs/bug244.go	pass	
@@ -508,15 +508,15 @@ fixedbugs/bug245.go	pass
 fixedbugs/bug246.go	pass	
 fixedbugs/bug247.go	pass	
 fixedbugs/bug248.go	skip	todo:errorcheck
-fixedbugs/bug249.go	skip	todo:errorcheck
+fixedbugs/bug249.go	pass	
 fixedbugs/bug250.go	pass	
-fixedbugs/bug251.go	skip	todo:errorcheck
-fixedbugs/bug252.go	skip	todo:errorcheck
+fixedbugs/bug251.go	pass	
+fixedbugs/bug252.go	pass	
 fixedbugs/bug253.go	pass	
 fixedbugs/bug254.go	pass	
-fixedbugs/bug255.go	skip	todo:errorcheck
-fixedbugs/bug256.go	skip	todo:errorcheck
-fixedbugs/bug257.go	fail	gd: panic: runtime error: invalid memory address or nil pointer dereference
+fixedbugs/bug255.go	pass	
+fixedbugs/bug256.go	pass	
+fixedbugs/bug257.go	fail	c11: error: string length '3020001' is greater than the length '4095' ISO C99 compilers are required to support [-Woverlength…
 fixedbugs/bug258.go	pass	
 fixedbugs/bug259.go	pass	
 fixedbugs/bug260.go	pass	
@@ -531,37 +531,37 @@ fixedbugs/bug269.go	pass
 fixedbugs/bug271.go	pass	
 fixedbugs/bug272.go	pass	
 fixedbugs/bug273.go	pass	
-fixedbugs/bug274.go	skip	todo:errorcheck
+fixedbugs/bug274.go	fail	errorcheck: bug274.go:23: no match for "statement" in: bug274.go:23:3: label L0 declared and not used
 fixedbugs/bug275.go	pass	
 fixedbugs/bug276.go	pass	
 fixedbugs/bug277.go	pass	
-fixedbugs/bug278.go	skip	todo:errorcheck
+fixedbugs/bug278.go	pass	
 fixedbugs/bug279.go	pass	
-fixedbugs/bug280.go	skip	todo:errorcheck
+fixedbugs/bug280.go	pass	
 fixedbugs/bug281.go	pass	
 fixedbugs/bug282.go	skip	todo:compiledir
 fixedbugs/bug283.go	pass	
-fixedbugs/bug284.go	skip	todo:errorcheck
+fixedbugs/bug284.go	pass	
 fixedbugs/bug285.go	pass	
 fixedbugs/bug286.go	pass	
-fixedbugs/bug287.go	skip	todo:errorcheck
+fixedbugs/bug287.go	pass	
 fixedbugs/bug288.go	pass	
-fixedbugs/bug289.go	skip	todo:errorcheck
-fixedbugs/bug290.go	fail	c11: error: 'go_type_Y_261_go_main_package' undeclared here (not in a function); did you mean 'go_type_X_go_main_package'?
+fixedbugs/bug289.go	pass	
+fixedbugs/bug290.go	pass	
 fixedbugs/bug291.go	pass	
 fixedbugs/bug292.go	pass	
 fixedbugs/bug293.go	pass	
 fixedbugs/bug294.go	pass	
 fixedbugs/bug295.go	pass	
 fixedbugs/bug296.go	pass	
-fixedbugs/bug297.go	skip	gc:diagnostics -d=panic
-fixedbugs/bug298.go	skip	todo:errorcheck
-fixedbugs/bug299.go	skip	todo:errorcheck
-fixedbugs/bug300.go	skip	todo:errorcheck
+fixedbugs/bug297.go	pass	
+fixedbugs/bug298.go	pass	
+fixedbugs/bug299.go	pass	
+fixedbugs/bug300.go	fail	errorcheck: unmatched error: bug300.go:25:8: invalid use of [...] array (outside a composite literal)
 fixedbugs/bug301.go	pass	
 fixedbugs/bug303.go	pass	
 fixedbugs/bug304.go	pass	
-fixedbugs/bug305.go	skip	todo:errorcheck
+fixedbugs/bug305.go	fail	errorcheck: bug305.go:24: missing error "cannot|incompatible"
 fixedbugs/bug306.go	skip	todo:compiledir
 fixedbugs/bug307.go	pass	
 fixedbugs/bug308.go	pass	
@@ -573,86 +573,86 @@ fixedbugs/bug314.go	pass
 fixedbugs/bug315.go	pass	
 fixedbugs/bug316.go	pass	
 fixedbugs/bug317.go	pass	
-fixedbugs/bug318.go	skip	todo:errorcheck
+fixedbugs/bug318.go	pass	
 fixedbugs/bug319.go	pass	
 fixedbugs/bug320.go	pass	
 fixedbugs/bug321.go	pass	
 fixedbugs/bug322.go	skip	todo:rundir
-fixedbugs/bug323.go	skip	todo:errorcheck
+fixedbugs/bug323.go	pass	
 fixedbugs/bug324.go	skip	todo:rundir
-fixedbugs/bug325.go	skip	todo:errorcheck
-fixedbugs/bug326.go	skip	todo:errorcheck
+fixedbugs/bug325.go	pass	
+fixedbugs/bug326.go	pass	
 fixedbugs/bug327.go	pass	
 fixedbugs/bug328.go	pass	
 fixedbugs/bug329.go	pass	
-fixedbugs/bug330.go	skip	todo:errorcheck
+fixedbugs/bug330.go	pass	
 fixedbugs/bug331.go	pass	
-fixedbugs/bug332.go	skip	todo:errorcheck
+fixedbugs/bug332.go	pass	
 fixedbugs/bug333.go	pass	
 fixedbugs/bug334.go	pass	
 fixedbugs/bug335.go	skip	todo:compiledir
 fixedbugs/bug336.go	pass	
-fixedbugs/bug337.go	skip	todo:errorcheck
+fixedbugs/bug337.go	pass	
 fixedbugs/bug338.go	pass	
 fixedbugs/bug339.go	pass	
-fixedbugs/bug340.go	skip	todo:errorcheck
+fixedbugs/bug340.go	pass	
 fixedbugs/bug341.go	pass	
-fixedbugs/bug342.go	skip	todo:errorcheck
+fixedbugs/bug342.go	pass	
 fixedbugs/bug343.go	pass	
-fixedbugs/bug344.go	skip	todo:errorcheck
+fixedbugs/bug344.go	pass	
 fixedbugs/bug345.go	skip	todo:errorcheck
 fixedbugs/bug346.go	pass	
 fixedbugs/bug347.go	skip	gc:stack-introspection runtime.Caller
 fixedbugs/bug348.go	skip	gc:stack-introspection runtime.Caller
-fixedbugs/bug349.go	skip	todo:errorcheck
-fixedbugs/bug350.go	skip	todo:errorcheck
-fixedbugs/bug351.go	skip	todo:errorcheck
-fixedbugs/bug352.go	fail	output: mismatch
-fixedbugs/bug353.go	skip	todo:errorcheck
+fixedbugs/bug349.go	fail	errorcheck: bug349.go:12: no match for "unexpected literal 2.01|expected ';' or '}' or newline|not enough arguments to return" in: b…
+fixedbugs/bug350.go	pass	
+fixedbugs/bug351.go	pass	
+fixedbugs/bug352.go	pass	
+fixedbugs/bug353.go	pass	
 fixedbugs/bug354.go	pass	
 fixedbugs/bug355.go	pass	
 fixedbugs/bug356.go	pass	
-fixedbugs/bug357.go	skip	todo:errorcheck
-fixedbugs/bug358.go	skip	gc:diagnostics -d=panic
+fixedbugs/bug357.go	pass	
+fixedbugs/bug358.go	pass	
 fixedbugs/bug361.go	pass	
-fixedbugs/bug362.go	skip	todo:errorcheck
-fixedbugs/bug363.go	skip	todo:errorcheck
+fixedbugs/bug362.go	pass	
+fixedbugs/bug363.go	pass	
 fixedbugs/bug364.go	pass	
-fixedbugs/bug365.go	skip	todo:errorcheck
+fixedbugs/bug365.go	pass	
 fixedbugs/bug366.go	pass	
 fixedbugs/bug367.go	skip	todo:rundir
 fixedbugs/bug368.go	pass	
 fixedbugs/bug369.go	skip	gc:build !nacl && !js && !wasip1 && gc
 fixedbugs/bug370.go	pass	
-fixedbugs/bug371.go	skip	todo:errorcheck
+fixedbugs/bug371.go	pass	
 fixedbugs/bug372.go	pass	
-fixedbugs/bug373.go	skip	todo:errorcheck
-fixedbugs/bug374.go	skip	todo:errorcheck
+fixedbugs/bug373.go	pass	
+fixedbugs/bug374.go	pass	
 fixedbugs/bug375.go	pass	
-fixedbugs/bug376.go	skip	todo:errorcheck
+fixedbugs/bug376.go	pass	
 fixedbugs/bug377.go	skip	todo:compiledir
 fixedbugs/bug378.go	pass	
-fixedbugs/bug379.go	skip	todo:errorcheck
+fixedbugs/bug379.go	pass	
 fixedbugs/bug380.go	pass	
-fixedbugs/bug381.go	skip	todo:errorcheck
+fixedbugs/bug381.go	pass	
 fixedbugs/bug382.go	skip	todo:compiledir
-fixedbugs/bug383.go	skip	todo:errorcheck
-fixedbugs/bug384.go	skip	todo:errorcheck
+fixedbugs/bug383.go	pass	
+fixedbugs/bug384.go	pass	
 fixedbugs/bug385_32.go	skip	upstream:build 386 || amd64p32 || arm
-fixedbugs/bug385_64.go	skip	todo:errorcheck
-fixedbugs/bug386.go	skip	todo:errorcheck
-fixedbugs/bug387.go	fail	c11: error: implicit declaration of function 'Lstat_go_os_package'; did you mean 'Lstat_go_io_fs_package'? [-Wimplicit-functi…
-fixedbugs/bug388.go	skip	todo:errorcheck
-fixedbugs/bug388a.go	skip	todo:errorcheck
-fixedbugs/bug389.go	skip	todo:errorcheck
-fixedbugs/bug390.go	skip	todo:errorcheck
+fixedbugs/bug385_64.go	fail	errorcheck: bug385_64.go:16496: missing error "stack frame too large"
+fixedbugs/bug386.go	pass	
+fixedbugs/bug387.go	pass	
+fixedbugs/bug388.go	fail	errorcheck: unmatched error: bug388.go:13:21: undefined: runtime.UintType
+fixedbugs/bug388a.go	pass	
+fixedbugs/bug389.go	pass	
+fixedbugs/bug390.go	pass	
 fixedbugs/bug391.go	pass	
 fixedbugs/bug392.go	skip	todo:compiledir
 fixedbugs/bug393.go	pass	
-fixedbugs/bug394.go	skip	todo:errorcheck
+fixedbugs/bug394.go	pass	
 fixedbugs/bug396.go	skip	todo:compiledir
-fixedbugs/bug397.go	skip	gc:diagnostics -d=panic
-fixedbugs/bug398.go	skip	todo:errorcheck
+fixedbugs/bug397.go	pass	
+fixedbugs/bug398.go	fail	errorcheck: bug398.go:14: missing error "invalid recursive type: anonymous interface refers to itself"
 fixedbugs/bug399.go	pass	
 fixedbugs/bug401.go	pass	
 fixedbugs/bug402.go	pass	
@@ -664,16 +664,16 @@ fixedbugs/bug407.go	skip	todo:compiledir
 fixedbugs/bug409.go	pass	
 fixedbugs/bug410.go	pass	
 fixedbugs/bug411.go	pass	
-fixedbugs/bug412.go	skip	todo:errorcheck
-fixedbugs/bug413.go	skip	todo:errorcheck
+fixedbugs/bug412.go	pass	
+fixedbugs/bug413.go	pass	
 fixedbugs/bug414.go	skip	todo:rundir
 fixedbugs/bug415.go	skip	todo:compiledir
-fixedbugs/bug416.go	skip	todo:errorcheck
+fixedbugs/bug416.go	pass	
 fixedbugs/bug417.go	pass	
-fixedbugs/bug418.go	skip	todo:errorcheck
+fixedbugs/bug418.go	pass	
 fixedbugs/bug419.go	pass	
 fixedbugs/bug420.go	pass	
-fixedbugs/bug421.go	skip	todo:errorcheck
+fixedbugs/bug421.go	pass	
 fixedbugs/bug422.go	pass	
 fixedbugs/bug423.go	pass	
 fixedbugs/bug424.go	skip	todo:rundir
@@ -686,7 +686,7 @@ fixedbugs/bug431.go	pass
 fixedbugs/bug432.go	pass	
 fixedbugs/bug433.go	pass	
 fixedbugs/bug434.go	pass	
-fixedbugs/bug435.go	skip	todo:errorcheck
+fixedbugs/bug435.go	fail	errorcheck: unmatched error: bug435.go:15:48: expected ')', found 'EOF'
 fixedbugs/bug436.go	pass	
 fixedbugs/bug437.go	skip	todo:rundir
 fixedbugs/bug438.go	pass	
@@ -703,7 +703,7 @@ fixedbugs/bug447.go	skip	todo:runoutput
 fixedbugs/bug448.go	skip	todo:compiledir
 fixedbugs/bug449.go	skip	todo:runoutput
 fixedbugs/bug450.go	pass	
-fixedbugs/bug451.go	skip	todo:errorcheck
+fixedbugs/bug451.go	pass	
 fixedbugs/bug452.go	pass	
 fixedbugs/bug453.go	pass	
 fixedbugs/bug454.go	pass	
@@ -711,12 +711,12 @@ fixedbugs/bug455.go	pass
 fixedbugs/bug456.go	pass	
 fixedbugs/bug457.go	pass	
 fixedbugs/bug458.go	pass	
-fixedbugs/bug459.go	skip	todo:errorcheck
+fixedbugs/bug459.go	pass	
 fixedbugs/bug460.go	skip	todo:errorcheck
 fixedbugs/bug461.go	pass	
-fixedbugs/bug462.go	skip	todo:errorcheck
-fixedbugs/bug463.go	skip	todo:errorcheck
-fixedbugs/bug464.go	skip	todo:errorcheck
+fixedbugs/bug462.go	pass	
+fixedbugs/bug463.go	pass	
+fixedbugs/bug464.go	pass	
 fixedbugs/bug465.go	skip	todo:rundir
 fixedbugs/bug466.go	skip	todo:rundir
 fixedbugs/bug467.go	skip	todo:compiledir
@@ -738,7 +738,7 @@ fixedbugs/bug483.go	pass
 fixedbugs/bug484.go	pass	
 fixedbugs/bug485.go	pass	
 fixedbugs/bug486.go	pass	
-fixedbugs/bug487.go	skip	todo:errorcheck
+fixedbugs/bug487.go	pass	
 fixedbugs/bug488.go	skip	todo:errorcheck
 fixedbugs/bug489.go	pass	
 fixedbugs/bug490.go	pass	
@@ -769,7 +769,7 @@ fixedbugs/bug514.go	skip	gc:build cgo
 fixedbugs/bug515.go	skip	gc:build gccgo
 fixedbugs/bug516.go	pass	
 fixedbugs/bug517.go	pass	
-fixedbugs/bug518.go	skip	todo:errorcheck
+fixedbugs/bug518.go	pass	
 fixedbugs/dse_move_auxint.go	pass	
 fixedbugs/gcc101994.go	pass	
 fixedbugs/gcc61204.go	pass	
@@ -795,7 +795,7 @@ fixedbugs/issue10219.go	skip	todo:compiledir
 fixedbugs/issue10253.go	pass	
 fixedbugs/issue10284.go	pass	
 fixedbugs/issue10320.go	pass	
-fixedbugs/issue10332.go	fail	output: mismatch
+fixedbugs/issue10332.go	pass	
 fixedbugs/issue10353.go	pass	
 fixedbugs/issue10407.go	skip	todo:runoutput
 fixedbugs/issue10441.go	pass	
@@ -806,28 +806,28 @@ fixedbugs/issue10654.go	pass
 fixedbugs/issue10700.go	skip	todo:errorcheck
 fixedbugs/issue10925.go	pass	
 fixedbugs/issue10958.go	skip	upstream:build !nacl && !js && disabled_see_issue_18589
-fixedbugs/issue10975.go	skip	todo:errorcheck
+fixedbugs/issue10975.go	pass	
 fixedbugs/issue10977.go	pass	
 fixedbugs/issue11053.go	skip	todo:rundir
 fixedbugs/issue11256.go	pass	
 fixedbugs/issue11286.go	pass	
-fixedbugs/issue11326.go	skip	todo:errorcheck
+fixedbugs/issue11326.go	pass	
 fixedbugs/issue11326b.go	pass	
 fixedbugs/issue11354.go	pass	
-fixedbugs/issue11359.go	skip	todo:errorcheck
-fixedbugs/issue11361.go	skip	todo:errorcheck
-fixedbugs/issue11362.go	skip	todo:errorcheck
+fixedbugs/issue11359.go	fail	errorcheck: issue11359.go:11: no match for "identifier cannot begin with digit" in: issue11359.go:11:5: expected 'IDENT', found 'ILL…
+fixedbugs/issue11361.go	pass	
+fixedbugs/issue11362.go	fail	errorcheck: issue11362.go:11: no match for "non-canonical import path .unicode//utf8. \\(should be .unicode/utf8.\\)" in: issue11362…
 fixedbugs/issue11369.go	pass	
 fixedbugs/issue11370.go	pass	
-fixedbugs/issue11371.go	skip	todo:errorcheck
-fixedbugs/issue11590.go	skip	todo:errorcheck
-fixedbugs/issue11610.go	skip	todo:errorcheck
-fixedbugs/issue11610a.go	skip	todo:errorcheck
-fixedbugs/issue11614.go	skip	todo:errorcheck
+fixedbugs/issue11371.go	pass	
+fixedbugs/issue11590.go	pass	
+fixedbugs/issue11610.go	fail	errorcheck: issue11610.go:11: no match for "invalid character U\\+003F '\\?'|invalid character 0x? in input file" in: issue11610.go:…
+fixedbugs/issue11610a.go	fail	errorcheck: unmatched error: -: issue11610a.go:11:7: invalid import path:
+fixedbugs/issue11614.go	pass	
 fixedbugs/issue11656.go	skip	todo:runindir
-fixedbugs/issue11674.go	skip	todo:errorcheck
+fixedbugs/issue11674.go	pass	
 fixedbugs/issue11699.go	pass	
-fixedbugs/issue11737.go	skip	todo:errorcheck
+fixedbugs/issue11737.go	pass	
 fixedbugs/issue11750.go	pass	
 fixedbugs/issue11771.go	skip	gc:build !nacl && !js && !wasip1 && gc
 fixedbugs/issue11790.go	pass	
@@ -840,54 +840,54 @@ fixedbugs/issue12226.go	pass
 fixedbugs/issue12347.go	pass	
 fixedbugs/issue12411.go	pass	
 fixedbugs/issue12413.go	pass	
-fixedbugs/issue12525.go	skip	todo:errorcheck
+fixedbugs/issue12525.go	pass	
 fixedbugs/issue12536.go	pass	
 fixedbugs/issue12577.go	pass	
 fixedbugs/issue12588.go	skip	gc:diagnostics -m
 fixedbugs/issue12621.go	pass	
 fixedbugs/issue12677.go	skip	todo:compiledir
 fixedbugs/issue12686.go	pass	
-fixedbugs/issue12944.go	skip	todo:errorcheck
+fixedbugs/issue12944.go	pass	
 fixedbugs/issue1304.go	pass	
 fixedbugs/issue13160.go	fail	exit: exit status 2 panic: bad pointer read 0x?!
 fixedbugs/issue13162.go	pass	
 fixedbugs/issue13169.go	pass	
 fixedbugs/issue13171.go	pass	
-fixedbugs/issue13248.go	skip	todo:errorcheck
+fixedbugs/issue13248.go	fail	errorcheck: unmatched error: issue13248.go:12:5: undefined: foo
 fixedbugs/issue13261.go	pass	
 fixedbugs/issue13262.go	pass	
 fixedbugs/issue13263.go	pass	
-fixedbugs/issue13265.go	skip	todo:errorcheck
-fixedbugs/issue13266.go	skip	todo:errorcheck
+fixedbugs/issue13265.go	skip	gc:flags -race
+fixedbugs/issue13266.go	fail	errorcheck: issue13266.go:10: no match for "unexpected %|package name must be an identifier|after package clause|expected declaratio…
 fixedbugs/issue13268.go	skip	gc:build gc
-fixedbugs/issue13273.go	skip	todo:errorcheck
-fixedbugs/issue13274.go	skip	todo:errorcheck
-fixedbugs/issue13319.go	skip	todo:errorcheck
+fixedbugs/issue13273.go	fail	errorcheck: issue13273.go:51: no match for "unexpected <-, expected chan|expecting {" in: issue13273.go:51:4: expected 'chan'; issue…
+fixedbugs/issue13274.go	fail	errorcheck: unmatched error: issue13274.go:11:58: expected ';', found 'EOF'
+fixedbugs/issue13319.go	fail	errorcheck: issue13319.go:12: no match for "expecting \\)|possibly missing comma or \\)" in: issue13319.go:12:72: missing ',' before…
 fixedbugs/issue13337.go	pass	
-fixedbugs/issue13365.go	skip	todo:errorcheck
-fixedbugs/issue13415.go	skip	todo:errorcheck
-fixedbugs/issue13471.go	skip	todo:errorcheck
-fixedbugs/issue13480.go	skip	todo:errorcheck
-fixedbugs/issue13485.go	skip	todo:errorcheck
-fixedbugs/issue13539.go	skip	todo:errorcheck
-fixedbugs/issue13559.go	skip	todo:errorcheck
+fixedbugs/issue13365.go	pass	
+fixedbugs/issue13415.go	pass	
+fixedbugs/issue13471.go	pass	
+fixedbugs/issue13480.go	pass	
+fixedbugs/issue13485.go	pass	
+fixedbugs/issue13539.go	pass	
+fixedbugs/issue13559.go	pass	
 fixedbugs/issue13587.go	skip	gc:diagnostics -d=wb
 fixedbugs/issue13684.go	pass	
 fixedbugs/issue13777.go	skip	todo:rundir
-fixedbugs/issue13779.go	skip	todo:errorcheck
+fixedbugs/issue13779.go	pass	
 fixedbugs/issue13799.go	skip	gc:diagnostics -m
 fixedbugs/issue13821.go	pass	
-fixedbugs/issue13821b.go	skip	todo:errorcheck
-fixedbugs/issue14006.go	skip	todo:errorcheck
-fixedbugs/issue14010.go	skip	todo:errorcheck
-fixedbugs/issue14136.go	skip	todo:errorcheck
+fixedbugs/issue13821b.go	pass	
+fixedbugs/issue14006.go	fail	errorcheck: issue14006.go:24: no match for "unexpected :|expected .*;.* or .*}.* or newline|value computed is not used" in: issue140…
+fixedbugs/issue14010.go	pass	
+fixedbugs/issue14136.go	pass	
 fixedbugs/issue14164.go	skip	todo:compiledir
-fixedbugs/issue14321.go	skip	todo:errorcheck
+fixedbugs/issue14321.go	pass	
 fixedbugs/issue14331.go	skip	todo:compiledir
 fixedbugs/issue14405.go	pass	
-fixedbugs/issue14520.go	skip	todo:errorcheck
-fixedbugs/issue14520a.go	skip	todo:errorcheck
-fixedbugs/issue14540.go	skip	todo:errorcheck
+fixedbugs/issue14520.go	fail	errorcheck: issue14520.go:9: no match for "unexpected newline" in: issue14520.go:9:49: missing ',' before newline in parameter list
+fixedbugs/issue14520a.go	fail	errorcheck: unmatched error: -: issue14520a.go:9:37: invalid import path:
+fixedbugs/issue14540.go	pass	
 fixedbugs/issue14553.go	pass	
 fixedbugs/issue14591.go	pass	
 fixedbugs/issue14636.go	skip	gc:build !nacl && !js && !wasip1 && !android && gc
@@ -895,29 +895,29 @@ fixedbugs/issue14646.go	skip	gc:stack-introspection runtime.Caller
 fixedbugs/issue14651.go	pass	
 fixedbugs/issue14652.go	pass	
 fixedbugs/issue14725.go	pass	
-fixedbugs/issue14729.go	skip	todo:errorcheck
-fixedbugs/issue14988.go	skip	todo:errorcheck
-fixedbugs/issue14999.go	skip	todo:errorcheck
+fixedbugs/issue14729.go	pass	
+fixedbugs/issue14988.go	pass	
+fixedbugs/issue14999.go	skip	gc:flags -+
 fixedbugs/issue15002.go	fail	exit: exit status 2 panic: 38
 fixedbugs/issue15013.go	pass	
 fixedbugs/issue15039.go	pass	
 fixedbugs/issue15042.go	pass	
-fixedbugs/issue15055.go	skip	todo:errorcheck
+fixedbugs/issue15055.go	pass	
 fixedbugs/issue15071.go	skip	todo:rundir
 fixedbugs/issue15084.go	pass	
-fixedbugs/issue15091.go	skip	todo:errorcheck
+fixedbugs/issue15091.go	skip	gc:flags -race
 fixedbugs/issue15141.go	pass	
 fixedbugs/issue15175.go	pass	
 fixedbugs/issue15252.go	pass	
 fixedbugs/issue15277.go	skip	gc:memstats runtime.ReadMemStats
 fixedbugs/issue15281.go	skip	gc:memstats runtime.ReadMemStats
 fixedbugs/issue15303.go	pass	
-fixedbugs/issue15311.go	skip	todo:errorcheck
+fixedbugs/issue15311.go	pass	
 fixedbugs/issue15329.go	fail	exit: signal: trace/breakpoint trap filc safety error: cannot read pointer with null object.
 fixedbugs/issue15439.go	pass	
 fixedbugs/issue15470.go	skip	todo:compiledir
 fixedbugs/issue15514.go	skip	todo:errorcheck
-fixedbugs/issue15528.go	fail	exit: exit status 1 eface(12)="*byte <nil>" want "*uint8 <nil>"
+fixedbugs/issue15528.go	pass	
 fixedbugs/issue15548.go	skip	todo:compiledir
 fixedbugs/issue15550.go	pass	
 fixedbugs/issue15572.go	skip	todo:compiledir
@@ -925,15 +925,15 @@ fixedbugs/issue15585.go	pass
 fixedbugs/issue15602.go	pass	
 fixedbugs/issue15604.go	pass	
 fixedbugs/issue15609.go	skip	todo:runindir
-fixedbugs/issue15611.go	skip	todo:errorcheck
+fixedbugs/issue15611.go	fail	errorcheck: issue15611.go:11: no match for "newline in character literal|newline in rune literal" in: issue15611.go:11: rune literal…
 fixedbugs/issue15646.go	skip	todo:rundir
-fixedbugs/issue15722.go	skip	todo:errorcheck
+fixedbugs/issue15722.go	pass	
 fixedbugs/issue15733.go	pass	
 fixedbugs/issue15747.go	skip	gc:diagnostics -live
 fixedbugs/issue15747b.go	pass	
 fixedbugs/issue15838.go	skip	todo:compiledir
 fixedbugs/issue15895.go	pass	
-fixedbugs/issue15898.go	skip	todo:errorcheck
+fixedbugs/issue15898.go	pass	
 fixedbugs/issue15902.go	pass	
 fixedbugs/issue15920.go	skip	todo:compiledir
 fixedbugs/issue15926.go	pass	
@@ -941,7 +941,7 @@ fixedbugs/issue15961.go	pass
 fixedbugs/issue15975.go	pass	
 fixedbugs/issue15988.go	pass	
 fixedbugs/issue15992.go	pass	
-fixedbugs/issue16008.go	skip	todo:errorcheck
+fixedbugs/issue16008.go	skip	gc:flags -race
 fixedbugs/issue16016.go	pass	
 fixedbugs/issue16037_run.go	skip	gc:toolchain
 fixedbugs/issue16095.go	pass	
@@ -953,10 +953,10 @@ fixedbugs/issue16241_64.go	skip	gc:diagnostics -m
 fixedbugs/issue16249.go	pass	
 fixedbugs/issue16306.go	pass	
 fixedbugs/issue16317.go	skip	todo:compiledir
-fixedbugs/issue16331.go	fail	exit: exit status 2 panic: reflect.MakeFunc is not supported by gd
-fixedbugs/issue16369.go	skip	todo:errorcheck
-fixedbugs/issue16428.go	skip	todo:errorcheck
-fixedbugs/issue16439.go	skip	todo:errorcheck
+fixedbugs/issue16331.go	pass	
+fixedbugs/issue16369.go	fail	errorcheck: issue16369.go:9: missing error "invalid recursive type: anonymous interface refers to itself"
+fixedbugs/issue16428.go	pass	
+fixedbugs/issue16439.go	pass	
 fixedbugs/issue16515.go	pass	
 fixedbugs/issue16616.go	skip	todo:compiledir
 fixedbugs/issue16733.go	pass	
@@ -965,179 +965,179 @@ fixedbugs/issue16760.go	pass
 fixedbugs/issue16804.go	pass	
 fixedbugs/issue16870.go	pass	
 fixedbugs/issue16948.go	pass	
-fixedbugs/issue16949.go	skip	todo:errorcheck
+fixedbugs/issue16949.go	pass	
 fixedbugs/issue16985.go	pass	
 fixedbugs/issue17005.go	pass	
-fixedbugs/issue17038.go	skip	todo:errorcheck
+fixedbugs/issue17038.go	pass	
 fixedbugs/issue17039.go	pass	
 fixedbugs/issue17111.go	pass	
 fixedbugs/issue17194.go	pass	
 fixedbugs/issue17270.go	pass	
 fixedbugs/issue17318.go	skip	gc:diagnostics -m
-fixedbugs/issue17328.go	skip	todo:errorcheck
+fixedbugs/issue17328.go	fail	errorcheck: unmatched error: issue17328.go:13:41: expected ';', found 'EOF'
 fixedbugs/issue17381.go	skip	gc:stack-introspection runtime.Callers
-fixedbugs/issue17449.go	skip	todo:errorcheck
+fixedbugs/issue17449.go	skip	gc:flags -race
 fixedbugs/issue17551.go	pass	
-fixedbugs/issue17588.go	skip	gc:diagnostics -d=panic
+fixedbugs/issue17588.go	pass	
 fixedbugs/issue17596.go	pass	
-fixedbugs/issue17631.go	skip	todo:errorcheck
+fixedbugs/issue17631.go	pass	
 fixedbugs/issue17640.go	pass	
-fixedbugs/issue17645.go	skip	todo:errorcheck
+fixedbugs/issue17645.go	pass	
 fixedbugs/issue17710.go	pass	
 fixedbugs/issue17752.go	pass	
-fixedbugs/issue17758.go	skip	todo:errorcheck
+fixedbugs/issue17758.go	pass	
 fixedbugs/issue17918.go	pass	
 fixedbugs/issue18089.go	pass	
-fixedbugs/issue18092.go	skip	todo:errorcheck
+fixedbugs/issue18092.go	fail	errorcheck: issue18092.go:14: no match for "expected :" in: issue18092.go:14:38: expected ':', found newline
 fixedbugs/issue18149.go	skip	gc:stack-introspection runtime.Caller
-fixedbugs/issue18231.go	skip	todo:errorcheck
-fixedbugs/issue18331.go	skip	todo:errorcheck
-fixedbugs/issue18392.go	skip	todo:errorcheck
-fixedbugs/issue18393.go	skip	todo:errorcheck
+fixedbugs/issue18231.go	pass	
+fixedbugs/issue18331.go	skip	gc:flags -std
+fixedbugs/issue18392.go	pass	
+fixedbugs/issue18393.go	pass	
 fixedbugs/issue18410.go	pass	
 fixedbugs/issue18419.go	skip	todo:errorcheck
-fixedbugs/issue18459.go	skip	todo:errorcheck
+fixedbugs/issue18459.go	fail	errorcheck: issue18459.go:11: missing error "//go:nowritebarrier only allowed in runtime"
 fixedbugs/issue18595.go	pass	
 fixedbugs/issue18636.go	skip	gc:import runtime/debug
 fixedbugs/issue18640.go	pass	
-fixedbugs/issue18655.go	skip	todo:errorcheck
+fixedbugs/issue18655.go	pass	
 fixedbugs/issue18661.go	pass	
 fixedbugs/issue18725.go	pass	
-fixedbugs/issue18747.go	skip	todo:errorcheck
+fixedbugs/issue18747.go	fail	errorcheck: issue18747.go:26: no match for "unexpected newline, expected { after if clause" in: issue18747.go:26:66: unexpected newl…
 fixedbugs/issue18808.go	pass	
-fixedbugs/issue18882.go	skip	todo:errorcheck
+fixedbugs/issue18882.go	fail	errorcheck: issue18882.go:11: missing error "usage: //go:cgo_ldflag"
 fixedbugs/issue18895.go	skip	gc:diagnostics -m
 fixedbugs/issue18906.go	pass	
 fixedbugs/issue18911.go	skip	todo:rundir
-fixedbugs/issue18915.go	skip	todo:errorcheck
+fixedbugs/issue18915.go	fail	errorcheck: issue18915.go:13: no match for "cannot use a := 10 as value|expected .*;|declared and not used" in: issue18915.go:13:5: …
 fixedbugs/issue18994.go	pass	
-fixedbugs/issue19012.go	skip	todo:errorcheck
+fixedbugs/issue19012.go	pass	
 fixedbugs/issue19028.go	skip	todo:rundir
 fixedbugs/issue19040.go	pass	
-fixedbugs/issue19056.go	skip	todo:errorcheck
+fixedbugs/issue19056.go	pass	
 fixedbugs/issue19078.go	pass	
 fixedbugs/issue19084.go	pass	
-fixedbugs/issue19113.go	fail	exit: exit status 2 panic: reflect: In is not supported by gd
+fixedbugs/issue19113.go	pass	
 fixedbugs/issue19137.go	pass	
 fixedbugs/issue19168.go	skip	gc:diagnostics -d=wb
 fixedbugs/issue19182.go	pass	
-fixedbugs/issue19201.go	fail	exit: exit status 2 panic: runtime error: invalid memory address or nil pointer …
+fixedbugs/issue19201.go	pass	
 fixedbugs/issue19217.go	pass	
 fixedbugs/issue19246.go	pass	
 fixedbugs/issue19261.go	skip	gc:diagnostics -m
 fixedbugs/issue19275.go	pass	
-fixedbugs/issue19323.go	skip	todo:errorcheck
+fixedbugs/issue19323.go	pass	
 fixedbugs/issue19359.go	pass	
 fixedbugs/issue19467.go	skip	todo:rundir
-fixedbugs/issue19482.go	skip	todo:errorcheck
+fixedbugs/issue19482.go	pass	
 fixedbugs/issue19507.go	skip	upstream:build arm
 fixedbugs/issue19515.go	pass	
 fixedbugs/issue19548.go	skip	todo:rundir
 fixedbugs/issue19555.go	pass	
-fixedbugs/issue19610.go	skip	todo:errorcheck
+fixedbugs/issue19610.go	pass	
 fixedbugs/issue19632.go	pass	
 fixedbugs/issue19658.go	skip	gc:toolchain
-fixedbugs/issue19667.go	skip	todo:errorcheck
+fixedbugs/issue19667.go	fail	errorcheck: unmatched error: issue19667.go:12:12: undefined: http
 fixedbugs/issue19671.go	pass	
 fixedbugs/issue19678.go	pass	
 fixedbugs/issue19679.go	pass	
 fixedbugs/issue19696.go	pass	
 fixedbugs/issue19699.go	skip	todo:compiledir
-fixedbugs/issue19699b.go	skip	todo:errorcheck
+fixedbugs/issue19699b.go	pass	
 fixedbugs/issue19705.go	pass	
 fixedbugs/issue19710.go	pass	
 fixedbugs/issue19743.go	skip	gc:diagnostics -m
 fixedbugs/issue19764.go	skip	todo:rundir
 fixedbugs/issue19783.go	pass	
 fixedbugs/issue19799.go	skip	gc:stack-introspection runtime.Callers
-fixedbugs/issue19880.go	skip	todo:errorcheck
+fixedbugs/issue19880.go	pass	
 fixedbugs/issue19911.go	pass	
-fixedbugs/issue19947.go	skip	todo:errorcheck
-fixedbugs/issue19977.go	skip	todo:errorcheck
+fixedbugs/issue19947.go	pass	
+fixedbugs/issue19977.go	pass	
 fixedbugs/issue20014.go	skip	todo:runindir
-fixedbugs/issue20027.go	skip	todo:errorcheck
+fixedbugs/issue20027.go	fail	errorcheck: issue20027.go:9: missing error "channel element type too large"
 fixedbugs/issue20029.go	pass	
 fixedbugs/issue20097.go	pass	
 fixedbugs/issue20145.go	pass	
 fixedbugs/issue20162.go	skip	gc:flags -c=4
 fixedbugs/issue20174.go	skip	gc:flags -c=2
-fixedbugs/issue20185.go	skip	todo:errorcheck
-fixedbugs/issue20227.go	skip	todo:errorcheck
-fixedbugs/issue20232.go	skip	gc:diagnostics -d=panic
-fixedbugs/issue20233.go	skip	todo:errorcheck
-fixedbugs/issue20245.go	skip	gc:diagnostics -d=panic
+fixedbugs/issue20185.go	pass	
+fixedbugs/issue20227.go	pass	
+fixedbugs/issue20232.go	pass	
+fixedbugs/issue20233.go	fail	errorcheck: unmatched error: issue20233.go:11:9: func(...A) (type) is not an expression
+fixedbugs/issue20245.go	fail	errorcheck: unmatched error: issue20245.go:11:9: interface{I1} (type) is not an expression
 fixedbugs/issue20250.go	skip	gc:diagnostics -live
-fixedbugs/issue20298.go	skip	todo:errorcheck
+fixedbugs/issue20298.go	skip	gc:flags -e=0
 fixedbugs/issue20333.go	pass	
 fixedbugs/issue20335.go	pass	
-fixedbugs/issue20415.go	skip	todo:errorcheck
-fixedbugs/issue20529.go	skip	todo:errorcheck
+fixedbugs/issue20415.go	pass	
+fixedbugs/issue20529.go	fail	errorcheck: issue20529.go:18: missing error "stack frame too large"
 fixedbugs/issue20530.go	pass	
-fixedbugs/issue20602.go	skip	todo:errorcheck
+fixedbugs/issue20602.go	pass	
 fixedbugs/issue20682.go	skip	todo:compiledir
 fixedbugs/issue20739.go	fail	c11: error: size of array 'a' exceeds maximum object size '9223372036854775807'
-fixedbugs/issue20749.go	skip	todo:errorcheck
-fixedbugs/issue20780.go	skip	todo:errorcheck
+fixedbugs/issue20749.go	pass	
+fixedbugs/issue20780.go	fail	errorcheck: issue20780.go:14: missing error "stack frame too large"
 fixedbugs/issue20780b.go	skip	gc:build cgo && linux && amd64
-fixedbugs/issue20789.go	skip	todo:errorcheck
+fixedbugs/issue20789.go	fail	errorcheck: issue20789.go:13: no match for "unexpected name u" in: issue20789.go:13:13: expected channel type; issue20789.go:13:21: …
 fixedbugs/issue20811.go	pass	
-fixedbugs/issue20812.go	skip	todo:errorcheck
-fixedbugs/issue20813.go	skip	todo:errorcheck
+fixedbugs/issue20812.go	pass	
+fixedbugs/issue20813.go	pass	
 fixedbugs/issue20923.go	pass	
 fixedbugs/issue21048.go	pass	
 fixedbugs/issue21120.go	skip	todo:rundir
 fixedbugs/issue21221.go	pass	
 fixedbugs/issue21253.go	pass	
-fixedbugs/issue21256.go	skip	todo:errorcheck
-fixedbugs/issue21273.go	skip	todo:errorcheck
+fixedbugs/issue21256.go	pass	
+fixedbugs/issue21273.go	pass	
 fixedbugs/issue21317.go	skip	gc:build !js && !wasip1 && gc
 fixedbugs/issue21576.go	skip	gc:toolchain
 fixedbugs/issue21655.go	pass	
-fixedbugs/issue21687.go	fail	exit: exit status 2 panic: 1
+fixedbugs/issue21687.go	pass	
 fixedbugs/issue21709.go	skip	gc:diagnostics -m
-fixedbugs/issue21770.go	skip	todo:errorcheck
+fixedbugs/issue21770.go	pass	
 fixedbugs/issue21808.go	pass	
 fixedbugs/issue21879.go	skip	gc:stack-introspection runtime.Callers
-fixedbugs/issue21882.go	skip	todo:errorcheck
+fixedbugs/issue21882.go	pass	
 fixedbugs/issue21887.go	pass	
-fixedbugs/issue21934.go	skip	todo:errorcheck
+fixedbugs/issue21934.go	pass	
 fixedbugs/issue21963.go	pass	
-fixedbugs/issue21979.go	skip	todo:errorcheck
-fixedbugs/issue21988.go	skip	todo:errorcheck
-fixedbugs/issue22063.go	skip	todo:errorcheck
+fixedbugs/issue21979.go	pass	
+fixedbugs/issue21988.go	pass	
+fixedbugs/issue22063.go	pass	
 fixedbugs/issue22076.go	pass	
 fixedbugs/issue22083.go	skip	gc:import runtime/debug
-fixedbugs/issue22164.go	skip	todo:errorcheck
+fixedbugs/issue22164.go	fail	errorcheck: issue22164.go:12: no match for "unexpected newline" in: issue22164.go:12:42: missing ',' before newline in argument list…
 fixedbugs/issue22198.go	pass	
-fixedbugs/issue22200.go	skip	todo:errorcheck
-fixedbugs/issue22200b.go	skip	todo:errorcheck
+fixedbugs/issue22200.go	fail	errorcheck: issue22200.go:16: missing error "stack frame too large"
+fixedbugs/issue22200b.go	fail	errorcheck: issue22200b.go:11: missing error "stack frame too large"
 fixedbugs/issue22305.go	pass	
 fixedbugs/issue22326.go	pass	
 fixedbugs/issue22327.go	pass	
 fixedbugs/issue22344.go	pass	
-fixedbugs/issue22351.go	skip	todo:errorcheck
-fixedbugs/issue22389.go	skip	gc:diagnostics -d=panic
+fixedbugs/issue22351.go	pass	
+fixedbugs/issue22389.go	pass	
 fixedbugs/issue22429.go	pass	
 fixedbugs/issue22458.go	pass	
-fixedbugs/issue22581.go	skip	todo:errorcheck
+fixedbugs/issue22581.go	fail	errorcheck: issue22581.go:10: no match for "unexpected \\)" in: issue22581.go:10:13: expected ';', found ')'; issue22581.go:10:14: e…
 fixedbugs/issue22605.go	fail	exit: exit status 2 panic: reflect.ArrayOf is not supported by gd
 fixedbugs/issue22660.go	skip	gc:build !js && !wasip1 && gc
 fixedbugs/issue22662.go	skip	gc:stack-introspection runtime.Caller
 fixedbugs/issue22662b.go	skip	gc:build !js && !wasip1 && gc
 fixedbugs/issue22683.go	pass	
 fixedbugs/issue22781.go	skip	gc:import runtime/debug
-fixedbugs/issue22794.go	skip	todo:errorcheck
-fixedbugs/issue22822.go	skip	todo:errorcheck
+fixedbugs/issue22794.go	pass	
+fixedbugs/issue22822.go	pass	
 fixedbugs/issue22877.go	skip	todo:builddir
 fixedbugs/issue22881.go	pass	
-fixedbugs/issue22904.go	skip	todo:errorcheck
-fixedbugs/issue22921.go	skip	gc:diagnostics -d=panic
+fixedbugs/issue22904.go	pass	
+fixedbugs/issue22921.go	pass	
 fixedbugs/issue22941.go	skip	todo:rundir
 fixedbugs/issue22962.go	skip	todo:compiledir
-fixedbugs/issue23017.go	fail	exit: exit status 2 panic: wanted 1, but got 0
-fixedbugs/issue23093.go	skip	todo:errorcheck
-fixedbugs/issue23094.go	skip	todo:errorcheck
-fixedbugs/issue23116.go	skip	todo:errorcheck
+fixedbugs/issue23017.go	pass	
+fixedbugs/issue23093.go	pass	
+fixedbugs/issue23094.go	pass	
+fixedbugs/issue23116.go	pass	
 fixedbugs/issue23179.go	skip	todo:compiledir
 fixedbugs/issue23188.go	pass	
 fixedbugs/issue23298.go	pass	
@@ -1151,30 +1151,30 @@ fixedbugs/issue23522.go	pass
 fixedbugs/issue23536.go	pass	
 fixedbugs/issue23545.go	pass	
 fixedbugs/issue23546.go	pass	
-fixedbugs/issue23586.go	skip	todo:errorcheck
-fixedbugs/issue23587.go	skip	todo:errorcheck
-fixedbugs/issue23609.go	skip	todo:errorcheck
-fixedbugs/issue23664.go	skip	todo:errorcheck
+fixedbugs/issue23586.go	fail	errorcheck: unmatched error: issue23586.go:20:6: declared and not used: i
+fixedbugs/issue23587.go	fail	errorcheck: issue23587.go:14: no match for "unexpected ~ at end of statement" in: issue23587.go:14:8: expected ';', found '~'
+fixedbugs/issue23609.go	pass	
+fixedbugs/issue23664.go	fail	errorcheck: issue23664.go:12: no match for "unexpected name true, expected {" in: issue23664.go:12:9: expected ';', found true
 fixedbugs/issue23719.go	pass	
-fixedbugs/issue23732.go	skip	todo:errorcheck
-fixedbugs/issue23734.go	fail	exit: exit status 2 panic: didn't panic
-fixedbugs/issue23780.go	fail	cc: timeout
-fixedbugs/issue23781.go	fail	cc: timeout
+fixedbugs/issue23732.go	pass	
+fixedbugs/issue23734.go	pass	
+fixedbugs/issue23780.go	pass	
+fixedbugs/issue23781.go	pass	
 fixedbugs/issue23812.go	pass	
 fixedbugs/issue23814.go	pass	
-fixedbugs/issue23823.go	skip	todo:errorcheck
+fixedbugs/issue23823.go	pass	
 fixedbugs/issue23837.go	pass	
 fixedbugs/issue23868.go	pass	
 fixedbugs/issue23870.go	pass	
 fixedbugs/issue23912.go	pass	
 fixedbugs/issue24120.go	pass	
-fixedbugs/issue24159.go	skip	todo:errorcheck
+fixedbugs/issue24159.go	pass	
 fixedbugs/issue24173.go	pass	
 fixedbugs/issue24187.go	skip	upstream:build amd64p32
-fixedbugs/issue24339.go	skip	todo:errorcheck
+fixedbugs/issue24339.go	pass	
 fixedbugs/issue24419.go	pass	
 fixedbugs/issue24449.go	pass	
-fixedbugs/issue24470.go	skip	gc:diagnostics -d=panic
+fixedbugs/issue24470.go	pass	
 fixedbugs/issue24488.go	skip	gc:stack-introspection runtime.Stack
 fixedbugs/issue24491a.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue24491b.go	skip	gc:finalizers runtime.SetFinalizer
@@ -1183,7 +1183,7 @@ fixedbugs/issue24547.go	pass
 fixedbugs/issue24651a.go	skip	gc:diagnostics -m
 fixedbugs/issue24651b.go	skip	gc:diagnostics -m
 fixedbugs/issue24693.go	skip	todo:rundir
-fixedbugs/issue24755.go	skip	todo:errorcheck
+fixedbugs/issue24755.go	pass	
 fixedbugs/issue24760.go	pass	
 fixedbugs/issue24761.go	skip	todo:compiledir
 fixedbugs/issue24763.go	pass	
@@ -1196,20 +1196,20 @@ fixedbugs/issue25006.go	pass
 fixedbugs/issue25055.go	skip	todo:compiledir
 fixedbugs/issue25101.go	pass	
 fixedbugs/issue25322.go	pass	
-fixedbugs/issue25507.go	skip	todo:errorcheck
+fixedbugs/issue25507.go	fail	errorcheck: issue25507.go:19: missing error "stack frame too large"
 fixedbugs/issue25516.go	pass	
-fixedbugs/issue25727.go	skip	todo:errorcheck
+fixedbugs/issue25727.go	pass	
 fixedbugs/issue25741.go	pass	
 fixedbugs/issue25776.go	pass	
-fixedbugs/issue25897a.go	fail	exit: exit status 2 panic: reflect.MakeFunc is not supported by gd
-fixedbugs/issue25897b.go	fail	exit: exit status 2 panic: reflect.Value.MethodByName is not supported by gd
-fixedbugs/issue25958.go	skip	todo:errorcheck
+fixedbugs/issue25897a.go	pass	
+fixedbugs/issue25897b.go	pass	
+fixedbugs/issue25958.go	pass	
 fixedbugs/issue25966.go	skip	gc:flags -N
 fixedbugs/issue25984.go	skip	todo:compiledir
 fixedbugs/issue25993.go	skip	gc:flags -d=ssa/check/on
 fixedbugs/issue26024.go	pass	
 fixedbugs/issue26043.go	pass	
-fixedbugs/issue26094.go	fail	exit: exit status 2 panic: interface conversion: interface {} is main.T, not mai…
+fixedbugs/issue26094.go	pass	
 fixedbugs/issue26097.go	pass	
 fixedbugs/issue26105.go	pass	
 fixedbugs/issue26116.go	pass	
@@ -1218,56 +1218,56 @@ fixedbugs/issue2615.go	pass
 fixedbugs/issue26153.go	pass	
 fixedbugs/issue26163.go	skip	gc:flags -N -d=softfloat
 fixedbugs/issue26248.go	pass	
-fixedbugs/issue26335.go	fail	exit: exit status 2 panic: reflect.Value.Call is not supported by gd
+fixedbugs/issue26335.go	pass	
 fixedbugs/issue26340.go	pass	
 fixedbugs/issue26341.go	skip	todo:compiledir
 fixedbugs/issue26407.go	pass	
 fixedbugs/issue26411.go	skip	gc:toolchain
-fixedbugs/issue26416.go	skip	todo:errorcheck
+fixedbugs/issue26416.go	pass	
 fixedbugs/issue26426.go	pass	
 fixedbugs/issue26438.go	pass	
 fixedbugs/issue26495.go	pass	
-fixedbugs/issue26616.go	skip	todo:errorcheck
-fixedbugs/issue26855.go	skip	todo:errorcheck
+fixedbugs/issue26616.go	pass	
+fixedbugs/issue26855.go	pass	
 fixedbugs/issue27143.go	pass	
 fixedbugs/issue27201.go	skip	gc:stack-introspection runtime.Stack
 fixedbugs/issue27232.go	pass	
 fixedbugs/issue27267.go	pass	
 fixedbugs/issue27278.go	pass	
 fixedbugs/issue27289.go	pass	
-fixedbugs/issue27356.go	skip	todo:errorcheck
+fixedbugs/issue27356.go	pass	
 fixedbugs/issue27518a.go	pass	
 fixedbugs/issue27518b.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue27557.go	skip	gc:diagnostics -m
-fixedbugs/issue27595.go	skip	todo:errorcheck
+fixedbugs/issue27595.go	pass	
 fixedbugs/issue27695.go	skip	gc:import runtime/debug
-fixedbugs/issue27695b.go	fail	exit: exit status 2 panic: reflect.MakeFunc is not supported by gd
-fixedbugs/issue27695c.go	fail	exit: exit status 2 panic: reflect.MakeFunc is not supported by gd
+fixedbugs/issue27695b.go	pass	
+fixedbugs/issue27695c.go	pass	
 fixedbugs/issue27718.go	pass	
 fixedbugs/issue27732a.go	skip	gc:diagnostics -m
 fixedbugs/issue27829.go	pass	
 fixedbugs/issue27836.go	skip	todo:compiledir
-fixedbugs/issue27938.go	skip	gc:diagnostics -d=panic
+fixedbugs/issue27938.go	pass	
 fixedbugs/issue27961.go	pass	
 fixedbugs/issue28053.go	skip	todo:errorcheck
 fixedbugs/issue28055.go	pass	
-fixedbugs/issue28058.go	skip	todo:errorcheck
+fixedbugs/issue28058.go	pass	
 fixedbugs/issue28078.go	pass	
 fixedbugs/issue28079a.go	pass	
-fixedbugs/issue28079b.go	skip	todo:errorcheck
-fixedbugs/issue28079c.go	skip	todo:errorcheck
-fixedbugs/issue28085.go	skip	todo:errorcheck
-fixedbugs/issue28268.go	skip	todo:errorcheck
+fixedbugs/issue28079b.go	pass	
+fixedbugs/issue28079c.go	pass	
+fixedbugs/issue28085.go	pass	
+fixedbugs/issue28268.go	pass	
 fixedbugs/issue28390.go	pass	
 fixedbugs/issue28430.go	pass	
 fixedbugs/issue28445.go	pass	
-fixedbugs/issue28450.go	skip	todo:errorcheck
+fixedbugs/issue28450.go	pass	
 fixedbugs/issue28601.go	pass	
 fixedbugs/issue28616.go	pass	
 fixedbugs/issue28688.go	skip	gc:flags -gcflags=-d=softfloat
-fixedbugs/issue28748.go	fail	exit: exit status 2 panic: wanted a reflect error, got this instead:
+fixedbugs/issue28748.go	pass	
 fixedbugs/issue28797.go	pass	
-fixedbugs/issue28926.go	skip	todo:errorcheck
+fixedbugs/issue28926.go	pass	
 fixedbugs/issue29013a.go	pass	
 fixedbugs/issue29013b.go	pass	
 fixedbugs/issue29190.go	fail	exit: exit status 2 panic: runtime error: makeslice: len out of range
@@ -1288,17 +1288,17 @@ fixedbugs/issue29562.go	pass
 fixedbugs/issue29610.go	skip	todo:rundir
 fixedbugs/issue29612.go	skip	todo:runindir
 fixedbugs/issue29735.go	skip	gc:stack-introspection runtime.Callers
-fixedbugs/issue29855.go	skip	todo:errorcheck
+fixedbugs/issue29855.go	pass	
 fixedbugs/issue29870.go	pass	
-fixedbugs/issue29870b.go	skip	todo:errorcheck
+fixedbugs/issue29870b.go	pass	
 fixedbugs/issue29919.go	skip	todo:rundir
 fixedbugs/issue29943.go	pass	
-fixedbugs/issue30041.go	fail	exit: exit status 2 panic: reflect.MakeFunc is not supported by gd
+fixedbugs/issue30041.go	pass	
 fixedbugs/issue30061.go	skip	gc:linkname
-fixedbugs/issue30085.go	skip	todo:errorcheck
-fixedbugs/issue30087.go	skip	todo:errorcheck
+fixedbugs/issue30085.go	pass	
+fixedbugs/issue30087.go	pass	
 fixedbugs/issue30116.go	pass	
-fixedbugs/issue30116u.go	fail	output: mismatch
+fixedbugs/issue30116u.go	pass	
 fixedbugs/issue30243.go	pass	
 fixedbugs/issue30430.go	pass	
 fixedbugs/issue30476.go	skip	gc:finalizers runtime.SetFinalizer
@@ -1309,7 +1309,7 @@ fixedbugs/issue30606b.go	fail	exit: exit status 2 panic: reflect.ArrayOf is not 
 fixedbugs/issue30659.go	skip	todo:compiledir
 fixedbugs/issue30679.go	pass	
 fixedbugs/issue30709.go	pass	
-fixedbugs/issue30722.go	skip	todo:errorcheck
+fixedbugs/issue30722.go	fail	errorcheck: unmatched error: issue30722.go:12:6: malformed constant: 1_
 fixedbugs/issue30862.go	skip	todo:runindir
 fixedbugs/issue30898.go	skip	gc:diagnostics -m
 fixedbugs/issue30907.go	skip	todo:compiledir
@@ -1318,22 +1318,22 @@ fixedbugs/issue30956.go	pass
 fixedbugs/issue30977.go	pass	
 fixedbugs/issue31010.go	pass	
 fixedbugs/issue31053.go	skip	todo:errorcheck
-fixedbugs/issue31060.go	skip	todo:errorcheck
+fixedbugs/issue31060.go	pass	
 fixedbugs/issue31252.go	skip	todo:compiledir
 fixedbugs/issue31412a.go	pass	
-fixedbugs/issue31412b.go	skip	todo:errorcheck
+fixedbugs/issue31412b.go	pass	
 fixedbugs/issue31419.go	pass	
 fixedbugs/issue31546.go	pass	
 fixedbugs/issue31573.go	skip	gc:diagnostics -m
 fixedbugs/issue31636.go	skip	todo:rundir
 fixedbugs/issue31637.go	skip	todo:compiledir
-fixedbugs/issue31747.go	skip	todo:errorcheck
+fixedbugs/issue31747.go	pass	
 fixedbugs/issue31777.go	pass	
 fixedbugs/issue31782.go	pass	
 fixedbugs/issue31915.go	skip	gc:flags -d=ssa/check/on
 fixedbugs/issue31959.go	skip	todo:rundir
 fixedbugs/issue31987.go	pass	
-fixedbugs/issue32133.go	skip	todo:errorcheck
+fixedbugs/issue32133.go	fail	errorcheck: issue32133.go:10: no match for "newline in string" in: issue32133.go:10:8: string literal not terminated; issue32133.go:…
 fixedbugs/issue32175.go	pass	
 fixedbugs/issue32187.go	pass	
 fixedbugs/issue32288.go	pass	
@@ -1344,7 +1344,7 @@ fixedbugs/issue32560.go	pass
 fixedbugs/issue32595.go	skip	todo:rundir
 fixedbugs/issue32680.go	skip	gc:flags -gcflags=-d=ssa/check/on
 fixedbugs/issue32680b.go	pass	
-fixedbugs/issue32723.go	skip	todo:errorcheck
+fixedbugs/issue32723.go	pass	
 fixedbugs/issue32778.go	skip	todo:compiledir
 fixedbugs/issue32901.go	skip	todo:rundir
 fixedbugs/issue32922.go	skip	todo:compiledir
@@ -1357,18 +1357,18 @@ fixedbugs/issue33158.go	skip	todo:compiledir
 fixedbugs/issue33219.go	skip	todo:compiledir
 fixedbugs/issue33275.go	skip	upstream:skip
 fixedbugs/issue33275_run.go	skip	gc:toolchain
-fixedbugs/issue33308.go	skip	todo:errorcheck
+fixedbugs/issue33308.go	pass	
 fixedbugs/issue33355.go	pass	
-fixedbugs/issue33386.go	skip	todo:errorcheck
+fixedbugs/issue33386.go	fail	errorcheck: issue33386.go:26: missing error "expected expression|expected operand"
 fixedbugs/issue33438.go	pass	
-fixedbugs/issue33460.go	skip	todo:errorcheck
+fixedbugs/issue33460.go	pass	
 fixedbugs/issue33555.go	skip	gc:toolchain
 fixedbugs/issue33724.go	skip	gc:import runtime/debug
 fixedbugs/issue33739.go	skip	todo:rundir
 fixedbugs/issue33866.go	skip	todo:compiledir
 fixedbugs/issue33903.go	pass	
 fixedbugs/issue34123.go	skip	gc:stack-introspection runtime.Callers
-fixedbugs/issue34329.go	skip	todo:errorcheck
+fixedbugs/issue34329.go	pass	
 fixedbugs/issue34395.go	pass	
 fixedbugs/issue34503.go	skip	todo:compiledir
 fixedbugs/issue34520.go	pass	
@@ -1380,7 +1380,7 @@ fixedbugs/issue35027.go	skip	gc:flags -gcflags=-d=checkptr
 fixedbugs/issue35073a.go	skip	gc:flags -gcflags=-d=checkptr
 fixedbugs/issue35073b.go	skip	gc:diagnostics -d=checkptr
 fixedbugs/issue35157.go	pass	
-fixedbugs/issue35291.go	skip	todo:errorcheck
+fixedbugs/issue35291.go	pass	
 fixedbugs/issue35518.go	skip	gc:diagnostics -m=2
 fixedbugs/issue3552.go	skip	todo:compiledir
 fixedbugs/issue35576.go	pass	
@@ -1393,33 +1393,33 @@ fixedbugs/issue36437.go	skip	gc:build !nacl && !js && !wasip1 && gc
 fixedbugs/issue36516.go	skip	gc:build cgo && linux && amd64
 fixedbugs/issue36705.go	skip	gc:build cgo && !windows
 fixedbugs/issue36723.go	skip	gc:flags -d=ssa/check/on
-fixedbugs/issue3705.go	skip	todo:errorcheck
+fixedbugs/issue3705.go	pass	
 fixedbugs/issue37246.go	pass	
 fixedbugs/issue37513.go	skip	todo:buildrundir
 fixedbugs/issue37716.go	fail	exit: exit status 2 panic: reflect.MapOf is not supported by gd
 fixedbugs/issue37753.go	pass	
-fixedbugs/issue3783.go	skip	todo:errorcheck
+fixedbugs/issue3783.go	pass	
 fixedbugs/issue37837.go	skip	gc:diagnostics -m
 fixedbugs/issue37975.go	pass	
 fixedbugs/issue38093.go	skip	upstream:build js
-fixedbugs/issue38117.go	skip	todo:errorcheck
+fixedbugs/issue38117.go	pass	
 fixedbugs/issue38125.go	pass	
 fixedbugs/issue38356.go	pass	
 fixedbugs/issue38359.go	pass	
 fixedbugs/issue38496.go	pass	
 fixedbugs/issue38690.go	pass	
 fixedbugs/issue38698.go	pass	
-fixedbugs/issue38745.go	skip	todo:errorcheck
+fixedbugs/issue38745.go	pass	
 fixedbugs/issue38746.go	pass	
 fixedbugs/issue38905.go	pass	
 fixedbugs/issue38916.go	pass	
-fixedbugs/issue3925.go	skip	todo:errorcheck
+fixedbugs/issue3925.go	pass	
 fixedbugs/issue39292.go	skip	gc:diagnostics -m
 fixedbugs/issue39459.go	pass	
 fixedbugs/issue39472.go	skip	gc:flags -N
 fixedbugs/issue39505.go	pass	
 fixedbugs/issue39505b.go	pass	
-fixedbugs/issue39541.go	fail	exit: exit status 2 panic: reflect.MakeFunc is not supported by gd
+fixedbugs/issue39541.go	pass	
 fixedbugs/issue39651.go	pass	
 fixedbugs/issue40152.go	pass	
 fixedbugs/issue40252.go	skip	todo:rundir
@@ -1427,17 +1427,17 @@ fixedbugs/issue40367.go	pass
 fixedbugs/issue40629.go	pass	
 fixedbugs/issue4066.go	pass	
 fixedbugs/issue40746.go	pass	
-fixedbugs/issue4085a.go	skip	todo:errorcheck
+fixedbugs/issue4085a.go	pass	
 fixedbugs/issue4085b.go	pass	
 fixedbugs/issue40917.go	skip	gc:flags -gcflags=-d=checkptr
 fixedbugs/issue40954.go	skip	gc:build cgo
-fixedbugs/issue4097.go	skip	todo:errorcheck
+fixedbugs/issue4097.go	pass	
 fixedbugs/issue4099.go	skip	gc:diagnostics -m
 fixedbugs/issue41239.go	pass	
-fixedbugs/issue41247.go	skip	todo:errorcheck
-fixedbugs/issue41440.go	skip	todo:errorcheck
-fixedbugs/issue41500.go	skip	todo:errorcheck
-fixedbugs/issue41575.go	skip	todo:errorcheck
+fixedbugs/issue41247.go	pass	
+fixedbugs/issue41440.go	pass	
+fixedbugs/issue41500.go	pass	
+fixedbugs/issue41575.go	pass	
 fixedbugs/issue4162.go	pass	
 fixedbugs/issue41635.go	skip	gc:diagnostics -m
 fixedbugs/issue4167.go	pass	
@@ -1446,26 +1446,26 @@ fixedbugs/issue41736.go	pass
 fixedbugs/issue41780.go	pass	
 fixedbugs/issue41872.go	pass	
 fixedbugs/issue42032.go	skip	gc:build cgo
-fixedbugs/issue42058a.go	skip	todo:errorcheck
-fixedbugs/issue42058b.go	skip	todo:errorcheck
-fixedbugs/issue42075.go	skip	todo:errorcheck
+fixedbugs/issue42058a.go	fail	errorcheck: issue42058a.go:9: missing error "channel element type too large"
+fixedbugs/issue42058b.go	fail	errorcheck: issue42058b.go:9: missing error "channel element type too large"
+fixedbugs/issue42075.go	pass	
 fixedbugs/issue42076.go	skip	gc:build cgo
-fixedbugs/issue4215.go	skip	todo:errorcheck
+fixedbugs/issue4215.go	pass	
 fixedbugs/issue42284.go	skip	gc:diagnostics -m
-fixedbugs/issue4232.go	skip	todo:errorcheck
+fixedbugs/issue4232.go	pass	
 fixedbugs/issue42401.go	skip	todo:rundir
-fixedbugs/issue4251.go	skip	todo:errorcheck
+fixedbugs/issue4251.go	pass	
 fixedbugs/issue4252.go	skip	todo:rundir
 fixedbugs/issue42568.go	pass	
 fixedbugs/issue42587.go	pass	
-fixedbugs/issue4264.go	skip	todo:errorcheck
+fixedbugs/issue4264.go	pass	
 fixedbugs/issue42686.go	skip	gc:goexperiment fieldtrack
 fixedbugs/issue42703.go	pass	
 fixedbugs/issue42727.go	pass	
 fixedbugs/issue42753.go	skip	gc:flags -d=ssa/check/on
 fixedbugs/issue42784.go	pass	
 fixedbugs/issue42790.go	pass	
-fixedbugs/issue4283.go	skip	todo:errorcheck
+fixedbugs/issue4283.go	pass	
 fixedbugs/issue42876.go	pass	
 fixedbugs/issue42944.go	skip	gc:diagnostics -live
 fixedbugs/issue43099.go	pass	
@@ -1474,12 +1474,12 @@ fixedbugs/issue43112.go	pass
 fixedbugs/issue4313.go	pass	
 fixedbugs/issue4316.go	pass	
 fixedbugs/issue43164.go	skip	todo:compiledir
-fixedbugs/issue43167.go	skip	todo:errorcheck
+fixedbugs/issue43167.go	pass	
 fixedbugs/issue4323.go	pass	
 fixedbugs/issue4326.go	skip	todo:compiledir
 fixedbugs/issue43292.go	pass	
-fixedbugs/issue43384.go	skip	todo:errorcheck
-fixedbugs/issue43428.go	skip	todo:errorcheck
+fixedbugs/issue43384.go	pass	
+fixedbugs/issue43428.go	pass	
 fixedbugs/issue43444.go	pass	
 fixedbugs/issue43479.go	skip	todo:compiledir
 fixedbugs/issue4348.go	skip	upstream:skip
@@ -1487,24 +1487,24 @@ fixedbugs/issue43480.go	pass
 fixedbugs/issue4353.go	pass	
 fixedbugs/issue43551.go	skip	todo:compiledir
 fixedbugs/issue43570.go	pass	
-fixedbugs/issue4359.go	skip	todo:errorcheck
+fixedbugs/issue4359.go	pass	
 fixedbugs/issue43619.go	pass	
 fixedbugs/issue43633.go	skip	todo:rundir
-fixedbugs/issue4365.go	skip	todo:errorcheck
+fixedbugs/issue4365.go	pass	
 fixedbugs/issue43677.go	pass	
 fixedbugs/issue4370.go	skip	todo:compiledir
 fixedbugs/issue43701.go	pass	
-fixedbugs/issue43762.go	skip	todo:errorcheck
+fixedbugs/issue43762.go	pass	
 fixedbugs/issue43835.go	pass	
 fixedbugs/issue43908.go	pass	
-fixedbugs/issue43942.go	fail	exit: exit status 1 2026/10/01 17:02:54 want 5, have <nil>
+fixedbugs/issue43942.go	pass	
 fixedbugs/issue43962.go	skip	todo:errorcheck
 fixedbugs/issue4396a.go	pass	
 fixedbugs/issue4396b.go	pass	
 fixedbugs/issue4399.go	pass	
-fixedbugs/issue4405.go	skip	todo:errorcheck
-fixedbugs/issue44266.go	skip	todo:errorcheck
-fixedbugs/issue4429.go	skip	todo:errorcheck
+fixedbugs/issue4405.go	fail	errorcheck: unmatched error: issue4405.go:15:3: expected ')', found 'EOF'
+fixedbugs/issue44266.go	pass	
+fixedbugs/issue4429.go	pass	
 fixedbugs/issue44325.go	skip	todo:compiledir
 fixedbugs/issue44330.go	skip	todo:rundir
 fixedbugs/issue44335.go	skip	todo:compiledir
@@ -1513,34 +1513,34 @@ fixedbugs/issue44355.go	skip	todo:compiledir
 fixedbugs/issue44370.go	skip	todo:compiledir
 fixedbugs/issue44378.go	pass	
 fixedbugs/issue44383.go	pass	
-fixedbugs/issue44432.go	skip	gc:diagnostics -d=panic
+fixedbugs/issue44432.go	pass	
 fixedbugs/issue44465.go	skip	gc:flags -d=ssa/check/seed
 fixedbugs/issue4448.go	pass	
-fixedbugs/issue4452.go	skip	todo:errorcheck
-fixedbugs/issue4458.go	skip	todo:errorcheck
-fixedbugs/issue4463.go	skip	todo:errorcheck
-fixedbugs/issue4468.go	skip	todo:errorcheck
-fixedbugs/issue4470.go	skip	todo:errorcheck
+fixedbugs/issue4452.go	pass	
+fixedbugs/issue4458.go	pass	
+fixedbugs/issue4463.go	pass	
+fixedbugs/issue4468.go	pass	
+fixedbugs/issue4470.go	pass	
 fixedbugs/issue44732.go	skip	todo:runindir
 fixedbugs/issue44739.go	pass	
 fixedbugs/issue44823.go	pass	
-fixedbugs/issue44830.go	fail	exit: exit status 2 panic: unexpected t.PkgPath():
+fixedbugs/issue44830.go	pass	
 fixedbugs/issue4495.go	pass	
 fixedbugs/issue45045.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue4510.go	skip	todo:errorcheck
 fixedbugs/issue45175.go	pass	
-fixedbugs/issue4517a.go	skip	todo:errorcheck
-fixedbugs/issue4517b.go	skip	todo:errorcheck
-fixedbugs/issue4517c.go	skip	todo:errorcheck
-fixedbugs/issue4517d.go	skip	todo:errorcheck
+fixedbugs/issue4517a.go	pass	
+fixedbugs/issue4517b.go	pass	
+fixedbugs/issue4517c.go	pass	
+fixedbugs/issue4517d.go	pass	
 fixedbugs/issue4518.go	pass	
 fixedbugs/issue45242.go	pass	
 fixedbugs/issue45258.go	pass	
-fixedbugs/issue4529.go	fail	c11: error: too few arguments to function 'A_c_go_main_package'
+fixedbugs/issue4529.go	pass	
 fixedbugs/issue45323.go	pass	
 fixedbugs/issue45344.go	pass	
 fixedbugs/issue45359.go	pass	
-fixedbugs/issue4545.go	skip	todo:errorcheck
+fixedbugs/issue4545.go	pass	
 fixedbugs/issue45503.go	skip	todo:compiledir
 fixedbugs/issue45606.go	pass	
 fixedbugs/issue4562.go	skip	gc:stack-introspection runtime.Caller
@@ -1548,33 +1548,33 @@ fixedbugs/issue45665.go	pass
 fixedbugs/issue45693.go	pass	
 fixedbugs/issue45706.go	pass	
 fixedbugs/issue45743.go	pass	
-fixedbugs/issue45804.go	skip	todo:errorcheck
+fixedbugs/issue45804.go	pass	
 fixedbugs/issue4585.go	pass	
 fixedbugs/issue45851.go	pass	
 fixedbugs/issue4590.go	skip	todo:rundir
-fixedbugs/issue45913.go	skip	todo:errorcheck
+fixedbugs/issue45913.go	pass	
 fixedbugs/issue45947.go	pass	
 fixedbugs/issue45948.go	skip	gc:flags -N
-fixedbugs/issue4610.go	skip	todo:errorcheck
+fixedbugs/issue4610.go	pass	
 fixedbugs/issue4614.go	pass	
 fixedbugs/issue4618.go	fail	c11: error: implicit declaration of function 'AllocsPerRun_go_testing_package' [-Wimplicit-function-declaration]
 fixedbugs/issue4620.go	pass	
 fixedbugs/issue46234.go	skip	todo:buildrun
 fixedbugs/issue46304.go	pass	
 fixedbugs/issue46386.go	skip	gc:flags -p=main
-fixedbugs/issue46525.go	skip	todo:errorcheck
-fixedbugs/issue4654.go	skip	todo:errorcheck
+fixedbugs/issue46525.go	pass	
+fixedbugs/issue4654.go	pass	
 fixedbugs/issue46556.go	pass	
-fixedbugs/issue4663.go	skip	todo:errorcheck
+fixedbugs/issue4663.go	pass	
 fixedbugs/issue46653.go	skip	todo:runindir
 fixedbugs/issue4667.go	fail	c11: error: implicit declaration of function 'AllocsPerRun_go_testing_package' [-Wimplicit-function-declaration]
 fixedbugs/issue46720.go	pass	
 fixedbugs/issue46725.go	skip	gc:finalizers runtime.SetFinalizer
-fixedbugs/issue46749.go	skip	todo:errorcheck
+fixedbugs/issue46749.go	pass	
 fixedbugs/issue46903.go	skip	gc:build cgo
 fixedbugs/issue46907.go	pass	
 fixedbugs/issue46938.go	skip	gc:flags -gcflags="-d=checkptr"
-fixedbugs/issue46957.go	skip	todo:errorcheck
+fixedbugs/issue46957.go	pass	
 fixedbugs/issue47068.go	skip	todo:rundir
 fixedbugs/issue47087.go	skip	todo:rundir
 fixedbugs/issue47131.go	skip	todo:compiledir
@@ -1586,7 +1586,7 @@ fixedbugs/issue4734.go	pass
 fixedbugs/issue4748.go	pass	
 fixedbugs/issue4752.go	pass	
 fixedbugs/issue47712.go	pass	
-fixedbugs/issue4776.go	skip	todo:errorcheck
+fixedbugs/issue4776.go	fail	errorcheck: issue4776.go:9: no match for "package statement must be first|package clause" in: issue4776.go:9:1: expected 'package', …
 fixedbugs/issue47771.go	pass	
 fixedbugs/issue4785.go	pass	
 fixedbugs/issue47928.go	skip	gc:goexperiment fieldtrack
@@ -1594,32 +1594,32 @@ fixedbugs/issue48026.go	skip	gc:flags -d=ssa/check/on
 fixedbugs/issue48033.go	pass	
 fixedbugs/issue48088.go	skip	todo:compiledir
 fixedbugs/issue48092.go	skip	gc:flags -B
-fixedbugs/issue48097.go	skip	todo:errorcheck
-fixedbugs/issue4813.go	skip	todo:errorcheck
-fixedbugs/issue48230.go	skip	todo:errorcheck
+fixedbugs/issue48097.go	skip	gc:flags -complete
+fixedbugs/issue4813.go	pass	
+fixedbugs/issue48230.go	fail	errorcheck: issue48230.go:9: missing error "embed"
 fixedbugs/issue48289.go	pass	
-fixedbugs/issue48301.go	skip	todo:errorcheck
+fixedbugs/issue48301.go	pass	
 fixedbugs/issue48357.go	pass	
 fixedbugs/issue48459.go	pass	
-fixedbugs/issue4847.go	skip	todo:errorcheck
-fixedbugs/issue48471.go	skip	todo:errorcheck
+fixedbugs/issue4847.go	pass	
+fixedbugs/issue48471.go	pass	
 fixedbugs/issue48473.go	pass	
 fixedbugs/issue48476.go	pass	
 fixedbugs/issue48536.go	pass	
-fixedbugs/issue48558.go	skip	todo:errorcheck
-fixedbugs/issue48784.go	skip	todo:errorcheck
+fixedbugs/issue48558.go	pass	
+fixedbugs/issue48784.go	skip	gc:flags -e
 fixedbugs/issue4879.go	skip	todo:compiledir
-fixedbugs/issue48834.go	skip	todo:errorcheck
-fixedbugs/issue48835.go	skip	todo:errorcheck
-fixedbugs/issue48898.go	fail	exit: exit status 2 panic: interface conversion: interface {} is nil, not int
+fixedbugs/issue48834.go	pass	
+fixedbugs/issue48835.go	pass	
+fixedbugs/issue48898.go	pass	
 fixedbugs/issue48916.go	pass	
-fixedbugs/issue49003.go	skip	todo:errorcheck
-fixedbugs/issue49005a.go	skip	todo:errorcheck
-fixedbugs/issue49005b.go	skip	todo:errorcheck
+fixedbugs/issue49003.go	pass	
+fixedbugs/issue49005a.go	pass	
+fixedbugs/issue49005b.go	pass	
 fixedbugs/issue49016.go	skip	todo:compiledir
 fixedbugs/issue49029.go	pass	
 fixedbugs/issue49094.go	skip	todo:compiledir
-fixedbugs/issue4909a.go	skip	todo:errorcheck
+fixedbugs/issue4909a.go	pass	
 fixedbugs/issue4909b.go	skip	todo:errorcheck
 fixedbugs/issue49100.go	pass	
 fixedbugs/issue49100b.go	pass	
@@ -1631,7 +1631,7 @@ fixedbugs/issue49240.go	pass
 fixedbugs/issue49249.go	skip	gc:flags -l
 fixedbugs/issue49282.go	pass	
 fixedbugs/issue4932.go	skip	todo:compiledir
-fixedbugs/issue49368.go	skip	todo:errorcheck
+fixedbugs/issue49368.go	fail	errorcheck: issue49368.go:10: no match for "embedding non-interface type int requires go1\\.18 or later \\(-lang was set to go1\\.17…
 fixedbugs/issue49378.go	pass	
 fixedbugs/issue49512.go	pass	
 fixedbugs/issue49592.go	pass	
@@ -1639,19 +1639,19 @@ fixedbugs/issue49611.go	pass
 fixedbugs/issue49619.go	pass	
 fixedbugs/issue4964.go	skip	todo:rundir
 fixedbugs/issue49665.go	pass	
-fixedbugs/issue49767.go	skip	todo:errorcheck
-fixedbugs/issue49814.go	skip	todo:errorcheck
+fixedbugs/issue49767.go	fail	errorcheck: issue49767.go:10: missing error "channel element type too large"
+fixedbugs/issue49814.go	fail	errorcheck: issue49814.go:10: missing error "larger than address space|invalid array length"
 fixedbugs/issue5002.go	pass	
 fixedbugs/issue50169.go	pass	
-fixedbugs/issue50190.go	fail	exit: exit status 2 panic: FAIL
-fixedbugs/issue50372.go	skip	todo:errorcheck
+fixedbugs/issue50190.go	pass	
+fixedbugs/issue50372.go	fail	errorcheck: issue50372.go:16: no match for "range clause permits at most two iteration variables" in: issue50372.go:16:19: expected …
 fixedbugs/issue50439.go	pass	
 fixedbugs/issue5056.go	pass	
 fixedbugs/issue50671.go	pass	
 fixedbugs/issue50672.go	pass	
 fixedbugs/issue50788.go	skip	todo:errorcheck
 fixedbugs/issue50854.go	pass	
-fixedbugs/issue5089.go	skip	todo:errorcheck
+fixedbugs/issue5089.go	pass	
 fixedbugs/issue5105.go	skip	todo:rundir
 fixedbugs/issue51101.go	pass	
 fixedbugs/issue5125.go	skip	todo:compiledir
@@ -1659,9 +1659,9 @@ fixedbugs/issue51291.go	skip	todo:compiledir
 fixedbugs/issue51401.go	skip	gc:stack-introspection runtime.Callers
 fixedbugs/issue51437.go	pass	
 fixedbugs/issue51475.go	pass	
-fixedbugs/issue51531.go	skip	todo:errorcheck
+fixedbugs/issue51531.go	fail	errorcheck: issue51531.go:11: no match for "type parameter requires go1\\.18 or later \\(-lang was set to go1\\.17; check go.mod\\)"…
 fixedbugs/issue5162.go	skip	todo:runoutput
-fixedbugs/issue5172.go	skip	todo:errorcheck
+fixedbugs/issue5172.go	pass	
 fixedbugs/issue51733.go	skip	gc:build cgo
 fixedbugs/issue51839.go	pass	
 fixedbugs/issue51913.go	pass	
@@ -1681,11 +1681,11 @@ fixedbugs/issue52590.go	skip	todo:compiledir
 fixedbugs/issue5260.go	skip	todo:rundir
 fixedbugs/issue52612.go	pass	
 fixedbugs/issue52673.go	pass	
-fixedbugs/issue52697.go	skip	todo:errorcheck
+fixedbugs/issue52697.go	fail	errorcheck: issue52697.go:11: missing error "stack frame too large"
 fixedbugs/issue52701.go	pass	
-fixedbugs/issue52748.go	skip	todo:errorcheck
-fixedbugs/issue52788.go	fail	exit: exit status 2 panic: reflect.MakeFunc is not supported by gd
-fixedbugs/issue52788a.go	fail	exit: exit status 2 panic: reflect.MakeFunc is not supported by gd
+fixedbugs/issue52748.go	pass	
+fixedbugs/issue52788.go	pass	
+fixedbugs/issue52788a.go	pass	
 fixedbugs/issue52841.go	pass	
 fixedbugs/issue52846.go	pass	
 fixedbugs/issue52856.go	skip	todo:rundir
@@ -1700,7 +1700,7 @@ fixedbugs/issue53137.go	pass
 fixedbugs/issue53309.go	pass	
 fixedbugs/issue53439.go	pass	
 fixedbugs/issue53454.go	pass	
-fixedbugs/issue5358.go	skip	todo:errorcheck
+fixedbugs/issue5358.go	pass	
 fixedbugs/issue53600.go	pass	
 fixedbugs/issue53619.go	pass	
 fixedbugs/issue53635.go	pass	
@@ -1710,7 +1710,7 @@ fixedbugs/issue5373.go	pass
 fixedbugs/issue53982.go	pass	
 fixedbugs/issue54159.go	skip	gc:diagnostics -m=2
 fixedbugs/issue54220.go	pass	
-fixedbugs/issue54280.go	skip	todo:errorcheck
+fixedbugs/issue54280.go	pass	
 fixedbugs/issue54307.go	pass	
 fixedbugs/issue54343.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue54348.go	pass	
@@ -1730,26 +1730,26 @@ fixedbugs/issue55122.go	pass
 fixedbugs/issue55122b.go	pass	
 fixedbugs/issue5515.go	pass	
 fixedbugs/issue55242.go	pass	
-fixedbugs/issue5581.go	skip	todo:errorcheck
-fixedbugs/issue55889.go	skip	todo:errorcheck
+fixedbugs/issue5581.go	pass	
+fixedbugs/issue55889.go	skip	gc:linkname
 fixedbugs/issue5607.go	pass	
-fixedbugs/issue5609.go	skip	todo:errorcheck
-fixedbugs/issue56103.go	skip	todo:errorcheck
+fixedbugs/issue5609.go	pass	
+fixedbugs/issue56103.go	fail	errorcheck: issue56103.go:10: missing error "invalid recursive type"
 fixedbugs/issue56105.go	skip	gc:flags -d=libfuzzer
 fixedbugs/issue56109.go	pass	
 fixedbugs/issue5614.go	skip	todo:compiledir
 fixedbugs/issue56141.go	skip	gc:flags -d=libfuzzer
-fixedbugs/issue56220.go	skip	todo:errorcheck
+fixedbugs/issue56220.go	pass	
 fixedbugs/issue56280.go	skip	gc:diagnostics -m
 fixedbugs/issue56727.go	pass	
 fixedbugs/issue56768.go	pass	
 fixedbugs/issue56777.go	pass	
 fixedbugs/issue56778.go	skip	todo:compiledir
 fixedbugs/issue56923.go	pass	
-fixedbugs/issue5698.go	skip	todo:errorcheck
-fixedbugs/issue56990.go	fail	c11: error: implicit declaration of function 'Lstat_go_os_package'; did you mean 'Lstat_go_io_fs_package'? [-Wimplicit-functi…
+fixedbugs/issue5698.go	pass	
+fixedbugs/issue56990.go	fail	c11: error: implicit declaration of function 'common_Log_go_testing_package'; did you mean 'T_Log_go_testing_package'? [-Wimp…
 fixedbugs/issue5704.go	pass	
-fixedbugs/issue57184.go	fail	exit: exit status 2 panic: reflect.MakeFunc is not supported by gd
+fixedbugs/issue57184.go	pass	
 fixedbugs/issue57309.go	pass	
 fixedbugs/issue5753.go	pass	
 fixedbugs/issue5755.go	skip	todo:compiledir
@@ -1778,8 +1778,8 @@ fixedbugs/issue58826.go	skip	gc:flags -dynlink
 fixedbugs/issue5910.go	skip	todo:compiledir
 fixedbugs/issue59169.go	pass	
 fixedbugs/issue59174.go	pass	
-fixedbugs/issue59190.go	skip	todo:errorcheck
-fixedbugs/issue59293.go	fail	exit: exit status 2 panic: bad g
+fixedbugs/issue59190.go	pass	
+fixedbugs/issue59293.go	pass	
 fixedbugs/issue59334.go	skip	gc:flags -tags=purego -gcflags=all=-d=checkptr
 fixedbugs/issue59338.go	pass	
 fixedbugs/issue59367.go	pass	
@@ -1793,11 +1793,11 @@ fixedbugs/issue5963.go	pass
 fixedbugs/issue59638.go	skip	gc:flags -gcflags=-l=4
 fixedbugs/issue59680.go	pass	
 fixedbugs/issue59709.go	skip	todo:rundir
-fixedbugs/issue6004.go	skip	todo:errorcheck
+fixedbugs/issue6004.go	pass	
 fixedbugs/issue6036.go	pass	
 fixedbugs/issue6055.go	pass	
 fixedbugs/issue60582.go	pass	
-fixedbugs/issue60601.go	fail	exit: exit status 2 panic: did not panic
+fixedbugs/issue60601.go	pass	
 fixedbugs/issue60945.go	skip	todo:compiledir
 fixedbugs/issue60982.go	pass	
 fixedbugs/issue60990.go	pass	
@@ -1810,7 +1810,7 @@ fixedbugs/issue61778.go	pass
 fixedbugs/issue61895.go	pass	
 fixedbugs/issue61908.go	pass	
 fixedbugs/issue61992.go	pass	
-fixedbugs/issue62203.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
+fixedbugs/issue62203.go	pass	
 fixedbugs/issue62313.go	pass	
 fixedbugs/issue62360.go	pass	
 fixedbugs/issue62469.go	pass	
@@ -1820,31 +1820,31 @@ fixedbugs/issue62515.go	pass
 fixedbugs/issue6269.go	pass	
 fixedbugs/issue6295.go	skip	todo:compiledir
 fixedbugs/issue6298.go	pass	
-fixedbugs/issue63333.go	skip	todo:errorcheck
+fixedbugs/issue63333.go	skip	gc:goexperiment fieldtrack
 fixedbugs/issue63436.go	pass	
 fixedbugs/issue63462.go	pass	
-fixedbugs/issue63489a.go	skip	todo:errorcheck
-fixedbugs/issue63489b.go	skip	todo:errorcheck
+fixedbugs/issue63489a.go	fail	errorcheck: issue63489a.go:18: no match for "file declares //go:build go1.21" in: issue63489a.go:18:16: cannot range over 10 (untype…
+fixedbugs/issue63489b.go	fail	errorcheck: issue63489b.go:18: no match for "file declares //go:build go1.21" in: issue63489b.go:18:16: cannot range over 10 (untype…
 fixedbugs/issue63490.go	pass	
 fixedbugs/issue63505.go	pass	
 fixedbugs/issue63657.go	pass	
 fixedbugs/issue63955.go	pass	
 fixedbugs/issue6399.go	pass	
-fixedbugs/issue6402.go	skip	todo:errorcheck
-fixedbugs/issue6403.go	skip	todo:errorcheck
-fixedbugs/issue6405.go	skip	todo:errorcheck
-fixedbugs/issue6406.go	skip	todo:errorcheck
-fixedbugs/issue6428.go	skip	todo:errorcheck
+fixedbugs/issue6402.go	pass	
+fixedbugs/issue6403.go	pass	
+fixedbugs/issue6405.go	pass	
+fixedbugs/issue6406.go	pass	
+fixedbugs/issue6428.go	pass	
 fixedbugs/issue64565.go	pass	
 fixedbugs/issue64606.go	skip	upstream:build race
 fixedbugs/issue64715.go	pass	
 fixedbugs/issue64826.go	pass	
-fixedbugs/issue6500.go	skip	todo:errorcheck
+fixedbugs/issue6500.go	pass	
 fixedbugs/issue6513.go	skip	todo:compiledir
 fixedbugs/issue65362.go	pass	
 fixedbugs/issue65417.go	pass	
 fixedbugs/issue65593.go	pass	
-fixedbugs/issue6572.go	skip	todo:errorcheck
+fixedbugs/issue6572.go	pass	
 fixedbugs/issue65778.go	skip	gc:godebug gotypesalias=1
 fixedbugs/issue65808.go	pass	
 fixedbugs/issue65893.go	pass	
@@ -1857,46 +1857,46 @@ fixedbugs/issue66261.go	pass
 fixedbugs/issue66575.go	pass	
 fixedbugs/issue66585.go	pass	
 fixedbugs/issue66663.go	pass	
-fixedbugs/issue6671.go	skip	todo:errorcheck
+fixedbugs/issue6671.go	pass	
 fixedbugs/issue66873.go	pass	
-fixedbugs/issue6703a.go	skip	todo:errorcheck
-fixedbugs/issue6703b.go	skip	todo:errorcheck
-fixedbugs/issue6703c.go	skip	todo:errorcheck
-fixedbugs/issue6703d.go	skip	todo:errorcheck
-fixedbugs/issue6703e.go	skip	todo:errorcheck
-fixedbugs/issue6703f.go	skip	todo:errorcheck
-fixedbugs/issue6703g.go	skip	todo:errorcheck
-fixedbugs/issue6703h.go	skip	todo:errorcheck
-fixedbugs/issue6703i.go	skip	todo:errorcheck
-fixedbugs/issue6703j.go	skip	todo:errorcheck
-fixedbugs/issue6703k.go	skip	todo:errorcheck
-fixedbugs/issue6703l.go	skip	todo:errorcheck
-fixedbugs/issue6703m.go	skip	todo:errorcheck
-fixedbugs/issue6703n.go	skip	todo:errorcheck
-fixedbugs/issue6703o.go	skip	todo:errorcheck
-fixedbugs/issue6703p.go	skip	todo:errorcheck
-fixedbugs/issue6703q.go	skip	todo:errorcheck
-fixedbugs/issue6703r.go	skip	todo:errorcheck
-fixedbugs/issue6703s.go	skip	todo:errorcheck
-fixedbugs/issue6703t.go	skip	todo:errorcheck
-fixedbugs/issue6703u.go	skip	todo:errorcheck
-fixedbugs/issue6703v.go	skip	todo:errorcheck
-fixedbugs/issue6703w.go	skip	todo:errorcheck
-fixedbugs/issue6703x.go	skip	todo:errorcheck
-fixedbugs/issue6703y.go	skip	todo:errorcheck
-fixedbugs/issue6703z.go	skip	todo:errorcheck
-fixedbugs/issue67141.go	skip	todo:errorcheck
+fixedbugs/issue6703a.go	pass	
+fixedbugs/issue6703b.go	pass	
+fixedbugs/issue6703c.go	pass	
+fixedbugs/issue6703d.go	pass	
+fixedbugs/issue6703e.go	pass	
+fixedbugs/issue6703f.go	pass	
+fixedbugs/issue6703g.go	pass	
+fixedbugs/issue6703h.go	pass	
+fixedbugs/issue6703i.go	pass	
+fixedbugs/issue6703j.go	pass	
+fixedbugs/issue6703k.go	pass	
+fixedbugs/issue6703l.go	pass	
+fixedbugs/issue6703m.go	pass	
+fixedbugs/issue6703n.go	pass	
+fixedbugs/issue6703o.go	pass	
+fixedbugs/issue6703p.go	pass	
+fixedbugs/issue6703q.go	pass	
+fixedbugs/issue6703r.go	pass	
+fixedbugs/issue6703s.go	pass	
+fixedbugs/issue6703t.go	pass	
+fixedbugs/issue6703u.go	pass	
+fixedbugs/issue6703v.go	pass	
+fixedbugs/issue6703w.go	pass	
+fixedbugs/issue6703x.go	pass	
+fixedbugs/issue6703y.go	pass	
+fixedbugs/issue6703z.go	pass	
+fixedbugs/issue67141.go	pass	
 fixedbugs/issue67160.go	pass	
 fixedbugs/issue67190.go	pass	
 fixedbugs/issue67255.go	pass	
 fixedbugs/issue67329.go	skip	gc:diagnostics -d=ssa/check_bce/debug=1
-fixedbugs/issue6750.go	skip	todo:errorcheck
-fixedbugs/issue6772.go	skip	todo:errorcheck
+fixedbugs/issue6750.go	pass	
+fixedbugs/issue6772.go	pass	
 fixedbugs/issue6789.go	skip	todo:rundir
 fixedbugs/issue68054.go	pass	
 fixedbugs/issue68227.go	pass	
 fixedbugs/issue68264.go	pass	
-fixedbugs/issue68292.go	skip	todo:errorcheck
+fixedbugs/issue68292.go	pass	
 fixedbugs/issue68322.go	pass	
 fixedbugs/issue68415.go	skip	gc:flags -gcflags=all=-d=checkptr
 fixedbugs/issue6847.go	pass	
@@ -1907,13 +1907,13 @@ fixedbugs/issue6866.go	pass
 fixedbugs/issue68734.go	pass	
 fixedbugs/issue68809.go	pass	
 fixedbugs/issue68816.go	pass	
-fixedbugs/issue6889.go	skip	todo:errorcheck
+fixedbugs/issue6889.go	pass	
 fixedbugs/issue6899.go	pass	
 fixedbugs/issue6902.go	pass	
 fixedbugs/issue69434.go	pass	
 fixedbugs/issue69507.go	pass	
-fixedbugs/issue6964.go	skip	todo:errorcheck
-fixedbugs/issue6977.go	skip	todo:errorcheck
+fixedbugs/issue6964.go	pass	
+fixedbugs/issue6977.go	pass	
 fixedbugs/issue69825.go	skip	gc:flags -d=libfuzzer
 fixedbugs/issue70156.go	pass	
 fixedbugs/issue70175.go	pass	
@@ -1926,10 +1926,10 @@ fixedbugs/issue7083.go	skip	gc:import runtime/debug
 fixedbugs/issue71184.go	pass	
 fixedbugs/issue71225.go	skip	gc:build cgo
 fixedbugs/issue71226.go	skip	gc:build cgo
-fixedbugs/issue7129.go	skip	todo:errorcheck
-fixedbugs/issue7150.go	skip	todo:errorcheck
-fixedbugs/issue7153.go	skip	todo:errorcheck
-fixedbugs/issue71675.go	fail	gd: unsupported defer in the body of a range over a function
+fixedbugs/issue7129.go	pass	
+fixedbugs/issue7150.go	pass	
+fixedbugs/issue7153.go	pass	
+fixedbugs/issue71675.go	pass	
 fixedbugs/issue71680.go	pass	
 fixedbugs/issue71759.go	pass	
 fixedbugs/issue71852.go	pass	
@@ -1937,19 +1937,19 @@ fixedbugs/issue71857.go	pass
 fixedbugs/issue71932.go	pass	
 fixedbugs/issue72063.go	pass	
 fixedbugs/issue72090.go	pass	
-fixedbugs/issue7214.go	skip	todo:errorcheck
-fixedbugs/issue7223.go	skip	todo:errorcheck
+fixedbugs/issue7214.go	pass	
+fixedbugs/issue7223.go	pass	
 fixedbugs/issue7272.go	pass	
-fixedbugs/issue72844.go	fail	exit: exit status 2 panic: runtime error: invalid memory address or nil pointer …
+fixedbugs/issue72844.go	pass	
 fixedbugs/issue72860.go	pass	
-fixedbugs/issue7310.go	skip	todo:errorcheck
+fixedbugs/issue7310.go	pass	
 fixedbugs/issue7316.go	skip	todo:runoutput
 fixedbugs/issue73180.go	pass	
 fixedbugs/issue73200.go	pass	
 fixedbugs/issue73309.go	pass	
 fixedbugs/issue73309b.go	pass	
 fixedbugs/issue7346.go	pass	
-fixedbugs/issue73476.go	fail	exit: exit status 2 panic: runtime error: invalid memory address or nil pointer …
+fixedbugs/issue73476.go	pass	
 fixedbugs/issue73483.go	skip	gc:build race && cgo
 fixedbugs/issue73491.go	pass	
 fixedbugs/issue7366.go	pass	
@@ -1968,23 +1968,23 @@ fixedbugs/issue7419.go	pass
 fixedbugs/issue74379.go	pass	
 fixedbugs/issue74379b.go	pass	
 fixedbugs/issue74379c.go	pass	
-fixedbugs/issue74626.go	skip	todo:errorcheck
+fixedbugs/issue74626.go	skip	gc:goexperiment fieldtrack
 fixedbugs/issue74648.go	skip	todo:runindir
 fixedbugs/issue74836.go	pass	
 fixedbugs/issue74888.go	pass	
 fixedbugs/issue74908.go	pass	
 fixedbugs/issue74935.go	pass	
-fixedbugs/issue75022.go	skip	todo:errorcheck
+fixedbugs/issue75022.go	pass	
 fixedbugs/issue75063.go	pass	
-fixedbugs/issue7525.go	skip	todo:errorcheck
-fixedbugs/issue7525b.go	skip	todo:errorcheck
-fixedbugs/issue7525c.go	skip	todo:errorcheck
-fixedbugs/issue7525d.go	skip	todo:errorcheck
-fixedbugs/issue7525e.go	skip	todo:errorcheck
+fixedbugs/issue7525.go	pass	
+fixedbugs/issue7525b.go	pass	
+fixedbugs/issue7525c.go	pass	
+fixedbugs/issue7525d.go	pass	
+fixedbugs/issue7525e.go	pass	
 fixedbugs/issue75278.go	skip	gc:diagnostics -m=2
 fixedbugs/issue75327.go	pass	
-fixedbugs/issue75365.go	fail	output: mismatch
-fixedbugs/issue7538a.go	skip	todo:errorcheck
+fixedbugs/issue75365.go	pass	
+fixedbugs/issue7538a.go	fail	errorcheck: issue7538a.go:14: no match for "not defined|undefined label" in: issue7538a.go:14:7: label _ not declared
 fixedbugs/issue7538b.go	pass	
 fixedbugs/issue7547.go	pass	
 fixedbugs/issue7550.go	pass	
@@ -1994,16 +1994,16 @@ fixedbugs/issue7590.go	pass
 fixedbugs/issue76008.go	skip	gc:stack-introspection runtime.Caller
 fixedbugs/issue7648.go	skip	todo:compiledir
 fixedbugs/issue76709.go	pass	
-fixedbugs/issue7675.go	skip	todo:errorcheck
+fixedbugs/issue7675.go	pass	
 fixedbugs/issue7690.go	skip	gc:stack-introspection runtime.Stack
 fixedbugs/issue76950.go	pass	
 fixedbugs/issue77303.go	pass	
 fixedbugs/issue7740.go	pass	
 fixedbugs/issue7742.go	pass	
 fixedbugs/issue77435.go	pass	
-fixedbugs/issue7746.go	skip	todo:errorcheck
+fixedbugs/issue7746.go	pass	
 fixedbugs/issue77534.go	pass	
-fixedbugs/issue7760.go	skip	todo:errorcheck
+fixedbugs/issue7760.go	pass	
 fixedbugs/issue77604.go	pass	
 fixedbugs/issue77613.go	pass	
 fixedbugs/issue77635.go	pass	
@@ -2022,10 +2022,10 @@ fixedbugs/issue78297.go	pass
 fixedbugs/issue78303_1.go	pass	
 fixedbugs/issue78303_2.go	pass	
 fixedbugs/issue78313.go	pass	
-fixedbugs/issue78314.go	skip	todo:errorcheck
-fixedbugs/issue78355.go	skip	todo:errorcheck
+fixedbugs/issue78314.go	pass	
+fixedbugs/issue78355.go	fail	errorcheck: issue78355.go:15: missing error "map element type too large"
 fixedbugs/issue78404.go	pass	
-fixedbugs/issue78408.go	fail	c11: error: label 'go_label_A' used but not defined
+fixedbugs/issue78408.go	pass	
 fixedbugs/issue78410.go	pass	
 fixedbugs/issue78599.go	pass	
 fixedbugs/issue7863.go	pass	
@@ -2039,12 +2039,12 @@ fixedbugs/issue79197.go	pass
 fixedbugs/issue7921.go	skip	gc:diagnostics -m
 fixedbugs/issue79236.go	pass	
 fixedbugs/issue79236b.go	pass	
-fixedbugs/issue79258.go	skip	todo:errorcheck
+fixedbugs/issue79258.go	skip	gc:flags -std
 fixedbugs/issue79274.go	pass	
 fixedbugs/issue79274a.go	skip	todo:compiledir
 fixedbugs/issue7944.go	pass	
 fixedbugs/issue79762.go	skip	gc:import runtime/debug
-fixedbugs/issue79812.go	fail	gd: unsupported conversion to float64
+fixedbugs/issue79812.go	pass	
 fixedbugs/issue79874.go	fail	exit: exit status 2 panic: 38
 fixedbugs/issue79886.go	pass	
 fixedbugs/issue79887.go	pass	
@@ -2083,49 +2083,49 @@ fixedbugs/issue8079.go	pass
 fixedbugs/issue80976.go	pass	
 fixedbugs/issue81165.go	pass	
 fixedbugs/issue8132.go	pass	
-fixedbugs/issue8139.go	fail	exit: exit status 2 panic: interface conversion: interface {} is nil, not main.T
+fixedbugs/issue8139.go	pass	
 fixedbugs/issue8154.go	pass	
 fixedbugs/issue8155.go	pass	
 fixedbugs/issue8158.go	pass	
-fixedbugs/issue8183.go	skip	todo:errorcheck
+fixedbugs/issue8183.go	pass	
 fixedbugs/issue8280.go	skip	todo:compiledir
-fixedbugs/issue8311.go	skip	todo:errorcheck
+fixedbugs/issue8311.go	pass	
 fixedbugs/issue8325.go	pass	
 fixedbugs/issue8336.go	pass	
 fixedbugs/issue8347.go	pass	
-fixedbugs/issue8385.go	skip	todo:errorcheck
-fixedbugs/issue8438.go	skip	todo:errorcheck
-fixedbugs/issue8440.go	skip	todo:errorcheck
+fixedbugs/issue8385.go	pass	
+fixedbugs/issue8438.go	pass	
+fixedbugs/issue8440.go	pass	
 fixedbugs/issue8475.go	pass	
-fixedbugs/issue8501.go	skip	todo:errorcheck
-fixedbugs/issue8507.go	skip	todo:errorcheck
+fixedbugs/issue8501.go	pass	
+fixedbugs/issue8507.go	pass	
 fixedbugs/issue8606.go	pass	
 fixedbugs/issue8606b.go	fail	exit: exit status 2 panic: 38
 fixedbugs/issue8612.go	pass	
 fixedbugs/issue8613.go	pass	
 fixedbugs/issue8620.go	pass	
-fixedbugs/issue8745.go	skip	todo:errorcheck
+fixedbugs/issue8745.go	pass	
 fixedbugs/issue8761.go	pass	
-fixedbugs/issue8836.go	skip	todo:errorcheck
+fixedbugs/issue8836.go	pass	
 fixedbugs/issue887.go	pass	
 fixedbugs/issue8947.go	pass	
 fixedbugs/issue8961.go	pass	
 fixedbugs/issue9006.go	pass	
-fixedbugs/issue9017.go	skip	todo:errorcheck
-fixedbugs/issue9036.go	skip	todo:errorcheck
-fixedbugs/issue9076.go	skip	todo:errorcheck
-fixedbugs/issue9083.go	skip	todo:errorcheck
+fixedbugs/issue9017.go	pass	
+fixedbugs/issue9036.go	pass	
+fixedbugs/issue9076.go	pass	
+fixedbugs/issue9083.go	pass	
 fixedbugs/issue9110.go	skip	gc:import runtime/debug
 fixedbugs/issue9321.go	skip	gc:import runtime/pprof
 fixedbugs/issue9355.go	skip	gc:build !js && !wasip1 && gc
-fixedbugs/issue9370.go	skip	todo:errorcheck
-fixedbugs/issue9432.go	skip	todo:errorcheck
-fixedbugs/issue9521.go	skip	todo:errorcheck
+fixedbugs/issue9370.go	pass	
+fixedbugs/issue9432.go	pass	
+fixedbugs/issue9521.go	pass	
 fixedbugs/issue9537.go	skip	todo:rundir
 fixedbugs/issue9604.go	pass	
 fixedbugs/issue9604b.go	skip	todo:runoutput
 fixedbugs/issue9608.go	skip	todo:rundir
-fixedbugs/issue9634.go	skip	todo:errorcheck
+fixedbugs/issue9634.go	pass	
 fixedbugs/issue9691.go	pass	
 fixedbugs/issue9731.go	pass	
 fixedbugs/issue9738.go	pass	
@@ -2139,20 +2139,20 @@ fixedbugs/splitload_pointer_compare.go	pass
 fixedbugs/walk_bounded_overshift_empty_bound.go	pass	
 float_lit.go	pass	
 float_lit2.go	pass	
-float_lit3.go	skip	todo:errorcheck
+float_lit3.go	pass	
 floatcmp.go	pass	
 for.go	pass	
 func.go	pass	
-func1.go	skip	todo:errorcheck
+func1.go	pass	
 func2.go	pass	
-func3.go	skip	todo:errorcheck
-func4.go	skip	todo:errorcheck
+func3.go	pass	
+func4.go	pass	
 func5.go	pass	
 func6.go	pass	
 func7.go	pass	
 func8.go	pass	
-funcdup.go	skip	todo:errorcheck
-funcdup2.go	skip	todo:errorcheck
+funcdup.go	pass	
+funcdup2.go	pass	
 fuse.go	skip	gc:diagnostics -d=ssa/late_fuse/debug=1
 gc.go	pass	
 gc1.go	pass	
@@ -2160,32 +2160,32 @@ gc2.go	skip	gc:memstats runtime.ReadMemStats
 gcgort.go	skip	gc:import runtime/debug
 gcstring.go	skip	gc:finalizers runtime.SetFinalizer
 genmeth.go	pass	
-genmeth1.go	fail	gd: unsupported index of func
+genmeth1.go	pass	
 genmeth2.go	pass	
 goprint.go	pass	
-goto.go	skip	todo:errorcheck
+goto.go	fail	errorcheck: goto.go:42: no match for "goto L jumps over declaration of x at goto.go:43|goto jumps over declaration" in: goto.go:42:7…
 heapsampling.go	skip	gc:memstats runtime.MemProfileRate
 helloworld.go	pass	
 if.go	pass	
 import.go	pass	
-import1.go	skip	todo:errorcheck
+import1.go	pass	
 import2.go	skip	todo:compiledir
 import4.go	skip	todo:errorcheck
-import5.go	skip	todo:errorcheck
-import6.go	skip	todo:errorcheck
+import5.go	fail	errorcheck: unmatched error: import5.go:13:10: could not import fmt (no metadata for fmt)
+import6.go	fail	errorcheck: import6.go:38: no match for "import path cannot be absolute path|not used" in: import6.go:38:8: could not import /foo (n…
 index.go	skip	upstream:skip
 index0.go	skip	todo:runoutput
 index1.go	skip	todo:errorcheck
 index2.go	skip	todo:errorcheck
 indirect.go	pass	
-indirect1.go	skip	todo:errorcheck
-init.go	skip	todo:errorcheck
+indirect1.go	pass	
+init.go	pass	
 init1.go	skip	gc:memstats runtime.ReadMemStats
 initcomma.go	pass	
-initexp.go	skip	todo:errorcheck
+initexp.go	pass	
 initialize.go	pass	
-initializerr.go	skip	todo:errorcheck
-initloop.go	skip	todo:errorcheck
+initializerr.go	pass	
+initloop.go	pass	
 inline.go	skip	gc:diagnostics -m
 inline_big.go	skip	gc:diagnostics -m=2
 inline_caller.go	skip	gc:flags -gcflags -l=4
@@ -2204,16 +2204,16 @@ interface/convert1.go	pass
 interface/convert2.go	pass	
 interface/embed.go	pass	
 interface/embed1.go	skip	todo:rundir
-interface/embed2.go	skip	todo:errorcheck
+interface/embed2.go	pass	
 interface/embed3.go	skip	todo:rundir
-interface/explicit.go	skip	todo:errorcheck
+interface/explicit.go	pass	
 interface/fail.go	pass	
 interface/fake.go	pass	
 interface/noeq.go	pass	
-interface/pointer.go	skip	todo:errorcheck
+interface/pointer.go	pass	
 interface/private.go	skip	todo:errorcheck
 interface/receiver.go	pass	
-interface/receiver1.go	skip	todo:errorcheck
+interface/receiver1.go	pass	
 interface/recursive.go	pass	
 interface/recursive1.go	skip	todo:compiledir
 interface/returntype.go	pass	
@@ -2263,12 +2263,12 @@ ken/sliceslice.go	pass
 ken/string.go	pass	
 ken/strvar.go	pass	
 known_bits.go	skip	gc:diagnostics -d=ssa/known_bits/debug=1
-label.go	skip	todo:errorcheck
-label1.go	skip	todo:errorcheck
+label.go	fail	errorcheck: label.go:16: no match for "label .*L1.* defined and not used" in: label.go:16:1: label L1 declared and not used
+label1.go	fail	errorcheck: label1.go:18: no match for "continue is not in a loop$|continue statement not within for" in: label1.go:18:3: continue n…
 linkmain.go	skip	upstream:build ignore
 linkmain_run.go	skip	gc:toolchain
 linkname.go	skip	gc:diagnostics -m
-linkname3.go	skip	todo:errorcheck
+linkname3.go	skip	gc:linkname
 linknameasm.go	skip	todo:buildrundir
 linkobj.go	skip	gc:build !nacl && !js && gc && !wasip1
 linkx.go	skip	upstream:skip
@@ -2281,28 +2281,28 @@ live2.go	skip	gc:diagnostics -live
 live_regabi.go	skip	gc:build (amd64 && goexperiment.regabiargs) || (arm64 && goexperiment.regabiargs)
 live_uintptrkeepalive.go	skip	gc:diagnostics -m
 loopbce.go	skip	gc:diagnostics -d=ssa/prove/debug=1
-mainsig.go	skip	todo:errorcheck
-makechan.go	skip	todo:errorcheck
-makemap.go	skip	todo:errorcheck
-makenew.go	skip	todo:errorcheck
+mainsig.go	pass	
+makechan.go	pass	
+makemap.go	pass	
+makenew.go	pass	
 makeslice.go	pass	
 mallocfin.go	skip	gc:finalizers runtime.SetFinalizer
-map.go	fail	c11: error: 'nana' undeclared (first use in this function); did you mean 'nanl'?
-map1.go	skip	todo:errorcheck
+map.go	pass	
+map1.go	pass	
 mapclear.go	pass	
 maplinear.go	fail	exit: timeout
 maymorestack.go	skip	gc:flags -gcflags=-d=maymorestack=main.mayMoreStack
 mergemul.go	skip	todo:runoutput
 method.go	pass	
-method1.go	skip	todo:errorcheck
-method2.go	skip	todo:errorcheck
+method1.go	pass	
+method2.go	pass	
 method3.go	pass	
 method4.go	skip	todo:rundir
-method5.go	fail	exit: exit status 2 panic: not panicking
-method6.go	skip	todo:errorcheck
+method5.go	pass	
+method6.go	pass	
 method7.go	pass	
 named.go	pass	
-named1.go	skip	todo:errorcheck
+named1.go	pass	
 newexpr.go	pass	
 newinline.go	skip	gc:build goexperiment.newinliner
 nil.go	pass	
@@ -2317,7 +2317,7 @@ nilptr5_wasm.go	skip	upstream:build wasm
 nilptr_aix.go	skip	upstream:build aix
 noinit.go	skip	gc:linkname
 nosplit.go	skip	gc:build !nacl && !js && !aix && !openbsd && !wasip1 && !gcflags_noopt && gc
-nowritebarrier.go	skip	todo:errorcheck
+nowritebarrier.go	skip	gc:flags -+ -p=runtime
 nul1.go	skip	todo:errorcheck
 opt_branchlikely.go	skip	gc:diagnostics -d=ssa/likelyadjust/debug=1,ssa/insert_resched_checks/off
 parentype.go	pass	
@@ -2330,40 +2330,40 @@ prove_constant_folding.go	skip	gc:diagnostics -d=ssa/prove/debug=2
 prove_invert_loop_with_unused_iterators.go	skip	gc:diagnostics -d=ssa/prove/debug=1
 prove_popcount.go	skip	upstream:build amd64.v3 || arm64
 range.go	pass	
-range2.go	skip	todo:errorcheck
+range2.go	pass	
 range3.go	pass	
-range4.go	fail	gd: unsupported defer in the body of a range over a function
+range4.go	pass	
 rangegen.go	skip	todo:runoutput
-recover.go	fail	exit: exit status 2 panic: reflect.Value.Method is not supported by gd
-recover1.go	fail	exit: exit status 2 panic: nil
+recover.go	pass	
+recover1.go	pass	
 recover2.go	pass	
 recover3.go	pass	
 recover4.go	skip	gc:import runtime/debug
-recover5.go	skip	todo:errorcheck
-reflectmethod1.go	fail	exit: exit status 2 panic: (*reflect.ValueError) 0x?
-reflectmethod2.go	fail	exit: exit status 2 panic: (*reflect.ValueError) 0x?
-reflectmethod3.go	fail	exit: exit status 2 panic: (*reflect.ValueError) 0x?
-reflectmethod4.go	fail	exit: exit status 2 panic: reflect.Value.Method is not supported by gd
-reflectmethod5.go	fail	exit: exit status 2 panic: (*reflect.ValueError) 0x?
-reflectmethod6.go	fail	exit: exit status 2 panic: (*reflect.ValueError) 0x?
-reflectmethod7.go	fail	exit: exit status 2 panic: FAIL
+recover5.go	pass	
+reflectmethod1.go	pass	
+reflectmethod2.go	pass	
+reflectmethod3.go	pass	
+reflectmethod4.go	pass	
+reflectmethod5.go	pass	
+reflectmethod6.go	pass	
+reflectmethod7.go	pass	
 reflectmethod8.go	pass	
 rename.go	pass	
-rename1.go	skip	todo:errorcheck
+rename1.go	pass	
 reorder.go	pass	
 reorder2.go	pass	
 retjmp.go	skip	todo:buildrundir
-return.go	skip	todo:errorcheck
+return.go	pass	
 rotate.go	skip	upstream:skip
 rotate0.go	skip	todo:runoutput
 rotate1.go	skip	todo:runoutput
 rotate2.go	skip	todo:runoutput
 rotate3.go	skip	todo:runoutput
 rune.go	pass	
-runtime.go	skip	todo:errorcheck
-shift1.go	skip	todo:errorcheck
+runtime.go	fail	errorcheck: runtime.go:20: no match for "unexported|undefined" in: runtime.go:20:10: name printbool not exported by package runtime
+shift1.go	fail	errorcheck: shift1.go:47: no match for "non-integer|cannot use.*as type int" in: shift1.go:47:19: invalid operation: shifted operand…
 shift2.go	pass	
-shift3.go	fail	gd: panic: unsupported constant value (1 + 0i)
+shift3.go	pass	
 sieve.go	pass	
 sigchld.go	pass	
 simassign.go	pass	
@@ -2374,7 +2374,7 @@ simd/bug3.go	skip	gc:build goexperiment.simd && amd64
 simd_inline.go	skip	gc:build goexperiment.simd && amd64
 sizeof.go	pass	
 slice3.go	skip	todo:runoutput
-slice3err.go	skip	todo:errorcheck
+slice3err.go	pass	
 slicecap.go	pass	
 sliceopt.go	skip	gc:diagnostics -d=append,slice
 solitaire.go	pass	
@@ -2388,38 +2388,38 @@ string_lit.go	pass
 stringrange.go	pass	
 struct0.go	pass	
 switch.go	pass	
-switch2.go	skip	todo:errorcheck
-switch3.go	skip	todo:errorcheck
-switch4.go	skip	todo:errorcheck
-switch5.go	skip	todo:errorcheck
-switch6.go	skip	todo:errorcheck
-switch7.go	skip	todo:errorcheck
-syntax/chan.go	skip	todo:errorcheck
-syntax/chan1.go	skip	todo:errorcheck
-syntax/composite.go	skip	todo:errorcheck
-syntax/ddd.go	skip	todo:errorcheck
-syntax/else.go	skip	todo:errorcheck
-syntax/if.go	skip	todo:errorcheck
-syntax/import.go	skip	todo:errorcheck
-syntax/initvar.go	skip	todo:errorcheck
-syntax/semi1.go	skip	todo:errorcheck
-syntax/semi2.go	skip	todo:errorcheck
-syntax/semi3.go	skip	todo:errorcheck
-syntax/semi4.go	skip	todo:errorcheck
-syntax/semi5.go	skip	todo:errorcheck
-syntax/semi6.go	skip	todo:errorcheck
-syntax/semi7.go	skip	todo:errorcheck
-syntax/topexpr.go	skip	todo:errorcheck
-syntax/typesw.go	skip	todo:errorcheck
-syntax/vareq.go	skip	todo:errorcheck
-syntax/vareq1.go	skip	todo:errorcheck
+switch2.go	fail	errorcheck: switch2.go:14: no match for "expecting := or = or : or comma|expected :" in: switch2.go:14:8: expected ':', found ';'; s…
+switch3.go	pass	
+switch4.go	pass	
+switch5.go	pass	
+switch6.go	pass	
+switch7.go	pass	
+syntax/chan.go	fail	errorcheck: chan.go:11: no match for "unexpected .*}.* in channel type|missing channel element type" in: chan.go:11:1: expected type…
+syntax/chan1.go	fail	errorcheck: chan1.go:13: no match for "cannot use c <- v as value|send statement used as value" in: chan1.go:13:5: expected boolean …
+syntax/composite.go	fail	errorcheck: composite.go:10: no match for "need trailing comma before newline in composite literal|possibly missing comma or }" in: …
+syntax/ddd.go	fail	errorcheck: ddd.go:10: no match for "unexpected literal \\.3, expected name or \\(" in: ddd.go:10:6: expected selector or type asser…
+syntax/else.go	fail	errorcheck: else.go:11: no match for "else must be followed by if or statement block|expected .if. or .{." in: else.go:11:9: expecte…
+syntax/if.go	pass	
+syntax/import.go	fail	errorcheck: import.go:10: no match for "unexpected comma" in: import.go:10:6: expected ';', found ','; import.go:10:6: expected ';',…
+syntax/initvar.go	fail	errorcheck: initvar.go:12: no match for "var declaration not allowed in switch initializer" in: initvar.go:12:9: expected '{', found…
+syntax/semi1.go	fail	errorcheck: unmatched error: semi1.go:14:2: expected ';', found 'EOF'
+syntax/semi2.go	fail	errorcheck: unmatched error: semi2.go:11:2: expected '}', found '{'
+syntax/semi3.go	fail	errorcheck: unmatched error: semi3.go:14:2: expected ';', found 'EOF'
+syntax/semi4.go	fail	errorcheck: semi4.go:11: no match for "unexpected {, expected for loop condition|expecting .*{.* after for clause" in: semi4.go:11:2…
+syntax/semi5.go	fail	errorcheck: unmatched error: semi5.go:13:2: expected ';', found 'EOF'
+syntax/semi6.go	fail	errorcheck: semi6.go:9: no match for "newline in type declaration" in: semi6.go:9:47: expected type, found newline
+syntax/semi7.go	fail	errorcheck: semi7.go:11: no match for "unexpected semicolon or newline before .?else.?|unexpected keyword else" in: semi7.go:11:2: e…
+syntax/topexpr.go	fail	errorcheck: topexpr.go:14: missing error "non-declaration statement outside function body|expected declaration"
+syntax/typesw.go	fail	errorcheck: typesw.go:10: no match for "invalid variable name|cannot use .* as value" in: typesw.go:10:2: invalid syntax tree: incor…
+syntax/vareq.go	fail	errorcheck: vareq.go:10: no match for "unexpected { at end of statement|expected ';' or '}' or newline" in: vareq.go:10:25: expected…
+syntax/vareq1.go	fail	errorcheck: vareq1.go:9: no match for "unexpected { at end of statement|unexpected { after top level declaration|expected ';' or new…
 tailcall.go	skip	gc:diagnostics -d=tailcall=1
 tighten.go	skip	upstream:build arm64
 tinyfin.go	skip	gc:finalizers runtime.SetFinalizer
 torture.go	pass	
 turing.go	pass	
-typecheck.go	skip	todo:errorcheck
-typecheckloop.go	skip	todo:errorcheck
+typecheck.go	pass	
+typecheckloop.go	pass	
 typeparam/absdiff.go	pass	
 typeparam/absdiff2.go	pass	
 typeparam/absdiff3.go	pass	
@@ -2438,7 +2438,7 @@ typeparam/dedup.go	skip	todo:rundir
 typeparam/devirtualize1.go	pass	
 typeparam/devirtualize2.go	pass	
 typeparam/dictionaryCapture-noinline.go	skip	gc:flags -gcflags="-l"
-typeparam/dictionaryCapture.go	fail	c11: error: 'go_if' has no member named 'a'
+typeparam/dictionaryCapture.go	pass	
 typeparam/dottype.go	pass	
 typeparam/double.go	pass	
 typeparam/eface.go	pass	
@@ -2492,7 +2492,7 @@ typeparam/issue47877.go	pass
 typeparam/issue47878.go	pass	
 typeparam/issue47892.go	skip	todo:rundir
 typeparam/issue47892b.go	skip	todo:compiledir
-typeparam/issue47896.go	fail	gd: panic: runtime error: invalid memory address or nil pointer dereference
+typeparam/issue47896.go	pass	
 typeparam/issue47901.go	pass	
 typeparam/issue47924.go	pass	
 typeparam/issue47925.go	pass	
@@ -2522,8 +2522,8 @@ typeparam/issue48276a.go	pass
 typeparam/issue48276b.go	pass	
 typeparam/issue48280.go	skip	todo:rundir
 typeparam/issue48306.go	skip	todo:rundir
-typeparam/issue48317.go	fail	gd: unsupported call with the results of another call, outside of a statement
-typeparam/issue48318.go	fail	gd: panic: runtime error: invalid memory address or nil pointer dereference
+typeparam/issue48317.go	pass	
+typeparam/issue48318.go	pass	
 typeparam/issue48337a.go	skip	todo:rundir
 typeparam/issue48337b.go	skip	todo:rundir
 typeparam/issue48344.go	pass	
@@ -2540,7 +2540,7 @@ typeparam/issue48609.go	pass
 typeparam/issue48617.go	pass	
 typeparam/issue48645a.go	pass	
 typeparam/issue48645b.go	pass	
-typeparam/issue48711.go	skip	todo:errorcheck
+typeparam/issue48711.go	pass	
 typeparam/issue48716.go	skip	todo:rundir
 typeparam/issue48838.go	pass	
 typeparam/issue48962.go	skip	todo:errorcheck
@@ -2574,7 +2574,7 @@ typeparam/issue50177.go	pass
 typeparam/issue50193.go	pass	
 typeparam/issue50259.go	pass	
 typeparam/issue50264.go	pass	
-typeparam/issue50317.go	skip	todo:errorcheck
+typeparam/issue50317.go	pass	
 typeparam/issue50417.go	pass	
 typeparam/issue50417b.go	pass	
 typeparam/issue50419.go	pass	
@@ -2595,8 +2595,8 @@ typeparam/issue50841.go	skip	todo:compiledir
 typeparam/issue50993.go	skip	gc:flags -d=checkptr
 typeparam/issue51219.go	skip	todo:rundir
 typeparam/issue51219b.go	skip	todo:compiledir
-typeparam/issue51232.go	skip	todo:errorcheck
-typeparam/issue51233.go	skip	todo:errorcheck
+typeparam/issue51232.go	pass	
+typeparam/issue51233.go	pass	
 typeparam/issue51236.go	pass	
 typeparam/issue51245.go	pass	
 typeparam/issue51250a.go	skip	todo:rundir
@@ -2629,7 +2629,7 @@ typeparam/issue53762.go	pass
 typeparam/issue54135.go	pass	
 typeparam/issue54225.go	pass	
 typeparam/issue54302.go	skip	todo:rundir
-typeparam/issue54456.go	fail	exit: exit status 2 panic: bad type identity
+typeparam/issue54456.go	pass	
 typeparam/issue54497.go	skip	gc:diagnostics -m
 typeparam/issue54535.go	pass	
 typeparam/issue54537.go	pass	
@@ -2651,8 +2651,8 @@ typeparam/mdempsky/12.go	skip	todo:rundir
 typeparam/mdempsky/13.go	pass	
 typeparam/mdempsky/14.go	pass	
 typeparam/mdempsky/15.go	skip	gc:goexperiment fieldtrack
-typeparam/mdempsky/16.go	fail	output: mismatch
-typeparam/mdempsky/17.go	fail	c11: error: invalid initializer
+typeparam/mdempsky/16.go	pass	
+typeparam/mdempsky/17.go	pass	
 typeparam/mdempsky/18.go	pass	
 typeparam/mdempsky/19.go	pass	
 typeparam/mdempsky/2.go	pass	
@@ -2695,7 +2695,7 @@ typeparam/struct.go	pass
 typeparam/structinit.go	skip	todo:rundir
 typeparam/subdict.go	pass	
 typeparam/sum.go	pass	
-typeparam/tparam1.go	skip	todo:errorcheck
+typeparam/tparam1.go	pass	
 typeparam/typelist.go	pass	
 typeparam/typeswitch1.go	pass	
 typeparam/typeswitch2.go	pass	
@@ -2708,27 +2708,27 @@ typeparam/valimp.go	skip	todo:rundir
 typeparam/value.go	pass	
 typeswitch.go	pass	
 typeswitch1.go	pass	
-typeswitch2.go	skip	todo:errorcheck
-typeswitch2b.go	skip	todo:errorcheck
-typeswitch3.go	skip	todo:errorcheck
+typeswitch2.go	pass	
+typeswitch2b.go	pass	
+typeswitch3.go	pass	
 uintptrescapes.go	skip	todo:rundir
 uintptrescapes2.go	skip	gc:diagnostics -m
 uintptrescapes3.go	skip	gc:finalizers runtime.SetFinalizer
-uintptrkeepalive.go	skip	todo:errorcheck
-undef.go	skip	todo:errorcheck
+uintptrkeepalive.go	skip	gc:flags -std
+undef.go	pass	
 unsafe_slice_data.go	pass	
 unsafe_string.go	pass	
 unsafe_string_data.go	pass	
-unsafebuiltins.go	fail	c11: error: request for member 'ptr' in something not a structure or union
-used.go	skip	todo:errorcheck
+unsafebuiltins.go	pass	
+used.go	pass	
 utf.go	pass	
-varerr.go	skip	todo:errorcheck
+varerr.go	pass	
 varinit.go	pass	
 wasmexport.go	skip	upstream:build wasm
 wasmexport2.go	skip	upstream:build wasm
 wasmmemsize.go	skip	upstream:build wasm
-weak.go	skip	todo:errorcheck
-winbatch.go	fail	c11: error: implicit declaration of function 'File_Readdir_go_os_package'; did you mean 'File_Read_go_os_package'? [-Wimplici…
+weak.go	skip	gc:import weak
+winbatch.go	fail	c11: error: implicit declaration of function 'CreateTemp_go_os_package'; did you mean 'Create_go_os_package'? [-Wimplicit-fun…
 writebarrier.go	skip	gc:diagnostics -d=wb
 zerodivide.go	pass	
 zerosize.go	pass	

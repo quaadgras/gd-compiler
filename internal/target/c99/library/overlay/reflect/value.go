@@ -640,12 +640,123 @@ func (v Value) NumMethod() int {
 	return v.typ.NumMethod()
 }
 
-func (v Value) Method(i int) Value { panic("reflect.Value.Method is not supported by gd") }
-func (v Value) MethodByName(name string) Value {
-	panic("reflect.Value.MethodByName is not supported by gd")
+// Method returns a function value corresponding to v's i'th method: the method value,
+// with a copy of v as its receiver.
+func (v Value) Method(i int) Value {
+	if v.typ == nil {
+		panic(&ValueError{"reflect.Value.Method", Invalid})
+	}
+	if i < 0 || i >= v.typ.NumMethod() {
+		panic("reflect: Method index out of range")
+	}
+	if v.Kind() == Interface {
+		if v.IsNil() {
+			panic("reflect: Method on nil interface value")
+		}
+		return v.Elem().MethodByName(v.typ.Method(i).Name)
+	}
+	mt := methodType(v.typ.ptr(), i)
+	if mt == nil {
+		panic("reflect: gd has no type for method " + v.typ.Method(i).Name + " of " + v.typ.String())
+	}
+	recv := unsafeNew(v.typ.ptr())
+	memmove(recv, v.ptr, v.typ.Size())
+	fn := unsafeNew(mt)
+	methodValue(v.typ.ptr(), i, recv, fn)
+	return Value{(*rtype)(canonical(mt)), fn, v.flag & flagRO}
 }
-func (v Value) Call(in []Value) []Value      { panic("reflect.Value.Call is not supported by gd") }
-func (v Value) CallSlice(in []Value) []Value { panic("reflect.Value.CallSlice is not supported by gd") }
+
+// MethodByName returns a function value corresponding to the method of v with the given
+// name, or the zero Value if there is none.
+func (v Value) MethodByName(name string) Value {
+	if v.typ == nil {
+		panic(&ValueError{"reflect.Value.MethodByName", Invalid})
+	}
+	if m, ok := v.typ.MethodByName(name); ok {
+		return v.Method(m.Index)
+	}
+	return Value{}
+}
+
+// Call calls the function v with the input arguments in.
+func (v Value) Call(in []Value) []Value {
+	v.mustBe("Call", Func)
+	return v.call("Call", in, false)
+}
+
+// CallSlice calls the variadic function v with the input arguments in, assigning the
+// slice in[len(in)-1] to v's final variadic argument.
+func (v Value) CallSlice(in []Value) []Value {
+	v.mustBe("CallSlice", Func)
+	return v.call("CallSlice", in, true)
+}
+
+func (v Value) call(op string, in []Value, isSlice bool) []Value {
+	t := v.typ
+	if v.flag&flagRO != 0 {
+		panic("reflect: reflect.Value." + op + " using value obtained using unexported field")
+	}
+	if v.IsNil() {
+		panic("reflect: call of nil function")
+	}
+	n := t.NumIn()
+	if isSlice {
+		if !t.IsVariadic() {
+			panic("reflect: CallSlice of non-variadic function")
+		}
+		if len(in) != n {
+			panic("reflect: CallSlice with wrong argument count")
+		}
+	} else {
+		if t.IsVariadic() {
+			n--
+		}
+		if len(in) < n {
+			panic("reflect: Call with too few input arguments")
+		}
+		if !t.IsVariadic() && len(in) > n {
+			panic("reflect: Call with too many input arguments")
+		}
+	}
+	for _, x := range in {
+		if x.Kind() == Invalid {
+			panic("reflect: " + op + " using zero Value argument")
+		}
+	}
+	if !isSlice && t.IsVariadic() { // the extra arguments, in a slice.
+		m := len(in) - n
+		slice := MakeSlice(t.In(n), m, m)
+		elem := t.In(n).Elem()
+		for i := 0; i < m; i++ {
+			x := in[n+i]
+			if xt := x.Type(); !xt.AssignableTo(elem) {
+				panic("reflect: cannot use " + xt.String() + " as type " + elem.String() + " in " + op)
+			}
+			slice.Index(i).Set(x)
+		}
+		in = append(in[:n:n], slice)
+	}
+	args := make([]unsafe.Pointer, len(in)+1) // (never empty)
+	for i, x := range in {
+		pt := t.In(i).common()
+		if xt := x.Type(); !xt.AssignableTo(pt) {
+			panic("reflect: " + op + " using " + xt.String() + " as type " + pt.String())
+		}
+		arg := Value{pt, unsafeNew(pt.ptr()), flagAddr}
+		arg.Set(x)
+		args[i] = arg.ptr
+	}
+	nout := t.NumOut()
+	out := make([]Value, nout)
+	results := make([]unsafe.Pointer, nout+1)
+	for i := range out {
+		rt := t.Out(i).common()
+		out[i] = Value{rt, unsafeNew(rt.ptr()), 0}
+		results[i] = out[i].ptr
+	}
+	callFunc(t.ptr(), v.ptr, unsafe.Pointer(&args[0]), unsafe.Pointer(&results[0]))
+	return out
+}
 func (v Value) Send(x Value)                 { panic("reflect.Value.Send is not supported by gd") }
 func (v Value) Recv() (Value, bool)          { panic("reflect.Value.Recv is not supported by gd") }
 func (v Value) TrySend(x Value) bool         { panic("reflect.Value.TrySend is not supported by gd") }
@@ -840,8 +951,54 @@ func (v Value) SetMapIndex(key, elem Value) {
 func MakeMap(typ Type) Value                { panic("reflect.MakeMap is not supported by gd") }
 func MakeMapWithSize(typ Type, n int) Value { panic("reflect.MakeMapWithSize is not supported by gd") }
 func MakeChan(typ Type, buffer int) Value   { panic("reflect.MakeChan is not supported by gd") }
+// MakeFunc returns a new function of the given Type that wraps the function fn.
 func MakeFunc(typ Type, fn func(args []Value) (results []Value)) Value {
-	panic("reflect.MakeFunc is not supported by gd")
+	if typ.Kind() != Func {
+		panic("reflect: call of MakeFunc with non-Func type")
+	}
+	t := typ.common()
+	impl := &makeFuncImpl{t, fn}
+	f := unsafeNew(t.ptr())
+	makeFunc(t.ptr(), unsafe.Pointer(impl), f)
+	return Value{t, f, 0}
+}
+
+type makeFuncImpl struct {
+	typ *rtype
+	fn  func([]Value) []Value
+}
+
+func init() { registerMakeFunc() }
+
+// makeFuncCall is called by the functions that MakeFunc makes, with pointers to their
+// arguments and results.
+func makeFuncCall(env, args, results unsafe.Pointer, recoverable bool) {
+	impl := (*makeFuncImpl)(env)
+	t := impl.typ
+	in := make([]Value, t.NumIn())
+	for i := range in {
+		it := t.In(i).common()
+		arg := *(*unsafe.Pointer)(unsafe.Add(args, uintptr(i)*unsafe.Sizeof(args)))
+		p := unsafeNew(it.ptr())
+		memmove(p, arg, it.Size())
+		in[i] = Value{it, p, 0}
+	}
+	giveRecover(recoverable) // (reflection is transparent to recover)
+	out := impl.fn(in)
+	if len(out) != t.NumOut() {
+		panic("reflect: wrong return count from function created by MakeFunc")
+	}
+	for i, x := range out {
+		ot := t.Out(i).common()
+		if x.typ == nil {
+			panic("reflect: function created by MakeFunc using closure returned zero Value")
+		}
+		if xt := x.Type(); !xt.AssignableTo(ot) {
+			panic("reflect: function created by MakeFunc using closure returned wrong type: have " + xt.String() + " for " + ot.String())
+		}
+		res := *(*unsafe.Pointer)(unsafe.Add(results, uintptr(i)*unsafe.Sizeof(results)))
+		Value{ot, res, flagAddr}.Set(x)
+	}
 }
 
 // A MapIter is an iterator for ranging over a map.

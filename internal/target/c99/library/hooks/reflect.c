@@ -53,6 +53,7 @@ go_pt S(pointerTo)(go_pt t) {
     char* name = go_new((go_ii)n + 2, NULL).ptr;
     name[0] = '*';
     memcpy(name + 1, elem, n + 1);
+    if (T(t)->ptrto) return (go_pt){ (void*)go_rtype_find(name, go_kind_pointer, T(t)->ptrto) };
     const go_type* found = go_rtype_find(name, go_kind_pointer, NULL);
     if (found) return (go_pt){ (void*)found };
     go_type* p = go_new(sizeof(go_type), NULL).ptr;
@@ -113,6 +114,44 @@ go_ss S(methodName)(go_pt t, go_ii i) {
     }
     go_panic_error("reflect: Method index out of range");
 }
+
+static const go_method* go_rmethod(go_pt t, go_ii i) {
+    const go_type* typ = T(t);
+    for (go_ii j = 0; j < typ->nmethods; j++) {
+        if (go_rexported(typ->methods[j].name) && i-- == 0) return &typ->methods[j];
+    }
+    go_panic_error("reflect: Method index out of range");
+}
+go_pt S(methodType)(go_pt t, go_ii i) { return (go_pt){ (void*)go_rmethod(t, i)->mtype }; }
+go_pt S(methodFuncType)(go_pt t, go_ii i) { return (go_pt){ (void*)go_rmethod(t, i)->ftype }; }
+// methodFunc stores the method expression of the i'th method of t.
+void S(methodFunc)(go_pt t, go_ii i, go_pt dst) { *(go_fn*)dst.ptr = (go_fn){ go_rmethod(t, i)->func, NULL }; }
+// methodValue stores the method value of the i'th method of t, of the receiver at recv.
+void S(methodValue)(go_pt t, go_ii i, go_pt recv, go_pt dst) {
+    *(go_fn*)dst.ptr = (go_fn){ go_rmethod(t, i)->fn, recv.ptr };
+}
+
+// Functions: their parameters and results, calls (through the call function of the type)
+// and making them (MakeFunc's functions call go_makefunc_call, with their environment).
+go_ii S(typeNumIn)(go_pt t) { return T(t)->data.func.nin; }
+go_ii S(typeNumOut)(go_pt t) { return T(t)->data.func.nout; }
+go_pt S(typeIn)(go_pt t, go_ii i) { return (go_pt){ (void*)T(t)->data.func.in[i] }; }
+go_pt S(typeOut)(go_pt t, go_ii i) { return (go_pt){ (void*)T(t)->data.func.out[i] }; }
+go_tf S(typeVariadic)(go_pt t) { return T(t)->data.func.variadic; }
+void S(callFunc)(go_pt t, go_pt fn, go_pt args, go_pt results) {
+    if (!T(t)->data.func.call) go_panic_error("reflect: call of a function of type %s, which gd can't call", T(t)->name);
+    T(t)->data.func.call(*(go_fn*)fn.ptr, args.ptr, results.ptr);
+}
+void S(makeFunc)(go_pt t, go_pt env, go_pt dst) {
+    if (!T(t)->data.func.makefunc) go_panic_error("reflect.MakeFunc: gd can't make functions of type %s", T(t)->name);
+    *(go_fn*)dst.ptr = (go_fn){ T(t)->data.func.makefunc, env.ptr };
+}
+static void go_reflect_makefunc(void* env, void** args, void** results) {
+    go_tf token = go_take_recover(); // (for the function that MakeFunc wraps, if it is a deferred call)
+    makeFuncCall_go_reflect_package((go_pt){ env }, (go_pt){ args }, (go_pt){ results }, token);
+}
+void S(giveRecover)(go_tf token) { go_give_recover(token); }
+void S(registerMakeFunc)(void) { go_makefunc_call = go_reflect_makefunc; }
 
 go_tf S(typeImplements)(go_pt t, go_pt iface) {
     const go_type* i = T(iface);

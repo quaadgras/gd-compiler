@@ -432,6 +432,7 @@ static go_thread_local struct {
     go_frame* top;      // innermost frame with deferred calls.
     go_panicking* panic; // the current panic, if any.
     go_tf token;        // set while a deferred call is starting, see go_take_recover.
+    go_tf unwinding;    // set while a deferred call is starting, when called by a panic.
 } go_g;
 
 go_frame* go_frame_push(void) {
@@ -455,10 +456,13 @@ static void go_run_defers(go_frame* f) {
         go_deferred* d = f->defers;
         f->defers = d->next;
         go_g.token = true;
+        go_g.unwinding = false;
         ((void(*)(void*))d->fn.ptr)(d->fn.env);
         go_g.token = false;
     }
 }
+
+go_tf go_unwinding(void) { return go_g.unwinding; }
 
 void go_frame_return(go_frame* f) {
     go_run_defers(f);
@@ -472,6 +476,8 @@ go_tf go_take_recover(void) {
     go_g.token = false;
     return token;
 }
+
+void go_give_recover(go_tf token) { go_g.token = token; }
 
 go_vv go_recover(go_tf can_recover) {
     go_panicking* p = go_g.panic;
@@ -527,13 +533,25 @@ static go_tf go_started_in(go_frame* frame, go_frame* f) {
 }
 
 void go_frame_unwind(go_frame* f) {
-    go_run_defers(f);
-    go_g.top = f->prev;
-    if (!go_g.panic->recovered) go_panic_continue();
+    while (f->defers) { // (as go_run_defers, until one recovers)
+        go_deferred* d = f->defers;
+        f->defers = d->next;
+        go_g.token = true;
+        go_g.unwinding = true;
+        ((void(*)(void*))d->fn.ptr)(d->fn.env);
+        go_g.token = false;
+        if (go_g.panic->recovered) break;
+    }
+    if (!go_g.panic->recovered) {
+        go_g.top = f->prev;
+        go_panic_continue();
+    }
     // f's function returns normally: the recovered panic is over, and so are those that
-    // were started (by deferred calls) in f, or in the functions it called.
+    // were started (by deferred calls) in f, or in the functions it called. Its other
+    // deferred calls run as they do when it returns.
     go_g.panic = go_g.panic->prev;
     while (go_g.panic && go_started_in(go_g.panic->frame, f)) go_g.panic = go_g.panic->prev;
+    go_frame_return(f);
 }
 
 // panic(nil) panics with a *runtime.PanicNilError (since Go 1.21).

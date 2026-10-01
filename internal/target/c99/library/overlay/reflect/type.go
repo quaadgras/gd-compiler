@@ -27,6 +27,19 @@ func fieldOffset(t unsafe.Pointer, i int) uintptr
 func fieldExported(t unsafe.Pointer, i int) bool
 func fieldEmbedded(t unsafe.Pointer, i int) bool
 func fieldTag(t unsafe.Pointer, i int) string
+func methodType(t unsafe.Pointer, i int) unsafe.Pointer // (nil for the methods of interfaces)
+func methodValue(t unsafe.Pointer, i int, recv, dst unsafe.Pointer)
+func methodFuncType(t unsafe.Pointer, i int) unsafe.Pointer
+func methodFunc(t unsafe.Pointer, i int, dst unsafe.Pointer)
+func typeNumIn(t unsafe.Pointer) int
+func typeNumOut(t unsafe.Pointer) int
+func typeIn(t unsafe.Pointer, i int) unsafe.Pointer
+func typeOut(t unsafe.Pointer, i int) unsafe.Pointer
+func typeVariadic(t unsafe.Pointer) bool
+func callFunc(t, fn, args, results unsafe.Pointer) // calls *fn, args and results point to pointers.
+func makeFunc(t, env, dst unsafe.Pointer)           // *dst = a function of type t, that calls makeFuncCall(env, ...).
+func registerMakeFunc()
+func giveRecover(token bool) // lets the next function called recover, if token (see makeFuncCall)
 func fieldPkgPath(t unsafe.Pointer, i int) string
 func typePkgPath(t unsafe.Pointer) string
 func typeNumMethod(t unsafe.Pointer) int
@@ -184,7 +197,7 @@ func (t *rtype) Size() uintptr    { return typeSize(t.ptr()) }
 func (t *rtype) Align() int       { return t.FieldAlign() }
 func (t *rtype) NumMethod() int   { return typeNumMethod(t.ptr()) }
 func (t *rtype) PkgPath() string  { return typePkgPath(t.ptr()) }
-func (t *rtype) IsVariadic() bool { panic("reflect: IsVariadic is not supported by gd") }
+func (t *rtype) IsVariadic() bool { t.mustBeFunc("IsVariadic"); return typeVariadic(t.ptr()) }
 func (t *rtype) CanSeq() bool     { return false }
 func (t *rtype) CanSeq2() bool    { return false }
 func (t *rtype) Comparable() bool { return typeComparable(t.ptr()) }
@@ -372,7 +385,17 @@ func (t *rtype) Method(i int) Method {
 	if i < 0 || i >= t.NumMethod() {
 		panic("reflect: Method index out of range")
 	}
-	return Method{Name: methodName(t.ptr(), i), Index: i}
+	m := Method{Name: methodName(t.ptr(), i), Index: i}
+	if t.Kind() == Interface {
+		return m // (gd records the signatures of the methods of interfaces as strings)
+	}
+	if ft := methodFuncType(t.ptr(), i); ft != nil { // (the method expression, with the receiver first)
+		m.Type = toType(ft)
+		fn := unsafeNew(ft)
+		methodFunc(t.ptr(), i, fn)
+		m.Func = Value{(*rtype)(canonical(ft)), fn, 0}
+	}
+	return m
 }
 
 func (t *rtype) MethodByName(name string) (Method, bool) {
@@ -418,10 +441,30 @@ func (t *rtype) ConvertibleTo(u Type) bool {
 	return false
 }
 
-func (t *rtype) In(i int) Type  { panic("reflect: In is not supported by gd") }
-func (t *rtype) Out(i int) Type { panic("reflect: Out is not supported by gd") }
-func (t *rtype) NumIn() int     { panic("reflect: NumIn is not supported by gd") }
-func (t *rtype) NumOut() int    { panic("reflect: NumOut is not supported by gd") }
+func (t *rtype) mustBeFunc(method string) {
+	if t.Kind() != Func {
+		panic("reflect: " + method + " of non-func type " + t.String())
+	}
+}
+
+func (t *rtype) In(i int) Type {
+	t.mustBeFunc("In")
+	if i < 0 || i >= t.NumIn() {
+		panic("reflect: Function index out of range")
+	}
+	return toType(typeIn(t.ptr(), i))
+}
+
+func (t *rtype) Out(i int) Type {
+	t.mustBeFunc("Out")
+	if i < 0 || i >= t.NumOut() {
+		panic("reflect: Function index out of range")
+	}
+	return toType(typeOut(t.ptr(), i))
+}
+
+func (t *rtype) NumIn() int  { t.mustBeFunc("NumIn"); return typeNumIn(t.ptr()) }
+func (t *rtype) NumOut() int { t.mustBeFunc("NumOut"); return typeNumOut(t.ptr()) }
 
 func (t *rtype) OverflowComplex(x complex128) bool {
 	k := t.Kind()
