@@ -18,7 +18,7 @@ abi/f_ret_z_not.go	pass
 abi/fibish.go	pass	
 abi/fibish_closure.go	pass	
 abi/fuzz_trailing_zero_field.go	pass	
-abi/idata.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
+abi/idata.go	pass	
 abi/leaf.go	pass	
 abi/leaf2.go	pass	
 abi/many_int_input.go	pass	
@@ -62,7 +62,7 @@ assign1.go	skip	todo:errorcheck
 atomicload.go	pass	
 bigalg.go	pass	
 bigmap.go	pass	
-blank.go	fail	c11: error: '__go_main_package' redeclared as different kind of symbol
+blank.go	pass	
 blank1.go	skip	todo:errorcheck
 bloop.go	skip	gc:diagnostics -m=2
 bom.go	skip	todo:runoutput
@@ -86,7 +86,7 @@ chan/select7.go	pass
 chan/select8.go	pass	
 chan/sendstmt.go	pass	
 chan/sieve1.go	pass	
-chan/sieve2.go	fail	c11: error: conflicting types for 'primes'; have 'go_ch' {aka 'void *'}
+chan/sieve2.go	pass	
 chan/zerosize.go	pass	
 chancap.go	pass	
 chanlinear.go	pass	
@@ -198,7 +198,7 @@ codegen/writebarrier.go	skip	gc:asmcheck
 codegen/zerosize.go	skip	gc:asmcheck
 complit.go	pass	
 complit1.go	skip	todo:errorcheck
-complit2.go	fail	c11: error: 'A_go_main_package' {aka 'go_struct_e55c72d3b264b8e5'} has no member named 'b'
+complit2.go	pass	
 compos.go	pass	
 const.go	pass	
 const1.go	skip	todo:errorcheck
@@ -366,7 +366,7 @@ fixedbugs/bug093.go	pass
 fixedbugs/bug094.go	pass	
 fixedbugs/bug096.go	pass	
 fixedbugs/bug097.go	pass	
-fixedbugs/bug098.go	fail	c11: error: lvalue required as unary '&' operand
+fixedbugs/bug098.go	pass	
 fixedbugs/bug099.go	pass	
 fixedbugs/bug101.go	pass	
 fixedbugs/bug102.go	pass	
@@ -468,7 +468,7 @@ fixedbugs/bug202.go	pass
 fixedbugs/bug203.go	pass	
 fixedbugs/bug204.go	pass	
 fixedbugs/bug205.go	skip	todo:errorcheck
-fixedbugs/bug206.go	fail	c11: error: incompatible type for argument 1 of 'go_if_to_vv'
+fixedbugs/bug206.go	fail	c11: error: 'go_env_go_yield_FileSet_Write_30' undeclared (first use in this function)
 fixedbugs/bug207.go	pass	
 fixedbugs/bug208.go	skip	todo:errorcheck
 fixedbugs/bug209.go	skip	todo:errorcheck
@@ -633,7 +633,7 @@ fixedbugs/bug376.go	skip	todo:errorcheck
 fixedbugs/bug377.go	skip	todo:compiledir
 fixedbugs/bug378.go	pass	
 fixedbugs/bug379.go	skip	todo:errorcheck
-fixedbugs/bug380.go	fail	c11: error: lvalue required as unary '&' operand
+fixedbugs/bug380.go	pass	
 fixedbugs/bug381.go	skip	todo:errorcheck
 fixedbugs/bug382.go	skip	todo:compiledir
 fixedbugs/bug383.go	skip	todo:errorcheck
@@ -672,7 +672,7 @@ fixedbugs/bug416.go	skip	todo:errorcheck
 fixedbugs/bug417.go	pass	
 fixedbugs/bug418.go	skip	todo:errorcheck
 fixedbugs/bug419.go	pass	
-fixedbugs/bug420.go	fail	c11: error: '_' undeclared (first use in this function)
+fixedbugs/bug420.go	pass	
 fixedbugs/bug421.go	skip	todo:errorcheck
 fixedbugs/bug422.go	pass	
 fixedbugs/bug423.go	pass	
@@ -849,7 +849,7 @@ fixedbugs/issue12677.go	skip	todo:compiledir
 fixedbugs/issue12686.go	pass	
 fixedbugs/issue12944.go	skip	todo:errorcheck
 fixedbugs/issue1304.go	pass	
-fixedbugs/issue13160.go	fail	c11: error: assignment to 'go_ii' {aka 'long int'} from 'go_ii *' {aka 'long int *'} makes integer from pointer without a cas…
+fixedbugs/issue13160.go	fail	exit: exit status 2 panic: bad pointer read 0x?!
 fixedbugs/issue13162.go	pass	
 fixedbugs/issue13169.go	pass	
 fixedbugs/issue13171.go	pass	
@@ -1408,7 +1408,7 @@ fixedbugs/issue38356.go	pass
 fixedbugs/issue38359.go	pass	
 fixedbugs/issue38496.go	pass	
 fixedbugs/issue38690.go	pass	
-fixedbugs/issue38698.go	fail	c11: error: expected ';' before '}' token
+fixedbugs/issue38698.go	pass	
 fixedbugs/issue38745.go	skip	todo:errorcheck
 fixedbugs/issue38746.go	pass	
 fixedbugs/issue38905.go	pass	
@@ -1497,7 +1497,7 @@ fixedbugs/issue43701.go	pass
 fixedbugs/issue43762.go	skip	todo:errorcheck
 fixedbugs/issue43835.go	fail	exit: exit status 2 panic: FAIL
 fixedbugs/issue43908.go	pass	
-fixedbugs/issue43942.go	fail	exit: exit status 1 2026/10/01 13:49:16 want 5, have <nil>
+fixedbugs/issue43942.go	fail	exit: exit status 1 2026/10/01 14:21:39 want 5, have <nil>
 fixedbugs/issue43962.go	skip	todo:errorcheck
 fixedbugs/issue4396a.go	pass	
 fixedbugs/issue4396b.go	pass	
@@ -1812,7 +1812,7 @@ fixedbugs/issue61908.go	pass
 fixedbugs/issue61992.go	pass	
 fixedbugs/issue62203.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
 fixedbugs/issue62313.go	pass	
-fixedbugs/issue62360.go	fail	cc: filcc: error: linker command failed with exit code 1 (use -v to see invocation)
+fixedbugs/issue62360.go	pass	
 fixedbugs/issue62469.go	pass	
 fixedbugs/issue6247.go	pass	
 fixedbugs/issue62498.go	skip	todo:rundir
@@ -1916,7 +1916,7 @@ fixedbugs/issue6964.go	skip	todo:errorcheck
 fixedbugs/issue6977.go	skip	todo:errorcheck
 fixedbugs/issue69825.go	skip	gc:flags -d=libfuzzer
 fixedbugs/issue70156.go	pass	
-fixedbugs/issue70175.go	fail	c11: error: duplicate label 'go_label__'
+fixedbugs/issue70175.go	pass	
 fixedbugs/issue70189.go	pass	
 fixedbugs/issue7023.go	skip	todo:compiledir
 fixedbugs/issue7044.go	pass	
@@ -2016,7 +2016,7 @@ fixedbugs/issue7794.go	pass
 fixedbugs/issue78016.go	pass	
 fixedbugs/issue78028.go	pass	
 fixedbugs/issue78081.go	pass	
-fixedbugs/issue78262.go	fail	c11: error: 'A_go_main_package' {aka 'go_struct_e55c72d3b264b8e5'} has no member named 'b'
+fixedbugs/issue78262.go	pass	
 fixedbugs/issue78295.go	pass	
 fixedbugs/issue78297.go	pass	
 fixedbugs/issue78303_1.go	pass	
@@ -2254,7 +2254,7 @@ ken/robfunc.go	pass
 ken/shift.go	pass	
 ken/simparray.go	pass	
 ken/simpbool.go	pass	
-ken/simpconv.go	fail	c11: error: 'short_go_main_package' undeclared here (not in a function); did you mean 'short__go_main_package'?
+ken/simpconv.go	pass	
 ken/simpfun.go	pass	
 ken/simpswitch.go	pass	
 ken/simpvar.go	pass	
@@ -2387,7 +2387,7 @@ strength.go	skip	todo:runoutput
 string_lit.go	pass	
 stringrange.go	pass	
 struct0.go	pass	
-switch.go	fail	c11: error: used struct type value where scalar is required
+switch.go	pass	
 switch2.go	skip	todo:errorcheck
 switch3.go	skip	todo:errorcheck
 switch4.go	skip	todo:errorcheck
@@ -2601,7 +2601,7 @@ typeparam/issue51236.go	pass
 typeparam/issue51245.go	pass	
 typeparam/issue51250a.go	skip	todo:rundir
 typeparam/issue51303.go	pass	
-typeparam/issue51355.go	fail	c11: error: incompatible types when assigning to type 'go_ss' from type 'go_ss *'
+typeparam/issue51355.go	pass	
 typeparam/issue51367.go	skip	todo:rundir
 typeparam/issue51423.go	skip	todo:compiledir
 typeparam/issue51521.go	fail	gd: panic: type parameter T was not substituted
@@ -2670,7 +2670,7 @@ typeparam/min.go	pass
 typeparam/mincheck.go	skip	todo:errorcheck
 typeparam/minimp.go	skip	todo:rundir
 typeparam/mutualimp.go	skip	todo:compiledir
-typeparam/nested.go	fail	c11: error: redefinition of 'go_type_Int_4181265_go_main_package'
+typeparam/nested.go	fail	output: mismatch
 typeparam/ordered.go	pass	
 typeparam/orderedmap.go	skip	gc:finalizers runtime.SetFinalizer
 typeparam/orderedmapsimp.go	skip	todo:rundir
@@ -2723,7 +2723,7 @@ unsafebuiltins.go	fail	c11: error: request for member 'ptr' in something not a s
 used.go	skip	todo:errorcheck
 utf.go	pass	
 varerr.go	skip	todo:errorcheck
-varinit.go	fail	exit: exit status 2 panic: fail
+varinit.go	pass	
 wasmexport.go	skip	upstream:build wasm
 wasmexport2.go	skip	upstream:build wasm
 wasmmemsize.go	skip	upstream:build wasm

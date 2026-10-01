@@ -225,6 +225,10 @@ func (c99 Target) assignment(stmt source.StatementAssignment) error {
 		return nil
 	}
 	for i, variable := range stmt.Variables {
+		for xyz.ValueOf(variable) == source.Expressions.Parenthesized { // (_) = x
+			variable = source.Expressions.Parenthesized.Get(variable).X
+			stmt.Variables[i] = variable
+		}
 		if op := stmt.Token.Value; op >= token.ADD_ASSIGN && op <= token.AND_NOT_ASSIGN && !isAssignable(variable) {
 			// *p op= v and m[k] op= v are *p = *p op v and m[k] = m[k] op v.
 			return c99.assignment(source.StatementAssignment{Location: stmt.Location,

@@ -112,6 +112,10 @@ func (c99 Target) TypeDefinition(spec source.TypeDefinition) error {
 		}
 		name = c99.typeCName(obj.Type().(*types.Named)) + "_go_" + c99.CurrentPackage + "_package"
 		out, static = c99.Generic, "static "
+		if _, done := c99.Symbols["type "+name]; done {
+			return nil // (in another instance of the same generic function)
+		}
+		c99.Symbols["type "+name] = struct{}{}
 	}
 	ctype := c99.TypeOf(spec.Type.TypeAndValue().Type)
 	if iface, ok := spec.Type.TypeAndValue().Type.Underlying().(*types.Interface); ok && iface.NumMethods() > 0 {
@@ -275,13 +279,33 @@ func (c99 Target) VariableDefinition(spec source.VariableDefinition) error {
 			temp := c99.Closures.tuples[source.LocationOf(tupleValue).Node]
 			fmt.Fprintf(c99, "%s %s = %s; ", c99.TupleOf(ts), temp.name, value)
 		}
-		if name.String == "_" {
+		if name.String == "_" && !hasValue {
+			// (nothing: var _ T)
+		} else if name.String == "_" {
 			fmt.Fprintf(c99, "go_ignore(")
 			if err := value(); err != nil {
 				return err
 			}
 			fmt.Fprintf(c99, ")")
 		} else {
+			if !spec.Global && hasValue && !c99.Header { // x := x, of an outer x: in C, the new x is in scope.
+				var buf strings.Builder
+				writer := c99.Writer
+				c99.Writer = &buf
+				err := value()
+				c99.Writer = writer
+				if err != nil {
+					return err
+				}
+				rendered := buf.String()
+				if mentions(rendered, name.String) {
+					temp := fmt.Sprintf("go_init_%d", c99.Closures.count)
+					c99.Closures.count++
+					fmt.Fprintf(c99, "%s %s = %s; ", c99.TypeOf(rtype), temp, rendered)
+					rendered = temp
+				}
+				value = func() error { _, err := fmt.Fprint(c99, rendered); return err }
+			}
 			if spec.Global {
 				if err := c99.definedVariable(true, name); err != nil {
 					return err
@@ -375,22 +399,19 @@ func (c99 Target) StaticInitializer(expr source.Expression, t types.Type) (strin
 		return "{{" + strings.Join(elems, ", ") + "}}", true
 	case *types.Struct:
 		for i, elem := range data.Elements {
-			field := typ.Field(i)
+			path, ftype := []string{fieldName(typ.Field(i), i)}, typ.Field(i).Type()
 			if xyz.ValueOf(elem) == source.Expressions.KeyValue {
 				pair := source.Expressions.KeyValue.Get(elem)
-				name := c99.toString(pair.Key)
-				for f := range typ.Fields() {
-					if f.Name() == name {
-						field = f
-					}
+				if path, ftype = promotedField(typ, c99.toString(pair.Key)); ftype == nil {
+					return "", false
 				}
 				elem = pair.Value
 			}
-			value, ok := c99.StaticInitializer(elem, field.Type())
+			value, ok := c99.StaticInitializer(elem, ftype)
 			if !ok {
 				return "", false
 			}
-			elems = append(elems, "."+fieldName(field, fieldIndex(typ, field))+" = "+value)
+			elems = append(elems, "."+strings.Join(path, ".")+" = "+value)
 		}
 		if len(elems) == 0 {
 			elems = append(elems, "0")

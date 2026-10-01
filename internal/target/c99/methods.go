@@ -284,7 +284,7 @@ func (c99 Target) methodValue(sel source.Selection, fn source.DefinedFunction) e
 	if pointerReceiver(xtype, obj) {
 		ctype = "go_pt"
 	}
-	box := "go_box_" + identifier.ReplaceAllString(ctype, "_")
+	box := "go_boxed_" + identifier.ReplaceAllString(ctype, "_")
 	c99.Requires(box, c99.Generic, func(w io.Writer) error {
 		fmt.Fprintf(w, "static inline void* %s(%s v) { return go_new(sizeof v, &v).ptr; }\n", box, ctype)
 		return nil

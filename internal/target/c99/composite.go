@@ -119,13 +119,11 @@ func (c99 Target) DataComposite(data source.DataComposite) error {
 			case source.Expressions.KeyValue:
 				pair := source.Expressions.KeyValue.Get(elem)
 				name := c99.toString(pair.Key)
-				var ftype types.Type
-				for f := range typ.Fields() {
-					if f.Name() == name {
-						ftype = f.Type()
-					}
+				path, ftype := promotedField(typ, name) // (or a field promoted from an embedded struct)
+				if ftype == nil {
+					return data.Errorf("unsupported field %s", name)
 				}
-				fmt.Fprintf(c99, ".%s=", name)
+				fmt.Fprintf(c99, ".%s=", strings.Join(path, "."))
 				if err := c99.ExpressionAs(pair.Value, ftype); err != nil {
 					return err
 				}
@@ -142,4 +140,31 @@ func (c99 Target) DataComposite(data source.DataComposite) error {
 	default:
 		return data.Errorf("unexpected composite type: " + typ.String())
 	}
+}
+
+// promotedField returns the path (of C names) to the field of the struct type typ with the
+// C name name, and its type, the shallowest (as Go finds them) through embedded structs.
+func promotedField(typ *types.Struct, name string) ([]string, types.Type) {
+	type candidate struct {
+		st   *types.Struct
+		path []string
+	}
+	level := []candidate{{typ, nil}}
+	for len(level) > 0 {
+		var next []candidate
+		for _, c := range level {
+			for i := range c.st.NumFields() {
+				f := c.st.Field(i)
+				path := append(append([]string{}, c.path...), fieldName(f, i))
+				if fieldName(f, i) == name {
+					return path, f.Type()
+				}
+				if st, ok := f.Type().Underlying().(*types.Struct); ok && f.Anonymous() {
+					next = append(next, candidate{st, path})
+				}
+			}
+		}
+		level = next
+	}
+	return nil, nil
 }

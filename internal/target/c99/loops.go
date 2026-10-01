@@ -12,6 +12,9 @@ import (
 )
 
 func (c99 Target) StatementFor(stmt source.StatementFor) error {
+	if stmt.Label == "_" {
+		stmt.Label = ""
+	}
 	if stmt.Label != "" {
 		fmt.Fprintf(c99, "go_label_%s:; ", stmt.Label)
 		defer fmt.Fprintf(c99, " go_break_%s:;", stmt.Label)
@@ -149,6 +152,9 @@ func (c99 Target) forLoop(stmt source.StatementFor) error {
 }
 
 func (c99 Target) StatementRange(stmt source.StatementRange) error {
+	if stmt.Label == "_" {
+		stmt.Label = ""
+	}
 	if err := c99.rangeTargets(&stmt); err != nil {
 		return err
 	}
@@ -300,10 +306,37 @@ func (c99 Target) rangeString(stmt source.StatementRange) error {
 // declare returns a C declaration of the variable name, of type t, with the value (a C
 // expression), boxed when captured by a closure.
 func (c99 Target) declare(name source.DefinedVariable, t types.Type, value string) string {
-	if !c99.StackAllocated(name) {
-		return fmt.Sprintf("%s* %s = go_new(sizeof(%[1]s), NULL).ptr; *%[2]s = %s;", c99.TypeOf(t), name.String, value)
+	prefix := ""
+	if mentions(value, name.String) { // (x := x, of an outer x: in C, the new x is in scope)
+		temp := fmt.Sprintf("go_init_%d", c99.Closures.count)
+		c99.Closures.count++
+		prefix = fmt.Sprintf("%s %s = %s; ", c99.TypeOf(t), temp, value)
+		value = temp
 	}
-	return fmt.Sprintf("%s %s = %s;", c99.TypeOf(t), name.String, value)
+	if !c99.StackAllocated(name) {
+		return prefix + fmt.Sprintf("%s* %s = go_new(sizeof(%[1]s), NULL).ptr; *%[2]s = %s;", c99.TypeOf(t), name.String, value)
+	}
+	return prefix + fmt.Sprintf("%s %s = %s;", c99.TypeOf(t), name.String, value)
+}
+
+// mentions reports whether the C expression expr has the identifier name.
+func mentions(expr, name string) bool {
+	for i := strings.Index(expr, name); i >= 0; {
+		before, after := i == 0 || !isIdentChar(expr[i-1]), i+len(name) == len(expr) || !isIdentChar(expr[i+len(name)])
+		if before && after {
+			return true
+		}
+		j := strings.Index(expr[i+1:], name)
+		if j < 0 {
+			break
+		}
+		i += 1 + j
+	}
+	return false
+}
+
+func isIdentChar(c byte) bool {
+	return c == '_' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9'
 }
 
 // loopBody writes the body of a loop: continue goes to the end of it (for a labeled loop,
@@ -331,6 +364,9 @@ func (c99 Target) loopBody(label string, body []source.Statement) error {
 // statement after a label may be a declaration in Go, but not C11, so the label is on an
 // empty statement).
 func (c99 Target) StatementLabel(stmt source.StatementLabel) error {
+	if stmt.Label.String == "_" { // (blank labels can't be used, and may be repeated)
+		return c99.Statement(stmt.Statement)
+	}
 	fmt.Fprintf(c99, "go_label_%s:;", stmt.Label.String)
 	if err := c99.Statement(stmt.Statement); err != nil {
 		return err

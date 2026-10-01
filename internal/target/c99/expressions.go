@@ -495,6 +495,11 @@ func (c99 Target) ExpressionUnary(e source.ExpressionUnary) error {
 	switch e.Operation.Value {
 	case token.AND:
 		if xyz.ValueOf(e.X) == source.Expressions.Composite { // &T{...} is allocated.
+			switch e.X.TypeAndValue().Type.Underlying().(type) {
+			case *types.Map, *types.Slice: // (not compound literals, so boxed)
+				fmt.Fprintf(c99, "((go_pt){ %s(%s) })", c99.BoxOf(e.X.TypeAndValue().Type), c99.toString(e.X))
+				return nil
+			}
 			fmt.Fprintf(c99, "go_new(sizeof(%s), &", c99.TypeOf(e.X.TypeAndValue().Type))
 			if err := c99.Expression(e.X); err != nil {
 				return err

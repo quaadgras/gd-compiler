@@ -155,12 +155,12 @@ func (c99 Target) instanceSuffix(args []types.Type) string {
 // type arguments of instances of generic types.
 func (c99 Target) typeCName(named *types.Named) string {
 	if obj := named.Obj(); obj.Pkg() != nil && obj.Parent() != nil && obj.Parent() != obj.Pkg().Scope() {
-		return fmt.Sprintf("%s_%d", obj.Name(), obj.Pos()) // a local type, defined in a function.
+		return fmt.Sprintf("%s_%d", source.CIdent(obj.Name()), obj.Pos()) // a local type, defined in a function.
 	}
 	if named.TypeArgs().Len() == 0 {
-		return named.Obj().Name()
+		return source.CIdent(named.Obj().Name())
 	}
-	return named.Obj().Name() + c99.instanceSuffix(slicesOf(named.TypeArgs()))
+	return source.CIdent(named.Obj().Name()) + c99.instanceSuffix(slicesOf(named.TypeArgs()))
 }
 
 func slicesOf(list *types.TypeList) []types.Type {

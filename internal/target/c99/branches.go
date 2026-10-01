@@ -2,6 +2,8 @@ package c99
 
 import (
 	"fmt"
+	"go/ast"
+	"go/constant"
 	"go/token"
 	"go/types"
 	"strings"
@@ -98,6 +100,21 @@ func (c99 Target) StatementSwitch(stmt source.StatementSwitch) error {
 					if err := c99.ExpressionBinary(source.ExpressionBinary{
 						Typed:     source.Typed{TV: types.TypeAndValue{Type: types.Typ[types.Bool]}},
 						X:         tag,
+						Operation: source.WithLocation[token.Token]{Value: token.EQL},
+						Y:         expr,
+					}); err != nil {
+						return err
+					}
+				} else if _, isBool := expr.TypeAndValue().Type.Underlying().(*types.Basic); !isBool {
+					// switch { case x: }, where x is an interface: true == x.
+					truth := source.Expressions.DefinedVariable.New(source.DefinedVariable{
+						Typed:    source.Typed{TV: types.TypeAndValue{Type: types.Typ[types.Bool], Value: constant.MakeBool(true)}},
+						Location: source.Location{Node: &ast.Ident{Name: "true"}},
+						String:   "true",
+					})
+					if err := c99.ExpressionBinary(source.ExpressionBinary{
+						Typed:     source.Typed{TV: types.TypeAndValue{Type: types.Typ[types.Bool]}},
+						X:         truth,
 						Operation: source.WithLocation[token.Token]{Value: token.EQL},
 						Y:         expr,
 					}); err != nil {

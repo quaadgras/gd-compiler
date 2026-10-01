@@ -10,6 +10,9 @@ import (
 )
 
 func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
+	if decl.Name.String == "_" && !decl.IsClosure {
+		return nil // (blank functions can't be called)
+	}
 	fmt.Fprintf(c99, "\n%s", strings.Repeat("\t", c99.Tabs))
 	instance := c99.Instance
 	c99.Instance = ""
@@ -220,10 +223,16 @@ func (c99 Target) FunctionDefinition(decl source.FunctionDefinition) error {
 		fmt.Fprintf(c99, "%sgo_frame* go_fr = go_frame_push();", indent)
 		fmt.Fprintf(c99, "%sif (setjmp(go_fr->jb)) { go_frame_unwind(go_fr); return%s; }", indent, c99.returnValues())
 	}
+	if closure { // (a scope of its own, as it may redeclare the variables it captures)
+		fmt.Fprintf(c99, "%s{", indent)
+	}
 	for _, stmt := range body.Statements {
 		if err := c99.Statement(stmt); err != nil {
 			return err
 		}
+	}
+	if closure {
+		fmt.Fprintf(c99, "%s}", indent)
 	}
 	if c99.Frame && len(c99.Results) == 0 {
 		fmt.Fprintf(c99, "%sgo_frame_return(go_fr);", indent)
