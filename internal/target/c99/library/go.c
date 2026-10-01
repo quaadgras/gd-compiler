@@ -88,11 +88,13 @@ typedef struct {
     go_hash key_hash;
     go_same key_same;
     go_ii clears; // (entries that iterators have yet to produce are gone)
+    const go_type* key_type; // (of maps made by reflection, without key_hash and key_same)
     char staging[];
 } map_metadata;
 
 int map_compare(const void *a, const void *b, void *udata) {
     map_metadata *meta = (map_metadata*)udata;
+    if (!meta->key_same) return go_type_equal(meta->key_type, a, b) ? 0 : 1;
     if (meta->key_same(a, b)) {
         return 0;
     }
@@ -101,6 +103,7 @@ int map_compare(const void *a, const void *b, void *udata) {
 
 uint64_t map_hash(const void *item, uint64_t seed0, uint64_t seed1, void *udata) {
     map_metadata *meta = (map_metadata*)udata;
+    if (!meta->key_hash) return go_type_hash(meta->key_type, item, seed0, seed1);
     return meta->key_hash(item, seed0, seed1);
 }
 
@@ -113,6 +116,7 @@ go_kv go_make(go_ii key_size, go_ii elem_size, go_hash hash_func, go_same same_f
     meta->key_hash = hash_func;
     meta->key_same = same_func;
     meta->clears = 0;
+    meta->key_type = NULL;
     go_kv map = (go_kv)hashmap_new(aligned + elem_size, hint > 0 ? (size_t)hint : 0, 0, 0,
         map_hash, map_compare, NULL, meta);
     for (go_ii i = 0; i < argc; i++) {
@@ -122,10 +126,17 @@ go_kv go_make(go_ii key_size, go_ii elem_size, go_hash hash_func, go_same same_f
     return map;
 }
 
+go_kv go_make_typed(const go_type* key, const go_type* elem, go_ii hint) {
+    go_kv m = go_make(key->size, elem->size, NULL, NULL, hint, 0, NULL, 0, 0);
+    ((map_metadata*)hashmap_udata(m))->key_type = key;
+    return m;
+}
+
 go_kv go_map_clone(go_kv m) {
     if (!m) return NULL;
     map_metadata *meta = hashmap_udata(m);
     go_kv clone = go_make(meta->key_size, meta->val_size, meta->key_hash, meta->key_same, go_map_len(m), 0, NULL, 0, 0);
+    ((map_metadata*)hashmap_udata(clone))->key_type = meta->key_type;
     size_t i = 0;
     void* item;
     while (hashmap_iter(m, &i, &item)) hashmap_set(clone, item);
@@ -610,10 +621,68 @@ go_tf go_vv_eq(go_vv a, go_vv b) {
     case go_kind_chan: return *(const go_ch*)x == *(const go_ch*)y;
     case go_kind_struct: case go_kind_array:
         if (a.go_type->equal) return a.go_type->equal(x, y);
+        if (go_type_comparable(a.go_type)) return go_type_equal(a.go_type, x, y); // (of types made by reflection)
         break;
     default: break;
     }
     go_panic_error("runtime error: comparing uncomparable type %s", a.go_type->name);
+}
+
+// Values of the types that reflection makes are compared and hashed by their descriptors.
+go_tf go_type_comparable(const go_type* t) {
+    switch (t->kind) {
+    case go_kind_slice: case go_kind_map: case go_kind_func: return false;
+    case go_kind_array: return t->equal || t->size == 0 || go_type_comparable(t->data.array.elem);
+    case go_kind_struct:
+        if (t->equal || t->size == 0) return true;
+        for (go_ii i = 0; i < t->data.fields.count; i++) {
+            if (!go_type_comparable(t->data.fields.field[i].type)) return false;
+        }
+        return true;
+    default: return true;
+    }
+}
+
+go_tf go_type_equal(const go_type* t, const void* x, const void* y) {
+    switch (t->kind) {
+    case go_kind_interface: return go_vv_eq(*(const go_vv*)x, *(const go_vv*)y); // (go_if starts like go_vv)
+    case go_kind_array:
+        if (t->equal) return t->equal(x, y);
+        for (go_ii i = 0; i < t->data.array.len; i++) {
+            go_ii offset = i * t->data.array.elem->size;
+            if (!go_type_equal(t->data.array.elem, (const char*)x + offset, (const char*)y + offset)) return false;
+        }
+        return true;
+    case go_kind_struct:
+        if (t->equal) return t->equal(x, y);
+        for (go_ii i = 0; i < t->data.fields.count; i++) {
+            const go_field* f = &t->data.fields.field[i];
+            if (strcmp(f->name, "_") == 0) continue;
+            if (!go_type_equal(f->type, (const char*)x + f->offset, (const char*)y + f->offset)) return false;
+        }
+        return true;
+    default: return go_vv_eq((go_vv){ { (void*)x }, t }, (go_vv){ { (void*)y }, t });
+    }
+}
+
+go_u8 go_type_hash(const go_type* t, const void* x, go_u8 seed0, go_u8 seed1) {
+    switch (t->kind) {
+    case go_kind_interface: return go_vv_hash(*(const go_vv*)x, seed0, seed1);
+    case go_kind_array:
+        if (t->hash) return t->hash(x, seed0, seed1);
+        for (go_ii i = 0; i < t->data.array.len; i++) {
+            seed0 = go_type_hash(t->data.array.elem, (const char*)x + i * t->data.array.elem->size, seed0, seed1);
+        }
+        return seed0;
+    case go_kind_struct:
+        if (t->hash) return t->hash(x, seed0, seed1);
+        for (go_ii i = 0; i < t->data.fields.count; i++) {
+            const go_field* f = &t->data.fields.field[i];
+            if (strcmp(f->name, "_") != 0) seed0 = go_type_hash(f->type, (const char*)x + f->offset, seed0, seed1);
+        }
+        return seed0;
+    default: return go_vv_hash((go_vv){ { (void*)x }, t }, seed0, seed1);
+    }
 }
 
 go_u8 go_vv_hash(go_vv v, go_u8 seed0, go_u8 seed1) {
@@ -636,6 +705,7 @@ go_u8 go_vv_hash(go_vv v, go_u8 seed0, go_u8 seed1) {
     case go_kind_chan: { go_ch c = *(const go_ch*)x; return go_hash_bytes(&c, sizeof c, seed0, seed1); }
     case go_kind_struct: case go_kind_array:
         if (v.go_type->hash) return v.go_type->hash(x, seed0, seed1);
+        if (!v.go_type->equal && go_type_comparable(v.go_type)) return go_type_hash(v.go_type, x, seed0, seed1);
         /* fallthrough */
     default:
         go_panic_error("runtime error: hash of unhashable type %s", v.go_type->name);

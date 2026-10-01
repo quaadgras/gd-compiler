@@ -421,7 +421,54 @@ func (t *rtype) AssignableTo(u Type) bool {
 	if u == nil {
 		panic("reflect: nil type passed to Type.AssignableTo")
 	}
-	return u.common() == t || (u.Kind() == Interface && t.Implements(u))
+	return u.common() == t || (u.Kind() == Interface && t.Implements(u)) || (t.Name() == "" || u.Name() == "") && identicalUnderlying(t, u.common())
+}
+
+// identicalUnderlying reports whether the underlying types of t and u are identical (as
+// their descriptors tell, for the types that are made of other types).
+func identicalUnderlying(t, u *rtype) bool {
+	if t.Kind() != u.Kind() {
+		return false
+	}
+	switch t.Kind() {
+	case Pointer, Slice:
+		return t.Elem() == u.Elem()
+	case Array:
+		return t.Len() == u.Len() && t.Elem() == u.Elem()
+	case Map:
+		return t.Key() == u.Key() && t.Elem() == u.Elem()
+	case Chan:
+		return t.ChanDir() == u.ChanDir() && t.Elem() == u.Elem()
+	case Func:
+		if t.NumIn() != u.NumIn() || t.NumOut() != u.NumOut() || t.IsVariadic() != u.IsVariadic() {
+			return false
+		}
+		for i := 0; i < t.NumIn(); i++ {
+			if t.In(i) != u.In(i) {
+				return false
+			}
+		}
+		for i := 0; i < t.NumOut(); i++ {
+			if t.Out(i) != u.Out(i) {
+				return false
+			}
+		}
+		return true
+	case Struct:
+		if t.NumField() != u.NumField() {
+			return false
+		}
+		for i := 0; i < t.NumField(); i++ {
+			a, b := t.Field(i), u.Field(i)
+			if a.Name != b.Name || a.Type != b.Type || a.Tag != b.Tag || a.Anonymous != b.Anonymous || a.PkgPath != b.PkgPath {
+				return false
+			}
+		}
+		return true
+	case Interface:
+		return t.String() == u.String()
+	}
+	return false // (basic types are named)
 }
 
 func (t *rtype) ConvertibleTo(u Type) bool {
@@ -535,12 +582,143 @@ func PtrTo(t Type) Type { return PointerTo(t) }
 // PointerTo returns the pointer type with element t.
 func PointerTo(t Type) Type { return toType(pointerTo(t.common().ptr())) }
 
-func SliceOf(t Type) Type                       { panic("reflect.SliceOf is not supported by gd") }
-func MapOf(key, elem Type) Type                 { panic("reflect.MapOf is not supported by gd") }
-func ArrayOf(length int, elem Type) Type        { panic("reflect.ArrayOf is not supported by gd") }
-func ChanOf(dir ChanDir, t Type) Type           { panic("reflect.ChanOf is not supported by gd") }
-func StructOf(fields []StructField) Type        { panic("reflect.StructOf is not supported by gd") }
-func FuncOf(in, out []Type, variadic bool) Type { panic("reflect.FuncOf is not supported by gd") }
+func sliceOf(elem unsafe.Pointer) unsafe.Pointer
+func arrayOf(n int, elem unsafe.Pointer) unsafe.Pointer
+func mapOf(key, elem unsafe.Pointer) unsafe.Pointer
+func chanOf(dir int, elem unsafe.Pointer) unsafe.Pointer
+func makeMap(t unsafe.Pointer, n int) unsafe.Pointer
+func makeChan(t unsafe.Pointer, buffer int) unsafe.Pointer
+func chanSend(t, c, x unsafe.Pointer, block bool) bool
+func chanRecv(t, c, x unsafe.Pointer, block bool, ok unsafe.Pointer) bool
+func chanClose(c unsafe.Pointer)
+func selectCases(n int, chans, elems, sends unsafe.Pointer, block bool, ok unsafe.Pointer) int // the case chosen, or -1
+func structOf(n int, names []string, types []unsafe.Pointer, tags []string, exported, embedded []bool, pkg, name string) unsafe.Pointer
+
+// SliceOf returns the slice type with element type t.
+func SliceOf(t Type) Type { return toType(sliceOf(t.common().ptr())) }
+
+// MapOf returns the map type with the given key and element types.
+func MapOf(key, elem Type) Type {
+	if !key.Comparable() {
+		panic("reflect.MapOf: invalid key type " + key.String())
+	}
+	return toType(mapOf(key.common().ptr(), elem.common().ptr()))
+}
+
+// ArrayOf returns the array type with the given length and element type.
+func ArrayOf(length int, elem Type) Type {
+	if length < 0 {
+		panic("reflect: negative length passed to ArrayOf")
+	}
+	return toType(arrayOf(length, elem.common().ptr()))
+}
+
+// ChanOf returns the channel type with the given direction and element type.
+func ChanOf(dir ChanDir, t Type) Type {
+	d := 0 // (as go/types numbers them)
+	switch dir {
+	case SendDir:
+		d = 1
+	case RecvDir:
+		d = 2
+	case BothDir:
+	default:
+		panic("reflect.ChanOf: invalid dir")
+	}
+	return toType(chanOf(d, t.common().ptr()))
+}
+
+// StructOf returns the struct type containing fields.
+func StructOf(fields []StructField) Type {
+	names, tags := make([]string, len(fields)), make([]string, len(fields))
+	types := make([]unsafe.Pointer, len(fields))
+	exported, embedded := make([]bool, len(fields)), make([]bool, len(fields))
+	pkg := ""
+	seen := make(map[string]bool)
+	for i, f := range fields {
+		if f.Name == "" {
+			panic("reflect.StructOf: field " + strconv.Itoa(i) + " has no name")
+		}
+		if f.Type == nil {
+			panic("reflect.StructOf: field " + strconv.Itoa(i) + " has no type")
+		}
+		if seen[f.Name] && f.Name != "_" {
+			panic("reflect.StructOf: duplicate field " + f.Name)
+		}
+		seen[f.Name] = true
+		names[i], tags[i], types[i] = f.Name, string(f.Tag), f.Type.common().ptr()
+		exported[i] = f.Name[0] >= 'A' && f.Name[0] <= 'Z'
+		embedded[i] = f.Anonymous
+		if !exported[i] {
+			if f.PkgPath == "" {
+				panic("reflect.StructOf: field \"" + f.Name + "\" is unexported but missing PkgPath")
+			}
+			pkg = f.PkgPath
+		}
+	}
+	name := "struct {" // (as gd names struct types: struct { A int "tag"; B })
+	for i, f := range fields {
+		if i > 0 {
+			name += ";"
+		}
+		name += " "
+		if !f.Anonymous {
+			name += f.Name + " "
+		}
+		name += f.Type.String()
+		if f.Tag != "" {
+			name += " " + strconv.Quote(string(f.Tag))
+		}
+	}
+	if len(fields) > 0 {
+		name += " }"
+	} else {
+		name += "}"
+	}
+	return toType(structOf(len(fields), names, types, tags, exported, embedded, pkg, name))
+}
+
+func funcOf(name string, in, out []unsafe.Pointer, variadic bool) unsafe.Pointer
+
+// FuncOf returns the function type with the given argument and result types. Functions
+// of it can be called (and made) only when the program has the type.
+func FuncOf(in, out []Type, variadic bool) Type {
+	if variadic && (len(in) == 0 || in[len(in)-1].Kind() != Slice) {
+		panic("reflect.FuncOf: last arg of variadic func must be slice")
+	}
+	name := "func(" // (as gd names function types)
+	ins, outs := make([]unsafe.Pointer, len(in)), make([]unsafe.Pointer, len(out))
+	for i, t := range in {
+		if i > 0 {
+			name += ", "
+		}
+		if variadic && i == len(in)-1 {
+			name += "..." + t.Elem().String()
+		} else {
+			name += t.String()
+		}
+		ins[i] = t.common().ptr()
+	}
+	name += ")"
+	for i, t := range out {
+		outs[i] = t.common().ptr()
+	}
+	switch len(out) {
+	case 0:
+	case 1:
+		name += " " + out[0].String()
+	default:
+		name += " ("
+		for i, t := range out {
+			if i > 0 {
+				name += ", "
+			}
+			name += t.String()
+		}
+		name += ")"
+	}
+	return toType(funcOf(name, ins, outs, variadic))
+}
 
 // Method represents a single method.
 type Method struct {

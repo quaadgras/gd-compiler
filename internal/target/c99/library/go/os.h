@@ -69,6 +69,22 @@ typedef struct { go_ss r0; go_if r1; } go_tuple_go_ss_go_if;
 #endif
 go_tuple_go_ss_go_if Readlink_go_os_package(go_ss name);
 go_tuple_go_ss_go_if Getwd_go_os_package(void);
+go_tuple_go_pt_go_if OpenFile_go_os_package(go_ss name, go_ii flag, go_u4 perm);
+go_if Mkdir_go_os_package(go_ss name, go_u4 perm);
+go_if MkdirAll_go_os_package(go_ss path, go_u4 perm);
+go_tuple_go_ss_go_if MkdirTemp_go_os_package(go_ss dir, go_ss pattern);
+go_if Chdir_go_os_package(go_ss dir);
+go_tf IsNotExist_go_os_package(go_if err);
+go_tf IsExist_go_os_package(go_if err);
+#ifndef go_tuple_go_pt_go_pt_go_if_defined
+#define go_tuple_go_pt_go_pt_go_if_defined
+typedef struct { go_pt r0; go_pt r1; go_if r2; } go_tuple_go_pt_go_pt_go_if;
+#endif
+go_tuple_go_pt_go_pt_go_if Pipe_go_os_package(void);
+#ifndef go_tuple_go_i8_go_if_defined
+#define go_tuple_go_i8_go_if_defined
+typedef struct { go_i8 r0; go_if r1; } go_tuple_go_i8_go_if;
+#endif
 static inline go_tf IsPathSeparator_go_os_package(go_u1 c) { return c == '/'; }
 go_if RemoveAll_go_os_package(go_ss path);
 
@@ -80,6 +96,8 @@ go_ss File_Name_go_os_package(go_pt f);
 go_if File_Sync_go_os_package(go_pt f);
 go_tuple_go_ll_go_if File_Readdirnames_go_os_package(go_pt f, go_ii n);
 go_tuple_go_ll_go_if File_Readdir_go_os_package(go_pt f, go_ii n);
+go_tuple_go_i8_go_if File_Seek_go_os_package(go_pt f, go_i8 offset, go_ii whence);
+go_if File_Chdir_go_os_package(go_pt f);
 
 // for interface values of *os.File (see I_ wrappers)
 go_tuple_go_ii_go_if I_File_Write_go_os_package(void* f, go_ll b);

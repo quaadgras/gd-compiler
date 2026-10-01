@@ -51,7 +51,8 @@ typedef struct {
     go_tf EnableGC;
     go_tf DebugGC;
     go_aau4u8u8zz BySize[61]; // size, mallocs, frees
-} go_tt_MemStats_go_runtime_package;
+} MemStats_go_runtime_package;
+static const go_type go_type_MemStats_go_runtime_package = {.name="runtime.MemStats", .kind=go_kind_struct, .size=sizeof(MemStats_go_runtime_package), .pkg="runtime"};
 
 typedef struct { go_up Stack0[32]; } StackRecord_go_runtime_package;
 typedef struct { go_i8 Count; go_i8 Cycles; StackRecord_go_runtime_package StackRecord; } BlockProfileRecord_go_runtime_package;
@@ -75,7 +76,12 @@ static inline void Breakpoint_go_runtime_package(void) {
 #endif
 }
 static inline go_tuple_go_up_go_ss_go_ii_go_tf Caller_go_runtime_package(go_ii skip) { return (go_tuple_go_up_go_ss_go_ii_go_tf){0}; }
-static inline go_ii Callers_go_runtime_package(go_ii skip, go_ll pc) { return 0; }
+// gd doesn't record the callers: there is one, unknown (for packages that need some).
+static inline go_ii Callers_go_runtime_package(go_ii skip, go_ll pc) {
+    if (pc.len == 0) return 0;
+    ((go_up*)pc.ptr.ptr)[0] = 1;
+    return 1;
+}
 static inline void GC_go_runtime_package(void) {}
 static inline go_ii GOMAXPROCS_go_runtime_package(go_ii n) { return 1; }
 static inline void Goexit_go_runtime_package(void) { thrd_exit(0); }
@@ -128,6 +134,7 @@ typedef struct {
     go_ii Line;
     go_up Entry;
 } Frame_go_runtime_package;
+static const go_type go_type_Frame_go_runtime_package = {.name="runtime.Frame", .kind=go_kind_struct, .size=sizeof(Frame_go_runtime_package), .pkg="runtime"};
 
 typedef struct { char _; } Frames_go_runtime_package;
 
@@ -139,7 +146,9 @@ typedef struct { Frame_go_runtime_package r0; go_tf r1; } go_tuple_Frame_go_runt
 // There is no information about the callers (gd doesn't record it).
 static inline go_pt CallersFrames_go_runtime_package(go_ll callers) { return go_new(sizeof(Frames_go_runtime_package), NULL); }
 static inline go_tuple_Frame_go_runtime_package_go_tf Frames_Next_go_runtime_package(go_pt f) {
-    return (go_tuple_Frame_go_runtime_package_go_tf){0};
+    (void)f;
+    Frame_go_runtime_package frame = { .PC = 1, .Function = go_string_new("?"), .File = go_string_new("?") };
+    return (go_tuple_Frame_go_runtime_package_go_tf){ frame, false };
 }
 
 typedef struct { char _; } Func_go_runtime_package;

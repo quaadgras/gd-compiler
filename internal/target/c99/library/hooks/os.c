@@ -1,4 +1,8 @@
-// Package os, implemented with C11's standard library, see library/go/os.h.
+// Package os, implemented with C11's standard library, see library/go/os.h, and POSIX's
+// where there is one (whose declarations strict C11 otherwise hides).
+#if (defined(__unix__) || defined(__APPLE__)) && !defined(_POSIX_C_SOURCE)
+#define _POSIX_C_SOURCE 200809L
+#endif
 #include <go/os.h>
 #include <go/io.h>
 #include <ctype.h>
@@ -256,7 +260,92 @@ go_tuple_go_ss_go_if S(Getwd)(void) {
         if (errno != ERANGE) return (go_tuple_go_ss_go_if){ {0}, go_os_error("getwd", go_string_new(""), errno) };
     }
 }
+#include <fcntl.h>
+
+go_tuple_go_pt_go_if S(OpenFile)(go_ss name, go_ii flag, go_u4 perm) {
+    int flags = 0; // (from Go's, as numbered on Linux)
+    switch (flag & 3) { case 1: flags = O_WRONLY; break; case 2: flags = O_RDWR; break; default: flags = O_RDONLY; }
+    if (flag & 0x40) flags |= O_CREAT;
+    if (flag & 0x80) flags |= O_EXCL;
+    if (flag & 0x200) flags |= O_TRUNC;
+    if (flag & 0x400) flags |= O_APPEND;
+    if (flag & 0x101000) flags |= O_SYNC;
+    int fd = open(go_os_cstring(name), flags, (mode_t)(perm & 0777));
+    if (fd < 0) return (go_tuple_go_pt_go_if){ {0}, go_os_error("open", name, errno) };
+    const char* mode = (flag & 3) == 0 ? "rb" : (flag & 0x400) ? ((flag & 3) == 2 ? "a+b" : "ab") : (flag & 3) == 2 ? "r+b" : "wb";
+    FILE* f = fdopen(fd, mode);
+    if (!f) { int err = errno; close(fd); return (go_tuple_go_pt_go_if){ {0}, go_os_error("open", name, err) }; }
+    File_go_os_package file = { f, name, false, false };
+    return (go_tuple_go_pt_go_if){ go_new(sizeof file, &file), {0} };
+}
+
+go_if S(Mkdir)(go_ss name, go_u4 perm) {
+    return mkdir(go_os_cstring(name), (mode_t)(perm & 0777)) == 0 ? (go_if){0} : go_os_error("mkdir", name, errno);
+}
+
+go_if S(MkdirAll)(go_ss path, go_u4 perm) {
+    struct stat st;
+    if (stat(go_os_cstring(path), &st) == 0) return S_ISDIR(st.st_mode) ? (go_if){0} : go_os_error("mkdir", path, ENOTDIR);
+    go_ii n = go_string_len(path), i = n;
+    while (i > 0 && path.ptr[i - 1] == '/') i--; // (the parent)
+    while (i > 0 && path.ptr[i - 1] != '/') i--;
+    if (i > 1) {
+        go_if err = S(MkdirAll)(go_string_slice(path, 0, i - 1), perm);
+        if (err.go_type) return err;
+    }
+    if (mkdir(go_os_cstring(path), (mode_t)(perm & 0777)) != 0) {
+        int err = errno;
+        if (stat(go_os_cstring(path), &st) == 0 && S_ISDIR(st.st_mode)) return (go_if){0};
+        return go_os_error("mkdir", path, err);
+    }
+    return (go_if){0};
+}
+
+go_tuple_go_ss_go_if S(MkdirTemp)(go_ss dir, go_ss pattern) {
+    if (go_string_len(dir) == 0) {
+        const char* tmp = getenv("TMPDIR");
+        dir = go_string_new(tmp && *tmp ? tmp : "/tmp");
+    }
+    go_ii n = go_string_len(pattern), star = -1;
+    for (go_ii i = 0; i < n; i++) if (pattern.ptr[i] == '*') star = i;
+    go_ss prefix = star >= 0 ? go_string_slice(pattern, 0, star) : pattern;
+    go_ss suffix = star >= 0 ? go_string_slice(pattern, star + 1, n) : (go_ss){0};
+    for (int try = 0; try < 10000; try++) {
+        char random[24];
+        snprintf(random, sizeof random, "%llu", (unsigned long long)(go_rand() % 10000000000ull));
+        go_ss name = go_string_concat(go_string_concat(go_string_concat(dir, go_string_new("/")), prefix),
+            go_string_concat(go_string_new(go_new((go_ii)strlen(random) + 1, random).ptr), suffix));
+        if (mkdir(go_os_cstring(name), 0700) == 0) return (go_tuple_go_ss_go_if){ name, {0} };
+        if (errno != EEXIST) return (go_tuple_go_ss_go_if){ {0}, go_os_error("mkdirtemp", name, errno) };
+    }
+    return (go_tuple_go_ss_go_if){ {0}, go_os_error("mkdirtemp", dir, EEXIST) };
+}
+
+go_if S(Chdir)(go_ss dir) { return chdir(go_os_cstring(dir)) == 0 ? (go_if){0} : go_os_error("chdir", dir, errno); }
+go_if S(File_Chdir)(go_pt f) {
+    File_go_os_package* file = go_os_check(f);
+    if (!file) return S(ErrInvalid);
+    return fchdir(fileno(file->f)) == 0 ? (go_if){0} : go_os_error("chdir", file->name, errno);
+}
+
+go_tuple_go_pt_go_pt_go_if S(Pipe)(void) {
+    int fds[2];
+    if (pipe(fds) != 0) return (go_tuple_go_pt_go_pt_go_if){ {0}, {0}, go_os_error("pipe", go_string_new(""), errno) };
+    File_go_os_package r = { fdopen(fds[0], "rb"), go_string_new("|0"), false, false };
+    File_go_os_package w = { fdopen(fds[1], "wb"), go_string_new("|1"), false, false };
+    return (go_tuple_go_pt_go_pt_go_if){ go_new(sizeof r, &r), go_new(sizeof w, &w), {0} };
+}
 #else
+go_tuple_go_pt_go_if S(OpenFile)(go_ss name, go_ii flag, go_u4 perm) {
+    (void)perm;
+    return go_os_open(name, (flag & 3) == 0 ? "rb" : (flag & 0x400) ? "ab" : (flag & 3) == 2 ? "r+b" : "wb");
+}
+go_if S(Mkdir)(go_ss name, go_u4 perm) { return go_os_error("mkdir", name, ENOSYS); }
+go_if S(MkdirAll)(go_ss path, go_u4 perm) { return go_os_error("mkdir", path, ENOSYS); }
+go_tuple_go_ss_go_if S(MkdirTemp)(go_ss dir, go_ss pattern) { return (go_tuple_go_ss_go_if){ {0}, go_os_error("mkdirtemp", dir, ENOSYS) }; }
+go_if S(Chdir)(go_ss dir) { return go_os_error("chdir", dir, ENOSYS); }
+go_if S(File_Chdir)(go_pt f) { return go_os_error("chdir", go_string_new(""), ENOSYS); }
+go_tuple_go_pt_go_pt_go_if S(Pipe)(void) { return (go_tuple_go_pt_go_pt_go_if){ {0}, {0}, go_os_error("pipe", go_string_new(""), ENOSYS) }; }
 go_tuple_go_ll_go_if S(ReadDir)(go_ss name) { return (go_tuple_go_ll_go_if){ {0}, go_os_error("open", name, ENOSYS) }; }
 go_tuple_go_ll_go_if S(File_Readdirnames)(go_pt f, go_ii n) { return (go_tuple_go_ll_go_if){ {0}, go_os_error("readdirent", go_string_new(""), ENOSYS) }; }
 go_tuple_go_ll_go_if S(File_Readdir)(go_pt f, go_ii n) { return S(File_Readdirnames)(f, n); }
@@ -271,6 +360,29 @@ static go_tuple_go_if_go_if go_os_stat_file(const char* op, go_ss name, go_tf fo
 
 go_tuple_go_if_go_if S(Stat)(go_ss name) { return go_os_stat_file("stat", name, true); }
 go_tuple_go_if_go_if S(Lstat)(go_ss name) { return go_os_stat_file("lstat", name, false); }
+
+go_tuple_go_i8_go_if S(File_Seek)(go_pt f, go_i8 offset, go_ii whence) {
+    File_go_os_package* file = go_os_check(f);
+    if (!file) return (go_tuple_go_i8_go_if){ 0, S(ErrInvalid) };
+    if (fseek(file->f, (long)offset, whence == 1 ? SEEK_CUR : whence == 2 ? SEEK_END : SEEK_SET) != 0) {
+        return (go_tuple_go_i8_go_if){ 0, go_os_error("seek", file->name, errno) };
+    }
+    return (go_tuple_go_i8_go_if){ (go_i8)ftell(file->f), {0} };
+}
+
+// IsNotExist and IsExist recognize the errors of os (which are strings, see go_os_error).
+static go_tf go_os_error_is(go_if err, go_if sentinel, int errnum) {
+    if (!err.go_type) return false;
+    if (err.ptr.ptr == sentinel.ptr.ptr) return true;
+    go_ss msg = ((go_error*)err.vtable)->Error(err.ptr.ptr);
+    const char* reason = strerror(errnum);
+    go_ii n = go_string_len(msg), m = (go_ii)strlen(reason);
+    if (n < m) return false;
+    for (go_ii i = 1; i < m; i++) if (msg.ptr[n - m + i] != reason[i]) return false; // (the first letter is lowercase)
+    return true;
+}
+go_tf S(IsNotExist)(go_if err) { return go_os_error_is(err, S(ErrNotExist), ENOENT); }
+go_tf S(IsExist)(go_if err) { return go_os_error_is(err, S(ErrExist), EEXIST); }
 
 go_if S(Remove)(go_ss name) {
     return remove(go_os_cstring(name)) == 0 ? (go_if){0} : go_os_error("remove", name, errno);

@@ -449,7 +449,15 @@ func (v Value) Slice(i, j int) Value {
 		if v.flag&flagAddr == 0 {
 			panic("reflect.Value.Slice: slice of unaddressable array")
 		}
-		panic("reflect.Value.Slice of arrays is not supported by gd")
+		n := v.typ.Len()
+		if i < 0 || j < i || j > n {
+			panic("reflect.Value.Slice: slice index out of bounds")
+		}
+		size := v.typ.Elem().Size()
+		r := unsafe.Slice((*byte)(unsafe.Add(v.ptr, uintptr(i)*size)), 0)
+		h := (*[3]int)(unsafe.Pointer(&r))
+		h[1], h[2] = j-i, n-i
+		return Value{SliceOf(v.typ.Elem()).common(), unsafe.Pointer(&r), v.flag & flagRO}
 	}
 	panic(&ValueError{"reflect.Value.Slice", v.Kind()})
 }
@@ -464,7 +472,7 @@ func (v Value) Set(x Value) {
 		storeInterface(v.typ.ptr(), v.ptr, packEface(x.typ.ptr(), x.ptr))
 		return
 	}
-	if x.typ != v.typ {
+	if !x.typ.AssignableTo(v.typ) {
 		panic("reflect.Set: value of type " + x.typ.String() + " is not assignable to type " + v.typ.String())
 	}
 	memmove(v.ptr, x.ptr, v.typ.Size())
@@ -757,16 +765,181 @@ func (v Value) call(op string, in []Value, isSlice bool) []Value {
 	callFunc(t.ptr(), v.ptr, unsafe.Pointer(&args[0]), unsafe.Pointer(&results[0]))
 	return out
 }
-func (v Value) Send(x Value)                 { panic("reflect.Value.Send is not supported by gd") }
-func (v Value) Recv() (Value, bool)          { panic("reflect.Value.Recv is not supported by gd") }
-func (v Value) TrySend(x Value) bool         { panic("reflect.Value.TrySend is not supported by gd") }
-func (v Value) TryRecv() (Value, bool)       { panic("reflect.Value.TryRecv is not supported by gd") }
-func (v Value) Close()                       { panic("reflect.Value.Close is not supported by gd") }
+// Send sends x on the channel v.
+func (v Value) Send(x Value) { v.send("Send", x, true) }
+
+// TrySend attempts to send x on the channel v but will not block.
+func (v Value) TrySend(x Value) bool { return v.send("TrySend", x, false) }
+
+func (v Value) send(op string, x Value, block bool) bool {
+	v.mustBe(op, Chan)
+	if v.typ.ChanDir()&SendDir == 0 {
+		panic("reflect: send on recv-only channel")
+	}
+	elem := v.typ.Elem().common()
+	e := Value{elem, unsafeNew(elem.ptr()), flagAddr}
+	e.Set(x)
+	return chanSend(v.typ.ptr(), v.ptr, e.ptr, block)
+}
+
+// Recv receives and returns a value from the channel v.
+func (v Value) Recv() (Value, bool) {
+	x, ok, _ := v.recv("Recv", true)
+	return x, ok
+}
+
+// TryRecv attempts to receive a value from the channel v but will not block.
+func (v Value) TryRecv() (Value, bool) {
+	x, ok, done := v.recv("TryRecv", false)
+	if !done {
+		return Value{}, false
+	}
+	return x, ok
+}
+
+func (v Value) recv(op string, block bool) (x Value, ok, done bool) {
+	v.mustBe(op, Chan)
+	if v.typ.ChanDir()&RecvDir == 0 {
+		panic("reflect: recv on send-only channel")
+	}
+	elem := v.typ.Elem().common()
+	x = Value{elem, unsafeNew(elem.ptr()), 0}
+	done = chanRecv(v.typ.ptr(), v.ptr, x.ptr, block, unsafe.Pointer(&ok))
+	return x, ok, done
+}
+
+// Close closes the channel v.
+func (v Value) Close() {
+	v.mustBe("Close", Chan)
+	if v.typ.ChanDir()&SendDir == 0 {
+		panic("reflect: close of receive-only channel")
+	}
+	chanClose(v.ptr)
+}
 func (v Value) Convert(t Type) Value         { return convert(v, t) }
 func (v Value) CanConvert(t Type) bool       { return v.Type().ConvertibleTo(t) }
-func (v Value) Seq() func(func(Value) bool)  { panic("reflect.Value.Seq is not supported by gd") }
+// Seq returns an iter.Seq[Value] that loops over the elements of v.
+func (v Value) Seq() func(func(Value) bool) {
+	switch v.Kind() {
+	case Int, Int8, Int16, Int32, Int64:
+		return func(yield func(Value) bool) {
+			for i := int64(0); i < v.Int(); i++ {
+				x := New(v.Type()).Elem()
+				x.SetInt(i)
+				if !yield(x) {
+					return
+				}
+			}
+		}
+	case Uint, Uint8, Uint16, Uint32, Uint64, Uintptr:
+		return func(yield func(Value) bool) {
+			for i := uint64(0); i < v.Uint(); i++ {
+				x := New(v.Type()).Elem()
+				x.SetUint(i)
+				if !yield(x) {
+					return
+				}
+			}
+		}
+	case Pointer:
+		if v.Elem().Kind() != Array {
+			break
+		}
+		return func(yield func(Value) bool) {
+			for i := range v.Elem().Len() {
+				if !yield(ValueOf(i)) {
+					return
+				}
+			}
+		}
+	case Array, Slice:
+		return func(yield func(Value) bool) {
+			for i := range v.Len() {
+				if !yield(ValueOf(i)) {
+					return
+				}
+			}
+		}
+	case String:
+		return func(yield func(Value) bool) {
+			for i := range v.String() {
+				if !yield(ValueOf(i)) {
+					return
+				}
+			}
+		}
+	case Map:
+		return func(yield func(Value) bool) {
+			for it := v.MapRange(); it.Next(); {
+				if !yield(it.Key()) {
+					return
+				}
+			}
+		}
+	case Chan:
+		return func(yield func(Value) bool) {
+			for {
+				x, ok := v.Recv()
+				if !ok || !yield(x) {
+					return
+				}
+			}
+		}
+	case Func:
+		return func(yield func(Value) bool) {
+			f := MakeFunc(v.Type().In(0), func(in []Value) []Value { return []Value{ValueOf(yield(in[0]))} })
+			v.Call([]Value{f})
+		}
+	}
+	panic("reflect: " + v.Type().String() + " cannot produce iter.Seq[Value]")
+}
+
+// Seq2 returns an iter.Seq2[Value, Value] that loops over the elements of v.
 func (v Value) Seq2() func(func(Value, Value) bool) {
-	panic("reflect.Value.Seq2 is not supported by gd")
+	switch v.Kind() {
+	case Pointer:
+		if v.Elem().Kind() != Array {
+			break
+		}
+		return func(yield func(Value, Value) bool) {
+			a := v.Elem()
+			for i := range a.Len() {
+				if !yield(ValueOf(i), a.Index(i)) {
+					return
+				}
+			}
+		}
+	case Array, Slice:
+		return func(yield func(Value, Value) bool) {
+			for i := range v.Len() {
+				if !yield(ValueOf(i), v.Index(i)) {
+					return
+				}
+			}
+		}
+	case String:
+		return func(yield func(Value, Value) bool) {
+			for i, r := range v.String() {
+				if !yield(ValueOf(i), ValueOf(r)) {
+					return
+				}
+			}
+		}
+	case Map:
+		return func(yield func(Value, Value) bool) {
+			for it := v.MapRange(); it.Next(); {
+				if !yield(it.Key(), it.Value()) {
+					return
+				}
+			}
+		}
+	case Func:
+		return func(yield func(Value, Value) bool) {
+			f := MakeFunc(v.Type().In(0), func(in []Value) []Value { return []Value{ValueOf(yield(in[0], in[1]))} })
+			v.Call([]Value{f})
+		}
+	}
+	panic("reflect: " + v.Type().String() + " cannot produce iter.Seq2[Value, Value]")
 }
 
 // convert converts v to t, for numeric types, and strings.
@@ -948,9 +1121,37 @@ func (v Value) SetMapIndex(key, elem Value) {
 	mapAssign(v.ptr, k, e)
 }
 
-func MakeMap(typ Type) Value                { panic("reflect.MakeMap is not supported by gd") }
-func MakeMapWithSize(typ Type, n int) Value { panic("reflect.MakeMapWithSize is not supported by gd") }
-func MakeChan(typ Type, buffer int) Value   { panic("reflect.MakeChan is not supported by gd") }
+// MakeMap creates a new map with the specified type.
+func MakeMap(typ Type) Value { return MakeMapWithSize(typ, 0) }
+
+// MakeMapWithSize creates a new map with the specified type and initial space for
+// approximately n elements.
+func MakeMapWithSize(typ Type, n int) Value {
+	if typ.Kind() != Map {
+		panic("reflect.MakeMapWithSize of non-map type")
+	}
+	t := typ.common()
+	p := unsafeNew(t.ptr())
+	*(*unsafe.Pointer)(p) = makeMap(t.ptr(), n)
+	return Value{t, p, 0}
+}
+
+// MakeChan creates a new channel with the specified type and buffer size.
+func MakeChan(typ Type, buffer int) Value {
+	if typ.Kind() != Chan {
+		panic("reflect.MakeChan of non-chan type")
+	}
+	if buffer < 0 {
+		panic("reflect.MakeChan: negative buffer size")
+	}
+	if typ.ChanDir() != BothDir {
+		panic("reflect.MakeChan: unidirectional channel type")
+	}
+	t := typ.common()
+	p := unsafeNew(t.ptr())
+	*(*unsafe.Pointer)(p) = makeChan(t.ptr(), buffer)
+	return Value{t, p, 0}
+}
 // MakeFunc returns a new function of the given Type that wraps the function fn.
 func MakeFunc(typ Type, fn func(args []Value) (results []Value)) Value {
 	if typ.Kind() != Func {
@@ -1067,8 +1268,63 @@ type SelectCase struct {
 	Send Value
 }
 
+// Select executes a select operation described by the list of cases.
 func Select(cases []SelectCase) (chosen int, recv Value, recvOK bool) {
-	panic("reflect.Select is not supported by gd")
+	chans := make([]unsafe.Pointer, len(cases)+1) // (pointers to the channels, nil for none)
+	elems := make([]unsafe.Pointer, len(cases)+1)
+	sends := make([]bool, len(cases)+1)
+	block, defaultCase := true, -1
+	var recvs []Value
+	recvs = make([]Value, len(cases))
+	for i, c := range cases {
+		switch c.Dir {
+		case SelectDefault:
+			if defaultCase >= 0 {
+				panic("reflect.Select: multiple default cases")
+			}
+			if c.Chan.IsValid() || c.Send.IsValid() {
+				panic("reflect.Select: default case has Chan or Send value")
+			}
+			block, defaultCase = false, i
+		case SelectSend:
+			if c.Chan.IsValid() {
+				c.Chan.mustBe("Select", Chan)
+				if c.Chan.typ.ChanDir()&SendDir == 0 {
+					panic("reflect.Select: SendDir case using recv-only channel")
+				}
+				elem := c.Chan.typ.Elem().common()
+				e := Value{elem, unsafeNew(elem.ptr()), flagAddr}
+				if !c.Send.IsValid() {
+					panic("reflect.Select: SendDir case missing Send value")
+				}
+				e.Set(c.Send)
+				chans[i], elems[i], sends[i] = c.Chan.ptr, e.ptr, true
+			}
+		case SelectRecv:
+			if c.Send.IsValid() {
+				panic("reflect.Select: RecvDir case has Send value")
+			}
+			if c.Chan.IsValid() {
+				c.Chan.mustBe("Select", Chan)
+				if c.Chan.typ.ChanDir()&RecvDir == 0 {
+					panic("reflect.Select: RecvDir case using send-only channel")
+				}
+				elem := c.Chan.typ.Elem().common()
+				recvs[i] = Value{elem, unsafeNew(elem.ptr()), 0}
+				chans[i], elems[i] = c.Chan.ptr, recvs[i].ptr
+			}
+		default:
+			panic("reflect.Select: invalid Dir")
+		}
+	}
+	chosen = selectCases(len(cases), unsafe.Pointer(&chans[0]), unsafe.Pointer(&elems[0]), unsafe.Pointer(&sends[0]), block, unsafe.Pointer(&recvOK))
+	if chosen < 0 {
+		return defaultCase, Value{}, false
+	}
+	if cases[chosen].Dir == SelectRecv {
+		return chosen, recvs[chosen], recvOK
+	}
+	return chosen, Value{}, false
 }
 
 // DeepEqual reports whether x and y are "deeply equal".

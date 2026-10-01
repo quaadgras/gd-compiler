@@ -400,7 +400,7 @@ fixedbugs/bug132.go	pass
 fixedbugs/bug133.go	skip	todo:errorcheck
 fixedbugs/bug13343.go	pass	
 fixedbugs/bug135.go	pass	
-fixedbugs/bug136.go	fail	errorcheck: unmatched error: bug136.go:10:2: label L declared and not used
+fixedbugs/bug136.go	fail	errorcheck: unmatched error: bug136.go:16:2: label L1 declared and not used
 fixedbugs/bug137.go	pass	
 fixedbugs/bug139.go	pass	
 fixedbugs/bug140.go	pass	
@@ -753,7 +753,7 @@ fixedbugs/bug498.go	pass
 fixedbugs/bug499.go	pass	
 fixedbugs/bug500.go	pass	
 fixedbugs/bug501.go	pass	
-fixedbugs/bug502.go	fail	c11: error: unknown type name 'T_go_testing_package'; did you mean 'I_go_main_package'?
+fixedbugs/bug502.go	pass	
 fixedbugs/bug503.go	pass	
 fixedbugs/bug504.go	skip	todo:compiledir
 fixedbugs/bug505.go	pass	
@@ -1120,7 +1120,7 @@ fixedbugs/issue22389.go	pass
 fixedbugs/issue22429.go	pass	
 fixedbugs/issue22458.go	pass	
 fixedbugs/issue22581.go	fail	errorcheck: issue22581.go:10: no match for "unexpected \\)" in: issue22581.go:10:13: expected ';', found ')'; issue22581.go:10:14: e…
-fixedbugs/issue22605.go	fail	exit: exit status 2 panic: reflect.ArrayOf is not supported by gd
+fixedbugs/issue22605.go	pass	
 fixedbugs/issue22660.go	skip	gc:build !js && !wasip1 && gc
 fixedbugs/issue22662.go	skip	gc:stack-introspection runtime.Caller
 fixedbugs/issue22662b.go	skip	gc:build !js && !wasip1 && gc
@@ -1304,8 +1304,8 @@ fixedbugs/issue30430.go	pass
 fixedbugs/issue30476.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue30566a.go	pass	
 fixedbugs/issue30566b.go	pass	
-fixedbugs/issue30606.go	fail	exit: exit status 2 panic: reflect.SliceOf is not supported by gd
-fixedbugs/issue30606b.go	fail	exit: exit status 2 panic: reflect.ArrayOf is not supported by gd
+fixedbugs/issue30606.go	pass	
+fixedbugs/issue30606b.go	pass	
 fixedbugs/issue30659.go	skip	todo:compiledir
 fixedbugs/issue30679.go	pass	
 fixedbugs/issue30709.go	pass	
@@ -1396,7 +1396,7 @@ fixedbugs/issue36723.go	skip	gc:flags -d=ssa/check/on
 fixedbugs/issue3705.go	pass	
 fixedbugs/issue37246.go	pass	
 fixedbugs/issue37513.go	skip	todo:buildrundir
-fixedbugs/issue37716.go	fail	exit: exit status 2 panic: reflect.MapOf is not supported by gd
+fixedbugs/issue37716.go	pass	
 fixedbugs/issue37753.go	pass	
 fixedbugs/issue3783.go	pass	
 fixedbugs/issue37837.go	skip	gc:diagnostics -m
@@ -1557,7 +1557,7 @@ fixedbugs/issue45947.go	pass
 fixedbugs/issue45948.go	skip	gc:flags -N
 fixedbugs/issue4610.go	pass	
 fixedbugs/issue4614.go	pass	
-fixedbugs/issue4618.go	fail	c11: error: implicit declaration of function 'AllocsPerRun_go_testing_package' [-Wimplicit-function-declaration]
+fixedbugs/issue4618.go	pass	
 fixedbugs/issue4620.go	pass	
 fixedbugs/issue46234.go	skip	todo:buildrun
 fixedbugs/issue46304.go	pass	
@@ -1567,7 +1567,7 @@ fixedbugs/issue4654.go	pass
 fixedbugs/issue46556.go	pass	
 fixedbugs/issue4663.go	pass	
 fixedbugs/issue46653.go	skip	todo:runindir
-fixedbugs/issue4667.go	fail	c11: error: implicit declaration of function 'AllocsPerRun_go_testing_package' [-Wimplicit-function-declaration]
+fixedbugs/issue4667.go	pass	
 fixedbugs/issue46720.go	pass	
 fixedbugs/issue46725.go	skip	gc:finalizers runtime.SetFinalizer
 fixedbugs/issue46749.go	pass	
@@ -1623,7 +1623,7 @@ fixedbugs/issue4909a.go	pass
 fixedbugs/issue4909b.go	skip	todo:errorcheck
 fixedbugs/issue49100.go	pass	
 fixedbugs/issue49100b.go	pass	
-fixedbugs/issue49110.go	fail	exit: exit status 2 panic: reflect.StructOf is not supported by gd
+fixedbugs/issue49110.go	pass	
 fixedbugs/issue49122.go	pass	
 fixedbugs/issue49143.go	skip	todo:compiledir
 fixedbugs/issue49145.go	pass	
@@ -1747,7 +1747,7 @@ fixedbugs/issue56777.go	pass
 fixedbugs/issue56778.go	skip	todo:compiledir
 fixedbugs/issue56923.go	pass	
 fixedbugs/issue5698.go	pass	
-fixedbugs/issue56990.go	fail	c11: error: implicit declaration of function 'common_Log_go_testing_package'; did you mean 'T_Log_go_testing_package'? [-Wimp…
+fixedbugs/issue56990.go	pass	
 fixedbugs/issue5704.go	pass	
 fixedbugs/issue57184.go	pass	
 fixedbugs/issue57309.go	pass	

@@ -28,6 +28,10 @@ static const go_type* go_rtype_find(const char* name, go_kind kind, const go_typ
     mtx_lock(&go_rtypes_lock);
     for (go_rtype_entry* e = go_rtypes[h]; e; e = e->next) {
         if (e->t->kind == kind && strcmp(e->t->name, name) == 0) {
+            if (t && kind == go_kind_func && !e->t->data.func.call && t->data.func.call) { // (made by FuncOf)
+                ((go_type*)e->t)->data.func.call = t->data.func.call;
+                ((go_type*)e->t)->data.func.makefunc = t->data.func.makefunc;
+            }
             mtx_unlock(&go_rtypes_lock);
             return e->t;
         }
@@ -168,12 +172,153 @@ go_tf S(typeImplements)(go_pt t, go_pt iface) {
     return go_implements(T(t), i->data.interface.methods, i->data.interface.count, NULL);
 }
 
-go_tf S(typeComparable)(go_pt t) {
-    switch (T(t)->kind) {
-    case go_kind_slice: case go_kind_map: case go_kind_func: return false;
-    case go_kind_struct: case go_kind_array: return T(t)->equal != NULL || T(t)->size == 0;
-    default: return true;
+go_tf S(typeComparable)(go_pt t) { return go_type_comparable(T(t)); }
+
+// Types made by reflection (SliceOf and others), canonical like the others, so that the
+// same type made twice (or compiled) is the same reflect.Type.
+static char* go_rconcat(const char* a, const char* b, const char* c, const char* d) {
+    size_t n = strlen(a) + strlen(b) + strlen(c) + strlen(d);
+    char* s = go_new((go_ii)n + 1, NULL).ptr;
+    strcat(strcat(strcat(strcpy(s, a), b), c), d);
+    return s;
+}
+static go_pt go_rmake(go_type* t) { return (go_pt){ (void*)go_rtype_find(t->name, t->kind, t) }; }
+static go_type* go_rnew(char* name, go_kind kind, go_ii size) {
+    const go_type* found = go_rtype_find(name, kind, NULL);
+    if (found) return (go_type*)found;
+    go_type* t = go_new(sizeof(go_type), NULL).ptr;
+    t->name = name;
+    t->kind = kind;
+    t->size = size;
+    return t;
+}
+
+// go_ralign returns the alignment of values of t, as C lays them out.
+static go_ii go_ralign(const go_type* t) {
+    switch (t->kind) {
+    case go_kind_bool: case go_kind_int8: case go_kind_uint8: return 1;
+    case go_kind_int16: case go_kind_uint16: return 2;
+    case go_kind_int32: case go_kind_uint32: case go_kind_float32: case go_kind_complex64: return 4;
+    case go_kind_array: return go_ralign(t->data.array.elem);
+    case go_kind_struct: {
+        go_ii align = 1;
+        for (go_ii i = 0; i < t->data.fields.count; i++) {
+            go_ii a = go_ralign(t->data.fields.field[i].type);
+            if (a > align) align = a;
+        }
+        return align;
     }
+    default: return 8;
+    }
+}
+
+go_pt S(sliceOf)(go_pt elem) {
+    go_type* t = go_rnew(go_rconcat("[]", T(elem)->name, "", ""), go_kind_slice, sizeof(go_ll));
+    if (!t->data.slice.elem) t->data.slice.elem = T(elem);
+    return go_rmake(t);
+}
+go_pt S(arrayOf)(go_ii n, go_pt elem) {
+    char len[32];
+    snprintf(len, sizeof len, "[%lld]", (long long)n);
+    if (n < 0 || (T(elem)->size > 0 && n > ((go_ii)1 << 47) / T(elem)->size)) go_panic_error("reflect.ArrayOf: array size would exceed virtual address space");
+    go_type* t = go_rnew(go_rconcat(len, T(elem)->name, "", ""), go_kind_array, n * T(elem)->size);
+    if (!t->data.array.elem) t->data.array = (go_type_array){ T(elem), n };
+    return go_rmake(t);
+}
+go_pt S(mapOf)(go_pt key, go_pt elem) {
+    if (!go_type_comparable(T(key))) go_panic_error("reflect.MapOf: invalid key type %s", T(key)->name);
+    go_type* t = go_rnew(go_rconcat("map[", T(key)->name, "]", T(elem)->name), go_kind_map, sizeof(go_kv));
+    if (!t->data.map.key) t->data.map = (go_type_map){ T(key), T(elem) };
+    return go_rmake(t);
+}
+go_pt S(chanOf)(go_ii dir, go_pt elem) {
+    const char* prefix = dir == 1 ? "chan<- " : dir == 2 ? "<-chan " : "chan "; // (go/types' directions)
+    go_type* t = go_rnew(go_rconcat(prefix, T(elem)->name, "", ""), go_kind_chan, sizeof(go_ch));
+    if (!t->data.chan.elem) t->data.chan = (go_type_chan){ T(elem), dir };
+    return go_rmake(t);
+}
+// structOf makes a struct type of n fields (with names, types, tags and whether they are
+// exported or embedded), laid out as C does.
+go_pt S(structOf)(go_ii n, go_ll names, go_ll types, go_ll tags, go_ll exported, go_ll embedded, go_ss pkg, go_ss typename) {
+    go_field* fields = go_new(n > 0 ? n * (go_ii)sizeof(go_field) : 1, NULL).ptr;
+    go_ii offset = 0, align = 1;
+    for (go_ii i = 0; i < n; i++) {
+        go_field* f = &fields[i];
+        go_ss fname = ((go_ss*)names.ptr.ptr)[i], tag = ((go_ss*)tags.ptr.ptr)[i];
+        f->name = go_new(go_string_len(fname) + 1, NULL).ptr;
+        memcpy(f->name, fname.ptr, (size_t)go_string_len(fname));
+        f->type = ((go_pt*)types.ptr.ptr)[i].ptr;
+        f->exported = ((go_tf*)exported.ptr.ptr)[i];
+        f->embedded = ((go_tf*)embedded.ptr.ptr)[i];
+        if (go_string_len(tag) > 0) {
+            f->tag = go_new(go_string_len(tag) + 1, NULL).ptr;
+            memcpy(f->tag, tag.ptr, (size_t)go_string_len(tag));
+        }
+        if (!f->exported) {
+            char* p = go_new(go_string_len(pkg) + 1, NULL).ptr;
+            memcpy(p, pkg.ptr, (size_t)go_string_len(pkg));
+            f->pkg = p;
+        }
+        go_ii a = go_ralign(f->type);
+        if (a > align) align = a;
+        offset = (offset + a - 1) / a * a;
+        f->offset = offset;
+        offset += f->type->size;
+    }
+    char* name = go_new(go_string_len(typename) + 1, NULL).ptr;
+    memcpy(name, typename.ptr, (size_t)go_string_len(typename));
+    go_type* t = go_rnew(name, go_kind_struct, (offset + align - 1) / align * align);
+    if (!t->data.fields.field) t->data.fields = (go_type_struct){ fields, n };
+    return go_rmake(t);
+}
+// funcOf makes a function type (named name), that reflection can't call or make functions
+// of, unless the program has the type (whose descriptor has the functions to).
+go_pt S(funcOf)(go_ss typename, go_ll in, go_ll out, go_tf variadic) {
+    char* name = go_new(go_string_len(typename) + 1, NULL).ptr;
+    memcpy(name, typename.ptr, (size_t)go_string_len(typename));
+    go_type* t = go_rnew(name, go_kind_func, sizeof(go_fn));
+    if (!t->data.func.call && !t->data.func.in && !t->data.func.out) {
+        const go_type** ins = go_new(in.len > 0 ? in.len * (go_ii)sizeof(go_type*) : 1, NULL).ptr;
+        const go_type** outs = go_new(out.len > 0 ? out.len * (go_ii)sizeof(go_type*) : 1, NULL).ptr;
+        for (go_ii i = 0; i < in.len; i++) ins[i] = ((go_pt*)in.ptr.ptr)[i].ptr;
+        for (go_ii i = 0; i < out.len; i++) outs[i] = ((go_pt*)out.ptr.ptr)[i].ptr;
+        t->data.func = (go_type_func){ ins, in.len, outs, out.len, variadic, NULL, NULL };
+    }
+    return go_rmake(t);
+}
+
+go_pt S(makeMap)(go_pt t, go_ii n) { return (go_pt){ (void*)go_make_typed(T(t)->data.map.key, T(t)->data.map.elem, n > 0 ? n : 0) }; }
+
+// Channels, c points to the channel.
+go_pt S(makeChan)(go_pt t, go_ii buffer) { return (go_pt){ (void*)go_chan(T(t)->data.chan.elem->size, buffer) }; }
+// chanSend sends the value at x, chanRecv receives into x, without waiting unless block,
+// reporting whether they did (and for chanRecv, ok, whether the channel is open).
+go_tf S(chanSend)(go_pt t, go_pt c, go_pt x, go_tf block) {
+    go_ch ch = *(go_ch*)c.ptr;
+    if (block) { go_send(ch, T(t)->data.chan.elem->size, x.ptr); return true; }
+    go_select_case cases[] = { { ch, true, x.ptr, false } };
+    return go_select(cases, 1, false) == 0;
+}
+go_tf S(chanRecv)(go_pt t, go_pt c, go_pt x, go_tf block, go_pt ok) {
+    go_ch ch = *(go_ch*)c.ptr;
+    if (block) { *(go_tf*)ok.ptr = go_recv(ch, T(t)->data.chan.elem->size, x.ptr); return true; }
+    go_select_case cases[] = { { ch, false, x.ptr, false } };
+    if (go_select(cases, 1, false) != 0) return false;
+    *(go_tf*)ok.ptr = cases[0].ok;
+    return true;
+}
+void S(chanClose)(go_pt c) { go_close(*(go_ch*)c.ptr); }
+// selectCases selects between n cases: chans points to pointers to their channels (nil
+// for none), elems to pointers to their values, and sends to whether they send.
+go_ii S(selectCases)(go_ii n, go_pt chans, go_pt elems, go_pt sends, go_tf block, go_pt ok) {
+    go_select_case* cases = go_new((n > 0 ? n : 1) * (go_ii)sizeof(go_select_case), NULL).ptr;
+    for (go_ii i = 0; i < n; i++) {
+        go_pt c = ((go_pt*)chans.ptr)[i];
+        cases[i] = (go_select_case){ c.ptr ? *(go_ch*)c.ptr : NULL, ((go_tf*)sends.ptr)[i], ((go_pt*)elems.ptr)[i].ptr, false };
+    }
+    int chosen = go_select(cases, (int)n, block);
+    if (chosen >= 0) *(go_tf*)ok.ptr = cases[chosen].ok;
+    return chosen;
 }
 
 go_pt S(efaceType)(go_vv i) { return (go_pt){ (void*)i.go_type }; }

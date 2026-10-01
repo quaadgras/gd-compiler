@@ -302,6 +302,10 @@ go_tf go_map_get(go_kv m, const void* key, void* val);
 typedef struct { go_kv m; char* entries; go_ii n, i, start, clears; } go_map_iter;
 go_map_iter go_map_range(go_kv m);
 go_kv go_map_clone(go_kv m); // (of maps.Clone)
+go_kv go_make_typed(const go_type* key, const go_type* elem, go_ii hint); // (of reflect.MakeMap)
+go_tf go_type_comparable(const go_type* t);
+go_tf go_type_equal(const go_type* t, const void* x, const void* y);
+go_u8 go_type_hash(const go_type* t, const void* x, go_u8 seed0, go_u8 seed1);
 go_tf go_map_next(go_map_iter* it, void* key, void* val); // val may be NULL.
 
 #define go_string_new(str) (go_ss){ .ptr = str, .len = -1 }
